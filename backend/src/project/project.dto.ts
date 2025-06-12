@@ -1,8 +1,10 @@
+import { Prop } from '@nestjs/mongoose';
 import { IsString, IsOptional, IsBoolean, IsNumber, IsArray, IsDate, IsMongoId } from 'class-validator';
 import { Schema as MongooseSchema } from 'mongoose';
 
 export class CreateProjectDto {
   @IsString()
+  @Prop({ required: true, unique: true })
   code: string;
 
   @IsArray()

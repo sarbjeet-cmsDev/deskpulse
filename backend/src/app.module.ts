@@ -2,6 +2,10 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { FaqModule } from './faq/faq.module';
+import { ProjectModule } from './project/project.module';
+import { TaskModule } from './task/task.module';
+import { TimelineModule } from './timeline/timeline.module';
+import { CommentModule } from './comment/comment.module';
 
 @Module({
   imports: [
@@ -17,6 +21,10 @@ import { FaqModule } from './faq/faq.module';
       inject: [ConfigService],
     }),
     FaqModule,
+    ProjectModule,
+    TaskModule,
+    TimelineModule,
+    CommentModule
   ],
   controllers: [],
   providers: [],

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Project, ProjectDocument } from './project.schema';
@@ -7,56 +7,87 @@ import { Project, ProjectDocument } from './project.schema';
 export class ProjectService {
   constructor(
     @InjectModel(Project.name) private projectModel: Model<ProjectDocument>
-  ) {}
+  ) { }
 
+  
   async create(createProjectDto: Partial<Project>): Promise<Project> {
-    const createdProject = new this.projectModel(createProjectDto);
-    return createdProject.save();
+    try {
+      const createdProject = new this.projectModel(createProjectDto);
+      return await createdProject.save();
+    } catch (error) {
+      if (error.code === 11000 && error.keyPattern?.code) {
+        throw new ConflictException('Project code must be unique.');
+      }
+      throw new InternalServerErrorException('Failed to create project.');
+    }
   }
+
 
   async findAll(): Promise<Project[]> {
     return this.projectModel.find().exec();
   }
 
   async findOne(id: string): Promise<Project> {
-    return this.projectModel.findById(id).exec();
+    const project = await this.projectModel.findById(id).exec();
+    if (!project) {
+      throw new NotFoundException(`Project with ID ${id} not found.`);
+    }
+    return project;
   }
 
   async findByCode(code: string): Promise<Project> {
-    return this.projectModel.findOne({ code }).exec();
+    const project = await this.projectModel.findOne({ code }).exec();
+    if (!project) {
+      throw new NotFoundException(`Project with code ${code} not found.`);
+    }
+    return project;
   }
 
   async update(id: string, updateProjectDto: Partial<Project>): Promise<Project> {
-    return this.projectModel
+    const updatedProject = await this.projectModel
       .findByIdAndUpdate(id, updateProjectDto, { new: true })
       .exec();
-  }
+    if (!updatedProject) {
+      throw new NotFoundException(`Project with ID ${id} not found.`);
+    }
 
+    return updatedProject;
+  }
   async remove(id: string): Promise<Project> {
     return this.projectModel.findByIdAndDelete(id).exec();
   }
-
   async findActiveProjects(): Promise<Project[]> {
     return this.projectModel.find({ is_active: true }).exec();
   }
-
   async addMember(projectId: string, memberId: string): Promise<Project> {
-    return this.projectModel
+    const updatedProject = await this.projectModel
       .findByIdAndUpdate(
         projectId,
-        { $addToSet: { members: memberId } },
+        { $addToSet: { members: memberId } }, // Avoid duplicates
         { new: true }
       )
       .exec();
+
+    if (!updatedProject) {
+      throw new NotFoundException(`Project with ID ${projectId} not found.`);
+    }
+
+    return updatedProject;
   }
 
   async removeMember(projectId: string, memberId: string): Promise<Project> {
-    return this.projectModel
+    const updatedProject = await this.projectModel
       .findByIdAndUpdate(
         projectId,
         { $pull: { members: memberId } },
         { new: true }
       )
       .exec();
+
+    if (!updatedProject) {
+      throw new NotFoundException(`Project with ID ${projectId} not found.`);
+    }
+
+    return updatedProject;
   }
 }
