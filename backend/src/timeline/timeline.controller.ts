@@ -55,6 +55,15 @@ export class TimelineController {
       return this.timelineService.findByUserId(userId);
     }
 
+    @Get('project/:projectId')
+    async getByProject(
+      @Param('projectId') projectId: string,
+      @Query('from') from?: string,
+      @Query('to') to?: string,
+    ): Promise<Timeline[]> {
+      return this.timelineService.findByProjectId(projectId, from, to);
+    }
+
     
 
 }

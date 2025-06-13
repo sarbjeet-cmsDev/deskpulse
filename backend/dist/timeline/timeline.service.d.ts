@@ -16,4 +16,5 @@ export declare class TimelineService {
     removeByTaskId(taskId: string): Promise<{
         deletedCount?: number;
     }>;
+    findByProjectId(projectId: string, from?: string, to?: string): Promise<Timeline[]>;
 }

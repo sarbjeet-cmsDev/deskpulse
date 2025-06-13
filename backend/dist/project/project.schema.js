@@ -22,7 +22,7 @@ __decorate([
 __decorate([
     (0, mongoose_1.Prop)({ type: [{ type: mongoose_2.Schema.Types.ObjectId, ref: 'User', required: false }] }),
     __metadata("design:type", Array)
-], Project.prototype, "members", void 0);
+], Project.prototype, "users", void 0);
 __decorate([
     (0, mongoose_1.Prop)({ type: mongoose_2.Schema.Types.ObjectId, ref: 'User', required: false }),
     __metadata("design:type", mongoose_2.Schema.Types.ObjectId)

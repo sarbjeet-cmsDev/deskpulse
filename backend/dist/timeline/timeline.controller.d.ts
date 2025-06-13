@@ -11,4 +11,5 @@ export declare class TimelineController {
     remove(id: string): Promise<Timeline>;
     findByTaskId(taskId: string): Promise<Timeline[]>;
     findByUserId(userId: string): Promise<Timeline[]>;
+    getByProject(projectId: string, from?: string, to?: string): Promise<Timeline[]>;
 }

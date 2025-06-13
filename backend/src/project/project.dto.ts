@@ -10,7 +10,7 @@ export class CreateProjectDto {
   @IsArray()
   @IsMongoId({ each: true })
   @IsOptional()
-  members?: MongooseSchema.Types.ObjectId[];
+  users?: MongooseSchema.Types.ObjectId[];
 
   @IsString()
   @IsOptional()

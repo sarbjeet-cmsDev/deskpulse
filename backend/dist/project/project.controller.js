@@ -16,6 +16,7 @@ exports.ProjectController = void 0;
 const common_1 = require("@nestjs/common");
 const project_service_1 = require("./project.service");
 const project_dto_1 = require("./project.dto");
+const jwt_auth_guard_1 = require("../guard/jwt-auth.guard");
 let ProjectController = class ProjectController {
     constructor(projectService) {
         this.projectService = projectService;
@@ -41,11 +42,17 @@ let ProjectController = class ProjectController {
     async remove(id) {
         return this.projectService.remove(id);
     }
-    async addMember(id, memberId) {
-        return this.projectService.addMember(id, memberId);
+    async addUser(id, userId) {
+        return this.projectService.addUser(id, userId);
     }
-    async removeMember(id, memberId) {
-        return this.projectService.removeMember(id, memberId);
+    async getAssignedUsers(userId) {
+        return this.projectService.getAssignedUsers(userId);
+    }
+    async removeUser(id, userId) {
+        return this.projectService.removeUser(id, userId);
+    }
+    async getMyProjects(req) {
+        return this.projectService.findProjectsByUserId(req.user.userId);
     }
 };
 exports.ProjectController = ProjectController;
@@ -69,7 +76,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ProjectController.prototype, "findActive", null);
 __decorate([
-    (0, common_1.Get)(':id'),
+    (0, common_1.Get)('/fetch/:id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -98,21 +105,36 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ProjectController.prototype, "remove", null);
 __decorate([
-    (0, common_1.Post)(':id/members/:memberId'),
+    (0, common_1.Post)('/:id/users/:userId'),
     __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Param)('memberId')),
+    __param(1, (0, common_1.Param)('userId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
-], ProjectController.prototype, "addMember", null);
+], ProjectController.prototype, "addUser", null);
 __decorate([
-    (0, common_1.Delete)(':id/members/:memberId'),
+    (0, common_1.Get)('/assigned/:userId/'),
+    __param(0, (0, common_1.Param)('userId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], ProjectController.prototype, "getAssignedUsers", null);
+__decorate([
+    (0, common_1.Delete)(':id/users/:userId'),
     __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Param)('memberId')),
+    __param(1, (0, common_1.Param)('userId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
-], ProjectController.prototype, "removeMember", null);
+], ProjectController.prototype, "removeUser", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Get)('me'),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ProjectController.prototype, "getMyProjects", null);
 exports.ProjectController = ProjectController = __decorate([
     (0, common_1.Controller)('projects'),
     __metadata("design:paramtypes", [project_service_1.ProjectService])

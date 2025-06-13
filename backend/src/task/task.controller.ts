@@ -7,10 +7,13 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { CreateTaskDto, UpdateTaskDto } from './task.dto';
 import { Task } from './task.interface';
+import { JwtAuthGuard } from 'src/guard/jwt-auth.guard';
 
 @Controller('tasks')
 export class TaskController {
@@ -26,7 +29,7 @@ export class TaskController {
     return this.taskService.findAll();
   }
 
-  @Get(':id')
+  @Get('fetch/:id')
   async findOne(@Param('id') id: string): Promise<Task> {
     return this.taskService.findOne(id);
   }
@@ -58,4 +61,11 @@ export class TaskController {
   async remove(@Param('id') id: string): Promise<Task> {
     return this.taskService.remove(id);
   }
+
+
+  @UseGuards(JwtAuthGuard)
+    @Get('me')
+    async getMyTaskes(@Req() req: any): Promise<Task[]> {
+      return this.taskService.findByAssignedUser(req.user.userId);
+    }
 }

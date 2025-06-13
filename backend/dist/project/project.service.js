@@ -66,23 +66,33 @@ let ProjectService = class ProjectService {
     async findActiveProjects() {
         return this.projectModel.find({ is_active: true }).exec();
     }
-    async addMember(projectId, memberId) {
+    async addUser(projectId, userId) {
         const updatedProject = await this.projectModel
-            .findByIdAndUpdate(projectId, { $addToSet: { members: memberId } }, { new: true })
+            .findByIdAndUpdate(projectId, { $addToSet: { users: userId } }, { new: true })
             .exec();
         if (!updatedProject) {
             throw new common_1.NotFoundException(`Project with ID ${projectId} not found.`);
         }
         return updatedProject;
     }
-    async removeMember(projectId, memberId) {
+    async removeUser(projectId, userId) {
         const updatedProject = await this.projectModel
-            .findByIdAndUpdate(projectId, { $pull: { members: memberId } }, { new: true })
+            .findByIdAndUpdate(projectId, { $pull: { users: userId } }, { new: true })
             .exec();
         if (!updatedProject) {
             throw new common_1.NotFoundException(`Project with ID ${projectId} not found.`);
         }
         return updatedProject;
+    }
+    async getAssignedUsers(projectId) {
+        const project = await this.projectModel.findById(projectId).exec();
+        if (!project) {
+            throw new common_1.NotFoundException(`Project with ID ${projectId} not found.`);
+        }
+        return project;
+    }
+    async findProjectsByUserId(userId) {
+        return this.projectModel.find({ users: userId }).exec();
     }
 };
 exports.ProjectService = ProjectService;

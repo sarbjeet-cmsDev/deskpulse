@@ -59,4 +59,24 @@ export class TimelineService {
   async removeByTaskId(taskId: string): Promise<{ deletedCount?: number }> {
     return this.timelineModel.deleteMany({ task: taskId }).exec();
   }
+
+
+  async findByProjectId(projectId: string, from?: string, to?: string): Promise<Timeline[]> {
+  const tasks = await this.taskService.findByProject(projectId);
+  if (!tasks?.length) throw new NotFoundException(`No tasks found for project ID ${projectId}.`);
+
+  const filterDate: any = {
+    ...(from && { $gte: new Date(new Date(from).setHours(0, 0, 0, 0)) }),
+    ...(to && { $lte: new Date(new Date(to).setHours(23, 59, 59, 999)) }),
+  };
+  const hasDateFilter = Object.keys(filterDate).length > 0;
+  const queries = tasks.map(({ _id }) =>
+    this.timelineModel.find({
+      task: _id,
+      ...(hasDateFilter && { date: filterDate }),
+    }).exec()
+  );
+
+  return (await Promise.all(queries)).flat();
+}
 }

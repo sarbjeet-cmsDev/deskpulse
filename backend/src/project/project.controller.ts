@@ -6,12 +6,16 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { CreateProjectDto, UpdateProjectDto } from './project.dto';
 import { Project } from './project.interface';
+import { JwtAuthGuard } from 'src/guard/jwt-auth.guard';
 
 @Controller('projects')
+
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
 
@@ -29,11 +33,11 @@ export class ProjectController {
   async findActive(): Promise<Project[]> {
     return this.projectService.findActiveProjects();
   }
-
-  @Get(':id')
+  @Get('/fetch/:id')
   async findOne(@Param('id') id: string): Promise<Project> {
     return this.projectService.findOne(id);
   }
+
 
   @Get('code/:code')
   async findByCode(@Param('code') code: string): Promise<Project> {
@@ -53,19 +57,30 @@ export class ProjectController {
     return this.projectService.remove(id);
   }
 
-  @Post(':id/members/:memberId')
-  async addMember(
+  @Post('/:id/users/:userId')
+  async addUser(
     @Param('id') id: string,
-    @Param('memberId') memberId: string,
+    @Param('userId') userId: string,
   ): Promise<Project> {
-    return this.projectService.addMember(id, memberId);
+    return this.projectService.addUser(id, userId);
   }
 
-  @Delete(':id/members/:memberId')
-  async removeMember(
+  @Get('/assigned/:userId/')
+  async getAssignedUsers(@Param('userId') userId: string): Promise<Project> {
+    return this.projectService.getAssignedUsers(userId);
+  }
+
+  @Delete(':id/users/:userId')
+  async removeUser(
     @Param('id') id: string,
-    @Param('memberId') memberId: string,
+    @Param('userId') userId: string,
   ): Promise<Project> {
-    return this.projectService.removeMember(id, memberId);
+    return this.projectService.removeUser(id, userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
+  async getMyProjects(@Req() req: any): Promise<Project[]> {
+    return this.projectService.findProjectsByUserId(req.user.userId);
   }
 }

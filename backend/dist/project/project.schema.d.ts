@@ -2,7 +2,7 @@ import { Document, Schema as MongooseSchema } from 'mongoose';
 export type ProjectDocument = Project & Document;
 export declare class Project {
     code: string;
-    members: MongooseSchema.Types.ObjectId[];
+    users: MongooseSchema.Types.ObjectId[];
     project_coordinator: MongooseSchema.Types.ObjectId;
     team_leader: MongooseSchema.Types.ObjectId;
     project_manager: MongooseSchema.Types.ObjectId;

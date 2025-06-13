@@ -1,7 +1,7 @@
 import { Schema as MongooseSchema } from 'mongoose';
 export declare class CreateProjectDto {
     code: string;
-    members?: MongooseSchema.Types.ObjectId[];
+    users?: MongooseSchema.Types.ObjectId[];
     notes?: string;
     creds?: string;
     additional_information?: string;

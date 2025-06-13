@@ -1,7 +1,7 @@
 import { Document, Schema as MongooseSchema } from 'mongoose';
 export interface Project {
     code: string;
-    members: MongooseSchema.Types.ObjectId[];
+    users: MongooseSchema.Types.ObjectId[];
     notes?: string;
     creds?: string;
     additional_information?: string;

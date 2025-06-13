@@ -11,6 +11,8 @@ export declare class ProjectController {
     findByCode(code: string): Promise<Project>;
     update(id: string, updateProjectDto: UpdateProjectDto): Promise<Project>;
     remove(id: string): Promise<Project>;
-    addMember(id: string, memberId: string): Promise<Project>;
-    removeMember(id: string, memberId: string): Promise<Project>;
+    addUser(id: string, userId: string): Promise<Project>;
+    getAssignedUsers(userId: string): Promise<Project>;
+    removeUser(id: string, userId: string): Promise<Project>;
+    getMyProjects(req: any): Promise<Project[]>;
 }

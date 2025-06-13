@@ -16,6 +16,7 @@ exports.TaskController = void 0;
 const common_1 = require("@nestjs/common");
 const task_service_1 = require("./task.service");
 const task_dto_1 = require("./task.dto");
+const jwt_auth_guard_1 = require("../guard/jwt-auth.guard");
 let TaskController = class TaskController {
     constructor(taskService) {
         this.taskService = taskService;
@@ -44,6 +45,9 @@ let TaskController = class TaskController {
     async remove(id) {
         return this.taskService.remove(id);
     }
+    async getMyTaskes(req) {
+        return this.taskService.findByAssignedUser(req.user.userId);
+    }
 };
 exports.TaskController = TaskController;
 __decorate([
@@ -60,7 +64,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], TaskController.prototype, "findAll", null);
 __decorate([
-    (0, common_1.Get)(':id'),
+    (0, common_1.Get)('fetch/:id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -102,6 +106,14 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], TaskController.prototype, "remove", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Get)('me'),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], TaskController.prototype, "getMyTaskes", null);
 exports.TaskController = TaskController = __decorate([
     (0, common_1.Controller)('tasks'),
     __metadata("design:paramtypes", [task_service_1.TaskService])

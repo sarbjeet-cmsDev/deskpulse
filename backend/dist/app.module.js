@@ -15,6 +15,8 @@ const project_module_1 = require("./project/project.module");
 const task_module_1 = require("./task/task.module");
 const timeline_module_1 = require("./timeline/timeline.module");
 const comment_module_1 = require("./comment/comment.module");
+const user_module_1 = require("./user/user.module");
+const auth_module_1 = require("./auth/auth.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -36,7 +38,9 @@ exports.AppModule = AppModule = __decorate([
             project_module_1.ProjectModule,
             task_module_1.TaskModule,
             timeline_module_1.TimelineModule,
-            comment_module_1.CommentModule
+            comment_module_1.CommentModule,
+            user_module_1.UserModule,
+            auth_module_1.AuthModule
         ],
         controllers: [],
         providers: [],

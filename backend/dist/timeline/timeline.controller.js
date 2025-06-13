@@ -41,6 +41,9 @@ let TimelineController = class TimelineController {
     async findByUserId(userId) {
         return this.timelineService.findByUserId(userId);
     }
+    async getByProject(projectId, from, to) {
+        return this.timelineService.findByProjectId(projectId, from, to);
+    }
 };
 exports.TimelineController = TimelineController;
 __decorate([
@@ -95,6 +98,15 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], TimelineController.prototype, "findByUserId", null);
+__decorate([
+    (0, common_1.Get)('project/:projectId'),
+    __param(0, (0, common_1.Param)('projectId')),
+    __param(1, (0, common_1.Query)('from')),
+    __param(2, (0, common_1.Query)('to')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:returntype", Promise)
+], TimelineController.prototype, "getByProject", null);
 exports.TimelineController = TimelineController = __decorate([
     (0, common_1.Controller)('timelines'),
     __metadata("design:paramtypes", [timeline_service_1.TimelineService])

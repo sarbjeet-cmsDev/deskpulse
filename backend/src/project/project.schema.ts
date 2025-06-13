@@ -9,7 +9,7 @@ export class Project {
   code: string;
 
   @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'User', required: false }] })
-  members: MongooseSchema.Types.ObjectId[];
+  users: MongooseSchema.Types.ObjectId[];
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: false })
   project_coordinator: MongooseSchema.Types.ObjectId;

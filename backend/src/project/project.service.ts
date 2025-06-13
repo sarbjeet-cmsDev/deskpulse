@@ -59,11 +59,11 @@ export class ProjectService {
   async findActiveProjects(): Promise<Project[]> {
     return this.projectModel.find({ is_active: true }).exec();
   }
-  async addMember(projectId: string, memberId: string): Promise<Project> {
+  async addUser(projectId: string, userId: string): Promise<Project> {
     const updatedProject = await this.projectModel
       .findByIdAndUpdate(
         projectId,
-        { $addToSet: { members: memberId } }, // Avoid duplicates
+        { $addToSet: { users: userId } }, // Avoid duplicates
         { new: true }
       )
       .exec();
@@ -75,11 +75,11 @@ export class ProjectService {
     return updatedProject;
   }
 
-  async removeMember(projectId: string, memberId: string): Promise<Project> {
+  async removeUser(projectId: string, userId: string): Promise<Project> {
     const updatedProject = await this.projectModel
       .findByIdAndUpdate(
         projectId,
-        { $pull: { members: memberId } },
+        { $pull: { users: userId } },
         { new: true }
       )
       .exec();
@@ -89,5 +89,19 @@ export class ProjectService {
     }
 
     return updatedProject;
+  }
+
+
+  async getAssignedUsers(projectId: string): Promise<Project> {
+    const project = await this.projectModel.findById(projectId).exec();
+    if (!project) {
+      throw new NotFoundException(`Project with ID ${projectId} not found.`);
+    }
+    return project;
+  }
+
+
+  async findProjectsByUserId(userId: string): Promise<Project[]> {
+    return this.projectModel.find({ users: userId }).exec();
   }
 }

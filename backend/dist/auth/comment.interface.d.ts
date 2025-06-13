@@ -1,0 +1,12 @@
+import { Document, Schema as MongooseSchema } from 'mongoose';
+export interface Comment {
+    content: string;
+    task: MongooseSchema.Types.ObjectId;
+    mentioned?: MongooseSchema.Types.ObjectId[];
+    parent_comment?: MongooseSchema.Types.ObjectId;
+    created_by: MongooseSchema.Types.ObjectId;
+    createdAt: Date;
+    updatedAt: Date;
+}
+export interface CommentDocument extends Comment, Document {
+}

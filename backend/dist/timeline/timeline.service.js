@@ -61,6 +61,15 @@ let TimelineService = class TimelineService {
     async removeByTaskId(taskId) {
         return this.timelineModel.deleteMany({ task: taskId }).exec();
     }
+    async findByProjectId(projectId, from, to) {
+        const tasks = await this.taskService.findByProject(projectId);
+        if (!(tasks === null || tasks === void 0 ? void 0 : tasks.length))
+            throw new common_1.NotFoundException(`No tasks found for project ID ${projectId}.`);
+        const filterDate = Object.assign(Object.assign({}, (from && { $gte: new Date(new Date(from).setHours(0, 0, 0, 0)) })), (to && { $lte: new Date(new Date(to).setHours(23, 59, 59, 999)) }));
+        const hasDateFilter = Object.keys(filterDate).length > 0;
+        const queries = tasks.map(({ _id }) => this.timelineModel.find(Object.assign({ task: _id }, (hasDateFilter && { date: filterDate }))).exec());
+        return (await Promise.all(queries)).flat();
+    }
 };
 exports.TimelineService = TimelineService;
 exports.TimelineService = TimelineService = __decorate([

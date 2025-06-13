@@ -12,4 +12,5 @@ export declare class TaskController {
     findByReportToUser(userId: string): Promise<Task[]>;
     update(id: string, updateTaskDto: UpdateTaskDto): Promise<Task>;
     remove(id: string): Promise<Task>;
+    getMyTaskes(req: any): Promise<Task[]>;
 }

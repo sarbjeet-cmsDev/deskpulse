@@ -6,6 +6,8 @@ import { ProjectModule } from './project/project.module';
 import { TaskModule } from './task/task.module';
 import { TimelineModule } from './timeline/timeline.module';
 import { CommentModule } from './comment/comment.module';
+import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -24,7 +26,9 @@ import { CommentModule } from './comment/comment.module';
     ProjectModule,
     TaskModule,
     TimelineModule,
-    CommentModule
+    CommentModule,
+    UserModule,
+    AuthModule
   ],
   controllers: [],
   providers: [],

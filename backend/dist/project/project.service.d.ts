@@ -10,6 +10,8 @@ export declare class ProjectService {
     update(id: string, updateProjectDto: Partial<Project>): Promise<Project>;
     remove(id: string): Promise<Project>;
     findActiveProjects(): Promise<Project[]>;
-    addMember(projectId: string, memberId: string): Promise<Project>;
-    removeMember(projectId: string, memberId: string): Promise<Project>;
+    addUser(projectId: string, userId: string): Promise<Project>;
+    removeUser(projectId: string, userId: string): Promise<Project>;
+    getAssignedUsers(projectId: string): Promise<Project>;
+    findProjectsByUserId(userId: string): Promise<Project[]>;
 }

@@ -25,7 +25,7 @@ __decorate([
     (0, class_validator_1.IsMongoId)({ each: true }),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Array)
-], CreateProjectDto.prototype, "members", void 0);
+], CreateProjectDto.prototype, "users", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
