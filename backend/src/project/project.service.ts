@@ -104,4 +104,37 @@ export class ProjectService {
   async findProjectsByUserId(userId: string): Promise<Project[]> {
     return this.projectModel.find({ users: userId }).exec();
   }
+
+  async findAllPaginated(
+  page: number,
+  limit: number,
+  keyword?: string,
+  sortOrder: 'asc' | 'desc' = 'asc'
+): Promise<{ data: Project[]; total: number }> {
+  const skip = (page - 1) * limit;
+  const query: any = {};
+
+  if (keyword) {
+    query.$or = [
+      { name: { $regex: keyword, $options: 'i' } },
+      { code: { $regex: keyword, $options: 'i' } },
+    ];
+  }
+
+  const [projects, total] = await Promise.all([
+    this.projectModel
+      .find(query)
+      .sort({ createdAt: sortOrder === 'asc' ? 1 : -1 })
+      .skip(skip)
+      .limit(limit)
+      .exec(),
+    this.projectModel.countDocuments(query),
+  ]);
+
+  return {
+    data: projects,
+    total,
+  };
+}
+
 }

@@ -23,6 +23,7 @@
     "@heroui/switch": "2.2.18",
     "@heroui/system": "2.4.16",
     "@heroui/theme": "2.4.16",
+    "@hookform/resolvers": "^5.1.1",
     "@nestjs/bull": "^11.0.2",
     "@nestjs/common": "^10.3.0",
     "@nestjs/config": "^4.0.2",
@@ -35,6 +36,7 @@
     "@nestjs/typeorm": "^10.0.1",
     "@react-aria/ssr": "3.9.8",
     "@react-aria/visually-hidden": "3.8.23",
+    "axios": "^1.10.0",
     "bcrypt": "^6.0.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
@@ -48,7 +50,11 @@
     "passport-local": "^1.0.0",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "swagger-ui-express": "^5.0.1"
+    "react-hook-form": "^7.59.0",
+    "react-toastify": "^11.0.5",
+    "swagger-ui-express": "^5.0.1",
+    "sweetalert2": "^11.22.2",
+    "zod": "^3.25.67"
   },
   "devDependencies": {
     "@eslint/compat": "1.2.8",

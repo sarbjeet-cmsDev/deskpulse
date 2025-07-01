@@ -2,7 +2,7 @@ import { Injectable, ConflictException } from '@nestjs/common';
 import { User, UserDocument } from './user.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import {  checkUserExists, comparePassword, hashPassword } from './user.helper';
+import { checkUserExists, comparePassword, hashPassword } from './user.helper';
 import { Types } from 'mongoose';
 @Injectable()
 export class UserService {
@@ -18,7 +18,7 @@ export class UserService {
         return createdUser.save();
     }
 
-    
+
 
     async comparePassword(password: string, userId: string): Promise<boolean> {
         const user = await this.userModel.findById(userId).exec();
@@ -29,6 +29,7 @@ export class UserService {
     async findAll(): Promise<UserDocument[]> {
         return this.userModel.find().exec();
     }
+
     async findOne(id: string): Promise<UserDocument | null> {
         return this.userModel.findById(id).exec();
     }
@@ -43,7 +44,7 @@ export class UserService {
 
     async getmeDetails(userId: string): Promise<any | null> {
         const user = await this.userModel.findById(userId).exec();
-        const { password: _, __v,  ...safeUser } = user.toObject();
+        const { password: _, __v, ...safeUser } = user.toObject();
         return safeUser;
     }
 
@@ -59,6 +60,42 @@ export class UserService {
         }
         return updatedUser;
     }
+    async resetPasswordByAdmin(id: string, newPassword: string): Promise<UserDocument | null> {
+        const hashedPassword = await hashPassword(newPassword);
+        return this.userModel.findByIdAndUpdate(
+            id,
+            { password: hashedPassword },
+            { new: true }
+        ).exec();
+    }
+    async findAllPaginated(
+        page: number = 1,
+        limit: number = 10,
+        keyword?: string,
+        sortOrder: 'asc' | 'desc' = 'asc',
+    ): Promise<{ data: UserDocument[]; total: number }> {
+        const skip = (page - 1) * limit;
 
+        const query: any = {};
+        if (keyword) {
+            query.$or = [
+                { firstName: { $regex: keyword, $options: 'i' } },
+                { lastName: { $regex: keyword, $options: 'i' } },
+                { email: { $regex: keyword, $options: 'i' } },
+            ];
+        }
+
+        const [users, total] = await Promise.all([
+            this.userModel
+                .find(query)
+                .sort({ createdAt: sortOrder === 'asc' ? 1 : -1 })
+                .skip(skip)
+                .limit(limit)
+                .exec(),
+            this.userModel.countDocuments(query),
+        ]);
+
+        return { data: users, total };
+    }
 }
 
