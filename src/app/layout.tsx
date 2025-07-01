@@ -8,6 +8,7 @@ import { Providers } from "./providers";
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
 import { Navbar } from "@/components/navbar";
+import LayoutClientWrapper from "@/components/common/LayoutClientWrapper";
 
 export const metadata: Metadata = {
   title: {
@@ -53,7 +54,7 @@ export default function RootLayout({
                 className="flex items-center gap-1 text-current"
                 href="https://heroui.com?utm_source=next-app-template"
                 title="heroui.com homepage"
-              >
+                >
                 <span className="text-default-600">Powered by</span>
                 <p className="text-primary">HeroUI</p>
               </Link>
@@ -64,3 +65,8 @@ export default function RootLayout({
     </html>
   );
 }
+
+{/* <section role="main" className="w-full h-full flex-grow overflow-auto"> */}
+{/* <LayoutClientWrapper> */}
+{/* </LayoutClientWrapper> */}
+{/* </section> */}

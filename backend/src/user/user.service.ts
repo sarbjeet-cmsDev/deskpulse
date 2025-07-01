@@ -112,5 +112,17 @@ export class UserService {
     };
 }
 
+    async validateToken(user: { userId: string; email: string }) {
+    const foundUser = await this.userModel.findById(user.userId).lean();
+    if (!foundUser) {
+      throw new UnauthorizedException('User not found or token invalid');
+    }
+
+    return {
+      valid: true,
+      user
+    };
+}
+
 }
 

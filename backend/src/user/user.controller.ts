@@ -44,5 +44,12 @@ export class UserController {
   async UpdateMyDetails(@Req() req: any, @Body() updateUserDto: UpdateUserDto): Promise<User> {
     return this.userService.UpdateMyDetails(req.user.userId, updateUserDto);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('validate-token')
+  async validateToken(@Req() req: any) {
+    const user = req.user as { userId: string; email: string };
+    return this.userService.validateToken(user);
+  }
 }
 

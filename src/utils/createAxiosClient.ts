@@ -74,11 +74,9 @@ const defaultOnSuccess = (response: AxiosResponse) => {
  */
 export function createAxiosClient(options: AxiosClientOptions = {}) {
   const {
-<<<<<<< HEAD
-    baseURL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000/api",
-=======
+
     baseURL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3001/api",
->>>>>>> r_july1
+
     withCreds = false,
     getToken,
     onSuccess = defaultOnSuccess,
