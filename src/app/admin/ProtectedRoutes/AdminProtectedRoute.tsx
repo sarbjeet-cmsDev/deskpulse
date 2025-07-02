@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useSelector } from 'react-redux';
-import { RootState } from '@/store/store';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 const AdminProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const admin = useSelector((state: RootState) => state.auth.admin); 
