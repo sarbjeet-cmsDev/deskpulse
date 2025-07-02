@@ -43,11 +43,11 @@ const CreateUserPage = () => {
     try {
       const { confirmPassword, ...payload } = data;
       await AdminUserService.createUser(payload);
-      Swal.fire('Success', 'User created successfully!', 'success');
+ 
       router.push('/admin/user');
     } catch (error) {
       console.error(error);
-      Swal.fire('Error', 'Failed to create user.', 'error');
+
     } finally {
       setLoading(false);
     }

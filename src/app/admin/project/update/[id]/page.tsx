@@ -36,7 +36,7 @@ const UpdateProjectPage = () => {
         reset(project);
       } catch (error) {
         console.error('Failed to fetch project', error);
-        Swal.fire('Error', 'Failed to load project.', 'error');
+
         router.push('/admin/project');
       } finally {
         setLoading(false);
@@ -49,11 +49,11 @@ const UpdateProjectPage = () => {
   const onSubmit: SubmitHandler<UpdateProjectInput> = async (data) => {
     try {
       await AdminProjectService.updateProject(id, data);
-      Swal.fire('Success', 'Project updated successfully!', 'success');
+
       router.push('/admin/project');
     } catch (error) {
       console.error(error);
-      Swal.fire('Error', 'Failed to update project.', 'error');
+
     }
   };
 

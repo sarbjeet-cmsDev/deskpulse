@@ -9,7 +9,7 @@ import { Input } from '@/components/Form/Input';
 import { Button } from '@/components/Form/Button';
 import { H1 } from '@/components/Heading/H1';
 import { useParams, useRouter } from 'next/navigation';
-import AdminUserService from '@/service/adminUser.service';
+import AdminUserService, { IUser } from '@/service/adminUser.service';
 import Swal from 'sweetalert2';
 
 type UpdateUserInput = z.infer<typeof userUpdateSchema>;
@@ -34,19 +34,21 @@ const UpdateUserPage = () => {
     const fetchUser = async () => {
       try {
         const user = await AdminUserService.getUserById(id);
+
         reset({
-          username: user.username,
-          email: user.email,
+          username: user.username ?? '',
+          email: user.email ?? '',
           firstName: user.firstName ?? '',
           lastName: user.lastName ?? '',
           phone: user.phone ?? '',
-          gender: user.gender ?? '',
+          gender: ['male', 'female', 'other'].includes(user.gender || '')
+            ? (user.gender as 'male' | 'female' | 'other')
+            : undefined,
           userRoles: user.userRoles ?? [],
           isActive: user.isActive ?? false,
         });
       } catch (err) {
         console.error('Failed to fetch user', err);
-        Swal.fire('Error', 'Failed to fetch user details', 'error');
         router.push('/admin/user');
       } finally {
         setInitialLoading(false);
@@ -60,11 +62,12 @@ const UpdateUserPage = () => {
     setLoading(true);
     try {
       await AdminUserService.updateUser(id, data);
-      Swal.fire('Success', 'User updated successfully', 'success');
+
+     
+
       router.push('/admin/user');
     } catch (error) {
       console.error('Update failed', error);
-      Swal.fire('Error', 'Failed to update user', 'error');
     } finally {
       setLoading(false);
     }

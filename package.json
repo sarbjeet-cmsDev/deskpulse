@@ -23,7 +23,7 @@
     "@heroui/switch": "2.2.18",
     "@heroui/system": "2.4.16",
     "@heroui/theme": "2.4.16",
-    "@hookform/resolvers": "^5.1.1",
+    "@hookform/resolvers": "^3.10.0",
     "@nestjs/bull": "^11.0.2",
     "@nestjs/common": "^10.3.0",
     "@nestjs/config": "^4.0.2",

@@ -29,11 +29,11 @@ const ResetPasswordPage = () => {
   const onSubmit = async (data: ResetPasswordInput) => {
     try {
       await AdminUserService.resetPassword(id, data.newPassword);
-      Swal.fire('Success', 'Password has been reset successfully!', 'success');
+
       router.push('/admin/user');
     } catch (err) {
       console.error('Password reset failed:', err);
-      Swal.fire('Error', 'Failed to reset password', 'error');
+
     }
   };
 

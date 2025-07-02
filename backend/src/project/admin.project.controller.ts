@@ -18,8 +18,12 @@ export class AdminProjectController {
 
   // ✅ Create Project
   @Post()
-  async create(@Body() createProjectDto: CreateProjectDto): Promise<Project> {
-    return this.projectService.create(createProjectDto);
+  async create(@Body() createProjectDto: CreateProjectDto): Promise<any> {
+    const project = await this.projectService.create(createProjectDto);
+    return {
+      message: 'Project created successfully!',
+      data: project,
+    };
   }
 
   // ✅ Get All Projects with Pagination, Search, Sort
@@ -35,8 +39,12 @@ export class AdminProjectController {
 
   // ✅ Get Project by ID
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<Project> {
-    return this.projectService.findOne(id);
+  async findOne(@Param('id') id: string): Promise<any> {
+    const project = await this.projectService.findOne(id);
+    return {
+      message: 'Project fetched successfully!',
+      data: project,
+    };
   }
 
   // ✅ Update Project by ID
@@ -44,13 +52,21 @@ export class AdminProjectController {
   async update(
     @Param('id') id: string,
     @Body() updateProjectDto: UpdateProjectDto,
-  ): Promise<Project> {
-    return this.projectService.update(id, updateProjectDto);
+  ): Promise<any> {
+    const updated = await this.projectService.update(id, updateProjectDto);
+    return {
+      message: 'Project updated successfully!',
+      data: updated,
+    };
   }
 
   // ✅ Delete Project by ID
   @Delete(':id')
-  async remove(@Param('id') id: string): Promise<Project> {
-    return this.projectService.remove(id);
+  async remove(@Param('id') id: string): Promise<any> {
+    const deleted = await this.projectService.remove(id);
+    return {
+      message: 'Project deleted successfully!',
+      data: deleted,
+    };
   }
 }

@@ -72,6 +72,7 @@ export class UserService {
         page: number = 1,
         limit: number = 10,
         keyword?: string,
+        sortField: string = 'createdAt',
         sortOrder: 'asc' | 'desc' = 'asc',
     ): Promise<{ data: UserDocument[]; total: number }> {
         const skip = (page - 1) * limit;
@@ -88,7 +89,7 @@ export class UserService {
         const [users, total] = await Promise.all([
             this.userModel
                 .find(query)
-                .sort({ createdAt: sortOrder === 'asc' ? 1 : -1 })
+                .sort({ [sortField]: sortOrder === 'asc' ? 1 : -1 })
                 .skip(skip)
                 .limit(limit)
                 .exec(),
@@ -97,5 +98,6 @@ export class UserService {
 
         return { data: users, total };
     }
+
 }
 

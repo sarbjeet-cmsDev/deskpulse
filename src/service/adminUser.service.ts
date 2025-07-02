@@ -2,9 +2,10 @@ import { createAxiosClient } from '@/utils/createAxiosClient';
 
 const axiosClient = createAxiosClient({ withCreds: false });
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+export type UserRole = 'admin' | 'project_manager' | 'team_member' | 'client' | 'employee';
 
 export interface IUser {
-  userRoles: never[];
+  userRoles?:UserRole[];
   gender: string;
   phone: string;
      _id: string;
@@ -38,7 +39,7 @@ const AdminUserService = {
     //  Get user by ID
     async getUserById(id: string): Promise<IUser> {
         const res = await axiosClient.get(`${API_URL}/admin/user/view/${id}`);
-        return res.data;
+         return res.data.data;
     },
 
     //  Create user
