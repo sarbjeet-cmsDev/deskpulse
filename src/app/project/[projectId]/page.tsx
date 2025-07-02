@@ -10,23 +10,24 @@ import DropDownOptions from "@/components/ProjectDetails/DropDown"
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import ProjectService from "@/service/project.service";
+import TaskPage from "@/app/task/page";
 
 export default function MyProjectDetails(){
     const { projectId } = useParams();
     const [project, setProject] = useState<any>(null);
-    // const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        console.log(projectId,"prohectjhkjhjk")
-    // if (projectId) {
+        console.log(projectId,"projectId---------------------------------")
+    if (projectId) {
       ProjectService.getProjectById(projectId as string)
         .then(setProject)
         .catch((err) => console.error("Failed to load project", err))
-        // .finally(() => setLoading(false));
-    // }
+        .finally(() => setLoading(false));
+    }
   }, []);
 
-//   if (loading) return <div className="p-6 text-center">Loading project...</div>;
+  if (loading) return <div className="p-6 text-center">Loading project...</div>;
 //   if (!project) return <div className="p-6 text-center">Project not found</div>;
    console.log(project,"projectjhj")
     return(
@@ -40,7 +41,7 @@ export default function MyProjectDetails(){
                                     <Image src={leftarrow} alt="Logo" width={16} height={16} />
                                 </a>
                             </div>
-                            <H5 className='w-[98%] text-center'>Gaming Platform Web & Mobile Apps</H5>
+                            <H5 className='w-[98%] text-center'>{project.code}</H5>
                         </div>
                         <div className="">
                             <DropDownOptions/>
@@ -59,6 +60,9 @@ export default function MyProjectDetails(){
                             <Details project={project}/>
                             <div className="mt-[20px]">
                                 <a href="#" className="text-[#7980ff] bg-[#7980ff1f] py-[16px] px-[28px] rounded-[12px] w-full text-[14px] leading-[16px] font-bold text-center block">Add Custom Section</a>
+                            </div>
+                            <div className="mt-[5px]">
+                               <TaskPage/>
                             </div>
                             <div className="mt-[28px]">
                                 <H5>Sub Tasks (3)</H5>

@@ -77,3 +77,15 @@ export const userResetPasswordSchema = z.object({
   message: 'Passwords do not match',
   path: ['confirmPassword'],
 });
+
+  export const userLoginSchema = z.object({
+  email: z
+    .string({ required_error: 'Email is required' })
+    .nonempty('Email is required')
+    .email('Invalid email format'),
+
+  password: z
+    .string({ required_error: 'Password is required' })
+    .nonempty('Password is required')
+    .min(6, 'Password must be at least 6 characters'),
+});

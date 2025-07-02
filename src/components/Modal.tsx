@@ -11,7 +11,12 @@ import {
   import rightarrow from "@/assets/images/rightarrow.png";
   import logout from "@/assets/images/logout.png";
   import { H5 } from "./Heading/H5";
-  export default function ModalDiv() {
+
+  interface ModalDivProps {
+  onLogout: () => void;
+}
+
+  export default function ModalDiv({ onLogout }: ModalDivProps) {
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
   
     return (
@@ -33,7 +38,7 @@ import {
                 
                 <ModalBody className="p-0">
                   <H5 className="text-center p-4 border-b border-[#31394f1a]">Are you sure, you want to log out?</H5>
-                  <Button color="danger" onPress={onClose} className="p-4 border-b border-[#31394f1a] bg-transparent text-[#f05a5a] font-bold">
+                  <Button color="danger" onPress={() => {onLogout(); onClose()}} className="p-4 border-b border-[#31394f1a] bg-transparent text-[#f05a5a] font-bold">
                     Log Out
                   </Button>
                   <Button color="danger" variant="light" onPress={onClose} className="p-4 bg-transparent text-[#31394f99] font-bold data-[hover=true]:bg-transparent">

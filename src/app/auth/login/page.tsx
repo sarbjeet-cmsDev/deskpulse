@@ -1,8 +1,12 @@
 'use client';
-import { useState, useRef, useEffect } from 'react';
+
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { userLoginSchema } from '@/components/validation/userValidation';
+import { z } from 'zod';
 import { useDispatch } from 'react-redux';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
+import { useEffect, useRef, useState } from 'react';
 
 import { Button } from '@/components/Form/Button';
 import { Input } from '@/components/Form/Input';
@@ -10,66 +14,53 @@ import { H3 } from '@/components/Heading/H3';
 import AuthService from '@/service/auth.service';
 import { signIn } from '@/store/slices/authSlice';
 
+type LoginInput = z.infer<typeof userLoginSchema>;
+
 export default function AuthLoginPage() {
   const dispatch = useDispatch();
   const router = useRouter();
-  const emailRef = useRef<HTMLInputElement>(null);
   const searchParams = useSearchParams();
   const redirect = searchParams.get('redirect');
+  const emailRef = useRef<HTMLInputElement>(null);
 
-  const [formData, setFormData] = useState({ email: '', password: '' });
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [apiError, setApiError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    setErrors(prev => ({ ...prev, [name]: '' }));
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginInput>({
+    resolver: zodResolver(userLoginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
+
+  const onSubmit = async (formData: LoginInput) => {
     setApiError('');
-  };
-
-  const validate = () => {
-    const newErrors: { [key: string]: string } = {};
-    if (!formData.email.trim()) newErrors.email = 'Email is required';
-    else if (!/^\S+@\S+\.\S+$/.test(formData.email)) newErrors.email = 'Invalid email format';
-    if (!formData.password) newErrors.password = 'Password is required';
-    return newErrors;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setApiError('');
-
-    const validationErrors = validate();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
+    setLoading(true);
 
     try {
-      setLoading(true);
       const data = await AuthService.login(formData);
-
-       const { access_token, user } = data;
-       const role = user.role[0];
+      const { access_token, user } = data;
+      const role = user.role[0];
 
       localStorage.setItem('token', access_token);
       localStorage.setItem('type', user.role);
-      
 
-      dispatch(signIn({ id: data.user.id, email: data.user.email, role: user.role }));
-      
+      dispatch(signIn({ id: user.id, email: user.email, role: user.role }));
+
       if (role === 'admin') {
         router.push('/admin');
-      }else if (redirect) {
+      } else if (redirect) {
         router.push(`/${redirect}`);
       } else {
         router.push('/');
       }
     } catch (error: any) {
       setApiError(error?.response?.data?.message || error.message || 'Login failed');
-      console.log('error in login page',error)
     } finally {
       setLoading(false);
     }
@@ -82,37 +73,29 @@ export default function AuthLoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="w-full max-w-md space-y-6">
-        <div className='w-full'>
-        <H3 className="text-sm flex items-center justify-center text-gray-500">Sign In</H3>
+        <div className="w-full">
+          <H3 className="text-sm flex items-center justify-center text-gray-500">Sign In</H3>
         </div>
         <p className="text-center text-sm text-gray-500">
-          Give credential to sign in your account
+          Give credentials to sign in your account
         </p>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <Input
-            ref={emailRef}
-            name="email"
+            {...register('email')}
             type="text"
             placeholder="Type your email"
-            value={formData.email}
-            onChange={handleChange}
           />
-          {errors.email && <p className="text-xs text-red-500">{errors.email}</p>}
+          {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
 
           <div className="relative">
             <Input
-              name="password"
+              {...register('password')}
               placeholder="Type your password"
-              type='password'
-              value={formData.password}
-              onChange={handleChange}
+              type="password"
             />
-
           </div>
-          {errors.password && <p className="text-xs text-red-500">{errors.password}</p>}
-
-          {apiError && <p className="text-sm text-red-600">{apiError}</p>}
+          {errors.password && <p className="text-xs text-red-500">{errors.password.message}</p>}
 
           <Button type="submit" disabled={loading} className="w-full bg-indigo-500 text-white hover:bg-indigo-600">
             {loading ? 'Signing in...' : 'Sign In'}
@@ -122,4 +105,3 @@ export default function AuthLoginPage() {
     </div>
   );
 }
-
