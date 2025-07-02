@@ -5,18 +5,18 @@ const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 export type UserRole = 'admin' | 'project_manager' | 'team_member' | 'client' | 'employee';
 
 export interface IUser {
-  userRoles?:UserRole[];
-  gender: string;
-  phone: string;
-     _id: string;
-  username: string;
-  email: string;
-  password?: string;
-  firstName?: string;
-  lastName?: string;
-  isActive?: boolean;
-  createdAt: string;
-  updatedAt: string;
+    userRoles?: UserRole[];
+    gender: string;
+    phone: string;
+    _id: string;
+    username: string;
+    email: string;
+    password?: string;
+    firstName?: string;
+    lastName?: string;
+    isActive?: boolean;
+    createdAt: string;
+    updatedAt: string;
 }
 
 const AdminUserService = {
@@ -24,7 +24,7 @@ const AdminUserService = {
     async getAllUsers(params: {
         page?: number;
         limit?: number;
-        keyword?: string; 
+        keyword?: string;
         sortField?: string;
         sortOrder?: 'asc' | 'desc';
     }): Promise<{ data: IUser[]; total: number }> {
@@ -39,9 +39,14 @@ const AdminUserService = {
     //  Get user by ID
     async getUserById(id: string): Promise<IUser> {
         const res = await axiosClient.get(`${API_URL}/admin/user/view/${id}`);
-         return res.data.data;
+        return res.data.data;
     },
-
+    async searchUsers(keyword: string): Promise<IUser[]> {
+        const res = await axiosClient.get(`${API_URL}/admin/user/search`, {
+            params: { keyword },
+        });
+        return res.data ?? [];
+    },
     //  Create user
     async createUser(data: {
         username: string;

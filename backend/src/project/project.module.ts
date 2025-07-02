@@ -4,11 +4,13 @@ import { ProjectController } from './project.controller';
 import { ProjectService } from './project.service';
 import { ProjectSchema } from './project.schema';
 import { AdminProjectController } from './admin.project.controller';
+import { ProjectKanbanModule } from '../project-kanban/project_kanban.module';
 @Module({
-  imports: [MongooseModule.forFeature([{ name: 'Project', schema: ProjectSchema }])],
+  imports: [MongooseModule.forFeature([{ name: 'Project', schema: ProjectSchema }]),ProjectKanbanModule],
+  
   controllers: [ProjectController, AdminProjectController],
   providers: [ProjectService],
-exports: [ProjectService], // ✅ EXPORT the service
+exports: [ProjectService], 
 })
 export class ProjectModule {}
 

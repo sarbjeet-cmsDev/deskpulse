@@ -14,6 +14,8 @@ export interface Project {
   sort_order: number;
   createdAt: Date;
   updatedAt: Date;
+  project?: string;        
+  report_to?: string;  
 }
 
 export interface ProjectDocument extends Project, Document {}

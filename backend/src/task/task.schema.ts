@@ -23,6 +23,8 @@ export class Task {
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
   report_to: MongooseSchema.Types.ObjectId;
 
+  @Prop({ type: MongooseSchema.ObjectId, ref: 'ProjectKanban'})
+  kanban: MongooseSchema.Types.ObjectId;
   @Prop()
   due_date: Date;
 

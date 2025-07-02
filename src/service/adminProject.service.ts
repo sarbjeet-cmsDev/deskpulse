@@ -38,7 +38,7 @@ const AdminProjectService = {
   //  Get single project by ID
   async getProjectById(id: string): Promise<IProject> {
     const res = await axiosClient.get(`${API_URL}/admin/project/${id}`);
-    return res.data;
+    return res.data.data;
   },
 
   //  Create new project
