@@ -2,8 +2,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
-
 import { Button } from '@/components/Form/Button';
 import { Input } from '@/components/Form/Input';
 import { H3 } from '@/components/Heading/H3';
@@ -19,14 +17,14 @@ export default function AuthLoginPage() {
 
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [apiError, setApiError] = useState('');
+  // const [apiError, setApiError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     setErrors(prev => ({ ...prev, [name]: '' }));
-    setApiError('');
+    // setApiError('');
   };
 
   const validate = () => {
@@ -39,7 +37,7 @@ export default function AuthLoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setApiError('');
+    // setApiError('');
 
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
@@ -57,7 +55,7 @@ export default function AuthLoginPage() {
       localStorage.setItem('token', access_token);
       localStorage.setItem('type', user.role);
 
-      dispatch(signIn({ id: data.user.id, email: data.user.email, role: user.role }));
+      dispatch(signIn({ id: user.id, email: user.email, role: user.role }));
       
       if (role === 'admin') {
         router.push('/admin');
@@ -67,7 +65,7 @@ export default function AuthLoginPage() {
         router.push('/');
       }
     } catch (error: any) {
-      setApiError(error?.response?.data?.message || error.message || 'Login failed');
+      // setApiError(error?.response?.data?.message || error.message || 'Login failed');
       console.log('error in login page',error)
     } finally {
       setLoading(false);
@@ -81,7 +79,7 @@ export default function AuthLoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-white">
       <div className="w-full max-w-md space-y-6">
-        <H3 className="text-sm text-center ">Sign In</H3>
+        <H3 className="text-2xl text-center">Sign In</H3>
         <p className="text-center text-sm text-gray-700">
           Give credential to sign in your account
         </p>
@@ -108,8 +106,6 @@ export default function AuthLoginPage() {
 
           </div>
           {errors.password && <p className="text-xs text-red-500">{errors.password}</p>}
-
-          {apiError && <p className="text-sm text-red-600">{apiError}</p>}
 
           <Button type="submit" disabled={loading} className="w-full bg-indigo-500 text-white hover:bg-indigo-600">
             {loading ? 'Signing in...' : 'Sign In'}
