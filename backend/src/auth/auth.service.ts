@@ -35,6 +35,7 @@ export class AuthService {
     return {
       message: 'Login successful.',
       access_token: token,
+      
       user: {
           id: user._id,
           email: user.email,
