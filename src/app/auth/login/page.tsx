@@ -79,10 +79,12 @@ export default function AuthLoginPage() {
   }, []);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white">
+    <div className="min-h-screen flex items-center justify-center">
       <div className="w-full max-w-md space-y-6">
-        <H3 className="text-sm text-center ">Sign In</H3>
-        <p className="text-center text-sm text-gray-700">
+        <div className='w-full'>
+        <H3 className="text-sm flex items-center justify-center text-gray-500">Sign In</H3>
+        </div>
+        <p className="text-center text-sm text-gray-500">
           Give credential to sign in your account
         </p>
 
