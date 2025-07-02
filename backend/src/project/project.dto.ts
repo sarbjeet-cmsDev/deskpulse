@@ -47,6 +47,7 @@ export class CreateProjectDto {
   @IsNumber()
   @IsOptional()
   sort_order?: number;
+  
 }
 
 export class UpdateProjectDto extends CreateProjectDto {}

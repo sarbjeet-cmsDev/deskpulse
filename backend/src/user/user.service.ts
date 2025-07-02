@@ -48,6 +48,15 @@ export class UserService {
         return safeUser;
     }
 
+    async searchUsers(keyword: string): Promise<UserDocument[]> {
+        const regex = new RegExp(keyword, 'i'); 
+        return this.userModel.find({
+            $or: [
+                { name: regex },
+                { email: regex }
+            ]
+        });
+    }
 
     async UpdateMyDetails(id: string, updateUserDto: Partial<User>): Promise<UserDocument | null> {
         const updatedUser = await this.userModel.findByIdAndUpdate(

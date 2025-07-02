@@ -9,8 +9,9 @@ export class CreateTaskDto {
   @IsString()
   description?: string;
 
+ @IsOptional()
   @IsMongoId()
-  project: MongooseSchema.Types.ObjectId;
+  project?: MongooseSchema.Types.ObjectId;
 
   @IsOptional()
   @IsNumber()
@@ -20,12 +21,18 @@ export class CreateTaskDto {
   @IsMongoId()
   assigned_to?: MongooseSchema.Types.ObjectId;
 
+
+ @IsOptional()
   @IsMongoId()
-  report_to: MongooseSchema.Types.ObjectId;
+  report_to?: MongooseSchema.Types.ObjectId;
 
   @IsOptional()
   @IsDate()
   due_date?: Date;
+
+  @IsOptional()
+  @IsMongoId()
+  kanban?: MongooseSchema.Types.ObjectId;
 
   @IsOptional()
   @IsBoolean()
@@ -34,6 +41,9 @@ export class CreateTaskDto {
   @IsOptional()
   @IsEnum(['low', 'medium', 'high'])
   priority?: 'low' | 'medium' | 'high';
+
+
+
 }
 
 export class UpdateTaskDto {

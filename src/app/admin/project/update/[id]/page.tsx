@@ -1,42 +1,81 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import dynamic from 'next/dynamic';
+import { useCallback, useEffect, useState } from 'react';
+import { debounce } from 'lodash';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useParams, useRouter } from 'next/navigation';
 import { z } from 'zod';
-import Swal from 'sweetalert2';
+import { MultiValue, Props as SelectProps } from 'react-select';
 
 import { Input } from '@/components/Form/Input';
 import { Button } from '@/components/Form/Button';
 import { H1 } from '@/components/Heading/H1';
+import AdminUserService, { IUser } from '@/service/adminUser.service';
 import AdminProjectService from '@/service/adminProject.service';
 import { projectUpdateSchema } from '@/components/validation/projectValidation';
 
 type UpdateProjectInput = z.infer<typeof projectUpdateSchema>;
+type UserOption = { label: string; value: string };
+
+// Dynamic import for react-select
+const ReactSelect = dynamic(() => import('react-select') as any, {
+  ssr: false,
+}) as React.ComponentType<SelectProps<UserOption, true>>;
 
 const UpdateProjectPage = () => {
   const router = useRouter();
   const { id } = useParams<{ id: string }>();
   const [loading, setLoading] = useState(true);
+  const [userOptions, setUserOptions] = useState<UserOption[]>([]);
+  const [inputValue, setInputValue] = useState('');
 
   const {
     register,
     handleSubmit,
+    control,
     reset,
     formState: { errors, isSubmitting },
   } = useForm<UpdateProjectInput>({
     resolver: zodResolver(projectUpdateSchema),
   });
 
+  // Debounced fetch for user search
+  const fetchUsers = useCallback(
+    debounce(async (input: string) => {
+      try {
+        const users = await AdminUserService.searchUsers(input || '');
+        const options = users.map((user: IUser) => ({
+          label: `${user.firstName || ''} ${user.lastName || ''} (${user.email})`,
+          value: user._id,
+        }));
+        setUserOptions(options);
+      } catch (err) {
+        console.error('Error fetching users:', err);
+        setUserOptions([]);
+      }
+    }, 300),
+    []
+  );
+
+  // Fetch and populate project
   useEffect(() => {
     const fetchData = async () => {
       try {
         const project = await AdminProjectService.getProjectById(id);
+
+        // Preload selected user options
+        const users = await AdminUserService.searchUsers('');
+        const options = users.map((user: IUser) => ({
+          label: `${user.firstName || ''} ${user.lastName || ''} (${user.email})`,
+          value: user._id,
+        }));
+        setUserOptions(options);
+
         reset(project);
       } catch (error) {
         console.error('Failed to fetch project', error);
-
         router.push('/admin/project');
       } finally {
         setLoading(false);
@@ -46,14 +85,12 @@ const UpdateProjectPage = () => {
     if (id) fetchData();
   }, [id, reset, router]);
 
-  const onSubmit: SubmitHandler<UpdateProjectInput> = async (data) => {
+  const onSubmit = async (data: UpdateProjectInput) => {
     try {
       await AdminProjectService.updateProject(id, data);
-
       router.push('/admin/project');
     } catch (error) {
       console.error(error);
-
     }
   };
 
@@ -72,6 +109,43 @@ const UpdateProjectPage = () => {
         <Input placeholder="Project Code" {...register('code')} />
         {errors.code && <p className="text-sm text-red-500">{errors.code.message}</p>}
 
+        {/* Assign Users */}
+        <Controller
+          name="users"
+          control={control}
+          render={({ field }) => {
+            const selectedOptions = userOptions.filter((opt) =>
+              field.value?.includes(opt.value)
+            );
+
+            return (
+              <ReactSelect
+                isMulti
+                options={userOptions}
+                placeholder="Assign Users"
+                value={selectedOptions}
+                inputValue={inputValue}
+                onInputChange={(value) => {
+                  setInputValue(value);
+                  if (value.length >= 1) {
+                    fetchUsers(value);
+                  }
+                }}
+                onChange={(selected: MultiValue<UserOption>) => {
+                  const ids = selected.map((opt) => opt.value);
+                  field.onChange(ids);
+                }}
+                styles={{
+                  option: (base) => ({ ...base, color: 'black' }),
+                  singleValue: (base) => ({ ...base, color: 'black' }),
+                  multiValueLabel: (base) => ({ ...base, color: 'black' }),
+                }}
+                classNamePrefix="react-select"
+              />
+            );
+          }}
+        />
+
         <Input placeholder="Dev URL" {...register('url_dev')} />
         <Input placeholder="Live URL" {...register('url_live')} />
         <Input placeholder="Staging URL" {...register('url_staging')} />
@@ -88,7 +162,9 @@ const UpdateProjectPage = () => {
         <Input placeholder="Avatar URL" {...register('avatar')} />
 
         <Input type="number" placeholder="Sort Order" {...register('sort_order')} />
-        {errors.sort_order && <p className="text-sm text-red-500">{errors.sort_order.message}</p>}
+        {errors.sort_order && (
+          <p className="text-sm text-red-500">{errors.sort_order.message}</p>
+        )}
 
         <div>
           <label className="flex items-center gap-2">

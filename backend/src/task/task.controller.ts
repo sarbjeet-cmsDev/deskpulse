@@ -15,14 +15,18 @@ import { CreateTaskDto, UpdateTaskDto } from './task.dto';
 import { Task } from './task.interface';
 import { JwtAuthGuard } from 'src/guard/jwt-auth.guard';
 
-@Controller('tasks')
+@Controller('api/tasks')
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
-  @Post()
-  async create(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
-    return this.taskService.create(createTaskDto);
-  }
+ @Post()
+async create(@Body() createTaskDto: CreateTaskDto): Promise<{ message: string; data: Task }> {
+  const task = await this.taskService.create(createTaskDto);
+  return {
+    message: 'Task created successfully',
+    data: task,
+  };
+}
 
   @Get()
   async findAll(): Promise<Task[]> {

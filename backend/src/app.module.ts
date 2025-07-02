@@ -8,7 +8,7 @@ import { TimelineModule } from './timeline/timeline.module';
 import { CommentModule } from './comment/comment.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
-
+import { ProjectKanbanModule } from './project-kanban/project_kanban.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -28,6 +28,7 @@ import { AuthModule } from './auth/auth.module';
     TimelineModule,
     CommentModule,
     UserModule,
+    ProjectKanbanModule,
     AuthModule
   ],
   controllers: [],

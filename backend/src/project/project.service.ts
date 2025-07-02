@@ -2,25 +2,33 @@ import { ConflictException, Injectable, InternalServerErrorException, NotFoundEx
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Project, ProjectDocument } from './project.schema';
+import { ProjectKanbanService } from '../project-kanban/project_kanban.service';
 
 @Injectable()
 export class ProjectService {
   constructor(
-    @InjectModel(Project.name) private projectModel: Model<ProjectDocument>
+    @InjectModel(Project.name) private projectModel: Model<ProjectDocument>,
+     private readonly kanbanService: ProjectKanbanService,
   ) { }
 
   
-  async create(createProjectDto: Partial<Project>): Promise<Project> {
-    try {
-      const createdProject = new this.projectModel(createProjectDto);
-      return await createdProject.save();
-    } catch (error) {
-      if (error.code === 11000 && error.keyPattern?.code) {
-        throw new ConflictException('Project code must be unique.');
-      }
-      throw new InternalServerErrorException('Failed to create project.');
+ async create(createProjectDto: Partial<Project>): Promise<Project> {
+  try {
+    const createdProject = new this.projectModel(createProjectDto);
+    const savedProject = await createdProject.save();
+
+    // ✅ Automatically create default Kanban stages
+    await this.kanbanService.createDefaults(savedProject._id.toString());
+
+    return savedProject;
+  } catch (error) {
+    if (error.code === 11000 && error.keyPattern?.code) {
+      throw new ConflictException('Project code must be unique.');
     }
+    throw new InternalServerErrorException('Failed to create project.');
   }
+}
+
 
 
   async findAll(): Promise<Project[]> {

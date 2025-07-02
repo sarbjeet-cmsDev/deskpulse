@@ -111,4 +111,9 @@ export class AdminUserController {
       data: user,
     };
   }
+
+  @Get('search')
+async search(@Query('q') query: string) {
+  return this.userService.searchUsers(query);
+}
 }
