@@ -92,7 +92,7 @@ export default function AuthLoginPage() {
           <Input
             ref={emailRef}
             name="email"
-            type="email"
+            type="text"
             placeholder="Type your email"
             value={formData.email}
             onChange={handleChange}

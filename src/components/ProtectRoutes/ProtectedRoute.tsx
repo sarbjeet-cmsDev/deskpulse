@@ -5,7 +5,7 @@ import { RootState } from '@/store/store';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { signOut } from '@/store/slices/authSlice';
-import UserService from '@/service/auth.service';
+import AuthService from '@/service/auth.service';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const user = useSelector((state: RootState) => state.auth.user);
@@ -16,7 +16,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const checkToken = async () => {
       try {
-        const res = await UserService.validateToken();
+        const res = await AuthService.validateToken();
   
         if (!res.valid || !res.user ) {
           }
@@ -24,7 +24,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
         localStorage.removeItem('token');
         localStorage.removeItem('type');
         dispatch(signOut());
-        router.push('/signin');
+        router.push('/auth/login');
       } finally {
         setCheckingToken(false);
       }
@@ -37,9 +37,9 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     return <div className="text-center mt-20">Checking token...</div>;
   }
 
-  if (!user || user.role !== 'user') {
-    return <div className="text-center mt-20">Redirecting...</div>;
-  }
+  // if (!user || user.role !== 'user') {
+  //   return <div className="text-center mt-20">Redirecting...</div>;
+  // }
 
   return <>{children}</>;
 };

@@ -5,8 +5,25 @@ import Image from "next/image";
 import DatePickerInput from "@/components/ProjectDetails/Datepicker";
 import { Input } from "../Form/Input";
 import { useState } from "react";
-export default function Details(){
+
+interface DetailsProps {
+  project: {
+    team?: any[];
+    leader?: {
+      name: string;
+      avatar: string;
+    };
+    status?: string;
+    dueDate?: string;
+    attachments?: string[];
+    // Add more fields as needed
+  };
+}
+
+export default function Details({ project }: DetailsProps){
     const [email, setEmail] = useState("");
+     const { team = [], leader, status = "To Do", dueDate, attachments = [] } = project || [];
+     
     return(
         <div>
             <ul className="mt-[24px]">

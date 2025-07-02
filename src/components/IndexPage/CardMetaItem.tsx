@@ -1,6 +1,8 @@
+interface CardMetaTagProps {
+  date?: string;
+}
 
-
-export default function CardMetaTag(){
+export default function CardMetaTag({ date }: CardMetaTagProps){
     return(
         <div className="flex items-center gap-2 bg-[#f6f5f7] rounded-[12px] px-[12px] py-[4px] inline">
             <svg
@@ -19,7 +21,7 @@ export default function CardMetaTag(){
                 />
             </svg>
             <span className="text-[#808492] text-[10px]">
-                June 18, 2022
+                 {date ? new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A'}
             </span>
         </div>
     );

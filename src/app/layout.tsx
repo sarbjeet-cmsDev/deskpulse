@@ -9,6 +9,7 @@ import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
 import { Navbar } from "@/components/navbar";
 import LayoutClientWrapper from "@/components/common/LayoutClientWrapper";
+import ProtectedRoute from "@/components/ProtectRoutes/ProtectedRoute";
 
 export const metadata: Metadata = {
   title: {
@@ -43,6 +44,7 @@ export default function RootLayout({
         )}
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
+        <ProtectedRoute>
           <div className="relative flex flex-col h-screen">
             <Navbar />
             <main className="container mx-auto max-w-7xl pt-16 px-6 flex-grow">
@@ -60,13 +62,9 @@ export default function RootLayout({
               </Link>
             </footer>
           </div>
+        </ProtectedRoute>
         </Providers>
       </body>
     </html>
   );
 }
-
-{/* <section role="main" className="w-full h-full flex-grow overflow-auto"> */}
-{/* <LayoutClientWrapper> */}
-{/* </LayoutClientWrapper> */}
-{/* </section> */}

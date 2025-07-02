@@ -1,6 +1,6 @@
 "use client";
 
-import {Card, CardBody} from "@heroui/react";
+import {Card, CardBody} from "@heroui/card";
 import CardHead from "./CardHeader";
 import CardMetaTag from "./CardMetaItem";
 import Image from "next/image";
@@ -8,15 +8,27 @@ import ProjectImage from "@/assets/images/projectimage.png";
 import AvatarList from "./avatarlist";
 import ProgressBar from "./progress";
 
-export default function ProjectCard() {
+
+interface ProjectCardProps {
+  project: {
+    code: string;
+    avatar?: string;
+    notes?: string;
+    url_live?: string;
+    createdAt?: string;
+    // add other fields if needed
+  };
+}
+
+export default function ProjectCard({ project }: ProjectCardProps) {
   return (
     
       <Card className=" !shadow-[0px_2px_36px_rgba(16,21,35,0.07)] py-[16px] px-[10px] rounded-[12px]">
         <CardBody className="p-0">
-          <CardHead/>
+          <CardHead title={project.code} />
           <div className="mt-[14px]">
             <div className="flex items-center gap-2"> 
-              <CardMetaTag/>
+              <CardMetaTag date={project.createdAt}/>
             </div>
             <div className="mt-[14px]  h-[135px] overflow-hidden border border-[#e3e3e35c] rounded-[8px]">
               <Image src={ProjectImage} alt="project-image" className="rounded-[8px]"/>

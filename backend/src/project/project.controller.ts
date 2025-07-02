@@ -14,7 +14,7 @@ import { CreateProjectDto, UpdateProjectDto } from './project.dto';
 import { Project } from './project.interface';
 import { JwtAuthGuard } from 'src/guard/jwt-auth.guard';
 
-@Controller('projects')
+@Controller('api/projects')
 
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}

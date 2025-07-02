@@ -12,7 +12,7 @@ import { UserService } from './user.service';
 import { UseGuards, Req } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/guard/jwt-auth.guard';
 
-@Controller('user')
+@Controller('api/user')
 export class UserController {
 
   constructor(private readonly userService: UserService) { }
