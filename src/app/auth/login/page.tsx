@@ -56,6 +56,7 @@ export default function AuthLoginPage() {
 
       localStorage.setItem('token', access_token);
       localStorage.setItem('type', user.role);
+      
 
       dispatch(signIn({ id: data.user.id, email: data.user.email, role: user.role }));
       
