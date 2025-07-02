@@ -5,7 +5,7 @@ import axios, {
   AxiosError,
 } from "axios";
 import Swal from "sweetalert2";
-import { SweetToast } from "./sweetToast";
+import { SweetToast } from "@/utils/sweetToast";
 
 /**
  * Custom Exception Classes
@@ -74,7 +74,11 @@ const defaultOnSuccess = (response: AxiosResponse) => {
  */
 export function createAxiosClient(options: AxiosClientOptions = {}) {
   const {
+<<<<<<< HEAD
     baseURL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000/api",
+=======
+    baseURL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3001/api",
+>>>>>>> r_july1
     withCreds = false,
     getToken,
     onSuccess = defaultOnSuccess,

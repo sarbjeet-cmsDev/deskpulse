@@ -1,4 +1,4 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import { Injectable, ConflictException, UnauthorizedException } from '@nestjs/common';
 import { User, UserDocument } from './user.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
@@ -20,6 +20,7 @@ export class UserService {
 
 
 
+    
     async comparePassword(password: string, userId: string): Promise<boolean> {
         const user = await this.userModel.findById(userId).exec();
         if (!user) return false;
@@ -98,6 +99,18 @@ export class UserService {
 
         return { data: users, total };
     }
+
+    async validateToken(user: { userId: string; email: string }) {
+    const foundUser = await this.userModel.findById(user.userId).lean();
+    if (!foundUser) {
+      throw new UnauthorizedException('User not found or token invalid');
+    }
+
+    return {
+      valid: true,
+      user
+    };
+}
 
 }
 
