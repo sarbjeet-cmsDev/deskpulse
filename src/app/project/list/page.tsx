@@ -10,7 +10,6 @@ import Link from "next/link";
 export default function MyProjects() {
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  console.log("pojects in my project page", projects);
 
   useEffect(() => {
     const loadProjects = async () => {
@@ -50,7 +49,6 @@ export default function MyProjects() {
                    <Link key={project._id} href={`/project/${project._id}`}>
                      <ProjectCard project={project} />
                    </Link>
-                //   <ProjectCard key={project._id} project={project} />
                 ))
               )}
             </div>

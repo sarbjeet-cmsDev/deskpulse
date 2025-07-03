@@ -1,9 +1,9 @@
 import { ReactNode } from 'react';
 import { ReduxProvider } from '@/app/admin/adminProvider';
+import AdminProtectedRoute from '@/app/admin/ProtectedRoutes/AdminProtectedRoute';
 // import Sidebar from '../../../components/admin/AdminSideBar';
 // import AdminNavbar from '../../../components/admin/AdminNavbar';
-// import AdminProtectedRoute from '@/app/admin/ProtectedRoutes/AdminProtectedRoute';
-// import ToastProvider from '../../axios-toastify/ToastProvider';
+
 
 interface Props {
   children: ReactNode;
@@ -11,7 +11,7 @@ interface Props {
 
 const AdminLayout = ({ children }: Props) => {
   return (
-    // <AdminProtectedRoute>
+    <AdminProtectedRoute>
        <ReduxProvider>
    
           <div className="flex">
@@ -21,9 +21,8 @@ const AdminLayout = ({ children }: Props) => {
               <main className="p-4">{children}</main>
             </div>
           </div>
-         {/* <ToastProvider children={''} /> */}
       </ReduxProvider>
-    //  </AdminProtectedRoute>
+    </AdminProtectedRoute>
   );
 };
 

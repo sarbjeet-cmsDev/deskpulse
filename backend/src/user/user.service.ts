@@ -121,6 +121,14 @@ export class UserService {
     };
 }
 
+async updateUserAvatar(userId: string, imageUrl: string): Promise<UserDocument | null> {
+  const updated = await this.userModel.findByIdAndUpdate(
+    userId,
+    { profileImage: imageUrl },
+    { new: true }
+  );
+  return updated;
+}
   
 
 }

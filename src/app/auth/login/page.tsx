@@ -47,10 +47,11 @@ export default function AuthLoginPage() {
       const { access_token, user } = data;
       const role = user.role[0];
 
-      localStorage.setItem('token', access_token);
-      localStorage.setItem('type', user.role);
 
-      dispatch(signIn({ id: user.id, email: user.email, role: user.role }));
+      localStorage.setItem('token', access_token);
+      localStorage.setItem('type', role);
+
+      dispatch(signIn({ id: user.id, email: user.email, role }));
 
       if (role === 'admin') {
         router.push('/admin');

@@ -23,7 +23,6 @@ export const userSchemaBase = z.object({
   userRoles: z.array(userRoleEnum).optional(),
 
   isActive: z.boolean().optional(),
-
   address: z.string().optional(),
   city: z.string().optional(),
   state: z.string().optional(),
@@ -87,5 +86,5 @@ export const userResetPasswordSchema = z.object({
   password: z
     .string({ required_error: 'Password is required' })
     .nonempty('Password is required')
-    .min(6, 'Password must be at least 6 characters'),
+    // .min(6, 'Password must be at least 6 characters'),
 });

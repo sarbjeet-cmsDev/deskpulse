@@ -15,7 +15,6 @@ export interface ITask {
 export interface CreateTaskDto {
   title: string;
    project: string;   
-
   report_to: string;   
 }
 
