@@ -22,7 +22,11 @@ let TaskController = class TaskController {
         this.taskService = taskService;
     }
     async create(createTaskDto) {
-        return this.taskService.create(createTaskDto);
+        const task = await this.taskService.create(createTaskDto);
+        return {
+            message: 'Task created successfully',
+            data: task,
+        };
     }
     async findAll() {
         return this.taskService.findAll();
@@ -115,7 +119,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], TaskController.prototype, "getMyTaskes", null);
 exports.TaskController = TaskController = __decorate([
-    (0, common_1.Controller)('tasks'),
+    (0, common_1.Controller)('api/tasks'),
     __metadata("design:paramtypes", [task_service_1.TaskService])
 ], TaskController);
 //# sourceMappingURL=task.controller.js.map

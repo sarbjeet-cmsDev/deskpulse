@@ -10,5 +10,22 @@ export declare class UserService {
     remove(id: string): Promise<UserDocument | null>;
     findByEmail(email: string): Promise<UserDocument | null>;
     getmeDetails(userId: string): Promise<any | null>;
+    searchUsers(keyword: string): Promise<UserDocument[]>;
     UpdateMyDetails(id: string, updateUserDto: Partial<User>): Promise<UserDocument | null>;
+    resetPasswordByAdmin(id: string, newPassword: string): Promise<UserDocument | null>;
+    findAllPaginated(page?: number, limit?: number, keyword?: string, sortField?: string, sortOrder?: 'asc' | 'desc'): Promise<{
+        data: UserDocument[];
+        total: number;
+    }>;
+    validateToken(user: {
+        userId: string;
+        email: string;
+    }): Promise<{
+        valid: boolean;
+        user: {
+            userId: string;
+            email: string;
+        };
+    }>;
+    updateUserAvatar(userId: string, imageUrl: string): Promise<UserDocument | null>;
 }

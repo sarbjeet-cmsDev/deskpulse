@@ -18,6 +18,9 @@ const user_dto_1 = require("./user.dto");
 const user_service_1 = require("./user.service");
 const common_2 = require("@nestjs/common");
 const jwt_auth_guard_1 = require("../guard/jwt-auth.guard");
+const common_3 = require("@nestjs/common");
+const platform_express_1 = require("@nestjs/platform-express");
+const multer_config_1 = require("../shared/multer.config");
 let UserController = class UserController {
     constructor(userService) {
         this.userService = userService;
@@ -37,10 +40,19 @@ let UserController = class UserController {
     async UpdateMyDetails(req, updateUserDto) {
         return this.userService.UpdateMyDetails(req.user.userId, updateUserDto);
     }
+    async validateToken(req) {
+        const user = req.user;
+        return this.userService.validateToken(user);
+    }
+    async uploadAvatar(file, req) {
+        const userId = req.user.userId;
+        const fileUrl = `/uploads/${file.filename}`;
+        return this.userService.updateUserAvatar(userId, fileUrl);
+    }
 };
 exports.UserController = UserController;
 __decorate([
-    (0, common_1.Post)('create'),
+    (0, common_1.Post)("create"),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [user_dto_1.CreateUserDto]),
@@ -53,15 +65,15 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "findAll", null);
 __decorate([
-    (0, common_1.Get)('view/:id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, common_1.Get)("view/:id"),
+    __param(0, (0, common_1.Param)("id")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "findOne", null);
 __decorate([
     (0, common_2.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, common_1.Get)('me'),
+    (0, common_1.Get)("me"),
     __param(0, (0, common_2.Req)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -69,15 +81,33 @@ __decorate([
 ], UserController.prototype, "getMe", null);
 __decorate([
     (0, common_2.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, common_1.Put)('me'),
+    (0, common_1.Put)("me"),
     __param(0, (0, common_2.Req)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, user_dto_1.UpdateUserDto]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "UpdateMyDetails", null);
+__decorate([
+    (0, common_2.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Get)("validate-token"),
+    __param(0, (0, common_2.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "validateToken", null);
+__decorate([
+    (0, common_2.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Post)("upload-avatar"),
+    (0, common_3.UseInterceptors)((0, platform_express_1.FileInterceptor)("file", multer_config_1.multerOptions)),
+    __param(0, (0, common_3.UploadedFile)()),
+    __param(1, (0, common_2.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "uploadAvatar", null);
 exports.UserController = UserController = __decorate([
-    (0, common_1.Controller)('user'),
+    (0, common_1.Controller)("api/user"),
     __metadata("design:paramtypes", [user_service_1.UserService])
 ], UserController);
 //# sourceMappingURL=user.controller.js.map

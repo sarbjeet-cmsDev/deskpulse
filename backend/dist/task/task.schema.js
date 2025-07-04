@@ -40,6 +40,10 @@ __decorate([
     __metadata("design:type", mongoose_2.Schema.Types.ObjectId)
 ], Task.prototype, "report_to", void 0);
 __decorate([
+    (0, mongoose_1.Prop)({ type: mongoose_2.Schema.ObjectId, ref: 'ProjectKanban' }),
+    __metadata("design:type", mongoose_2.Schema.Types.ObjectId)
+], Task.prototype, "kanban", void 0);
+__decorate([
     (0, mongoose_1.Prop)(),
     __metadata("design:type", Date)
 ], Task.prototype, "due_date", void 0);

@@ -21,8 +21,6 @@ export default function AuthProfilePage() {
   const [user, setUser] = useState<IUser | null>(null);
   const dispatch = useDispatch();
   const router = useRouter();
-  console.log('user----------ggggggggggg ',user)
-  console.log('avatarUrl--------------- ',avatarUrl)
   const handleLogout = () => {
     dispatch(signOut());
     localStorage.removeItem("token");
@@ -47,8 +45,12 @@ export default function AuthProfilePage() {
     const FetchUser = async () => {
       try {
         const data = await UserService.getUserById();
+        if (!data.profileImage) {
+            setAvatarUrl(avatar.src); // Fallback to default avatar if no profile image
+        } else {
+            setAvatarUrl(`${process.env.NEXT_PUBLIC_BACKEND_HOST}${data.profileImage}`);
+        }
         setUser(data);
-        setAvatarUrl(`${process.env.NEXT_PUBLIC_BACKEND_HOST}${data.profileImage}`);
       } catch (error) {
         console.error("Error fetching projects:", error);
       } finally {
@@ -70,7 +72,7 @@ export default function AuthProfilePage() {
       <div className="mt-[24px] px-[24px]">
         <div className="flex justify-center items-center flex-col gap-2">
           <div className="relative">
-            <Image src={avatarUrl ?? avatar} alt="avatar"  width={100} height={100} className="w-[100px] h-[100px] rounded-full object-cover" />
+            <Image src={avatarUrl ?? avatar} alt="avatar"  width={100} height={100} className="w-[100px] h-[100px] rounded-full object-cover" priority/>
             <div className="absolute right-0 bottom-0">
               <DrawerFunction onImageSelect={handleAvatarChange} />
             </div>

@@ -136,7 +136,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ProjectController.prototype, "getMyProjects", null);
 exports.ProjectController = ProjectController = __decorate([
-    (0, common_1.Controller)('projects'),
+    (0, common_1.Controller)('api/projects'),
     __metadata("design:paramtypes", [project_service_1.ProjectService])
 ], ProjectController);
 //# sourceMappingURL=project.controller.js.map

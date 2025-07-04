@@ -63,12 +63,60 @@ let UserService = class UserService {
         const _a = user.toObject(), { password: _, __v } = _a, safeUser = __rest(_a, ["password", "__v"]);
         return safeUser;
     }
+    async searchUsers(keyword) {
+        const regex = new RegExp(keyword, 'i');
+        return this.userModel.find({
+            $or: [
+                { name: regex },
+                { email: regex }
+            ]
+        });
+    }
     async UpdateMyDetails(id, updateUserDto) {
         const updatedUser = await this.userModel.findByIdAndUpdate(id, updateUserDto, { new: true, runValidators: true }).exec();
         if (!updatedUser) {
             throw new common_1.ConflictException('User not found');
         }
         return updatedUser;
+    }
+    async resetPasswordByAdmin(id, newPassword) {
+        const hashedPassword = await (0, user_helper_1.hashPassword)(newPassword);
+        return this.userModel.findByIdAndUpdate(id, { password: hashedPassword }, { new: true }).exec();
+    }
+    async findAllPaginated(page = 1, limit = 10, keyword, sortField = 'createdAt', sortOrder = 'asc') {
+        const skip = (page - 1) * limit;
+        const query = {};
+        if (keyword) {
+            query.$or = [
+                { firstName: { $regex: keyword, $options: 'i' } },
+                { lastName: { $regex: keyword, $options: 'i' } },
+                { email: { $regex: keyword, $options: 'i' } },
+            ];
+        }
+        const [users, total] = await Promise.all([
+            this.userModel
+                .find(query)
+                .sort({ [sortField]: sortOrder === 'asc' ? 1 : -1 })
+                .skip(skip)
+                .limit(limit)
+                .exec(),
+            this.userModel.countDocuments(query),
+        ]);
+        return { data: users, total };
+    }
+    async validateToken(user) {
+        const foundUser = await this.userModel.findById(user.userId).lean();
+        if (!foundUser) {
+            throw new common_1.UnauthorizedException('User not found or token invalid');
+        }
+        return {
+            valid: true,
+            user
+        };
+    }
+    async updateUserAvatar(userId, imageUrl) {
+        const updated = await this.userModel.findByIdAndUpdate(userId, { profileImage: imageUrl }, { new: true });
+        return updated;
     }
 };
 exports.UserService = UserService;

@@ -19,6 +19,7 @@
     "@heroui/link": "2.2.17",
     "@heroui/listbox": "2.3.19",
     "@heroui/navbar": "2.2.18",
+    "@heroui/react": "^2.7.11",
     "@heroui/snippet": "2.2.21",
     "@heroui/switch": "2.2.18",
     "@heroui/system": "2.4.16",
@@ -52,13 +53,12 @@
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-hook-form": "^7.59.0",
+    "react-redux": "^9.2.0",
     "react-toastify": "^11.0.5",
+    "redux-persist": "^6.0.0",
     "swagger-ui-express": "^5.0.1",
     "sweetalert2": "^11.22.2",
-    "zod": "^3.25.67",
-    "react-redux": "^9.2.0",
-    "redux-persist": "^6.0.0"
-   
+    "zod": "^3.25.67"
   },
   "devDependencies": {
     "@eslint/compat": "1.2.8",
@@ -70,6 +70,7 @@
     "@next/eslint-plugin-next": "15.3.1",
     "@react-types/shared": "3.29.0",
     "@types/bcrypt": "^5.0.2",
+    "@types/multer": "^2.0.0",
     "@types/node": "22.15.3",
     "@types/passport-jwt": "^4.0.1",
     "@types/react": "18.3.3",
