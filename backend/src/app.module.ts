@@ -9,6 +9,7 @@ import { CommentModule } from './comment/comment.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { ProjectKanbanModule } from './project-kanban/project_kanban.module';
+import { RemindersModule } from './reminders/reminders.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -29,7 +30,8 @@ import { ProjectKanbanModule } from './project-kanban/project_kanban.module';
     CommentModule,
     UserModule,
     ProjectKanbanModule,
-    AuthModule
+    AuthModule,
+    RemindersModule
   ],
   controllers: [],
   providers: [],
