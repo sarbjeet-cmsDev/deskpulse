@@ -23,7 +23,6 @@ export default function MyProjectDetails() {
   const [project, setProject] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [tasks, setTasks] = useState<ITask[]>([]);
-  console.log('tasks in MyProjectDetails-------- ',tasks)
   const user: IUser | null = useSelector((state: RootState) => state.auth.user);
 
   const fetchTasks = async (id: string) => {

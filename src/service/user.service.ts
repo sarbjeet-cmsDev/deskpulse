@@ -4,23 +4,6 @@ import { createAxiosClient } from '@/utils/createAxiosClient';
 const axiosClient = createAxiosClient({ withCreds: true });
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 export type UserRole = 'admin' | 'project_manager' | 'team_member' | 'client' | 'employee';
-
-// export interface IUser {
-//     userRoles?: UserRole[];
-//     gender: string;
-//     phone: string;
-//     _id: string;
-//     username: string;
-//     email: string;
-//     password?: string;
-//     firstName?: string;
-//     lastName?: string;
-//     isActive?: boolean;
-//     profileImage?: string;
-//     createdAt: string;
-//     updatedAt: string;
-// }
-
 export interface IUser {
   _id: string;
   username: string;

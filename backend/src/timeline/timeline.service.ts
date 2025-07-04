@@ -47,10 +47,27 @@ export class TimelineService {
     }
 
 
-  async findByTaskId(taskId: string): Promise<Timeline[]> {
-      await validateTaskId(this.taskService, taskId);
-      return this.timelineModel.find({ task: taskId }).exec();
-  }
+  // async findByTaskId(taskId: string): Promise<Timeline[]> {
+  //     await validateTaskId(this.taskService, taskId);
+  //     return this.timelineModel.find({ task: taskId }).exec();
+  // }
+  async findByTaskId(taskId: string, page: number, limit: number): Promise<{ data: Timeline[]; total: number; page: number; limit: number }> {
+  await validateTaskId(this.taskService, taskId);
+
+  const skip = (page - 1) * limit;
+
+  const [data, total] = await Promise.all([
+    this.timelineModel.find({ task: taskId }).skip(skip).limit(limit).exec(),
+    this.timelineModel.countDocuments({ task: taskId }),
+  ]);
+
+  return {
+    data,
+    total,
+    page,
+    limit,
+  };
+}
 
   async findByUserId(userId: string): Promise<Timeline[]> {
     return this.timelineModel.find({ user: userId }).exec();

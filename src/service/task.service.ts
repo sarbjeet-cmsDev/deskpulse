@@ -8,6 +8,8 @@ export interface ITask {
   title: string;
   createdAt: string;
   updatedAt: string;
+  project: string;   
+  report_to: string;   
   
   // Add more fields as needed
 }

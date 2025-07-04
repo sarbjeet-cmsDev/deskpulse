@@ -107,7 +107,7 @@ const UpdateUserProfile = () => {
           <p className="text-sm text-red-500">{errors.username.message}</p>
         )}
 
-        <Input type="email" placeholder="Email" {...register("email")} />
+        <Input type="email" placeholder="Email" {...register("email")} readOnly/>
         {errors.email && (
           <p className="text-sm text-red-500">{errors.email.message}</p>
         )}
@@ -118,12 +118,12 @@ const UpdateUserProfile = () => {
 
         {/* Gender Select */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="hidden block text-sm font-medium text-gray-700 mb-1">
             Gender
           </label>
           <select
             {...register("gender")}
-            className="w-full border border-gray-300 rounded px-3 py-2"
+            className="w-full border rounded px-3 py-2"
           >
             <option value="">Select gender</option>
             <option value="male">Male</option>
@@ -143,13 +143,13 @@ const UpdateUserProfile = () => {
 
         {/* User Roles Multi-Select */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className=" hidden block text-sm font-medium text-gray-700 mb-1">
             User Roles
           </label>
           <select
             multiple
             {...register("userRoles")}
-            className="w-full border border-gray-300 rounded px-3 py-2"
+            className="hidden w-full border border-gray-300 rounded px-3 py-2"
           >
             <option value="admin">Admin</option>
             <option value="project_manager">Project Manager</option>
