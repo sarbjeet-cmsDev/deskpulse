@@ -16,6 +16,7 @@ exports.NotificationController = void 0;
 const common_1 = require("@nestjs/common");
 const notification_service_1 = require("./notification.service");
 const notification_dto_1 = require("./notification.dto");
+const jwt_auth_guard_1 = require("../guard/jwt-auth.guard");
 let NotificationController = class NotificationController {
     constructor(notificationService) {
         this.notificationService = notificationService;
@@ -56,6 +57,7 @@ __decorate([
 ], NotificationController.prototype, "markAsRead", null);
 exports.NotificationController = NotificationController = __decorate([
     (0, common_1.Controller)('api/notifications'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __metadata("design:paramtypes", [notification_service_1.NotificationService])
 ], NotificationController);
 //# sourceMappingURL=notification.controller.js.map
