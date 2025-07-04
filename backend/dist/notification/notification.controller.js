@@ -15,18 +15,31 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.NotificationController = void 0;
 const common_1 = require("@nestjs/common");
 const notification_service_1 = require("./notification.service");
+const notification_dto_1 = require("./notification.dto");
 let NotificationController = class NotificationController {
     constructor(notificationService) {
         this.notificationService = notificationService;
     }
+    async create(createNotificationDto) {
+        const notification = await this.notificationService.create(createNotificationDto);
+        return { message: 'notification created successfully', notification };
+    }
     async findByUser(userId) {
-        return this.notificationService.findByUser(userId);
+        const notifications = await this.notificationService.findByUser(userId);
+        return { message: 'notifications retrieved successfully by userId', notifications };
     }
     async markAsRead(id) {
         return this.notificationService.update(id, { is_read: true });
     }
 };
 exports.NotificationController = NotificationController;
+__decorate([
+    (0, common_1.Post)(),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [notification_dto_1.CreateNotificationDto]),
+    __metadata("design:returntype", Promise)
+], NotificationController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)('user/:userId'),
     __param(0, (0, common_1.Param)('userId')),
@@ -42,7 +55,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], NotificationController.prototype, "markAsRead", null);
 exports.NotificationController = NotificationController = __decorate([
-    (0, common_1.Controller)('notifications'),
+    (0, common_1.Controller)('api/notifications'),
     __metadata("design:paramtypes", [notification_service_1.NotificationService])
 ], NotificationController);
 //# sourceMappingURL=notification.controller.js.map

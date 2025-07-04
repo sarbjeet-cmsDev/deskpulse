@@ -1,15 +1,24 @@
-import { Controller, Get, Param, Put, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Req, Get, Param, Put, NotFoundException } from '@nestjs/common';
 import { NotificationService } from './notification.service';
+import { CreateNotificationDto } from './notification.dto';
 
 
-@Controller('notifications')
+@Controller('api/notifications')
 
 export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
+
+  @Post()
+  async create(@Body() createNotificationDto: CreateNotificationDto) {
+    const notification = await this.notificationService.create(createNotificationDto);
+    return { message: 'notification created successfully', notification };
+  }
+
   @Get('user/:userId')
   async findByUser(@Param('userId') userId: string) {
-    return this.notificationService.findByUser(userId);
+    const notifications = await this.notificationService.findByUser(userId);
+    return { message: 'notifications retrieved successfully by userId', notifications };
   }
 
   @Put(':id/read')

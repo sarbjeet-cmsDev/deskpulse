@@ -18,6 +18,9 @@ const comment_module_1 = require("./comment/comment.module");
 const user_module_1 = require("./user/user.module");
 const auth_module_1 = require("./auth/auth.module");
 const project_kanban_module_1 = require("./project-kanban/project_kanban.module");
+const reminders_module_1 = require("./reminders/reminders.module");
+const taskchecklist_module_1 = require("./taskchecklist/taskchecklist.module");
+const notification_module_1 = require("./notification/notification.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -42,7 +45,10 @@ exports.AppModule = AppModule = __decorate([
             comment_module_1.CommentModule,
             user_module_1.UserModule,
             project_kanban_module_1.ProjectKanbanModule,
-            auth_module_1.AuthModule
+            auth_module_1.AuthModule,
+            reminders_module_1.RemindersModule,
+            taskchecklist_module_1.TaskChecklistModule,
+            notification_module_1.NotificationModule
         ],
         controllers: [],
         providers: [],

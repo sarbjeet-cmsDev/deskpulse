@@ -2,12 +2,10 @@ import { Schema as MongooseSchema } from 'mongoose';
 export declare class CreateNotificationDto {
     user: MongooseSchema.Types.ObjectId;
     content: string;
-    task?: MongooseSchema.Types.ObjectId;
     is_read?: boolean;
+    redirect_url: string;
 }
 export declare class UpdateNotificationDto {
-    user?: MongooseSchema.Types.ObjectId;
-    content?: string;
-    task?: MongooseSchema.Types.ObjectId;
     is_read?: boolean;
+    redirect_url?: string;
 }
