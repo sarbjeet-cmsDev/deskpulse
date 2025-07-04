@@ -25,6 +25,7 @@ __decorate([
     __metadata("design:type", String)
 ], CreateTaskDto.prototype, "description", void 0);
 __decorate([
+    (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsMongoId)(),
     __metadata("design:type", mongoose_1.Schema.Types.ObjectId)
 ], CreateTaskDto.prototype, "project", void 0);
@@ -39,6 +40,7 @@ __decorate([
     __metadata("design:type", mongoose_1.Schema.Types.ObjectId)
 ], CreateTaskDto.prototype, "assigned_to", void 0);
 __decorate([
+    (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsMongoId)(),
     __metadata("design:type", mongoose_1.Schema.Types.ObjectId)
 ], CreateTaskDto.prototype, "report_to", void 0);
@@ -47,6 +49,11 @@ __decorate([
     (0, class_validator_1.IsDate)(),
     __metadata("design:type", Date)
 ], CreateTaskDto.prototype, "due_date", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsMongoId)(),
+    __metadata("design:type", mongoose_1.Schema.Types.ObjectId)
+], CreateTaskDto.prototype, "kanban", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsBoolean)(),

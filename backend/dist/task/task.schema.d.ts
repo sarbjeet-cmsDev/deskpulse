@@ -7,6 +7,7 @@ export declare class Task {
     sort_order: number;
     assigned_to: MongooseSchema.Types.ObjectId;
     report_to: MongooseSchema.Types.ObjectId;
+    kanban: MongooseSchema.Types.ObjectId;
     due_date: Date;
     is_active: boolean;
     priority: string;

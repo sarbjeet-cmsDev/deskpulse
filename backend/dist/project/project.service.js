@@ -17,15 +17,19 @@ const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 const project_schema_1 = require("./project.schema");
+const project_kanban_service_1 = require("../project-kanban/project_kanban.service");
 let ProjectService = class ProjectService {
-    constructor(projectModel) {
+    constructor(projectModel, kanbanService) {
         this.projectModel = projectModel;
+        this.kanbanService = kanbanService;
     }
     async create(createProjectDto) {
         var _a;
         try {
             const createdProject = new this.projectModel(createProjectDto);
-            return await createdProject.save();
+            const savedProject = await createdProject.save();
+            await this.kanbanService.createDefaults(savedProject._id.toString());
+            return savedProject;
         }
         catch (error) {
             if (error.code === 11000 && ((_a = error.keyPattern) === null || _a === void 0 ? void 0 : _a.code)) {
@@ -94,11 +98,35 @@ let ProjectService = class ProjectService {
     async findProjectsByUserId(userId) {
         return this.projectModel.find({ users: userId }).exec();
     }
+    async findAllPaginated(page, limit, keyword, sortOrder = 'asc') {
+        const skip = (page - 1) * limit;
+        const query = {};
+        if (keyword) {
+            query.$or = [
+                { name: { $regex: keyword, $options: 'i' } },
+                { code: { $regex: keyword, $options: 'i' } },
+            ];
+        }
+        const [projects, total] = await Promise.all([
+            this.projectModel
+                .find(query)
+                .sort({ createdAt: sortOrder === 'asc' ? 1 : -1 })
+                .skip(skip)
+                .limit(limit)
+                .exec(),
+            this.projectModel.countDocuments(query),
+        ]);
+        return {
+            data: projects,
+            total,
+        };
+    }
 };
 exports.ProjectService = ProjectService;
 exports.ProjectService = ProjectService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, mongoose_1.InjectModel)(project_schema_1.Project.name)),
-    __metadata("design:paramtypes", [mongoose_2.Model])
+    __metadata("design:paramtypes", [mongoose_2.Model,
+        project_kanban_service_1.ProjectKanbanService])
 ], ProjectService);
 //# sourceMappingURL=project.service.js.map

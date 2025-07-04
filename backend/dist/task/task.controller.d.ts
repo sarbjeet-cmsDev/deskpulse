@@ -4,7 +4,10 @@ import { Task } from './task.interface';
 export declare class TaskController {
     private readonly taskService;
     constructor(taskService: TaskService);
-    create(createTaskDto: CreateTaskDto): Promise<Task>;
+    create(createTaskDto: CreateTaskDto): Promise<{
+        message: string;
+        data: Task;
+    }>;
     findAll(): Promise<Task[]>;
     findOne(id: string): Promise<Task>;
     findByProject(projectId: string): Promise<Task[]>;

@@ -12,13 +12,15 @@ const mongoose_1 = require("@nestjs/mongoose");
 const project_controller_1 = require("./project.controller");
 const project_service_1 = require("./project.service");
 const project_schema_1 = require("./project.schema");
+const admin_project_controller_1 = require("./admin.project.controller");
+const project_kanban_module_1 = require("../project-kanban/project_kanban.module");
 let ProjectModule = class ProjectModule {
 };
 exports.ProjectModule = ProjectModule;
 exports.ProjectModule = ProjectModule = __decorate([
     (0, common_1.Module)({
-        imports: [mongoose_1.MongooseModule.forFeature([{ name: 'Project', schema: project_schema_1.ProjectSchema }])],
-        controllers: [project_controller_1.ProjectController],
+        imports: [mongoose_1.MongooseModule.forFeature([{ name: 'Project', schema: project_schema_1.ProjectSchema }]), project_kanban_module_1.ProjectKanbanModule],
+        controllers: [project_controller_1.ProjectController, admin_project_controller_1.AdminProjectController],
         providers: [project_service_1.ProjectService],
         exports: [project_service_1.ProjectService],
     })

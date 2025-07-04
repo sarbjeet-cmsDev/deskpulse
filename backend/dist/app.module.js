@@ -17,6 +17,7 @@ const timeline_module_1 = require("./timeline/timeline.module");
 const comment_module_1 = require("./comment/comment.module");
 const user_module_1 = require("./user/user.module");
 const auth_module_1 = require("./auth/auth.module");
+const project_kanban_module_1 = require("./project-kanban/project_kanban.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -40,6 +41,7 @@ exports.AppModule = AppModule = __decorate([
             timeline_module_1.TimelineModule,
             comment_module_1.CommentModule,
             user_module_1.UserModule,
+            project_kanban_module_1.ProjectKanbanModule,
             auth_module_1.AuthModule
         ],
         controllers: [],
