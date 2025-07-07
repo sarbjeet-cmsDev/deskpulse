@@ -18,7 +18,11 @@
 # misc
 .DS_Store
 *.pem
-dist/
+/backend/dist/
+
+/upload
+/.idea
+
 # debug
 npm-debug.log*
 yarn-debug.log*
