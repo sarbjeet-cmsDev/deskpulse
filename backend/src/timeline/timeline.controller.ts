@@ -48,13 +48,6 @@ export class TimelineController {
     return this.timelineService.remove(id);
   }
 
-  // @Get('task/:taskId')
-  // async findByTaskId(@Param('taskId') taskId: string, @Query('page') page: string = '1',  @Query('limit') limit: string = '10'): Promise<{Timeline[]; total: number; page: number; limit: number }> {
-  //     const pageNumber = parseInt(page, 10);
-  //     const limitNumber = parseInt(limit, 10);
-  //   return this.timelineService.findByTaskId(taskId, pageNumber, limitNumber);
-  // }
-
   @Get("task/:taskId")
   async findByTaskId(
     @Param("taskId") taskId: string,

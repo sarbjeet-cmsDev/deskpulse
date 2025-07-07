@@ -1,6 +1,7 @@
 import { createAxiosClient } from '@/utils/createAxiosClient';
 
 const axiosClient = createAxiosClient({ withCreds: false });
+const axiosPrivateClient = createAxiosClient({ withCreds: true });
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export interface ITask {
@@ -9,15 +10,24 @@ export interface ITask {
   createdAt: string;
   updatedAt: string;
   project: string;   
-  report_to: string;   
+  report_to: string;
+  assigned_to: string;   
   
   // Add more fields as needed
 }
 
 export interface CreateTaskDto {
   title: string;
-   project: string;   
-  report_to: string;   
+  project: string;   
+  report_to: string; 
+  assigned_to: string;   
+}
+
+export interface ITaskResponse {
+  data: ITask[];
+  total: number;
+  page: number;
+  limit: number;
 }
 
 export interface UpdateTaskDto {
@@ -74,8 +84,8 @@ const TaskService = {
   },
 
   // Get logged-in user's tasks (JWT protected)
-  async getMyTasks(): Promise<ITask[]> {
-    const res = await axiosClient.get(`${API_URL}/tasks/me`);
+  async getMyTasks(page = 1, limit = 5): Promise<ITaskResponse> {
+    const res = await axiosPrivateClient.get(`${API_URL}/tasks/me?page=${page}&limit=${limit}`);
     return res.data;
   },
 };

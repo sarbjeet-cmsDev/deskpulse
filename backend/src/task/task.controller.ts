@@ -43,10 +43,10 @@ async create(@Body() createTaskDto: CreateTaskDto): Promise<{ message: string; d
     return this.taskService.findByProject(projectId);
   }
 
-  @Get('assigned/:userId')
-  async findByAssignedUser(@Param('userId') userId: string): Promise<Task[]> {
-    return this.taskService.findByAssignedUser(userId);
-  }
+  // @Get('assigned/:userId')
+  // async findByAssignedUser(@Param('userId') userId: string): Promise<Task[]> {
+  //   return this.taskService.findByAssignedUser(userId);
+  // }
 
   @Get('report-to/:userId')
   async findByReportToUser(@Param('userId') userId: string): Promise<Task[]> {
@@ -69,7 +69,14 @@ async create(@Body() createTaskDto: CreateTaskDto): Promise<{ message: string; d
 
   @UseGuards(JwtAuthGuard)
     @Get('me')
-    async getMyTaskes(@Req() req: any): Promise<Task[]> {
-      return this.taskService.findByAssignedUser(req.user.userId);
+    async getMyTaskes(
+      @Req() req: any,
+      @Query("page") page: string = "1",
+      @Query("limit") limit: string = "5"
+    )
+    : Promise<{ data:Task[]; total: number; page: number; limit: number }> {
+      const pageNumber = parseInt(page, 10);
+    const limitNumber = parseInt(limit, 10);
+      return this.taskService.findByAssignedUser(req.user.userId, pageNumber, limitNumber);
     }
 }

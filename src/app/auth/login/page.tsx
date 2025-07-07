@@ -1,6 +1,8 @@
 'use client';
 
 import { useForm } from 'react-hook-form';
+import Image from "next/image";
+import leftarrow from "@/assets/images/back.png";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { userLoginSchema } from '@/components/validation/userValidation';
 import { z } from 'zod';
@@ -74,9 +76,14 @@ export default function AuthLoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="w-full max-w-md space-y-6">
-        <div className="w-full">
-          <H3 className="text-sm flex items-center justify-center text-gray-500">Sign In</H3>
+        <div className="flex justify-center items-center p-[24px] border-b border-[#31394f14]">
+        <div className="w-[2%]">
+          <a href="/auth/profile">
+            <Image src={leftarrow} alt="Logo" width={16} height={16} />
+          </a>
         </div>
+        <H3 className="w-[98%] text-center">Sign In</H3>
+      </div>
         <p className="text-center text-sm text-gray-500">
           Give credentials to sign in your account
         </p>

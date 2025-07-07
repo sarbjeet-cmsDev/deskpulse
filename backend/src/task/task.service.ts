@@ -37,8 +37,19 @@ export class TaskService {
     return this.taskModel.find({ project: projectId }).exec();
   }
 
-  async findByAssignedUser(userId: string): Promise<Task[]> {
-    return this.taskModel.find({ assigned_to: userId }).exec();
+  async findByAssignedUser(userId: string, page: number, limit: number): Promise< { data: Task[]; total: number; page: number; limit: number }> {
+     const skip = (page - 1) * limit;
+    // return this.taskModel.find({ assigned_to: userId }).exec();
+    const [data, total] = await Promise.all([
+    this.taskModel.find({ assigned_to: userId }).skip(skip).limit(limit).exec(),
+    this.taskModel.countDocuments({ assigned_to: userId }),
+  ]);
+  return {
+    data,
+    page,
+    limit,
+    total,
+  };
   }
 
   async findByReportToUser(userId: string): Promise<Task[]> {

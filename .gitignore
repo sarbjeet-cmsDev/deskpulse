@@ -19,8 +19,7 @@
 .DS_Store
 *.pem
 /backend/dist/
-
-/upload
+/backend/uploads/
 /.idea
 
 # debug

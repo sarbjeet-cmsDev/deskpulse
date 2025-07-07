@@ -1,6 +1,6 @@
 "use client";
 
-import {Card, CardBody} from "@heroui/card";
+import {Card, CardBody} from "@heroui/react";
 import CardHead from "./CardHeader";
 import CardMetaTag from "./CardMetaItem";
 import Image from "next/image";

@@ -42,13 +42,15 @@ export default function AuthProfilePage() {
 };
 
   useEffect(()=>{
+    console.log("hgdgggggjjhjksjhdsfgjsdgh")
     const FetchUser = async () => {
       try {
         const data = await UserService.getUserById();
-        if (!data.profileImage) {
-            setAvatarUrl(avatar.src); // Fallback to default avatar if no profile image
+        if (data.profileImage) {
+          setAvatarUrl(avatar.src); 
+          setAvatarUrl(`${process.env.NEXT_PUBLIC_BACKEND_HOST}${data.profileImage}`);
         } else {
-            setAvatarUrl(`${process.env.NEXT_PUBLIC_BACKEND_HOST}${data.profileImage}`);
+          setAvatarUrl(avatar.src); 
         }
         setUser(data);
       } catch (error) {
@@ -59,6 +61,7 @@ export default function AuthProfilePage() {
 
     FetchUser();
   },[])
+
   return (
     <div className="max-w-6xl mx-auto">
       <div className="flex justify-center items-center p-[24px] border-b border-[#31394f14]">

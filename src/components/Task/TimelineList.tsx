@@ -91,7 +91,7 @@ export default function TimelineList({
       </div>
 
       <ul>
-        {timelines.map(timeline => (
+        {filteredTimelines.map(timeline => (
           <li key={timeline._id} className="inactive flex justify-between items-center bg-[#f8fafc] w-full py-[15px] px-[20px] rounded-[8px] border-l-[8px] border-l-[#5fd788] mt-[16px]">
             <div className="flex items-center gap-2">
               <input type="checkbox" defaultChecked className="accent-green-500" />

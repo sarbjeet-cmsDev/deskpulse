@@ -12,6 +12,13 @@ import Link from "next/link";
 import TimelineList from "@/components/Task/TimelineList";
 import TimelineService, { ITimeline } from "@/service/timeline.service";
 import ProjectService from "@/service/project.service";
+import CreateCommentModal from "@/components/Comment/CreateCommentModal";
+import { IUser } from "@/types/user.interface";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import { IComment } from "@/types/comment.interface";
+import CommentService from "@/service/comment.service";
+import CommentList from "@/components/Comment/CommnetList";
 
 export default function TaskDetails() {
   const params = useParams();
@@ -23,7 +30,9 @@ export default function TaskDetails() {
   const [timelineTotal, setTimelineTotal] = useState<number>(0);
   const [timelinePage, setTimelinePage] = useState<number>(1);
   const [timelineLimit, setTimelineLimit] = useState<number>(5);
-  console.log('timelines in TaskDetails',timelines)
+  const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
+   const [comments, setComments] = useState<IComment[]>([]);
+  const user: IUser | null = useSelector((state: RootState) => state.auth.user);
 
   useEffect(() => {
     if (taskId) {
@@ -60,6 +69,26 @@ export default function TaskDetails() {
   } catch (error) {
     console.error("Failed to load timelines", error);
   }
+};
+
+const fetchTasks = async () => {
+ // setLoading(true);
+ try {
+   const res = await CommentService.getCommentsByTask(taskId);
+   setComments(res);
+ } catch (error) {
+   console.error('Failed to load tasks:', error);
+   setComments([]);
+ } finally {
+   // setLoading(false);
+ }
+};
+useEffect(()=>{
+  fetchTasks();
+})
+
+const handleCommentCreated = () => {
+  setIsCommentModalOpen(false);
 };
   const handleLogTimeClick = () => {
     console.log("Open Log Time Modal");
@@ -103,9 +132,29 @@ export default function TaskDetails() {
                   currentPage={timelinePage}
                   itemsPerPage={timelineLimit}
                   onPageChange={(page) => fetchTimelines(taskId, page, timelineLimit)}
-                   refreshTimelines={() => fetchTimelines(taskId, timelinePage, timelineLimit)}
+                  refreshTimelines={() => fetchTimelines(taskId, timelinePage, timelineLimit)}
                 />
+
+                <div className="mt-4 flex justify-start">
+                <button
+                  onClick={() => setIsCommentModalOpen(true)}
+                  className="bg-[#7980ff] text-white px-4 py-2 text-sm rounded-md font-semibold hover:bg-[#5e64e6] transition"
+                >
+                  + Add Comment
+                </button>
               </div>
+               <CommentList comments={comments}/>
+              </div>
+
+              {isCommentModalOpen && (
+                <CreateCommentModal
+                  taskId={taskId}
+                  userId={user?.id || ''}   
+                   isOpen={isCommentModalOpen}
+                   onClose={() => setIsCommentModalOpen(false)}
+                  onCommentCreated={handleCommentCreated}
+                />
+              )}
             </div>
           </div>
         </div>

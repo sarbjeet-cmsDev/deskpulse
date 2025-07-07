@@ -56,6 +56,8 @@ export default function MyProjectDetails() {
         title,
         project: project._id,
         report_to: user?.id || '',
+        assigned_to:user?.id || '',
+      
       });
       refreshTasks();
     } catch (error) {

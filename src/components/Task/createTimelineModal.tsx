@@ -46,10 +46,8 @@ export default function CreateTimelineModal({ onCreate }: CreateTimelineModalPro
   return (
     <>
       <Button onPress={onOpen} 
-    //   className="bg-[#7980ff] text-white block w-full py-[16px] rounded-[12px] mt-[24px] px-[28px] font-bold" 
        className="bg-[#7980ff] text-white px-4 py-2 text-sm font-semibold"
        >
-        
         + Log Time
       </Button>
 

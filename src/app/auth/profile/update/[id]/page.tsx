@@ -102,23 +102,40 @@ const UpdateUserProfile = () => {
         onSubmit={handleSubmit(onSubmit)}
         className="w-full bg-white p-6 rounded shadow space-y-4"
       > 
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+            Username
+          </label>
         <Input placeholder="Username" {...register("username")} />
         {errors.username && (
           <p className="text-sm text-red-500">{errors.username.message}</p>
         )}
-
+        
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+            Email
+          </label>
         <Input type="email" placeholder="Email" {...register("email")} readOnly/>
         {errors.email && (
           <p className="text-sm text-red-500">{errors.email.message}</p>
         )}
-
+        
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+            First Name
+          </label>
         <Input placeholder="First Name" {...register("firstName")} />
+
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+            Last Name
+          </label>
         <Input placeholder="Last Name" {...register("lastName")} />
+
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+           Phone
+          </label>
         <Input placeholder="Phone" {...register("phone")} />
 
         {/* Gender Select */}
         <div>
-          <label className="hidden block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
             Gender
           </label>
           <select
@@ -134,11 +151,30 @@ const UpdateUserProfile = () => {
             <p className="text-sm text-red-500">{errors.gender.message}</p>
           )}
         </div>
-
+          
+         <label className="block text-sm font-medium text-gray-700 mb-1">
+            Address
+          </label>
         <Input placeholder="Address" {...register('address')} />
+
+         <label className="block text-sm font-medium text-gray-700 mb-1">
+            City
+          </label>
         <Input placeholder="City" {...register('city')} />
+
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+            State
+          </label>
         <Input placeholder="State" {...register('state')} />
+
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+            Country
+          </label>
         <Input placeholder="Country" {...register('country')} />
+
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+           Zip Code
+          </label>
         <Input placeholder="Zip Code" {...register('zipCode')} />
 
         {/* User Roles Multi-Select */}
