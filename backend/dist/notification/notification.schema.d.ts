@@ -1,10 +1,10 @@
 import { Document, Schema as MongooseSchema } from 'mongoose';
 export type NotificationDocument = Notification & Document;
 export declare class Notification {
-    user: MongooseSchema.Types.ObjectId;
     content: string;
-    task: MongooseSchema.Types.ObjectId;
+    user: MongooseSchema.Types.ObjectId;
     is_read: boolean;
+    redirect_url: string;
     createdAt: Date;
     updatedAt: Date;
 }

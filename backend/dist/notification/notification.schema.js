@@ -16,27 +16,38 @@ let Notification = class Notification {
 };
 exports.Notification = Notification;
 __decorate([
-    (0, mongoose_1.Prop)({ type: mongoose_2.Schema.Types.ObjectId, ref: 'User', required: true }),
-    __metadata("design:type", mongoose_2.Schema.Types.ObjectId)
-], Notification.prototype, "user", void 0);
-__decorate([
-    (0, mongoose_1.Prop)({ required: true }),
+    (0, mongoose_1.Prop)({
+        required: [true, 'Content is required'],
+    }),
     __metadata("design:type", String)
 ], Notification.prototype, "content", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ type: mongoose_2.Schema.Types.ObjectId, ref: 'Task', required: false }),
+    (0, mongoose_1.Prop)({
+        type: mongoose_2.Schema.Types.ObjectId,
+        ref: 'User',
+        required: [true, 'User reference is required'],
+    }),
     __metadata("design:type", mongoose_2.Schema.Types.ObjectId)
-], Notification.prototype, "task", void 0);
+], Notification.prototype, "user", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ default: false }),
+    (0, mongoose_1.Prop)({
+        default: false,
+    }),
     __metadata("design:type", Boolean)
 ], Notification.prototype, "is_read", void 0);
 __decorate([
-    (0, mongoose_1.Prop)(),
+    (0, mongoose_1.Prop)({
+        type: String,
+        required: [true, 'Redirect URL is required'],
+    }),
+    __metadata("design:type", String)
+], Notification.prototype, "redirect_url", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ default: Date.now }),
     __metadata("design:type", Date)
 ], Notification.prototype, "createdAt", void 0);
 __decorate([
-    (0, mongoose_1.Prop)(),
+    (0, mongoose_1.Prop)({ default: Date.now }),
     __metadata("design:type", Date)
 ], Notification.prototype, "updatedAt", void 0);
 exports.Notification = Notification = __decorate([

@@ -10,6 +10,8 @@ export class NotificationService {
   constructor(
     @InjectModel(Notification.name)
     private notificationModel: Model<NotificationDocument>,
+
+
   ) {}
 
   async create(createNotificationDto: CreateNotificationDto): Promise<Notification> {
