@@ -10,7 +10,6 @@ import { Button } from '@/components/Form/Button';
 import { H1 } from '@/components/Heading/H1';
 import { useParams, useRouter } from 'next/navigation';
 import AdminUserService, { IUser } from '@/service/adminUser.service';
-import Swal from 'sweetalert2';
 
 type UpdateUserInput = z.infer<typeof userUpdateSchema>;
 

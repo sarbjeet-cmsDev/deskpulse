@@ -1,5 +1,6 @@
 import { createAxiosClient } from '@/utils/createAxiosClient';
 import axios from 'axios'
+import { log } from 'console';
 
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 const axiosClient = createAxiosClient({withCreds:true});
@@ -14,7 +15,7 @@ const ProjectService = {
     }
   },
   async getProjectById(projectId: string) {
-    const response = await axios.get(`${API_URL}/projects/fetch/${projectId}`);
+    const response = await axiosClient.get(`${API_URL}/projects/fetch/${projectId}`);
     return response.data;
   }
 };

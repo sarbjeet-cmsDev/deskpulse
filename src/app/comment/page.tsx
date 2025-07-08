@@ -45,7 +45,9 @@ export default function MyCommentList() {
       </div>
 
       <div className="p-4">
-      <CommentList comments={comments}/>
+      <CommentList comments={comments} refreshComments={function (): void {
+          throw new Error("Function not implemented.");
+        } }/>
       </div>
     </div>
   );

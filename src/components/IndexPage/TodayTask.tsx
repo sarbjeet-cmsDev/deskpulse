@@ -23,7 +23,7 @@ export default function TodayTaskCard() {
                     <div>
                         <H6 className="mb-2">Fintech Project</H6>
                         <div className="flex justify-center items-center gap-2">
-                            <AvatarList/>
+                            <AvatarList users={[]}/>
                             <CardMetaTag/>
                         </div>
                     </div>

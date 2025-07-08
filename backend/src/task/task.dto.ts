@@ -29,6 +29,7 @@ export class CreateTaskDto {
   report_to?: MongooseSchema.Types.ObjectId;
 
   @IsDate()
+   @IsOptional()
   @Type(() => Date)  // <--- this converts the input string to a Date instance
   due_date: Date;
 

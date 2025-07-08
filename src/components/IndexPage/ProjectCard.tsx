@@ -35,7 +35,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
             </div>
           </div>
           <div className="mt-[14px] flex items-center gap-4" >
-            <AvatarList/>
+            <AvatarList users={[]}/>
             <div className="box-progress flex-grow">
               <div className="flex justify-between items-center mb-2">
                   <span className="text-[#31394f99] text-[10px] leading-[16px]">Progress</span>
