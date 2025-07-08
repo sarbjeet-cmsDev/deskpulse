@@ -5,6 +5,7 @@ export interface IComment {
   mentioned?: string[];
   parent_comment?: string;
   created_by: string;
+  mentioned_users: any;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -23,4 +24,11 @@ export interface UpdateCommentDto {
   mentioned?: string[];
   parent_comment?: string;
   created_by?: string;
+}
+
+export interface ICommentResponse {
+  data: IComment[];
+  total: number;
+  page: number;
+  limit: number;
 }

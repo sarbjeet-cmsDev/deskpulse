@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { CreateCommentDto, UpdateCommentDto } from './comment.dto';
@@ -31,8 +32,14 @@ export class CommentController {
   }
 
   @Get('task/:taskId')
-  async findByTask(@Param('taskId') taskId: string): Promise<Comment[]> {
-    return this.commentService.findByTask(taskId);
+  async findByTask(
+    @Param('taskId') taskId: string,
+    @Query("page") page: string = "1",
+    @Query("limit") limit: string = "5"
+  ): Promise<{data: Comment[]; total: number; page: number; limit: number}> {
+      const pageNumber = parseInt(page, 10);
+      const limitNumber = parseInt(limit, 10);
+    return this.commentService.findByTask(taskId, pageNumber, limitNumber);
   }
 
   @Get('parent/:parentId')

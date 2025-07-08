@@ -1,4 +1,4 @@
-import { CreateCommentDto, IComment, UpdateCommentDto } from '@/types/comment.interface';
+import { CreateCommentDto, IComment, ICommentResponse, UpdateCommentDto } from '@/types/comment.interface';
 import { createAxiosClient } from '@/utils/createAxiosClient';
 
 const axiosClient = createAxiosClient({ withCreds: false });
@@ -20,8 +20,23 @@ const CommentService = {
     return response.data;
   },
 
-  async getCommentsByTask(taskId: string): Promise<IComment[]> {
-    const response = await axiosClient.get(`${API_URL}/comments/task/${taskId}`);
+  async getCommentsByTask(
+    taskId: string,
+    page = 1,
+    limit = 5,
+    sortField: string = "createdAt",
+    sortOrder: "asc" | "desc" = "desc"
+  ): Promise<ICommentResponse> {
+    const response = await axiosClient.get(`${API_URL}/comments/task/${taskId}`,
+      {
+        params: {
+          page,
+          limit,
+          sortField,
+          sortOrder,
+        },
+      }
+    );
     return response.data;
   },
 

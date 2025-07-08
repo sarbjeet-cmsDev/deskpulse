@@ -19,6 +19,8 @@ import { RootState } from "@/store/store";
 import { IComment } from "@/types/comment.interface";
 import CommentService from "@/service/comment.service";
 import CommentList from "@/components/Comment/CommnetList";
+import Pagination from "@/components/Pagination/pagination";
+import CommentInputSection from "@/components/Comment/commentSection";
 
 export default function TaskDetails() {
   const params = useParams();
@@ -31,7 +33,10 @@ export default function TaskDetails() {
   const [timelinePage, setTimelinePage] = useState<number>(1);
   const [timelineLimit, setTimelineLimit] = useState<number>(5);
   const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
-   const [comments, setComments] = useState<IComment[]>([]);
+  const [comments, setComments] = useState<IComment[]>([]);
+  const [commentTotal, setCommentTotal] = useState<number>(0);
+  const [commentPage, setCommentPage] = useState<number>(1);
+  const [commentLimit, setCommentLimit] = useState<number>(5);
   const user: IUser | null = useSelector((state: RootState) => state.auth.user);
 
   useEffect(() => {
@@ -60,36 +65,39 @@ export default function TaskDetails() {
   };
 
   const fetchTimelines = async (taskId: string, page = 1, limit = 5) => {
-  try {
-    const res = await TimelineService.getTimelinesByTask(taskId, page, limit);
-    setTimelines(res.data);
-    setTimelineTotal(res.total);
-    setTimelinePage(res.page);
-    setTimelineLimit(res.limit);
-  } catch (error) {
-    console.error("Failed to load timelines", error);
-  }
-};
+    try {
+      const res = await TimelineService.getTimelinesByTask(taskId, page, limit);
+      setTimelines(res.data);
+      setTimelineTotal(res.total);
+      setTimelinePage(res.page);
+      setTimelineLimit(res.limit);
+    } catch (error) {
+      console.error("Failed to load timelines", error);
+    }
+  };
 
-const fetchTasks = async () => {
- // setLoading(true);
- try {
-   const res = await CommentService.getCommentsByTask(taskId);
-   setComments(res);
- } catch (error) {
-   console.error('Failed to load tasks:', error);
-   setComments([]);
- } finally {
-   // setLoading(false);
- }
-};
-useEffect(()=>{
-  fetchTasks();
-})
+  const fetchTasks = async ( page = 1, limit = 5) => {
+    // setLoading(true);
+    try {
+      const res = await CommentService.getCommentsByTask(taskId, page, limit);
+      setComments(res.data);
+      setCommentLimit(res.limit);
+      setCommentPage(res.page);
+      setCommentTotal(res.total);
+    } catch (error) {
+      console.error("Failed to load tasks:", error);
+      setComments([]);
+    } finally {
+      // setLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchTasks();
+  }, [taskId, commentPage, commentLimit]);
 
-const handleCommentCreated = () => {
-  setIsCommentModalOpen(false);
-};
+  const handleCommentCreated = () => {
+    setIsCommentModalOpen(false);
+  };
   const handleLogTimeClick = () => {
     console.log("Open Log Time Modal");
   };
@@ -131,27 +139,36 @@ const handleCommentCreated = () => {
                   totalItems={timelineTotal}
                   currentPage={timelinePage}
                   itemsPerPage={timelineLimit}
-                  onPageChange={(page) => fetchTimelines(taskId, page, timelineLimit)}
-                  refreshTimelines={() => fetchTimelines(taskId, timelinePage, timelineLimit)}
+                  onPageChange={(page) =>
+                    fetchTimelines(taskId, page, timelineLimit)
+                  }
+                  refreshTimelines={() =>
+                    fetchTimelines(taskId, timelinePage, timelineLimit)
+                  }
                 />
 
-                <div className="mt-4 flex justify-start">
-                <button
-                  onClick={() => setIsCommentModalOpen(true)}
-                  className="bg-[#7980ff] text-white px-4 py-2 text-sm rounded-md font-semibold hover:bg-[#5e64e6] transition"
-                >
-                  + Add Comment
-                </button>
-              </div>
-               <CommentList comments={comments}/>
+                <CommentInputSection
+                    taskId={taskId}
+                    createdBy={user?.id || ''}
+                    onCommentCreated={() => fetchTasks(commentPage, commentLimit)}
+                    inline={true}
+                  />
+                <CommentList comments={comments} refreshComments={() => fetchTasks(commentPage, commentLimit)} />
+                <Pagination
+                  currentPage={commentPage}
+                  totalItems={commentTotal}
+                  itemsPerPage={commentLimit}
+                  onPageChange={(page) => fetchTasks( page, commentLimit)
+                  }
+                />
               </div>
 
               {isCommentModalOpen && (
                 <CreateCommentModal
                   taskId={taskId}
-                  userId={user?.id || ''}   
-                   isOpen={isCommentModalOpen}
-                   onClose={() => setIsCommentModalOpen(false)}
+                  userId={user?.id || ""}
+                  isOpen={isCommentModalOpen}
+                  onClose={() => setIsCommentModalOpen(false)}
                   onCommentCreated={handleCommentCreated}
                 />
               )}

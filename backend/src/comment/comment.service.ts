@@ -26,8 +26,28 @@ export class CommentService {
     return this.commentModel.findById(id).exec();
   }
 
-  async findByTask(taskId: string): Promise<Comment[]> {
-    return this.commentModel.find({ task: taskId }).exec();
+  async findByTask(
+    taskId: string,
+    page: number,
+    limit: number
+  ): Promise<{ data: Comment[]; total: number; page: number; limit: number }> {
+    const skip = (page - 1) * limit;
+    const [data, total] = await Promise.all([
+      this.commentModel
+        .find({ task: taskId })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .exec(),
+      this.commentModel.countDocuments({ task: taskId }),
+    ]);
+    return {
+      data,
+      total,
+      page,
+      limit,
+    };
+    // return this.commentModel.find({ task: taskId }).exec();
   }
 
   async findByParentComment(parentId: string): Promise<Comment[]> {

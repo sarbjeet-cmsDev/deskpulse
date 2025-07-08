@@ -16,19 +16,28 @@ import { RootState } from "@/store/store";
 import { useSelector } from "react-redux";
 import { IUser } from "@/types/user.interface";
 import Link from "next/link";
+import Pagination from "@/components/Pagination/pagination";
 
 
 export default function MyProjectDetails() {
-  const { projectId } = useParams();
+  const params = useParams();
+  const projectId = params?.projectId as string;
   const [project, setProject] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [tasks, setTasks] = useState<ITask[]>([]);
+  const [taskTotal, setTaskTotal] = useState<number>(0);
+  const [taskPage, setTaskPage] = useState<number>(1);
+  const [taskLimit, setTaskLimit] = useState<number>(5);
   const user: IUser | null = useSelector((state: RootState) => state.auth.user);
 
-  const fetchTasks = async (id: string) => {
+  const fetchTasks = async (projectId: string, page = 1, limit = 5) => {
     try {
-      const data = await TaskService.getTasksByProject(id);
-      setTasks(data);
+      const res = await TaskService.getTasksByProject(projectId, page, limit);
+      setTasks(res.data);
+      setTaskTotal(res.total);
+      setTaskPage(res.page);
+      setTaskLimit(res.limit)
+
     } catch (error) {
       console.error("Failed to fetch tasks:", error);
     }
@@ -113,9 +122,12 @@ export default function MyProjectDetails() {
               <div className="mt-[28px]">
                 <H5>Tasks</H5>
                 <SubTasks tasks={tasks} />
-                {/* <Link key={project._id} href={`/task/${tasks}`}>
-                     <SubTasks tasks={tasks} />
-                </Link> */}
+                <Pagination
+                        currentPage={taskPage}
+                        totalItems={taskTotal}
+                        itemsPerPage={taskLimit}
+                        onPageChange={(page) => fetchTasks(projectId, page, taskLimit)}
+                      />
               </div>
               <div className="mt-[5px]">
                 <CreateTaskModal onCreate={handleCreateTask} />

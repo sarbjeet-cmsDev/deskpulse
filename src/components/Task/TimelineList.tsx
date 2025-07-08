@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import TimelineService, { ITimeline } from "@/service/timeline.service";
 import CreateTimelineModal from "./createTimelineModal";
 import Pagination from "../Pagination/pagination";
@@ -28,17 +28,16 @@ export default function TimelineList({
   refreshTimelines,
 }: TimelineListProps) {
   const today = new Date();
-  const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-  const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+  const dayOfWeek = today.getDay(); 
+  const diffToMonday = today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
 
-  const [fromDate, setFromDate] = useState<string>(firstDayOfMonth.toISOString().substring(0, 10));
-  const [toDate, setToDate] = useState<string>(lastDayOfMonth.toISOString().substring(0, 10));
+  const firstDayOfWeek = new Date(today.setDate(diffToMonday));
+  const lastDayOfWeek = new Date(today.setDate(firstDayOfWeek.getDate() + 6));
 
-  const handleCreateTimeline = async (data: {
-    date: string;
-    time_spent: string;
-    comment?: string;
-  }) => {
+  const [fromDate, setFromDate] = useState<string>(firstDayOfWeek.toISOString().substring(0, 10));
+  const [toDate, setToDate] = useState<string>(lastDayOfWeek.toISOString().substring(0, 10));
+
+  const handleCreateTimeline = async (data: { date: string; time_spent: string; comment?: string }) => {
     try {
       await TimelineService.createTimeline({
         ...data,
@@ -55,8 +54,8 @@ export default function TimelineList({
     const from = new Date(fromDate);
     const to = new Date(toDate);
 
-    from.setMonth(from.getMonth() + direction);
-    to.setMonth(to.getMonth() + direction);
+    from.setDate(from.getDate() + 7 * direction);
+    to.setDate(to.getDate() + 7 * direction);
 
     setFromDate(from.toISOString().substring(0, 10));
     setToDate(to.toISOString().substring(0, 10));
@@ -69,7 +68,7 @@ export default function TimelineList({
     const to = new Date(toDate);
     return timelineDate >= from && timelineDate <= to;
   });
-
+  
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   return (
@@ -83,10 +82,11 @@ export default function TimelineList({
           </div>
 
           <div className="flex items-center gap-2">
-            <button onClick={() => shiftDateRange(-1)} className="px-1 py-1 border text-gray-600 rounded">◀</button>
-            <button onClick={() => shiftDateRange(1)} className="px-1 py-1 border text-gray-600 rounded">▶</button>
+            <button aria-label="Previous week" onClick={() => shiftDateRange(-1)} className="px-1 py-1 border text-gray-600 rounded">◀</button>
+            <button aria-label="Previous week" onClick={() => shiftDateRange(1)} className="px-1 py-1 border text-gray-600 rounded">▶</button>
           </div>
         </div>
+
         <CreateTimelineModal onCreate={handleCreateTimeline} />
       </div>
 
@@ -114,10 +114,6 @@ export default function TimelineList({
         itemsPerPage={itemsPerPage}
         onPageChange={onPageChange}
       />
-
-      {/* <div className="mt-4 text-sm text-gray-500 text-center">
-        Page {currentPage} of {totalPages} ({totalItems} items)
-      </div> */}
     </div>
   );
-} 
+}

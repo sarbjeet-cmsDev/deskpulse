@@ -5,6 +5,8 @@ import Image from "next/image";
 import DatePickerInput from "@/components/ProjectDetails/Datepicker";
 import { Input } from "../Form/Input";
 import { useState } from "react";
+import MentionUserListModal from "@/components/MentionUserListBox";
+import { ITask } from "@/service/task.service";
 
 interface DetailsProps {
   project: {
@@ -20,9 +22,28 @@ interface DetailsProps {
   };
 }
 
+
+
+interface SubTasksProps {
+  tasks: ITask[];
+}
 export default function Details({ project }: DetailsProps){
     const [email, setEmail] = useState("");
+    const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
      const { team = [], leader, status = "To Do", dueDate, attachments = [] } = project || [];
+
+     const handleOpenCommentModal = () => {
+        setIsCommentModalOpen(true);
+        };
+
+        const handleCloseCommentModal = () => {
+        setIsCommentModalOpen(false);
+        };
+
+        const handleCommentCreated = () => {
+        setIsCommentModalOpen(false);
+        // You can trigger any data refresh here if needed
+        };
      
     return(
         <div>
@@ -40,10 +61,22 @@ export default function Details({ project }: DetailsProps){
                                 />
                             </g>
                         </svg>
-                        <span className="text-[#31394f] text-[14px] leading-[16px]">Team</span>
+                        <span className="text-[#31394f] text-[14px] leading-[16px]">Team Member</span>
                     </div>
                     <div className="flex items-center gap-2">
-                        <AvatarList/>
+                        <AvatarList users={team} onClick={handleOpenCommentModal} />
+                         <MentionUserListModal
+                            taskId={'some-task-id'}
+                            userId={'some-user-id'}
+                            isOpen={isCommentModalOpen}
+                            onClose={handleCloseCommentModal}
+                            onCommentCreated={handleCommentCreated}
+                            userOptions={team.map((member) => ({
+                            label: `${member.firstName} ${member.lastName} (${member.email})`,
+                            value: member._id,
+                            }))}
+                            enableUserSearch={false}
+                        />
                         <div className="add-member">
                             <a href="#" className="text-[#7980ff] border border-[#7980ff] px-[2px] rounded-[2px] text-[10px]">+</a>
                         </div>
@@ -63,13 +96,13 @@ export default function Details({ project }: DetailsProps){
                             />
                         </g>
                     </svg>
-                        <span className="text-[#31394f] text-[14px] leading-[16px]">Leader</span>
+                        <span className="text-[#31394f] text-[14px] leading-[16px]">Project Coordinator</span>
                     </div>
                     <div className="flex items-center gap-2">
                         <div className="avatar avt-27 round">
                             <Image src={avatar} alt="avatar-image" className=" w-[25px] h-[25px] rounded-[30px]"/>
                         </div>
-                        <span className="text-[#31394f] font-500 text-[12px] leading-[18px]">Rafi Islam Apon (you)</span>
+                        <span className="text-[#31394f] font-500 text-[12px] leading-[18px]"></span>
                     </div>
                 </div>
             </li>

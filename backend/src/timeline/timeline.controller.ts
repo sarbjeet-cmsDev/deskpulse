@@ -65,11 +65,22 @@ export class TimelineController {
   }
 
   @Get("project/:projectId")
-  async getByProject(
-    @Param("projectId") projectId: string,
-    @Query("from") from?: string,
-    @Query("to") to?: string
-  ): Promise<Timeline[]> {
-    return this.timelineService.findByProjectId(projectId, from, to);
-  }
+async getByProject(
+  @Param("projectId") projectId: string,
+  @Query("from") from?: string,
+  @Query("to") to?: string,
+  @Query("page") page: string = "1",
+  @Query("limit") limit: string = "5"
+): Promise<{ data: Timeline[]; total: number; page: number; limit: number }> {
+
+  const pageNumber = parseInt(page, 10);
+  const limitNumber = parseInt(limit, 10);
+
+  return this.timelineService.findByProjectId(projectId, {
+    from,
+    to,
+    page: pageNumber,
+    limit: limitNumber,
+  });
+}
 }

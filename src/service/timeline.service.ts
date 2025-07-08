@@ -1,4 +1,4 @@
-import { createAxiosClient } from '@/utils/createAxiosClient';
+import { createAxiosClient } from "@/utils/createAxiosClient";
 
 const axiosClient = createAxiosClient({ withCreds: false });
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -34,13 +34,11 @@ export interface ITimelineResponse {
 }
 
 const TimelineService = {
- 
   async createTimeline(payload: ICreateTimeline): Promise<ITimeline> {
     const response = await axiosClient.post(`${API_URL}/timelines`, payload);
     return response.data;
   },
 
- 
   async getAllTimelines(params?: {
     task?: string;
     user?: string;
@@ -50,40 +48,67 @@ const TimelineService = {
     return response.data;
   },
 
-  
   async getTimelineById(id: string): Promise<ITimeline> {
     const response = await axiosClient.get(`${API_URL}/timelines/${id}`);
     return response.data;
   },
 
-  
-  async updateTimeline(id: string, payload: ICreateTimeline): Promise<ITimeline> {
-    const response = await axiosClient.patch(`${API_URL}/timelines/${id}`, payload);
+  async updateTimeline(
+    id: string,
+    payload: ICreateTimeline
+  ): Promise<ITimeline> {
+    const response = await axiosClient.patch(
+      `${API_URL}/timelines/${id}`,
+      payload
+    );
     return response.data;
   },
 
- 
   async deleteTimeline(id: string): Promise<ITimeline> {
     const response = await axiosClient.delete(`${API_URL}/timelines/${id}`);
     return response.data;
   },
 
-  
-  async getTimelinesByTask(taskId: string, page = 1, limit = 5): Promise<ITimelineResponse> {
-    const response = await axiosClient.get(`${API_URL}/timelines/task/${taskId}?page=${page}&limit=${limit}`);
+  async getTimelinesByTask(
+    taskId: string,
+    page = 1,
+    limit = 5,
+    sortField: string = "createdAt",
+    sortOrder: "asc" | "desc" = "desc"
+  ): Promise<ITimelineResponse> {
+    const response = await axiosClient.get(
+      `${API_URL}/timelines/task/${taskId}`,
+      {
+        params: {
+          page,
+          limit,
+          sortField,
+          sortOrder,
+        },
+      }
+    );
+
     return response.data;
   },
 
   async getTimelinesByUser(userId: string): Promise<ITimeline[]> {
-    const response = await axiosClient.get(`${API_URL}/timelines/user/${userId}`);
+    const response = await axiosClient.get(
+      `${API_URL}/timelines/user/${userId}`
+    );
     return response.data;
   },
 
-
-  async getTimelinesByProject(projectId: string, from?: string, to?: string): Promise<ITimeline[]> {
-    const response = await axiosClient.get(`${API_URL}/timelines/project/${projectId}`, {
-      params: { from, to },
-    });
+  async getTimelinesByProject(
+    projectId: string,
+    from?: string,
+    to?: string
+  ): Promise<ITimeline[]> {
+    const response = await axiosClient.get(
+      `${API_URL}/timelines/project/${projectId}`,
+      {
+        params: { from, to },
+      }
+    );
     return response.data;
   },
 };

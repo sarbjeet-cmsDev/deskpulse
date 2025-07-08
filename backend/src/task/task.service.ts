@@ -32,9 +32,28 @@ export class TaskService {
     return task;
   }
 
-  async findByProject(projectId: string): Promise<Task[]> {
+  async findByProject(
+    projectId: string,
+    page: number,
+    limit: number
+  ): Promise<{data : Task[]; total: number; page: number; limit: number }> {
+    const skip = (page - 1) * limit;
     await validateProjectId(this.projectService, projectId.toString());
-    return this.taskModel.find({ project: projectId }).exec();
+    const [data, total] = await Promise.all([
+      this.taskModel
+        .find({ project: projectId })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .exec(),
+      this.taskModel.countDocuments({ project: projectId }),
+    ]);
+    return {
+      data,
+      total,
+      page,
+      limit,
+    };
   }
 
   async findByAssignedUser(userId: string, page: number, limit: number): Promise< { data: Task[]; total: number; page: number; limit: number }> {

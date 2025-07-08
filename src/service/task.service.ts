@@ -54,8 +54,23 @@ const TaskService = {
   },
 
   // Get tasks by project ID
-  async getTasksByProject(projectId: string): Promise<ITask[]> {
-    const res = await axiosClient.get(`${API_URL}/tasks/project/${projectId}`);
+  async getTasksByProject(
+    projectId: string,
+    page = 1,
+    limit = 5,
+    sortField: string = "createdAt",
+    sortOrder: "asc" | "desc" = "desc"
+  ): Promise<ITaskResponse> {
+    const res = await axiosClient.get(`${API_URL}/tasks/project/${projectId}`,
+      {
+        params: {
+          page,
+          limit,
+          sortField,
+          sortOrder,
+        },
+      }
+    );
     return res.data;
   },
 

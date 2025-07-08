@@ -39,8 +39,14 @@ async create(@Body() createTaskDto: CreateTaskDto): Promise<{ message: string; d
   }
 
   @Get('project/:projectId')
-  async findByProject(@Param('projectId') projectId: string): Promise<Task[]> {
-    return this.taskService.findByProject(projectId);
+  async findByProject(
+    @Param('projectId') projectId: string,
+    @Query("page") page: string = "1",
+    @Query("limit") limit: string = "5"
+  ): Promise<{data :Task[]; total: number; page: number; limit: number }> {
+    const pageNumber = parseInt(page, 10);
+    const limitNumber = parseInt(limit, 10);
+    return this.taskService.findByProject(projectId, pageNumber, limitNumber);
   }
 
   // @Get('assigned/:userId')
