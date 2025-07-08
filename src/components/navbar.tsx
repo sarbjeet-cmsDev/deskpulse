@@ -1,3 +1,4 @@
+"use client";
 import {
   Navbar as HeroUINavbar,
   NavbarContent,
@@ -25,7 +26,12 @@ import {
   SearchIcon,
   Logo,
 } from "@/components/icons";
-
+import Image from "next/image";
+import bellImage from "@/assets/images/bell.png";
+import { openDrawer } from "@/store/slices/drawerSlice";
+import { useDispatch } from "react-redux";
+import { CommonDrawer } from "./common/Drawer/Drawer";
+import { Notification } from "./Notification/Notification";
 export const Navbar = () => {
   const searchInput = (
     <Input
@@ -47,6 +53,7 @@ export const Navbar = () => {
       type="search"
     />
   );
+  const dispatch = useDispatch();
 
   return (
     <HeroUINavbar maxWidth="xl" position="sticky">
@@ -63,7 +70,7 @@ export const Navbar = () => {
               <NextLink
                 className={clsx(
                   linkStyles({ color: "foreground" }),
-                  "data-[active=true]:text-primary data-[active=true]:font-medium",
+                  "data-[active=true]:text-primary data-[active=true]:font-medium"
                 )}
                 color="foreground"
                 href={item.href}
@@ -104,8 +111,22 @@ export const Navbar = () => {
             Sponsor
           </Button>
         </NavbarItem>
+        <Button
+          variant="light"
+          onPress={() =>
+            dispatch(openDrawer({ size: "md", type: "notification" }))
+          }
+        >
+          <Image
+            src={bellImage}
+            alt="notification"
+            className="cursor-pointer"
+          />
+        </Button>
       </NavbarContent>
-
+      <CommonDrawer type="notification">
+        <Notification />
+      </CommonDrawer>
       <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
         <Link isExternal aria-label="Github" href={siteConfig.links.github}>
           <GithubIcon className="text-default-500" />
