@@ -34,6 +34,7 @@ export class UserService {
     async findOne(id: string): Promise<UserDocument | null> {
         return this.userModel.findById(id).exec();
     }
+    
 
     async remove(id: string): Promise<UserDocument | null> {
         return this.userModel.findByIdAndDelete(id).exec();

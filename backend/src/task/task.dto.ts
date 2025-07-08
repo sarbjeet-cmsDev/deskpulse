@@ -1,5 +1,7 @@
+import { Type } from 'class-transformer';
 import { IsString, IsMongoId, IsOptional, IsNumber, IsBoolean, IsDate, IsEnum } from 'class-validator';
 import { Schema as MongooseSchema } from 'mongoose';
+
 
 export class CreateTaskDto {
   @IsString()
@@ -26,9 +28,9 @@ export class CreateTaskDto {
   @IsMongoId()
   report_to?: MongooseSchema.Types.ObjectId;
 
-  @IsOptional()
   @IsDate()
-  due_date?: Date;
+  @Type(() => Date)  // <--- this converts the input string to a Date instance
+  due_date: Date;
 
   @IsOptional()
   @IsMongoId()
@@ -41,6 +43,11 @@ export class CreateTaskDto {
   @IsOptional()
   @IsEnum(['low', 'medium', 'high'])
   priority?: 'low' | 'medium' | 'high';
+
+  @IsOptional()
+  @IsEnum(['pending', 'inprogress', 'completed'])
+  status?: 'pending' | 'inprogress' | 'completed';
+
 
 
 
@@ -82,4 +89,15 @@ export class UpdateTaskDto {
   @IsOptional()
   @IsEnum(['low', 'medium', 'high'])
   priority?: 'low' | 'medium' | 'high';
+
+ @IsOptional()
+  @IsEnum(['pending', 'inprogress', 'completed'])
+  status?: 'pending' | 'inprogress' | 'completed';
+}
+
+
+export class UpdateTaskStatusUpdateDto {
+ @IsOptional()
+  @IsEnum(['pending', 'inprogress', 'completed'])
+  status?: 'pending' | 'inprogress' | 'completed';
 }

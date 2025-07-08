@@ -19,16 +19,19 @@ export class NotificationService {
     return createdNotification.save();
   }
 
-  async findAll(): Promise<Notification[]> {
-    return this.notificationModel.find().exec();
-  }
+ async findAll(): Promise<Notification[]> {
+  return this.notificationModel.find().sort({ createdAt: -1 }).exec();
+}
 
   async findOne(id: string): Promise<Notification> {
     return this.notificationModel.findById(id).exec();
   }
 
   async findByUser(userId: string): Promise<Notification[]> {
-    return this.notificationModel.find({ user: userId }).exec();
+    return this.notificationModel.find({
+      user: userId,
+      is_read: false, // ✅ Only fetch unread notifications
+    }).exec();
   }
 
   async update(id: string, updateNotificationDto: UpdateNotificationDto): Promise<Notification> {

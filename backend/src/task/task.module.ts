@@ -3,14 +3,17 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { TaskController } from './task.controller';
 import { TaskService } from './task.service';
 import { TaskSchema } from './task.schema';
-import { ProjectModule } from '../project/project.module'; // ✅ IMPORT
+import { ProjectModule } from '../project/project.module';
+import { TaskactivitylogModule } from 'src/taskactivitylog/taskactivitylog.module';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: 'Task', schema: TaskSchema }]), ProjectModule],  // ✅ Add this line
+  imports: [
+    MongooseModule.forFeature([{ name: 'Task', schema: TaskSchema }]),
+    ProjectModule, UserModule],
   controllers: [TaskController],
-  providers: [TaskService],
-  exports: [TaskService], // ✅ EXPORT the service
+  providers: [TaskService, TaskactivitylogModule,
+  ],
+  exports: [TaskService],
 })
-export class TaskModule {}
-
-
+export class TaskModule { }

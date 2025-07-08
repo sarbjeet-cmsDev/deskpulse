@@ -10,6 +10,7 @@ export interface Task extends Document {
   due_date?: Date;
   is_active: boolean;
   priority: 'low' | 'medium' | 'high';
+  status: 'pending' | 'inprogress' | 'completed';
   createdAt: Date;
   updatedAt: Date;
 }

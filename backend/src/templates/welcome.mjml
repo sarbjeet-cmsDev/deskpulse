@@ -1,0 +1,2 @@
+<mj-text>Hello {{name}},</mj-text>
+<mj-text>Your task "{{taskName}}" has been updated.</mj-text>

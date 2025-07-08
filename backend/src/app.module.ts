@@ -12,6 +12,10 @@ import { ProjectKanbanModule } from './project-kanban/project_kanban.module';
 import { RemindersModule } from './reminders/reminders.module';
 import { TaskChecklistModule } from './taskchecklist/taskchecklist.module';
 import { NotificationModule } from './notification/notification.module';
+import { TaskactivitylogModule } from './taskactivitylog/taskactivitylog.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+// import { EmailModule } from './email/email.module';
+import { BullModule } from '@nestjs/bull';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -25,6 +29,18 @@ import { NotificationModule } from './notification/notification.module';
       }),
       inject: [ConfigService],
     }),
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (config: ConfigService) => ({
+        redis: {
+          host: config.get('REDIS_HOST') || 'localhost',
+          port: parseInt(config.get('REDIS_PORT') || '6379', 10),
+          maxRetriesPerRequest: null,
+          enableReadyCheck: false
+        },
+      }),
+    }),
     FaqModule,
     ProjectModule,
     TaskModule,
@@ -35,7 +51,10 @@ import { NotificationModule } from './notification/notification.module';
     AuthModule,
     RemindersModule,
     TaskChecklistModule,
-    NotificationModule
+    NotificationModule,
+    TaskactivitylogModule,
+    EventEmitterModule.forRoot(),
+    // EmailModule
   ],
   controllers: [],
   providers: [],
