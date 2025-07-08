@@ -38,6 +38,14 @@ export class Task {
   })
   priority: string;
 
+
+    @Prop({
+    type: String,
+    enum: ['pending', 'inprogress', 'completed'],
+    default: 'pending'
+  })
+  status: string;
+
   // estimated time in hours
   @Prop({ type: Number })
   estimated_time: number;

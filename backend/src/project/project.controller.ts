@@ -15,7 +15,7 @@ import { Project } from './project.interface';
 import { JwtAuthGuard } from 'src/guard/jwt-auth.guard';
 
 @Controller('api/projects')
-
+@UseGuards(JwtAuthGuard)
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
 
@@ -78,7 +78,6 @@ export class ProjectController {
     return this.projectService.removeUser(id, userId);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('me')
   async getMyProjects(@Req() req: any): Promise<Project[]> {
     return this.projectService.findProjectsByUserId(req.user.userId);
