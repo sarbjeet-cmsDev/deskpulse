@@ -16,6 +16,7 @@ import { TaskactivitylogModule } from './taskactivitylog/taskactivitylog.module'
 import { EventEmitterModule } from '@nestjs/event-emitter';
 // import { EmailModule } from './email/email.module';
 import { BullModule } from '@nestjs/bull';
+import { EmailModule } from './email/email.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -54,7 +55,7 @@ import { BullModule } from '@nestjs/bull';
     NotificationModule,
     TaskactivitylogModule,
     EventEmitterModule.forRoot(),
-    // EmailModule
+    EmailModule
   ],
   controllers: [],
   providers: [],

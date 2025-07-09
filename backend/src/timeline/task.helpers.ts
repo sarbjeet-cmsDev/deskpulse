@@ -1,5 +1,6 @@
 import { NotFoundException } from '@nestjs/common';
 import { TaskService } from '../task/task.service';
+import { log } from 'console';
 
 export async function validateTaskId(taskService: TaskService, taskId: string) {
   const task = await taskService.findOne(taskId.toString());

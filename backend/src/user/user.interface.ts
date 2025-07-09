@@ -1,4 +1,4 @@
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export type UserRole = 'admin' | 'project_manager' | 'team_member' | 'client' | 'employee';
 export type Gender = 'male' | 'female' | 'other';

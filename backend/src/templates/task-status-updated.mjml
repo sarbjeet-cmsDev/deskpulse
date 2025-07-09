@@ -1,0 +1,28 @@
+<mjml>
+  <mj-body background-color="#f4f4f4">
+    <mj-section>
+      <mj-column width="100%">
+        <mj-text align="center" font-size="24px" font-weight="bold" color="#222222">
+          Task Status Notification
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section background-color="#ffffff" padding="20px">
+      <mj-column width="100%">
+        <mj-text font-size="16px" color="#555555" line-height="1.5">
+          <p style="margin: 0;">
+            Task status was updated from <strong>"{{oldTaskStatus}}"</strong> to <strong>"{{newTaskStatus}}"</strong> by <strong>{{username}}</strong> on <strong>{{updatedAt}}</strong>.
+          </p>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section background-color="#e0e0e0" padding="20px">
+      <mj-column width="100%">
+        <mj-button href="{{taskLink}}" font-size="16px" font-weight="bold" background-color="#007bff" color="#ffffff" border-radius="5px">
+          View Project
+        </mj-button>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>
+

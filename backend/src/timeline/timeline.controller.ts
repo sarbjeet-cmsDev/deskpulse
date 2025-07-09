@@ -18,9 +18,13 @@ export class TimelineController {
   constructor(private readonly timelineService: TimelineService) {}
   @Post()
   async create(
-    @Body() createTimelineDto: CreateTimelineDto
-  ): Promise<Timeline> {
-    return this.timelineService.create(createTimelineDto);
+    @Body() createTimelineDto: CreateTimelineDto,
+  ): Promise<{ message: string; data: Timeline }> {
+    const createdTimeline = await this.timelineService.create(createTimelineDto);
+    return {
+      message: 'Timeline created successfully!',
+      data: createdTimeline,
+    };
   }
   @Get()
   async findAll(

@@ -8,6 +8,7 @@ import { ProjectService } from '../project/project.service';
 import { validateProjectId } from './task.helpers';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { UserService } from 'src/user/user.service';
+import { getUserDetailsById } from 'src/shared/commonhelper';
 
 @Injectable()
 export class TaskService {
@@ -20,11 +21,27 @@ export class TaskService {
 
   async create(createTaskDto: CreateTaskDto): Promise<Task> {
     await validateProjectId(this.projectService, createTaskDto.project.toString());
+    // Check ADssign to the user  coordinator
+    // await getUserDetailsById(this.userservices, createTaskDto.assigned_to?.toString() );
     const createdTask = new this.taskModel(createTaskDto);
+    if (createTaskDto.assigned_to) {
+      const assigntask = await getUserDetailsById(this.userservices, createTaskDto.assigned_to?.toString());
+      this.eventEmitter.emit('task.assigned', {
+        taskdetails: createdTask,
+        assigntask: assigntask
+      });
+    }
     return createdTask.save();
   }
 
-  async findAll(): Promise<Task[]> {
+/*************  ✨ Windsurf Command ⭐  *************/
+  /**
+   * Retrieves all tasks from the database.
+   *
+   * @returns {Promise<Task[]>} A promise that resolves to an array of Task objects.
+   */
+
+/*******  de9a6f14-6fd5-40f6-b56e-8c19ebbd4001  *******/  async findAll(): Promise<Task[]> {
     return this.taskModel.find().exec();
   }
 
@@ -40,7 +57,7 @@ export class TaskService {
     projectId: string,
     page: number,
     limit: number
-  ): Promise<{data : Task[]; total: number; page: number; limit: number }> {
+  ): Promise<{ data: Task[]; total: number; page: number; limit: number }> {
     const skip = (page - 1) * limit;
     await validateProjectId(this.projectService, projectId.toString());
     const [data, total] = await Promise.all([
@@ -89,6 +106,13 @@ export class TaskService {
     if (!task) {
       throw new NotFoundException(`Task with ID ${id} not found.`);
     }
+    if (updateTaskDto.assigned_to) {
+      const assigntask = await getUserDetailsById(this.userservices, updateTaskDto.assigned_to?.toString());
+      this.eventEmitter.emit('task.assigned', {
+        taskdetails: updateTaskDto,
+        assigntask: assigntask
+      });
+    }
     return task;
   }
 
@@ -109,18 +133,15 @@ export class TaskService {
     const updatedTask = await this.taskModel
       .findByIdAndUpdate(id, updateTaskDto, { new: true })
       .exec();
-   const projectObj = (({ team_leader, project_coordinator, users,project_manager }) => ({
-      teamLeader: team_leader,
-      projectCoordinator: project_coordinator,
-      projectManager: project_coordinator,
-      users
-    }))(await validateProjectId(this.projectService, task.project.toString()));
-    const user = await this.userservices.findOne(userData.userId);
-    const userDataObj = {
-      id: userData.userId,
-      username: user.username,
-      email: user.email
-    };
+    const projectObj = await (async ({ team_leader, project_coordinator, users, project_manager }) => {
+      return {
+        teamLeader: await getUserDetailsById(this.userservices, team_leader?.toString()),
+        projectCoordinator: await getUserDetailsById(this.userservices, project_coordinator?.toString()),
+        projectManager: await getUserDetailsById(this.userservices, project_manager?.toString()),
+        users
+      };
+    })(await validateProjectId(this.projectService, task.project.toString()));
+    const userDataObj = await getUserDetailsById(this.userservices, userData.userId?.toString());
     this.eventEmitter.emit('task.status.updated', {
       taskDetails: updatedTask,
       userDetails: userDataObj,

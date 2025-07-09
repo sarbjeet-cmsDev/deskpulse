@@ -159,6 +159,7 @@ export class User {
 
   @Prop()
   updatedAt: Date;
+  userId: import("mongoose").Schema.Types.ObjectId;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -8,19 +8,23 @@ import {
   Delete,
   UseGuards,
   Req,
+  Put,
 } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { CreateProjectDto, UpdateProjectDto } from './project.dto';
 import { Project } from './project.interface';
 import { JwtAuthGuard } from 'src/guard/jwt-auth.guard';
+import { CurrentUser } from 'src/shared/current-user.decorator';
+import { log } from 'console';
 
 @Controller('api/projects')
 @UseGuards(JwtAuthGuard)
 export class ProjectController {
-  constructor(private readonly projectService: ProjectService) {}
+  constructor(private readonly projectService: ProjectService) { }
 
   @Post()
-  async create(@Body() createProjectDto: CreateProjectDto): Promise<Project> {
+  create(@Body() createProjectDto: CreateProjectDto, @CurrentUser() user: any) {
+    createProjectDto.created_by = user.userId;  // Safe, server-side only
     return this.projectService.create(createProjectDto);
   }
 
@@ -36,6 +40,7 @@ export class ProjectController {
   @Get('/fetch/:id')
   async findOne(@Param('id') id: string): Promise<Project> {
     return this.projectService.findOne(id);
+
   }
 
 
@@ -44,18 +49,29 @@ export class ProjectController {
     return this.projectService.findByCode(code);
   }
 
-  @Patch(':id')
+  @Put(':id')
   async update(
     @Param('id') id: string,
     @Body() updateProjectDto: UpdateProjectDto,
-  ): Promise<Project> {
-    return this.projectService.update(id, updateProjectDto);
+    @CurrentUser() user: any
+  ): Promise<{ message: string; data: Project }> {
+    updateProjectDto.updated_by = user.userId;
+    const updatedProject = await this.projectService.update(id, updateProjectDto);
+    return {
+      message: 'Project updated successfully!',
+      data: updatedProject,
+    };
+  }
+  @Delete(':id')
+  async remove(@Param('id') id: string, @CurrentUser() user: any): Promise<{ message: string; data: boolean }> {
+    const updatedProject = await this.projectService.remove(id);
+    return {
+      message: 'Project DELETED successfully!',
+      data: updatedProject,
+    };
   }
 
-  @Delete(':id')
-  async remove(@Param('id') id: string): Promise<Project> {
-    return this.projectService.remove(id);
-  }
+
 
   @Post('/:id/users/:userId')
   async addUser(

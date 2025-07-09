@@ -5,8 +5,15 @@ export type ProjectDocument = Project & Document;
 
 @Schema({ timestamps: true })
 export class Project {
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true, unique: true, immutable: true })
   code: string;
+
+  @Prop({ required: true })
+  title: string;
+
+  @Prop({ required: false })
+  description: string;
+
 
   @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'User', required: false }] })
   users: MongooseSchema.Types.ObjectId[];
@@ -49,6 +56,12 @@ export class Project {
 
   @Prop({ default: 0 })
   sort_order: number;
+
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: false })
+  created_by: MongooseSchema.Types.ObjectId;
+
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: false })
+  updated_by: MongooseSchema.Types.ObjectId;
 
   @Prop()
   createdAt: Date;

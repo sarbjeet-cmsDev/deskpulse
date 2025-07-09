@@ -10,9 +10,14 @@ export class Taskactivitylog {
   @Prop({
     type: MongooseSchema.Types.ObjectId,
     ref: 'Task',
-    required: [true, 'Task reference is required'],
   })
   task: MongooseSchema.Types.ObjectId;
+
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    ref: 'Project',
+  })
+  project: MongooseSchema.Types.ObjectId;
 
   @Prop({ required: true })
   @IsString()

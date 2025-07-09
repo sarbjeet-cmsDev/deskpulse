@@ -4,15 +4,18 @@ import { Model } from "mongoose";
 import { Timeline } from "./timeline.interface";
 import { TaskService } from "src/task/task.service";
 import { validateTaskId } from "./task.helpers";
-import { UpdateTimelineDto } from "./timeline.dto";
+import { CreateTimelineDto, UpdateTimelineDto } from "./timeline.dto";
+import { EventEmitter2 } from "@nestjs/event-emitter";
+
 
 @Injectable()
 export class TimelineService {
   constructor(
     @InjectModel("Timeline") private readonly timelineModel: Model<Timeline>,
-    private readonly taskService: TaskService
-  ) {}
-  async create(createTimelineDto: any): Promise<Timeline> {
+    private readonly taskService: TaskService,
+    private eventEmitter: EventEmitter2,
+  ) { }
+  async create(createTimelineDto: CreateTimelineDto): Promise<Timeline> {
     await validateTaskId(this.taskService, createTimelineDto.task.toString());
     const createdTimeline = new this.timelineModel(createTimelineDto);
     return createdTimeline.save();
@@ -80,50 +83,50 @@ export class TimelineService {
   async removeByTaskId(taskId: string): Promise<{ deletedCount?: number }> {
     return this.timelineModel.deleteMany({ task: taskId }).exec();
   }
-  
+
   async findByProjectId(
-  projectId: string,
-  options: {
-    from?: string;
-    to?: string;
-    page: number;
-    limit: number;
+    projectId: string,
+    options: {
+      from?: string;
+      to?: string;
+      page: number;
+      limit: number;
+    }
+  ): Promise<{ data: Timeline[]; total: number; page: number; limit: number }> {
+
+    const { from, to, page, limit } = options;
+
+    const tasksResult = await this.taskService.findByProject(projectId, page, limit);
+    const tasks = tasksResult.data;
+
+    if (!tasks?.length) {
+      throw new NotFoundException(`No tasks found for project ID ${projectId}.`);
+    }
+
+    const filterDate: any = {
+      ...(from && { $gte: new Date(new Date(from).setHours(0, 0, 0, 0)) }),
+      ...(to && { $lte: new Date(new Date(to).setHours(23, 59, 59, 999)) }),
+    };
+    const hasDateFilter = Object.keys(filterDate).length > 0;
+
+    const queries = tasks.map(({ _id }) =>
+      this.timelineModel
+        .find({
+          task: _id,
+          ...(hasDateFilter && { date: filterDate }),
+        })
+        .exec()
+    );
+
+    const timelines = (await Promise.all(queries)).flat();
+
+    return {
+      data: timelines,
+      total: timelines.length,
+      page,
+      limit,
+    };
   }
-): Promise<{ data: Timeline[]; total: number; page: number; limit: number }> {
-
-  const { from, to, page, limit } = options;
-
-  const tasksResult = await this.taskService.findByProject(projectId, page, limit);
-  const tasks = tasksResult.data;
-
-  if (!tasks?.length) {
-    throw new NotFoundException(`No tasks found for project ID ${projectId}.`);
-  }
-
-  const filterDate: any = {
-    ...(from && { $gte: new Date(new Date(from).setHours(0, 0, 0, 0)) }),
-    ...(to && { $lte: new Date(new Date(to).setHours(23, 59, 59, 999)) }),
-  };
-  const hasDateFilter = Object.keys(filterDate).length > 0;
-
-  const queries = tasks.map(({ _id }) =>
-    this.timelineModel
-      .find({
-        task: _id,
-        ...(hasDateFilter && { date: filterDate }),
-      })
-      .exec()
-  );
-
-  const timelines = (await Promise.all(queries)).flat();
-
-  return {
-    data: timelines,
-    total: timelines.length,
-    page,
-    limit,
-  };
-}
 
 
 }

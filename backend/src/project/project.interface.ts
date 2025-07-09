@@ -2,7 +2,12 @@ import { Document, Schema as MongooseSchema } from 'mongoose';
 
 export interface Project {
   code: string;
+  title: string;
+  description?: string;
   users: MongooseSchema.Types.ObjectId[];
+  project_coordinator: MongooseSchema.Types.ObjectId;
+  team_leader: MongooseSchema.Types.ObjectId;
+  project_manager: MongooseSchema.Types.ObjectId;
   notes?: string;
   creds?: string;
   additional_information?: string;
@@ -16,6 +21,9 @@ export interface Project {
   updatedAt: Date;
   project?: string;        
   report_to?: string;  
+  avatar?: string;
+  created_by: MongooseSchema.Types.ObjectId;
+  updated_by?: MongooseSchema.Types.ObjectId;
 }
 
 export interface ProjectDocument extends Project, Document {}
