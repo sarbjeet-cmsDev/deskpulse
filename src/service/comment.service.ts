@@ -1,5 +1,10 @@
-import { CreateCommentDto, IComment, ICommentResponse, UpdateCommentDto } from '@/types/comment.interface';
-import { createAxiosClient } from '@/utils/createAxiosClient';
+import {
+  CreateCommentDto,
+  IComment,
+  ICommentResponse,
+  UpdateCommentDto,
+} from "@/types/comment.interface";
+import { createAxiosClient } from "@/utils/createAxiosClient";
 
 const axiosClient = createAxiosClient({ withCreds: false });
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -27,7 +32,8 @@ const CommentService = {
     sortField: string = "createdAt",
     sortOrder: "asc" | "desc" = "desc"
   ): Promise<ICommentResponse> {
-    const response = await axiosClient.get(`${API_URL}/comments/task/${taskId}`,
+    const response = await axiosClient.get(
+      `${API_URL}/comments/task/${taskId}`,
       {
         params: {
           page,
@@ -41,12 +47,16 @@ const CommentService = {
   },
 
   async getCommentsByParent(parentId: string): Promise<IComment[]> {
-    const response = await axiosClient.get(`${API_URL}/comments/parent/${parentId}`);
+    const response = await axiosClient.get(
+      `${API_URL}/comments/parent/${parentId}`
+    );
     return response.data;
   },
 
   async getCommentsByUser(userId: string): Promise<IComment[]> {
-    const response = await axiosClient.get(`${API_URL}/comments/user/${userId}`);
+    const response = await axiosClient.get(
+      `${API_URL}/comments/user/${userId}`
+    );
     return response.data;
   },
 

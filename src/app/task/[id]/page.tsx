@@ -12,7 +12,6 @@ import Link from "next/link";
 import TimelineList from "@/components/Task/TimelineList";
 import TimelineService, { ITimeline } from "@/service/timeline.service";
 import ProjectService from "@/service/project.service";
-import CreateCommentModal from "@/components/Comment/CreateCommentModal";
 import { IUser } from "@/types/user.interface";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
@@ -32,11 +31,12 @@ export default function TaskDetails() {
   const [timelineTotal, setTimelineTotal] = useState<number>(0);
   const [timelinePage, setTimelinePage] = useState<number>(1);
   const [timelineLimit, setTimelineLimit] = useState<number>(5);
-  const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
+
   const [comments, setComments] = useState<IComment[]>([]);
   const [commentTotal, setCommentTotal] = useState<number>(0);
   const [commentPage, setCommentPage] = useState<number>(1);
   const [commentLimit, setCommentLimit] = useState<number>(5);
+
   const user: IUser | null = useSelector((state: RootState) => state.auth.user);
 
   useEffect(() => {
@@ -76,31 +76,27 @@ export default function TaskDetails() {
     }
   };
 
-  const fetchTasks = async ( page = 1, limit = 5) => {
-    // setLoading(true);
+  const fetchComments = async () => {
+    if (!taskId) return;
     try {
-      const res = await CommentService.getCommentsByTask(taskId, page, limit);
+      const res = await CommentService.getCommentsByTask(
+        taskId,
+        commentPage,
+        commentLimit
+      );
       setComments(res.data);
-      setCommentLimit(res.limit);
-      setCommentPage(res.page);
       setCommentTotal(res.total);
+      setCommentPage(res.page);
+      setCommentLimit(res.limit);
     } catch (error) {
-      console.error("Failed to load tasks:", error);
+      console.error("Failed to load comments:", error);
       setComments([]);
-    } finally {
-      // setLoading(false);
     }
   };
-  useEffect(() => {
-    fetchTasks();
-  }, [taskId, commentPage, commentLimit]);
 
-  const handleCommentCreated = () => {
-    setIsCommentModalOpen(false);
-  };
-  const handleLogTimeClick = () => {
-    console.log("Open Log Time Modal");
-  };
+  useEffect(() => {
+    fetchComments();
+  }, [taskId, commentPage, commentLimit]);
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -119,59 +115,55 @@ export default function TaskDetails() {
               <DropDownOptions />
             </div>
           </div>
-          <div className="">
-            <div className="pt-4 ">
-              <H5 className="mt-[20px]">Description</H5>
-              <P className="text-start">
-                {project?.notes || "No description provided."}
-                <a href="#" className="text-primary mt-[12px]">
-                  See Details
-                </a>
-              </P>
-              <Details project={project} />
-              <div className="mt-[28px]">
-                <H5>Task Timeline</H5>
 
-                <TimelineList
-                  timelines={timelines}
-                  task={task}
-                  onLogTimeClick={handleLogTimeClick}
-                  totalItems={timelineTotal}
-                  currentPage={timelinePage}
-                  itemsPerPage={timelineLimit}
-                  onPageChange={(page) =>
-                    fetchTimelines(taskId, page, timelineLimit)
-                  }
-                  refreshTimelines={() =>
-                    fetchTimelines(taskId, timelinePage, timelineLimit)
-                  }
-                />
+          <div className="pt-4">
+            <H5 className="mt-[20px]">Description</H5>
+            <P className="text-start">
+              {project?.notes || "No description provided."}
+              <a href="#" className="text-primary mt-[12px]">
+                See Details
+              </a>
+            </P>
 
-                <CommentInputSection
-                    taskId={taskId}
-                    createdBy={user?.id || ''}
-                    onCommentCreated={() => fetchTasks(commentPage, commentLimit)}
-                    inline={true}
-                  />
-                <CommentList comments={comments} refreshComments={() => fetchTasks(commentPage, commentLimit)} />
-                <Pagination
-                  currentPage={commentPage}
-                  totalItems={commentTotal}
-                  itemsPerPage={commentLimit}
-                  onPageChange={(page) => fetchTasks( page, commentLimit)
-                  }
-                />
-              </div>
+            <Details project={project} />
 
-              {isCommentModalOpen && (
-                <CreateCommentModal
-                  taskId={taskId}
-                  userId={user?.id || ""}
-                  isOpen={isCommentModalOpen}
-                  onClose={() => setIsCommentModalOpen(false)}
-                  onCommentCreated={handleCommentCreated}
-                />
-              )}
+            <div className="mt-[28px]">
+              <H5>Task Timeline</H5>
+
+              <TimelineList
+                timelines={timelines}
+                task={task}
+                onLogTimeClick={() => console.log("Open Log Time Modal")}
+                totalItems={timelineTotal}
+                currentPage={timelinePage}
+                itemsPerPage={timelineLimit}
+                onPageChange={(page) =>
+                  fetchTimelines(taskId, page, timelineLimit)
+                }
+                refreshTimelines={() =>
+                  fetchTimelines(taskId, timelinePage, timelineLimit)
+                }
+              />
+
+              <CommentInputSection
+                taskId={taskId}
+                createdBy={user?.id || ""}
+                onCommentCreated={() => fetchComments()}
+                inline={true}
+              />
+
+              <CommentList
+                comments={comments}
+                refreshComments={() => fetchComments()}
+                fetchComments={fetchComments}
+              />
+
+              <Pagination
+                currentPage={commentPage}
+                totalItems={commentTotal}
+                itemsPerPage={commentLimit}
+                onPageChange={(page) => setCommentPage(page)}
+              />
             </div>
           </div>
         </div>
