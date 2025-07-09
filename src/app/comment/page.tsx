@@ -7,14 +7,14 @@ import { useEffect, useState } from "react";
 import CommentService from "@/service/comment.service";
 import { IComment } from "@/types/comment.interface";
 import CommentList from "@/components/Comment/CommnetList";
-import { IUser } from "@/types/user.interface";
+import { IUserRedux } from "@/types/user.interface";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 
 export default function MyCommentList() {
   const [comments, setComments] = useState<IComment[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const user: IUser | null = useSelector((state: RootState) => state.auth.user);
+  const user: IUserRedux | null = useSelector((state: RootState) => state.auth.user);
   
   const fetchTasks = async () => {
     setLoading(true);

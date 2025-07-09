@@ -33,7 +33,6 @@ export default function AuthProfilePage() {
       const imageUrl = URL.createObjectURL(file);
       setAvatarUrl(imageUrl);
       const data = await UserService.uploadAvatar(file);
-      console.log('data when upload avtar ',data)
       setUser(data); 
       
     } catch (error) {
@@ -42,7 +41,6 @@ export default function AuthProfilePage() {
 };
 
   useEffect(()=>{
-    console.log("hgdgggggjjhjksjhdsfgjsdgh")
     const FetchUser = async () => {
       try {
         const data = await UserService.getUserById();

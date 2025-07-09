@@ -18,7 +18,7 @@ export class NotificationController {
   @Get('user/:userId')
   async findByUser(@Param('userId') userId: string) {
     const notifications = await this.notificationService.findByUser(userId);
-    return { message: 'notifications retrieved successfully by userId', notifications };
+    return { notifications };
   }
 
   @Put(':id/read')

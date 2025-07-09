@@ -14,7 +14,7 @@ import TaskService, { ITask } from "@/service/task.service";
 import CreateTaskModal from "@/components/Task/createTaskModel";
 import { RootState } from "@/store/store";
 import { useSelector } from "react-redux";
-import { IUser } from "@/types/user.interface";
+import { IUserRedux } from "@/types/user.interface";
 import Link from "next/link";
 import Pagination from "@/components/Pagination/pagination";
 
@@ -28,7 +28,7 @@ export default function MyProjectDetails() {
   const [taskTotal, setTaskTotal] = useState<number>(0);
   const [taskPage, setTaskPage] = useState<number>(1);
   const [taskLimit, setTaskLimit] = useState<number>(5);
-  const user: IUser | null = useSelector((state: RootState) => state.auth.user);
+  const user: IUserRedux | null = useSelector((state: RootState) => state.auth.user);
 
   const fetchTasks = async (projectId: string, page = 1, limit = 5) => {
     try {

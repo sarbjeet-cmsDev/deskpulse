@@ -2,14 +2,12 @@ import "@/styles/globals.css";
 import { Metadata, Viewport } from "next";
 import { Link } from "@heroui/link";
 import clsx from "clsx";
-
 import { Providers } from "./providers";
-
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
-import { Navbar } from "@/components/navbar";
-import LayoutClientWrapper from "@/components/common/LayoutClientWrapper";
 import ProtectedRoute from "@/components/ProtectRoutes/ProtectedRoute";
+import TopHeader from "@/components/IndexPage/TopHeader";
+
 
 export const metadata: Metadata = {
   title: {
@@ -40,29 +38,30 @@ export default function RootLayout({
       <body
         className={clsx(
           "min-h-screen text-foreground bg-background font-sans antialiased",
-          fontSans.variable,
+          fontSans.variable
         )}
       >
-        <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
-        <ProtectedRoute>
-          <div className="relative flex flex-col h-screen">
-            <Navbar />
-            <main className="container mx-auto max-w-7xl pt-16 px-6 flex-grow">
-              {children}
-            </main>
-            <footer className="w-full flex items-center justify-center py-3">
-              <Link
-                isExternal
-                className="flex items-center gap-1 text-current"
-                href="https://heroui.com?utm_source=next-app-template"
-                title="heroui.com homepage"
+        <Providers themeProps={{ attribute: "class", defaultTheme: "white" }}>
+          <ProtectedRoute>
+            <div className="sticky top-0 z-50">
+              <TopHeader />
+                </div>
+              <main className="container mx-auto max-w-7xl pt-16 px-6 flex-grow">
+                {children}
+              </main>
+              <footer className="w-full flex items-center justify-center py-3">
+                <Link
+                  isExternal
+                  className="flex items-center gap-1 text-current"
+                  href="https://heroui.com?utm_source=next-app-template"
+                  title="heroui.com homepage"
                 >
-                <span className="text-default-600">Powered by</span>
-                <p className="text-primary">HeroUI</p>
-              </Link>
-            </footer>
-          </div>
-        </ProtectedRoute>
+                  <span className="text-default-600">Powered by</span>
+                  <p className="text-primary">HeroUI</p>
+                </Link>
+              </footer>
+          
+          </ProtectedRoute>
         </Providers>
       </body>
     </html>

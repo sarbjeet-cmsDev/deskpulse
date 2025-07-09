@@ -19,7 +19,7 @@ export class RemindersService {
 
 async findAll(filter?: Partial<Reminder>): Promise<ReminderDocument[]> {
   if (filter) {
-    return this.reminderModel.find(filter).exec();
+    return this.reminderModel.find(filter).sort({ createdAt: -1 }).exec();
   }
   return this.reminderModel.find().exec();
 }

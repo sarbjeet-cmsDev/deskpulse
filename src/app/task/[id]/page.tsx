@@ -12,7 +12,7 @@ import Link from "next/link";
 import TimelineList from "@/components/Task/TimelineList";
 import TimelineService, { ITimeline } from "@/service/timeline.service";
 import ProjectService from "@/service/project.service";
-import { IUser } from "@/types/user.interface";
+import { IUserRedux } from "@/types/user.interface";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { IComment } from "@/types/comment.interface";
@@ -37,7 +37,7 @@ export default function TaskDetails() {
   const [commentPage, setCommentPage] = useState<number>(1);
   const [commentLimit, setCommentLimit] = useState<number>(5);
 
-  const user: IUser | null = useSelector((state: RootState) => state.auth.user);
+  const user: IUserRedux | null = useSelector((state: RootState) => state.auth.user);
 
   useEffect(() => {
     if (taskId) {
