@@ -7,26 +7,22 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import NotficationService from "@/service/notification.service";
 import { RootState } from "@/store/store";
-import { IUser } from "@/service/adminUser.service";
 import { Avatar } from "@heroui/react";
 import userAvtar from "@/assets/images/avt1.jpg";
 import { useRouter } from "next/navigation";
-import { INotificationItem } from "@/types/notification.interface";
 
 export const Notification = () => {
   const dispatch = useDispatch();
-  // const [notification, setNotification] = useState([]);
-  const [notification, setNotification] = useState<INotificationItem[]>([]);
-
-  const user = useSelector((state: RootState) => state.auth.user) as IUser | null;
+  const [notification, setNotification] = useState([]);
+  const user: any | null = useSelector((state: RootState) => state.auth.user);
   const router = useRouter();
 
   const fetchNotification = async () => {
     try {
-      const res = await NotficationService.getNotificationByUserId(
-        user?._id || ""
+      const res: any = await NotficationService.getNotificationByUserId(
+        user?.id
       );
-      setNotification(res?.notifications || []);
+      setNotification(res?.notifications);
     } catch (error) {
       console.error("Failed to fetch notifications", error);
     }
@@ -105,7 +101,8 @@ export const Notification = () => {
                 {!item?.is_read && (
                   <Button
                     className="text-xs text-blue-600 border-none px-2 py-1 rounded hover:bg-blue-50"
-                    onPress={() => {
+                    onPress={(e: any) => {
+                      e.stopPropagation(); // Prevent routing on button click
                       updateStatus(item?._id);
                     }}
                     variant="bordered"
