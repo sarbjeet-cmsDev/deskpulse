@@ -1,6 +1,6 @@
-import { createAxiosClient } from '@/utils/createAxiosClient';
+import { createAxiosClient } from "@/utils/createAxiosClient";
 
-const axiosClient = createAxiosClient({ withCreds: false });
+const axiosClient = createAxiosClient({ withCreds: true });
 const axiosPrivateClient = createAxiosClient({ withCreds: true });
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -9,18 +9,18 @@ export interface ITask {
   title: string;
   createdAt: string;
   updatedAt: string;
-  project: string;   
+  project: string;
   report_to: string;
-  assigned_to: string;   
-  
+  assigned_to: string;
+
   // Add more fields as needed
 }
 
 export interface CreateTaskDto {
   title: string;
-  project: string;   
-  report_to: string; 
-  assigned_to: string;   
+  project: string;
+  report_to: string;
+  assigned_to: string;
 }
 
 export interface ITaskResponse {
@@ -32,6 +32,7 @@ export interface ITaskResponse {
 
 export interface UpdateTaskDto {
   title?: string;
+  status?: string;
 }
 
 const TaskService = {
@@ -44,7 +45,7 @@ const TaskService = {
   // Get all tasks
   async getAllTasks(): Promise<ITask[]> {
     const res = await axiosPrivateClient.get(`${API_URL}/tasks`);
-    console.log(res)
+    console.log(res);
     return res.data;
   },
 
@@ -58,11 +59,12 @@ const TaskService = {
   async getTasksByProject(
     projectId: string,
     page = 1,
-    limit = 5,
+    limit = 100,
     sortField: string = "createdAt",
     sortOrder: "asc" | "desc" = "desc"
   ): Promise<ITaskResponse> {
-    const res = await axiosPrivateClient.get(`${API_URL}/tasks/project/${projectId}`,
+    const res = await axiosPrivateClient.get(
+      `${API_URL}/tasks/project/${projectId}`,
       {
         params: {
           page,
@@ -101,7 +103,9 @@ const TaskService = {
 
   // Get logged-in user's tasks (JWT protected)
   async getMyTasks(page = 1, limit = 5): Promise<ITaskResponse> {
-    const res = await axiosPrivateClient.get(`${API_URL}/tasks/me?page=${page}&limit=${limit}`);
+    const res = await axiosPrivateClient.get(
+      `${API_URL}/tasks/me?page=${page}&limit=${limit}`
+    );
     return res.data;
   },
 };
