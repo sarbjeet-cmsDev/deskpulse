@@ -12,8 +12,7 @@ import { UserModule } from 'src/user/user.module';
     }),
     UserModule,
   ],
-  // providers: [EmailService, EmailProcessor, EmailListener],
-  providers: [EmailService, EmailProcessor],
+  providers: [EmailService, EmailProcessor, EmailListener],
   exports: [EmailService],
 })
 export class EmailModule {}

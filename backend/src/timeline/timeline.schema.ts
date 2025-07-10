@@ -23,6 +23,12 @@ export class Timeline {
   @Prop()
   comment: string;
 
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: false })
+  created_by: MongooseSchema.Types.ObjectId;
+
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: false })
+  updated_by: MongooseSchema.Types.ObjectId;
+
   @Prop()
   createdAt: Date;
 

@@ -1,7 +1,19 @@
 import { Type } from 'class-transformer';
-import { IsString, IsMongoId, IsOptional, IsNumber, IsBoolean, IsDate, IsEnum } from 'class-validator';
+import {
+  IsString,
+  IsMongoId,
+  IsOptional,
+  IsNumber,
+  IsBoolean,
+  IsDate,
+  IsEnum,
+} from 'class-validator';
 import { Schema as MongooseSchema } from 'mongoose';
+import { AcceptanceLevelEnum, PriorityEnum, TaskStatusEnum, TaskTypeEnum } from './task.interface';
 
+
+
+// --- DTOs ---
 
 export class CreateTaskDto {
   @IsString()
@@ -11,7 +23,10 @@ export class CreateTaskDto {
   @IsString()
   description?: string;
 
- @IsOptional()
+  @IsEnum(TaskTypeEnum)
+  type: TaskTypeEnum;
+
+  @IsOptional()
   @IsMongoId()
   project?: MongooseSchema.Types.ObjectId;
 
@@ -23,35 +38,34 @@ export class CreateTaskDto {
   @IsMongoId()
   assigned_to?: MongooseSchema.Types.ObjectId;
 
-
- @IsOptional()
+  @IsOptional()
   @IsMongoId()
   report_to?: MongooseSchema.Types.ObjectId;
-
-  @IsDate()
-   @IsOptional()
-  @Type(() => Date)  // <--- this converts the input string to a Date instance
-  due_date: Date;
 
   @IsOptional()
   @IsMongoId()
   kanban?: MongooseSchema.Types.ObjectId;
 
   @IsOptional()
+  @IsDate()
+  @Type(() => Date)
+  due_date?: Date;
+
+  @IsOptional()
   @IsBoolean()
   is_active?: boolean;
 
   @IsOptional()
-  @IsEnum(['low', 'medium', 'high'])
-  priority?: 'low' | 'medium' | 'high';
+  @IsEnum(PriorityEnum)
+  priority?: PriorityEnum;
 
   @IsOptional()
-  @IsEnum(['pending', 'inprogress', 'completed'])
-  status?: 'pending' | 'inprogress' | 'completed';
+  @IsEnum(TaskStatusEnum)
+  status?: TaskStatusEnum;
 
-
-
-
+  @IsOptional()
+  @IsEnum(AcceptanceLevelEnum)
+  acceptance?: AcceptanceLevelEnum;
 }
 
 export class UpdateTaskDto {
@@ -64,6 +78,10 @@ export class UpdateTaskDto {
   description?: string;
 
   @IsOptional()
+  @IsEnum(TaskTypeEnum)
+  type?: TaskTypeEnum;
+
+  @IsOptional()
   @IsMongoId()
   project?: MongooseSchema.Types.ObjectId;
 
@@ -80,7 +98,12 @@ export class UpdateTaskDto {
   report_to?: MongooseSchema.Types.ObjectId;
 
   @IsOptional()
+  @IsMongoId()
+  kanban?: MongooseSchema.Types.ObjectId;
+
+  @IsOptional()
   @IsDate()
+  @Type(() => Date)
   due_date?: Date;
 
   @IsOptional()
@@ -88,17 +111,23 @@ export class UpdateTaskDto {
   is_active?: boolean;
 
   @IsOptional()
-  @IsEnum(['low', 'medium', 'high'])
-  priority?: 'low' | 'medium' | 'high';
+  @IsEnum(PriorityEnum)
+  priority?: PriorityEnum;
 
- @IsOptional()
-  @IsEnum(['pending', 'inprogress', 'completed'])
-  status?: 'pending' | 'inprogress' | 'completed';
+  @IsOptional()
+  @IsEnum(TaskStatusEnum)
+  status?: TaskStatusEnum;
+
+  @IsOptional()
+  @IsEnum(AcceptanceLevelEnum)
+  acceptance?: AcceptanceLevelEnum;
 }
 
-
 export class UpdateTaskStatusUpdateDto {
- @IsOptional()
-  @IsEnum(['pending', 'inprogress', 'completed'])
-  status?: 'pending' | 'inprogress' | 'completed';
+  @IsEnum(TaskStatusEnum)
+  status: TaskStatusEnum;
+
+  @IsOptional()
+  @IsNumber()
+  revision?: number; // corrected typo
 }

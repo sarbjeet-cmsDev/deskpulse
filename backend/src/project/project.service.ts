@@ -7,6 +7,7 @@ import { UserService } from 'src/user/user.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CreateProjectDto } from './project.dto';
 import { getUserDetailsById } from 'src/shared/commonhelper';
+import { log } from 'console';
 
 @Injectable()
 export class ProjectService {
@@ -57,6 +58,7 @@ export class ProjectService {
       const createdProject = new this.projectModel(createProjectDto);
       const savedProject = await createdProject.save();
       if (createProjectDto.users) {
+        // log(createProjectDto)
         const assignproject = await Promise.all(
           createProjectDto.users.map(async (userId) => {
             const userData = await getUserDetailsById(this.userservices, userId.toString());
@@ -82,7 +84,7 @@ export class ProjectService {
   }
 
   async findOne(id: string): Promise<Project> {
-    const project = await this.projectModel.findById(id).exec();
+    const project = await this.projectModel.findById(id).lean();
     if (!project) {
       throw new NotFoundException(`Project with ID ${id} not found.`);
     }
@@ -115,7 +117,6 @@ export class ProjectService {
           projectDetails: updatedProject,
           assignproject: assignproject
         });
-
       }
     return updatedProject;
   }

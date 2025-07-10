@@ -1,0 +1,58 @@
+<mjml>
+  <mj-head>
+    <mj-title>New Comment Notification</mj-title>
+    <mj-preview>You have a new comment on your task</mj-preview>
+    <mj-style inline="inline">
+      .comment-box {
+        background-color: #f9f9f9;
+        border-left: 4px solid #007bff;
+        padding: 15px;
+        font-style: italic;
+        color: #333333;
+        margin: 10px 0;
+      }
+      .footer-text {
+        font-size: 12px;
+        color: #888888;
+        text-align: center;
+        margin-top: 20px;
+      }
+    </mj-style>
+  </mj-head>
+
+  <mj-body background-color="#f4f4f4">
+    <mj-section background-color="#ffffff" padding="20px" border-radius="6px">
+      <mj-column>
+        <mj-text font-size="16px" color="#333333" font-weight="bold">
+          Hello {{userName}},
+        </mj-text>
+        <mj-text css-class="comment-box" font-size="15px">
+          "{{commentMessage}}"
+        </mj-text>
+
+        <mj-text font-size="14px" color="#888888">
+          <small><em>At {{commentDate}}</em></small>
+        </mj-text>
+
+        <mj-button 
+          href="{{commentlink}}" 
+          background-color="#007bff" 
+          color="#ffffff"
+          font-size="16px"
+          inner-padding="12px 25px"
+          border-radius="4px"
+          >
+          View Task
+        </mj-button>
+      </mj-column>
+    </mj-section>
+
+    <mj-section background-color="#f4f4f4" padding="15px 20px">
+      <mj-column>
+        <mj-text css-class="footer-text">
+          You’re receiving this email because you’re subscribed to updates for this task.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

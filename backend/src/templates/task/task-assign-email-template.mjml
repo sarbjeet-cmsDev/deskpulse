@@ -3,70 +3,74 @@
     <mj-title>Task Assignment Notification</mj-title>
     <mj-preview>Your new task details are inside</mj-preview>
     <mj-style inline="inline">
-      .details-table {
-        border-collapse: collapse;
-        width: 100%;
-      }
-      .details-table th, .details-table td {
+      .details-table th,
+      .details-table td {
         border: 1px solid #dddddd;
         text-align: left;
         padding: 8px;
       }
+
       .details-table th {
         background-color: #f4f4f4;
+        font-weight: bold;
       }
     </mj-style>
   </mj-head>
 
   <mj-body background-color="#f4f4f4">
+    <!-- Main Container -->
     <mj-section background-color="#ffffff" padding="20px" border-radius="4px">
       <mj-column>
-        <mj-text font-size="16px" color="#555555">
+
+        <!-- Greeting -->
+        <mj-text font-size="16px" color="#555555" font-weight="bold">
           Hello {{userName}},
         </mj-text>
+
+        <!-- Message -->
         <mj-text font-size="16px" color="#555555">
           You have been assigned a new task. Here are the details:
         </mj-text>
 
-        <mj-raw>
-          <table class="details-table">
-            <tr>
-              <th>Task</th>
-              <td>{{taskTitle}}</td>
-            </tr>
-            <tr>
-              <th>Description</th>
-              <td>{{taskDescription}}</td>
-            </tr>
-            <tr>
-              <th>Due Date</th>
-              <td>{{dueDate}}</td>
-            </tr>
-            <tr>
-              <th>Priority</th>
-              <td>{{priority}}</td>
-            </tr>
-            <tr>
-              <th>Status</th>
-              <td>{{status}}</td>
-            </tr>
-          </table>
-        </mj-raw>
+        <!-- Spacer -->
+        <mj-spacer height="10px" />
 
+        <!-- Task Details Table -->
+        <mj-table css-class="details-table">
+          <tr>
+            <th>Task</th>
+            <td>{{taskTitle}}</td>
+          </tr>
+          <tr>
+            <th>Description</th>
+            <td>{{taskDescription}}</td>
+          </tr>
+          <tr>
+            <th>Due Date</th>
+            <td>{{dueDate}}</td>
+          </tr>
+          <tr>
+            <th>Priority</th>
+            <td>{{priority}}</td>
+          </tr>
+          <tr>
+            <th>Status</th>
+            <td>{{status}}</td>
+          </tr>
+        </mj-table>
+
+        <!-- Divider -->
         <mj-divider border-color="#dddddd" />
 
-        <mj-button 
-          href="{{tasklink}}" 
-          background-color="#007bff" 
-          color="#ffffff"
-          font-size="16px"
-          inner-padding="12px 25px"
-          border-radius="4px">
+        <!-- Call to Action Button -->
+        <mj-button href="{{tasklink}}" background-color="#007bff" color="#ffffff" font-size="16px" inner-padding="12px 25px" border-radius="4px">
           View Task
         </mj-button>
+
       </mj-column>
     </mj-section>
 
+    <!-- Footer -->
     <mj-section background-color="#f4f4f4" padding="10px 20px">
       <mj-column>
         <mj-text font-size="12px" color="#888888" align="center">

@@ -4,22 +4,60 @@ import { Model } from 'mongoose';
 import { Comment, CommentDocument } from './comment.schema';
 import { TaskService } from 'src/task/task.service';
 import { validateTaskId } from './comment.helper';
+import { UserService } from 'src/user/user.service';
+import { extractTextFromHtml, getUserDetailsById } from 'src/shared/commonhelper';
+import { log } from 'console';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class CommentService {
   constructor(
     @InjectModel(Comment.name) private commentModel: Model<CommentDocument>,
-    private readonly taskService: TaskService
-  ) {}
+    private readonly taskService: TaskService,
+    private eventEmitter: EventEmitter2,
+    private readonly userservices: UserService,
+  ) { }
 
   async create(createCommentDto: Partial<Comment>): Promise<Comment> {
     await validateTaskId(this.taskService, createCommentDto.task.toString());
     const createdComment = new this.commentModel(createCommentDto);
+    if (createCommentDto.mentioned) {
+      const assignmentionsuser = await Promise.all(
+        createCommentDto.mentioned.map(async (userId) => {
+          const userData = await getUserDetailsById(this.userservices, userId.toString());
+          return userData;
+        })
+      );
+      this.eventEmitter.emit('comments.mention', {
+        CommentDetails: createdComment,
+        commentContent: extractTextFromHtml(createdComment.content),
+        assignmentionsuser: assignmentionsuser
+      });
+    }
     return createdComment.save();
   }
 
-  async findAll(): Promise<Comment[]> {
-    return this.commentModel.find().exec();
+
+  async findAll(): Promise<any[]> {
+    const comments = await this.commentModel.find().lean(); // lean returns plain JS objects
+    const commentMap = new Map();
+    // Index all comments by ID and remove parent_comment property
+    comments.forEach(comment => {
+      const { parent_comment, ...rest } = comment; // exclude parent_comment
+      commentMap.set(comment._id.toString(), { ...rest, replies: [] });
+    });
+    const roots = [];
+    // Build tree
+    for (const comment of comments) {
+      const parentId = comment.parent_comment?.toString();
+
+      if (parentId && commentMap.has(parentId)) {
+        commentMap.get(parentId).replies.push(commentMap.get(comment._id.toString()));
+      } else {
+        roots.push(commentMap.get(comment._id.toString())); // top-level comments
+      }
+    }
+    return roots;
   }
 
   async findOne(id: string): Promise<Comment> {
@@ -62,7 +100,7 @@ export class CommentService {
       .findByIdAndUpdate(id, updateCommentDto, { new: true })
       .exec();
   }
-  
+
   async remove(id: string): Promise<Comment> {
     return this.commentModel.findByIdAndDelete(id).exec();
   }

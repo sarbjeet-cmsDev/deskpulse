@@ -9,12 +9,6 @@ export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
 
-  @Post()
-  async create(@Body() createNotificationDto: CreateNotificationDto) {
-    const notification = await this.notificationService.create(createNotificationDto);
-    return { message: 'notification created successfully', notification };
-  }
-
   @Get('user/:userId')
   async findByUser(@Param('userId') userId: string) {
     const notifications = await this.notificationService.findByUser(userId);

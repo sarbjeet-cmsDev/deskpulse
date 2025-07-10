@@ -6,11 +6,11 @@ export class CreateTimelineDto {
     @IsMongoId()
     @IsNotEmpty({ message: 'Task is required.' })
     task: MongooseSchema.Types.ObjectId;
-    
+
     @IsNotEmpty({ message: 'Date is required.' })
-    
+
     @IsNotEmpty({ message: 'Date is required.' })
-    @Type(() => Date)                  
+    @Type(() => Date)
     @IsDate({ message: 'Date must be a valid Date instance.' })
     date: Date;
 
@@ -18,7 +18,7 @@ export class CreateTimelineDto {
     @IsNotEmpty({ message: 'User is required.' })
     user?: MongooseSchema.Types.ObjectId;
 
-    @IsString   ()
+    @IsString()
     @IsNotEmpty({ message: 'Time spent is required.' })
     time_spent?: string;
 
@@ -26,9 +26,17 @@ export class CreateTimelineDto {
     @IsString({ each: false })
     comment?: string;
 
-    @IsOptional()
+
     @IsBoolean()
+    @IsOptional()
     is_active?: boolean;
+
+
+    @IsOptional()
+    created_by?: MongooseSchema.Types.ObjectId;
+
+    @IsOptional()
+    updated_by?: MongooseSchema.Types.ObjectId;
 }
 
 export class UpdateTimelineDto {
@@ -49,7 +57,11 @@ export class UpdateTimelineDto {
     @IsString()
     @IsNotEmpty()
     time_spent?: string; // Time spent in hours
-    
+
     @IsBoolean()
+    @IsOptional()
     is_active?: boolean;
+
+    @IsOptional()
+    updated_by?: MongooseSchema.Types.ObjectId;
 }

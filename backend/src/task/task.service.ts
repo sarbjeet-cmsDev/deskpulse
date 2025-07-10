@@ -3,7 +3,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Task } from './task.interface';
 import { CreateTaskDto, UpdateTaskDto, UpdateTaskStatusUpdateDto } from './task.dto';
-import { log } from 'console';
 import { ProjectService } from '../project/project.service';
 import { validateProjectId } from './task.helpers';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -21,8 +20,6 @@ export class TaskService {
 
   async create(createTaskDto: CreateTaskDto): Promise<Task> {
     await validateProjectId(this.projectService, createTaskDto.project.toString());
-    // Check ADssign to the user  coordinator
-    // await getUserDetailsById(this.userservices, createTaskDto.assigned_to?.toString() );
     const createdTask = new this.taskModel(createTaskDto);
     if (createTaskDto.assigned_to) {
       const assigntask = await getUserDetailsById(this.userservices, createTaskDto.assigned_to?.toString());
@@ -34,19 +31,20 @@ export class TaskService {
     return createdTask.save();
   }
 
-/*************  ✨ Windsurf Command ⭐  *************/
-  /**
-   * Retrieves all tasks from the database.
-   *
-   * @returns {Promise<Task[]>} A promise that resolves to an array of Task objects.
-   */
-
-/*******  de9a6f14-6fd5-40f6-b56e-8c19ebbd4001  *******/  async findAll(): Promise<Task[]> {
+  async findAll(): Promise<Task[]> {
     return this.taskModel.find().exec();
   }
 
+async FetchDueTask(user_id: string): Promise<Task[]> {
+  const endOfDay = new Date().setHours(23, 59, 59, 999);
+  return this.taskModel.find({
+    assigned_to: user_id,
+    due_date: { $lte: new Date(endOfDay) },
+  }).exec();
+}
+
   async findOne(id: string): Promise<Task> {
-    const task = await this.taskModel.findById(id).exec();
+    const task = await this.taskModel.findById(id).lean();
     if (!task) {
       throw new NotFoundException(`Task with ID ${id} not found.`);
     }
@@ -109,7 +107,7 @@ export class TaskService {
     if (updateTaskDto.assigned_to) {
       const assigntask = await getUserDetailsById(this.userservices, updateTaskDto.assigned_to?.toString());
       this.eventEmitter.emit('task.assigned', {
-        taskdetails: updateTaskDto,
+        taskdetails: task,
         assigntask: assigntask
       });
     }

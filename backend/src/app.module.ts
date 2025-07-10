@@ -14,7 +14,6 @@ import { TaskChecklistModule } from './taskchecklist/taskchecklist.module';
 import { NotificationModule } from './notification/notification.module';
 import { TaskactivitylogModule } from './taskactivitylog/taskactivitylog.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
-// import { EmailModule } from './email/email.module';
 import { BullModule } from '@nestjs/bull';
 import { EmailModule } from './email/email.module';
 @Module({

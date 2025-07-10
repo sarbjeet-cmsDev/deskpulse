@@ -81,18 +81,9 @@ export class EmailListener {
   }
 
   @OnEvent('task.assigned', { async: true })
-  async handleTimelineCreatedEvent(payload: { taskdetails: any, assigntask: any }) {
+  async handleTaskAssignEvent(payload: { taskdetails: any, assigntask: any }) {
     const taskLink = `${process.env.FRONTEND_URL}/tasks/${payload.taskdetails._id.toString()}`;
     const assigntask = payload.assigntask;
-    log({
-        userName: assigntask.username,
-        taskTitle: payload.taskdetails.title,
-        taskDescription: payload.taskdetails.description,
-        dueDate: new Date(payload.taskdetails.due_date).toLocaleString(),
-        priority: payload.taskdetails.priority,
-        status: payload.taskdetails.status,
-        tasklink: taskLink,
-      })
     this.emailservice.sendEmail({
       to: assigntask.email,
       subject: 'Task Assign Notification',
@@ -108,7 +99,56 @@ export class EmailListener {
       },
     })
     this.logger.log(`Task Assign Notification created successfully`);
-
   }
+
+  @OnEvent('comments.mention', { async: true })
+  async handleCommentsMentionEvent(payload: { CommentDetails: any; assignmentionsuser: any; commentContent: string }) {
+    const { CommentDetails, commentContent } = payload;
+    const assignmentionUser = payload.assignmentionsuser;
+    if (assignmentionUser) {
+      for (const user of assignmentionUser) {
+        const commentlink = `${process.env.FRONTEND_URL}comments/${payload.CommentDetails._id.toString()}`;
+        await this.emailservice.sendEmail({
+          to: user.email,
+          subject: 'New Comment Notification',
+          template: 'templates/commnets/comments.notify.mjml',
+          variables: {
+            userName: user.username,
+            commentMessage: commentContent,
+            commentDate: new Date(CommentDetails.createdAt).toLocaleString(),
+            commentlink: commentlink
+          },
+        });
+      }
+    }
+    this.logger.log(`comments Mentioned Notification created successfully`);
+  }
+
+  @OnEvent('timeline.created', { async: true })
+  async handleTimelineCreatedEvent(payload: { taskdata: any, createdTimeline: any }) {
+    const { taskdata, createdTimeline } = payload;
+    const templates = `Worked ${createdTimeline.time_spent} hour(s) on task "${taskdata.task.title}" — general updates and review. Comment: ${createdTimeline.comment}. On ${new Date(createdTimeline.date).toLocaleString()} by "${taskdata.userData.username}"`;
+    const timelineLink = `${process.env.FRONTEND_URL}timeline/${createdTimeline._id.toString()}`;
+    const recipients = [
+      taskdata.project.projectCoordinator,
+      taskdata.project.teamLeader,
+      taskdata.project.projectManager,
+    ];
+    for (const recipient of recipients) {
+      await this.emailservice.sendEmail({
+        to: recipient.email,
+        subject: 'Timeline Notification',
+        template: 'templates/timeline/timeline-notification.mjml',
+        variables: {
+          User: recipient.username,
+          timeline_template:templates,
+          timelineLink: timelineLink,
+        },
+      });
+    }
+    this.logger.log(`timeline.created Email Sent NOtification`);
+  }
+  
+
 }
 

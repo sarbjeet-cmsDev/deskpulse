@@ -6,6 +6,10 @@ import { TaskService } from "src/task/task.service";
 import { validateTaskId } from "./task.helpers";
 import { CreateTimelineDto, UpdateTimelineDto } from "./timeline.dto";
 import { EventEmitter2 } from "@nestjs/event-emitter";
+import { fetchTaskProjectUserDetailsByTaskID } from "src/shared/commonhelper";
+import { ProjectService } from "src/project/project.service";
+import { log } from "console";
+import { UserService } from "src/user/user.service";
 
 
 @Injectable()
@@ -13,11 +17,17 @@ export class TimelineService {
   constructor(
     @InjectModel("Timeline") private readonly timelineModel: Model<Timeline>,
     private readonly taskService: TaskService,
+    private readonly projectService: ProjectService,
+     private readonly userService: UserService,
     private eventEmitter: EventEmitter2,
   ) { }
   async create(createTimelineDto: CreateTimelineDto): Promise<Timeline> {
-    await validateTaskId(this.taskService, createTimelineDto.task.toString());
+    const taskdata = await fetchTaskProjectUserDetailsByTaskID({ taskService: this.taskService, projectService: this.projectService , userService: this.userService},{ taskId: createTimelineDto.task.toString() , userId: createTimelineDto.created_by.toString() });
     const createdTimeline = new this.timelineModel(createTimelineDto);
+    this.eventEmitter.emit('timeline.created', {
+      taskdata: taskdata,
+      createdTimeline:createdTimeline
+    });
     return createdTimeline.save();
   }
   async findAll(): Promise<Timeline[]> {

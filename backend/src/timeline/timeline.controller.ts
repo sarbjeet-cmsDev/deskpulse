@@ -7,19 +7,24 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from "@nestjs/common";
 import { CreateTimelineDto } from "./timeline.dto";
 import { Timeline } from "./timeline.interface";
 import { TimelineService } from "./timeline.service";
-import { get } from "http";
+import { CurrentUser } from "src/shared/current-user.decorator";
+import { JwtAuthGuard } from 'src/guard/jwt-auth.guard';
+import { log } from "console";
 
 @Controller("api/timelines")
+@UseGuards(JwtAuthGuard)
 export class TimelineController {
   constructor(private readonly timelineService: TimelineService) {}
   @Post()
   async create(
-    @Body() createTimelineDto: CreateTimelineDto,
-  ): Promise<{ message: string; data: Timeline }> {
+    @Body() createTimelineDto: CreateTimelineDto,@CurrentUser() user: any
+  ): Promise<{ message: string; data: Timeline}> {
+    createTimelineDto.created_by = user.userId;  // Safe, server-side only
     const createdTimeline = await this.timelineService.create(createTimelineDto);
     return {
       message: 'Timeline created successfully!',
@@ -34,6 +39,8 @@ export class TimelineController {
   ): Promise<Timeline[]> {
     return this.timelineService.findAll();
   }
+
+
   @Get(":id")
   async findOne(@Param("id") id: string): Promise<Timeline> {
     return this.timelineService.findOne(id);

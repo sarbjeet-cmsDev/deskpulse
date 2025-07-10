@@ -11,12 +11,14 @@ import {
   Req,
   ValidationPipe,
   Logger,
+  Put,
 } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { CreateTaskDto, UpdateTaskDto, UpdateTaskStatusUpdateDto } from './task.dto';
 import { Task } from './task.interface';
 import { JwtAuthGuard } from 'src/guard/jwt-auth.guard';
 import { log } from 'console';
+import { CurrentUser } from 'src/shared/current-user.decorator';
 
 @Controller('api/tasks')
 @UseGuards(JwtAuthGuard)
@@ -65,7 +67,7 @@ export class TaskController {
     return this.taskService.findByReportToUser(userId);
   }
 
-  @Patch(':id')
+  @Put(':id')
   async update(
     @Param('id') id: string,
     @Body() updateTaskDto: UpdateTaskDto,
@@ -80,17 +82,24 @@ export class TaskController {
     @Param('id') id: string,
     @Req() req: any,
     @Body() updateTaskStatusUpdateDto: UpdateTaskStatusUpdateDto,
-  ): Promise<{ message: string; checklist: Task }> {
+  ): Promise<{ message: string; task: Task }> {
     const userData = req.user; // <--- declared user_id properly
-    const checklist = await this.taskService.updateTaskStatus(id, updateTaskStatusUpdateDto, userData);
-    return { message: 'Task Status  updated successfully', checklist };
+    const task = await this.taskService.updateTaskStatus(id, updateTaskStatusUpdateDto, userData);
+    return { message: 'Task Status  updated successfully', task };
   }
 
   @Delete(':id')
   async remove(@Param('id') id: string): Promise<Task> {
     return this.taskService.remove(id);
   }
-
+  @Get('get-due-task')
+  async FetchDueTask(@CurrentUser() user: any): Promise<any> {
+    const tasks = await this.taskService.FetchDueTask(user.userId);
+    return {
+      message: 'Due tasks fetched successfully.',
+      tasks: tasks,
+    };
+  }
 
 
   @Get('me')

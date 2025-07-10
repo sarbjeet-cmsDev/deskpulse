@@ -14,8 +14,8 @@ export class CreateCommentDto {
   mentioned?: MongooseSchema.Types.ObjectId[];
 
   @IsOptional()
-  @IsMongoId()
-  parent_comment?: MongooseSchema.Types.ObjectId;
+  @IsMongoId({ each: true })
+  parent_comment?: MongooseSchema.Types.ObjectId[];
 
   @IsMongoId()
   created_by: MongooseSchema.Types.ObjectId;
