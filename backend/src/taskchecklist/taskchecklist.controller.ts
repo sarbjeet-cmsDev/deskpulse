@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Req, Get, Param, Put, NotFoundException } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Req, Get, Param, Put, NotFoundException, Delete } from '@nestjs/common';
 import { CreateTaskChecklistDto, UpdateTaskChecklistDto } from './taskchecklist.dto';
 import { JwtAuthGuard } from 'src/guard/jwt-auth.guard';
 import { TaskChecklistService } from './taskchecklist.service';
@@ -25,12 +25,15 @@ export class TaskChecklistController {
         }
 
     @Get('task/:taskId')
-    async findByTaskId(@Param('taskId') taskId: string, @Req() req): Promise<{ message: string; checklists: TaskChecklist[] }> {
+    async findByTaskId(@Param('taskId') taskId: string, @Req() req): Promise<{ checklists: TaskChecklist[] }> {
         const checklists = await this.taskChecklistService.findByTaskId(taskId);
         if (!checklists || checklists.length === 0) {
             throw new NotFoundException('No task checklists found for this task');
         }
-        return { message: 'Task checklists fetched successfully', checklists };
+        return { 
+            // message: 'Task checklists fetched successfully', 
+            checklists 
+        };
     }
 
 
@@ -40,6 +43,12 @@ export class TaskChecklistController {
         if (!checklist) throw new NotFoundException('Task checklist not found');
         const updatedChecklist = await this.taskChecklistService.update(id, updateTaskChecklistDto);
         return { message: 'Task checklist updated successfully', checklist: updatedChecklist };
+    }
+
+    @Delete(':id')
+    async remove(@Param('id') id: string): Promise<{ message: string }> {
+    await this.taskChecklistService.remove(id);
+    return { message: 'Task checklist deleted successfully' };
     }
 
 }

@@ -20,11 +20,16 @@ import CommentService from "@/service/comment.service";
 import CommentList from "@/components/Comment/CommnetList";
 import Pagination from "@/components/Pagination/pagination";
 import CommentInputSection from "@/components/Comment/commentSection";
+import TaskChecklistService from "@/service/taskChecklist.service";
+import CreateChecklistModal from "@/components/TaskChecklist/createChecklistModal";
+import TaskChecklist from "@/components/TaskChecklist/taskChecklist";
+import { ITaskChecklist } from "@/types/taskchecklist.interface";
 
 export default function TaskDetails() {
   const params = useParams();
   const taskId = params?.id as string;
   const [task, setTask] = useState<ITask | null>(null);
+  const [taskChecklist, setTaskChecklist] = useState<ITaskChecklist[]>([]);
   const [project, setProject] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [timelines, setTimelines] = useState<ITimeline[]>([]);
@@ -37,7 +42,11 @@ export default function TaskDetails() {
   const [commentPage, setCommentPage] = useState<number>(1);
   const [commentLimit, setCommentLimit] = useState<number>(5);
 
-  const user: IUserRedux | null = useSelector((state: RootState) => state.auth.user);
+  const user: IUserRedux | null = useSelector(
+    (state: RootState) => state.auth.user
+  );
+
+  console.log("checklist", taskChecklist);
 
   useEffect(() => {
     if (taskId) {
@@ -52,8 +61,19 @@ export default function TaskDetails() {
         .finally(() => setLoading(false));
 
       fetchTimelines(taskId);
+      fetchTaskchecklist(taskId);
     }
   }, [taskId]);
+
+  const fetchTaskchecklist = async (taskId: string) => {
+    try {
+      const data = await TaskChecklistService.getChecklistByTaskId(taskId);
+      console.log("data in TaskDetails checklist---", data);
+      setTaskChecklist(data.checklists);
+    } catch (error) {
+      console.error("Failed to load task:", error);
+    }
+  };
 
   const fetchProject = async (projectId: string) => {
     try {
@@ -94,6 +114,21 @@ export default function TaskDetails() {
     }
   };
 
+  const handleCreateTaskChecklist = async (title: string) => {
+    try {
+      await TaskChecklistService.createChecklist({
+        title,
+        status: "pending",
+        task: taskId,
+        created_by: user?.id || "",
+        visibility: true,
+      });
+      fetchTaskchecklist(taskId);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
     fetchComments();
   }, [taskId, commentPage, commentLimit]);
@@ -125,7 +160,11 @@ export default function TaskDetails() {
               </a>
             </P>
 
-            <Details project={project} />
+            <Details 
+            project={project} 
+            taskId={taskId}
+            onTaskUpdate={() => fetchProject(project?._id)}
+            />
 
             <div className="mt-[28px]">
               <H5>Task Timeline</H5>
@@ -144,6 +183,15 @@ export default function TaskDetails() {
                   fetchTimelines(taskId, timelinePage, timelineLimit)
                 }
               />
+
+              <div className="mt-[34px] border-t pt-8">
+                <div className="flex justify-between items-center mb-4">
+                <H5>Task Checklist</H5>
+                <CreateChecklistModal onCreate={handleCreateTaskChecklist} />
+
+                </div>
+                <TaskChecklist taskchecklist={taskChecklist} refreshList={() => fetchTaskchecklist(taskId)} />
+              </div>
 
               <CommentInputSection
                 taskId={taskId}

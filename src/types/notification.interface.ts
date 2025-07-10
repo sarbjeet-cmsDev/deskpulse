@@ -3,6 +3,12 @@ export interface INotification {
   id: string;
 }
 
+export interface CreateNotificationDto {
+  content: string;
+  user: string;
+  redirect_url: string;
+  is_read?: boolean;
+}
 export interface INotificationItem {
   _id: string;
   content: string;

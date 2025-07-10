@@ -39,7 +39,7 @@ export class TaskChecklist {
   @Prop({
     type: MongooseSchema.Types.ObjectId,
     ref: 'User',
-    required: [true, 'Completed by user is required'],
+    // required: [true, 'Completed by user is required'],
   })
   completed_by: MongooseSchema.Types.ObjectId;
 

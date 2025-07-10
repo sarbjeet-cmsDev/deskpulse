@@ -25,13 +25,15 @@ export class CreateTaskChecklistDto {
 
   @IsMongoId({ message: 'Created by must be a valid Mongo ID' })
   created_by: string;
-
+  
+  @IsOptional()
   @IsMongoId({ message: 'Completed by must be a valid Mongo ID' })
   completed_by: string;
 
   @IsBoolean({ message: 'Visibility must be a boolean value' })
   visibility: boolean;
-
+  
+  @IsOptional()
   @IsNumber({}, { message: 'Estimate time must be a number' })
   estimate_time: number;
 }

@@ -6,6 +6,8 @@ import ReminderList from "@/components/Reminder/ReminderList";
 import { H3 } from "@/components/Heading/H3";
 import { P } from "@/components/ptag";
 import { IReminder } from "@/types/reminder.interface";
+import Image from "next/image";
+import leftarrow from "@/assets/images/back.png";
 
 export default function MyRemindersPage() {
   const [reminders, setReminders] = useState<IReminder[]>([]);
@@ -29,7 +31,14 @@ export default function MyRemindersPage() {
 
   return (
     <div className="max-w-6xl mx-auto p-6">
-      <H3 className="mb-4">My Reminders</H3>
+      <div className="flex justify-center items-center p-[24px] border-b border-[#31394f14]">
+        <div className="w-[2%]">
+          <a href="/">
+            <Image src={leftarrow} alt="Back" width={16} height={16} />
+          </a>
+        </div>
+        <H3 className="w-[98%] text-center">My Reminders</H3>
+      </div>
 
       {loading ? (
         <P>Loading reminders...</P>

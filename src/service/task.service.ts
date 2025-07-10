@@ -33,6 +33,7 @@ export interface ITaskResponse {
 export interface UpdateTaskDto {
   title?: string;
   status?: string;
+  assigned_to?: string; 
 }
 
 const TaskService = {

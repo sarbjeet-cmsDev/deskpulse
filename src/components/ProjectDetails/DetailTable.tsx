@@ -6,7 +6,9 @@ import DatePickerInput from "@/components/ProjectDetails/Datepicker";
 import { Input } from "../Form/Input";
 import { useState } from "react";
 import MentionUserListModal from "@/components/MentionUserListBox";
-import { ITask } from "@/service/task.service";
+import TaskService, { ITask } from "@/service/task.service";
+import Swal from "sweetalert2";
+import NotificationService from "@/service/notification.service";
 
 interface DetailsProps {
   project: {
@@ -20,14 +22,16 @@ interface DetailsProps {
     attachments?: string[];
     // Add more fields as needed
   };
+   taskId: string; 
+  onTaskUpdate: () => void;
 }
 
 interface SubTasksProps {
   tasks: ITask[];
 }
-export default function Details({ project }: DetailsProps) {
+export default function Details({ project, taskId, onTaskUpdate }: DetailsProps) {
   const [email, setEmail] = useState("");
-  const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const {
     team = [],
     leader,
@@ -36,17 +40,33 @@ export default function Details({ project }: DetailsProps) {
     attachments = [],
   } = project || [];
 
-  const handleOpenCommentModal = () => {
-    setIsCommentModalOpen(true);
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
   };
 
-  const handleCloseCommentModal = () => {
-    setIsCommentModalOpen(false);
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
   };
 
-  const handleCommentCreated = () => {
-    setIsCommentModalOpen(false);
-    // You can trigger any data refresh here if needed
+  const handleAssignUser = async (userId: string) => {
+    try {
+        await TaskService.updateTask(taskId, { assigned_to: userId });
+         const taskLink = `${process.env.NEXT_PUBLIC_FRONTEND_URL}tasks/${taskId}`;
+         console.log(taskLink,'tasklink')
+        await NotificationService.createNotification({
+          content: "You have been assigned a new task.",
+          user: userId,                        
+          redirect_url: taskLink,                 
+          is_read: false,   
+        })
+        Swal.fire("Assigned!", "The task has been assigned.", "success");
+        if (onTaskUpdate) onTaskUpdate();
+        handleCloseModal();
+      // }
+    } catch (error) {
+      console.error("Failed to assign task:", error);
+      Swal.fire("Error", "Failed to assign task.", "error");
+    }
   };
 
   return (
@@ -76,20 +96,14 @@ export default function Details({ project }: DetailsProps) {
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <AvatarList users={team} onClick={handleOpenCommentModal} />
+              <AvatarList users={team} onClick={handleOpenModal} />
               <MentionUserListModal
-                taskId={"some-task-id"}
-                userId={"some-user-id"}
-                isOpen={isCommentModalOpen}
-                onClose={handleCloseCommentModal}
-                onCommentCreated={handleCommentCreated}
-                userOptions={team.map((member) => ({
-                  label: `${member.firstName} ${member.lastName} (${member.email})`,
-                  value: member._id,
-                }))}
-                enableUserSearch={false}
-              />
-              <div className="add-member" onClick={handleOpenCommentModal}>
+                taskId={taskId}
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+                onAssigned={handleAssignUser}
+                   />
+              <div className="add-member" onClick={handleOpenModal}>
                 <a
                   href="#"
                   className="text-[#7980ff] border border-[#7980ff] px-[2px] rounded-[2px] text-[10px]"
@@ -116,7 +130,7 @@ export default function Details({ project }: DetailsProps) {
                     clipRule="evenodd"
                     d="M9.89766 12.0467L9.99692 12.0468L10.2169 12.0474C12.0852 12.0574 16.4618 12.2272 16.4618 15.1142C16.4618 17.791 12.8673 18.1487 10.0713 18.1622L9.57843 18.162C7.71015 18.152 3.3335 17.9822 3.3335 15.0959C3.3335 12.3626 7.07933 12.0467 9.89766 12.0467ZM9.89766 13.2967C6.37183 13.2967 4.5835 13.9026 4.5835 15.0959C4.5835 16.3009 6.37183 16.9126 9.89766 16.9126C13.4235 16.9126 15.2118 16.3067 15.2118 15.1142C15.2118 13.9076 13.4235 13.2967 9.89766 13.2967ZM9.89766 1.66675C12.3418 1.66675 14.3293 3.65508 14.3293 6.09841C14.3293 8.54175 12.3418 10.5301 9.89766 10.5301H9.87183C8.68933 10.5259 7.581 10.0617 6.75016 9.22508C5.9185 8.38758 5.46266 7.27592 5.4668 6.09591C5.4668 3.65508 7.45433 1.66675 9.89766 1.66675ZM9.89766 2.91675C8.14433 2.91675 6.7168 4.34425 6.7168 6.09841C6.7135 6.94758 7.04016 7.74341 7.636 8.34425C8.23266 8.94425 9.02766 9.27675 9.87433 9.28008L9.89766 9.89758V9.28008C11.6518 9.28008 13.0793 7.85258 13.0793 6.09841C13.0793 4.34425 11.6518 2.91675 9.89766 2.91675Z"
                     fill="#31394F"
-                  />
+                    />
                 </g>
               </svg>
               <span className="text-[#31394f] text-[14px] leading-[16px]">
@@ -129,7 +143,7 @@ export default function Details({ project }: DetailsProps) {
                   src={avatar}
                   alt="avatar-image"
                   className=" w-[25px] h-[25px] rounded-[30px]"
-                />
+                  />
               </div>
               <span className="text-[#31394f] font-500 text-[12px] leading-[18px]"></span>
             </div>
@@ -162,7 +176,7 @@ export default function Details({ project }: DetailsProps) {
               <a
                 href="#"
                 className="bg-[#ec4899] text-white text-[12px] leading-[16px] px-[9px] py-[4px] rounded-[8px] font-500"
-              >
+                >
                 To Do
               </a>
             </div>
@@ -177,7 +191,7 @@ export default function Details({ project }: DetailsProps) {
                 viewBox="0 0 20 20"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-              >
+                >
                 <g opacity="0.9">
                   <path
                     fillRule="evenodd"
@@ -213,7 +227,7 @@ export default function Details({ project }: DetailsProps) {
                     clipRule="evenodd"
                     d="M13.257 1.66675C15.877 1.66675 17.637 3.46091 17.637 6.13091V13.7942C17.637 16.4876 15.9312 18.2392 13.2912 18.2559L6.88034 18.2584C4.26034 18.2584 2.49951 16.4642 2.49951 13.7942V6.13091C2.49951 3.43675 4.20535 1.68591 6.84535 1.67008L13.2562 1.66675H13.257ZM13.257 2.91675L6.84951 2.92008C4.90951 2.93175 3.74951 4.13175 3.74951 6.13091V13.7942C3.74951 15.8067 4.92035 17.0084 6.87951 17.0084L13.287 17.0059C15.227 16.9942 16.387 15.7926 16.387 13.7942V6.13091C16.387 4.11841 15.217 2.91675 13.257 2.91675ZM13.0963 12.8948C13.4413 12.8948 13.7213 13.1748 13.7213 13.5198C13.7213 13.8648 13.4413 14.1448 13.0963 14.1448H7.0796C6.73459 14.1448 6.45459 13.8648 6.45459 13.5198C6.45459 13.1748 6.73459 12.8948 7.0796 12.8948H13.0963ZM13.0963 9.40608C13.4413 9.40608 13.7213 9.68608 13.7213 10.0311C13.7213 10.3761 13.4413 10.6561 13.0963 10.6561H7.0796C6.73459 10.6561 6.45459 10.3761 6.45459 10.0311C6.45459 9.68608 6.73459 9.40608 7.0796 9.40608H13.0963ZM9.37518 5.92542C9.72018 5.92542 10.0002 6.20542 10.0002 6.55042C10.0002 6.89542 9.72018 7.17542 9.37518 7.17542H7.07934C6.73434 7.17542 6.45434 6.89542 6.45434 6.55042C6.45434 6.20542 6.73434 5.92542 7.07934 5.92542H9.37518Z"
                     fill="#31394F"
-                  />
+                    />
                 </g>
               </svg>
               <span className="text-[#31394f] text-[14px] leading-[16px]">
@@ -237,3 +251,12 @@ export default function Details({ project }: DetailsProps) {
     </div>
   );
 }
+
+  // onCommentCreated={handleCommentCreated}
+  // userOptions={team.map((member) => ({
+  //   label: `${member.firstName} ${member.lastName} (${member.email})`,
+  //   value: member._id,
+  // }))}
+  // enableUserSearch={false} onAssigned={function (userId: string): void {
+  //   throw new Error("Function not implemented.");
+  // } }            

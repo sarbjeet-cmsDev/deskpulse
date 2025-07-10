@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import ProjectService from "@/service/project.service";
 import TaskService, { ITask } from "@/service/task.service";
-import CreateTaskModal from "@/components/Task/createTaskModel";
+import CreateTaskModal from "@/components/Task/createTaskModal";
 import { RootState } from "@/store/store";
 import { useSelector } from "react-redux";
 import { IUserRedux } from "@/types/user.interface";
@@ -110,7 +110,9 @@ export default function MyProjectDetails() {
                   See Details
                 </a>
               </P>
-              <Details project={project} />
+              <Details project={project} taskId={''}
+            onTaskUpdate={() => fetchTasks(project?._id)} 
+            />
               <div className="mt-[20px]">
                 <a
                   href="#"

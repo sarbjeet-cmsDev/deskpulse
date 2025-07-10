@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable,NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateTaskChecklistDto, UpdateTaskChecklistDto } from './taskchecklist.dto';
@@ -34,7 +34,7 @@ export class TaskChecklistService {
     }
 
     async findByTaskId(taskId: string): Promise<TaskChecklistDocument[]> {
-        return this.taskChecklistModel.find({ task: taskId }).exec();
+        return this.taskChecklistModel.find({ task: taskId }).sort({ createdAt: -1 }).exec();
     }
 
     async update(id: string, updateTaskChecklistDto: UpdateTaskChecklistDto): Promise<TaskChecklistDocument | null> {
@@ -44,5 +44,13 @@ export class TaskChecklistService {
             completed_by: (value, field) => validateUserId(this.userService, value, field),
         });
         return this.taskChecklistModel.findByIdAndUpdate(id, updateTaskChecklistDto, { new: true }).exec();
+    }
+
+    async remove(id: string): Promise<TaskChecklistDocument> {
+    const checklist = await this.taskChecklistModel.findByIdAndDelete(id).exec();
+    if (!checklist) {
+        throw new NotFoundException(`Task checklist with ID ${id} not found.`);
+    }
+    return checklist;
     }
 }
