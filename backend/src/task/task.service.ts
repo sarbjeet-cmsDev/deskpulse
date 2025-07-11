@@ -131,22 +131,22 @@ async FetchDueTask(user_id: string): Promise<Task[]> {
     const updatedTask = await this.taskModel
       .findByIdAndUpdate(id, updateTaskDto, { new: true })
       .exec();
-    const projectObj = await (async ({ team_leader, project_coordinator, users, project_manager }) => {
-      return {
-        teamLeader: await getUserDetailsById(this.userservices, team_leader?.toString()),
-        projectCoordinator: await getUserDetailsById(this.userservices, project_coordinator?.toString()),
-        projectManager: await getUserDetailsById(this.userservices, project_manager?.toString()),
-        users
-      };
-    })(await validateProjectId(this.projectService, task.project.toString()));
-    const userDataObj = await getUserDetailsById(this.userservices, userData.userId?.toString());
-    this.eventEmitter.emit('task.status.updated', {
-      taskDetails: updatedTask,
-      userDetails: userDataObj,
-      oldTaskStatus: oldTaskStatus,
-      newTaskStatus: updateTaskDto.status,
-      projectObj: projectObj
-    });
+    // const projectObj = await (async ({ team_leader, project_coordinator, users, project_manager }) => {
+    //   return {
+    //     teamLeader: await getUserDetailsById(this.userservices, team_leader?.toString()),
+    //     projectCoordinator: await getUserDetailsById(this.userservices, project_coordinator?.toString()),
+    //     projectManager: await getUserDetailsById(this.userservices, project_manager?.toString()),
+    //     users
+    //   };
+    // })(await validateProjectId(this.projectService, task.project.toString()));
+    // const userDataObj = await getUserDetailsById(this.userservices, userData.userId?.toString());
+    // this.eventEmitter.emit('task.status.updated', {
+    //   taskDetails: updatedTask,
+    //   userDetails: userDataObj,
+    //   oldTaskStatus: oldTaskStatus,
+    //   newTaskStatus: updateTaskDto.status,
+    //   projectObj: projectObj
+    // });
 
     return updatedTask;
   }

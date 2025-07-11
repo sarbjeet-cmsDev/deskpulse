@@ -104,6 +104,7 @@ export default function TaskDetails() {
         commentPage,
         commentLimit
       );
+      console.log(res?.data,"kjshkjfhksjhfkjdkshf")
       setComments(res.data);
       setCommentTotal(res.total);
       setCommentPage(res.page);
@@ -132,7 +133,7 @@ export default function TaskDetails() {
   useEffect(() => {
     fetchComments();
   }, [taskId, commentPage, commentLimit]);
-
+console.log(comments,"ksdjflkdjslkjflksdklj")
   return (
     <div className="max-w-6xl mx-auto">
       <div className="main-content">
@@ -203,7 +204,7 @@ export default function TaskDetails() {
               <CommentList
                 comments={comments}
                 refreshComments={() => fetchComments()}
-                fetchComments={fetchComments}
+                fetchComments={()=>fetchComments()}
               />
 
               <Pagination

@@ -1,6 +1,6 @@
 import { createAxiosClient } from "@/utils/createAxiosClient";
 
-const axiosClient = createAxiosClient({ withCreds: false });
+const axiosClient = createAxiosClient({ withCreds: true });
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export interface ITimeline {

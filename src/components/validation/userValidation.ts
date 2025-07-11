@@ -9,56 +9,76 @@ export const userRoleEnum = z.enum([
   'employee',
 ]);
 
+// ✅ Regex patterns
+const lettersAndSpacesRegex = /^[A-Za-z\s]+$/;
+const numbersOnlyRegex = /^[0-9]+$/;
+
 // ✅ Base Schema
 export const userSchemaBase = z.object({
-  username: z.string().min(3, 'Username is required'),
+  username: z.string().min(1, 'Username is required'),
   email: z.string().email('Invalid email address'),
 
-  firstName: z.string().optional(),
-  lastName: z.string().optional(),
-  phone: z.string().optional(),
+  firstName: z.string()
+    .min(1, 'First name is required')
+    .regex(lettersAndSpacesRegex, 'First name must contain only letters and spaces'),
 
-  gender: genderEnum.optional(),
+  lastName: z.string()
+    .min(1, 'Last name is required')
+    .regex(lettersAndSpacesRegex, 'Last name must contain only letters and spaces'),
 
-  userRoles: z.array(userRoleEnum).optional(),
+  phone: z.string()
+    .min(1, 'Phone number is required')
+    .regex(numbersOnlyRegex, 'Phone number must contain only digits'),
 
-  isActive: z.boolean().optional(),
-  address: z.string().optional(),
-  city: z.string().optional(),
-  state: z.string().optional(),
-  country: z.string().optional(),
-  zipCode: z.string().optional(),
+  gender: genderEnum,
 
-  dateOfBirth: z
-    .union([z.string(), z.date()])
-    .transform((val) => (typeof val === 'string' ? new Date(val) : val))
-    .optional(),
+  userRoles: z.array(userRoleEnum),
 
-  profileImage: z.string().url('Invalid image URL').optional(),
+  isActive: z.boolean(),
+  address: z.string()
+  .min(1, 'Address is required')
+  .regex(lettersAndSpacesRegex, 'Address must contain only letters and spaces'),
+  
+  city: z.string()
+  .min(1, 'City is required')
+    .regex(lettersAndSpacesRegex, 'City must contain only letters and spaces'),
 
-  roles: z.array(z.string()).optional(),
+  state: z.string()
+  .min(1, 'State is required')
+    .regex(lettersAndSpacesRegex, 'State must contain only letters and spaces'),
 
-  hobbies: z.array(z.string()).optional(),
-  aboutUs: z.string().optional(),
-  jobTitle: z.string().optional(),
-  department: z.string().optional(),
-  managerId: z.string().optional(),
+  country: z.string()
+  .min(1, 'Country is required')
+    .regex(lettersAndSpacesRegex, 'Country must contain only letters and spaces'),
 
-  joinedDate: z
-    .union([z.string(), z.date()])
-    .transform((val) => (typeof val === 'string' ? new Date(val) : val))
-    .optional(),
+  zipCode: z.string()
+  .min(1, 'ZipCode is required'),
 
-  lastLogin: z
-    .union([z.string(), z.date()])
-    .transform((val) => (typeof val === 'string' ? new Date(val) : val))
-    .optional(),
+  dateOfBirth: z.union([z.string(), z.date()])
+    .transform((val) => (typeof val === 'string' ? new Date(val) : val)),
 
-  timezone: z.string().optional(),
-  languagePreference: z.string().optional(),
-  receiveEmailNotifications: z.boolean().optional(),
+  profileImage: z.string().url('Invalid image URL'),
+
+  roles: z.array(z.string()),
+
+  hobbies: z.array(z.string()),
+  aboutUs: z.string(),
+  jobTitle: z.string(),
+  department: z.string(),
+  managerId: z.string(),
+
+  joinedDate: z.union([z.string(), z.date()])
+    .transform((val) => (typeof val === 'string' ? new Date(val) : val)),
+
+  lastLogin: z.union([z.string(), z.date()])
+    .transform((val) => (typeof val === 'string' ? new Date(val) : val)),
+
+  timezone: z.string(),
+  languagePreference: z.string(),
+  receiveEmailNotifications: z.boolean(),
 });
 
+// ✅ For Create (unchanged)
 export const userCreateSchema = userSchemaBase.extend({
   password: z.string().min(6, 'Password must be at least 6 characters'),
   confirmPassword: z.string().min(6, 'Confirm Password is required'),
@@ -67,7 +87,8 @@ export const userCreateSchema = userSchemaBase.extend({
   path: ['confirmPassword'],
 });
 
-export const userUpdateSchema = userSchemaBase.partial();
+// ✅ For Update (all fields required + specific validations applied)
+export const userUpdateSchema = userSchemaBase;
 
 export const userResetPasswordSchema = z.object({
   newPassword: z.string().min(6, 'Password must be at least 6 characters'),

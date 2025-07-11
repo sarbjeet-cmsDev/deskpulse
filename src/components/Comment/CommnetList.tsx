@@ -23,7 +23,7 @@ export default function CommentList({
 }: CommentProps) {
   const [activeReplyId, setActiveReplyId] = useState<string | null>(null);
   const [activeEditId, setActiveEditId] = useState<string | null>(null);
-
+console.log(comments,"commentscomments")
   const renderMentions = (comment: IComment) => {
     let content = comment.content;
     if (!comment.mentioned_users || comment.mentioned_users.length === 0)
@@ -165,7 +165,7 @@ export default function CommentList({
     );
   };
 
-  const topLevelComments = comments.filter((c) => !c.parent_comment);
+  const topLevelComments = comments.filter((c) => c.parent_comment);
 
   return (
     <div className="mt-6">

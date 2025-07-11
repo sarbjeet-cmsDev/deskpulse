@@ -31,7 +31,7 @@ export class NotificationService {
     return this.notificationModel.find({
       user: userId,
       is_read: false, // ✅ Only fetch unread notifications
-    }).exec();
+    }).sort({ createdAt: -1 }).exec();
   }
 
   async update(id: string, updateNotificationDto: UpdateNotificationDto): Promise<Notification> {

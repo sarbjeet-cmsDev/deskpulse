@@ -61,7 +61,7 @@ export class TaskController {
     return this.taskService.findByReportToUser(userId);
   }
 
-  @Put(':id')
+  @Patch(':id')
   async update(
     @Param('id') id: string,
     @Body() updateTaskDto: UpdateTaskDto,

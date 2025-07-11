@@ -51,14 +51,14 @@ export default function Details({ project, taskId, onTaskUpdate }: DetailsProps)
   const handleAssignUser = async (userId: string) => {
     try {
         await TaskService.updateTask(taskId, { assigned_to: userId });
-         const taskLink = `${process.env.NEXT_PUBLIC_FRONTEND_URL}tasks/${taskId}`;
-         console.log(taskLink,'tasklink')
-        await NotificationService.createNotification({
-          content: "You have been assigned a new task.",
-          user: userId,                        
-          redirect_url: taskLink,                 
-          is_read: false,   
-        })
+        //  const taskLink = `${process.env.NEXT_PUBLIC_FRONTEND_URL}tasks/${taskId}`;
+        //  console.log(taskLink,'tasklink')
+        // await NotificationService.createNotification({
+        //   content: "You have been assigned a new task.",
+        //   user: userId,                        
+        //   redirect_url: taskLink,                 
+        //   is_read: false,   
+        // })
         Swal.fire("Assigned!", "The task has been assigned.", "success");
         if (onTaskUpdate) onTaskUpdate();
         handleCloseModal();

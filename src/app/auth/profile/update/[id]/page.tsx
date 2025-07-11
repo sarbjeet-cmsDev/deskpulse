@@ -122,16 +122,25 @@ const UpdateUserProfile = () => {
             First Name
           </label>
         <Input placeholder="First Name" {...register("firstName")} />
+        {errors.firstName && (
+          <p className="text-sm text-red-500">{errors.firstName.message}</p>
+        )}
 
         <label className="block text-sm font-medium text-gray-700 mb-1">
             Last Name
           </label>
         <Input placeholder="Last Name" {...register("lastName")} />
+        {errors.lastName && (
+          <p className="text-sm text-red-500">{errors.lastName.message}</p>
+        )}
 
         <label className="block text-sm font-medium text-gray-700 mb-1">
            Phone
           </label>
         <Input placeholder="Phone" {...register("phone")} />
+         {errors.phone && (
+          <p className="text-sm text-red-500">{errors.phone.message}</p>
+        )}
 
         {/* Gender Select */}
         <div>
@@ -156,26 +165,45 @@ const UpdateUserProfile = () => {
             Address
           </label>
         <Input placeholder="Address" {...register('address')} />
+        {errors.address && (
+          <p className="text-sm text-red-500">{errors.address.message}</p>
+        )}
 
          <label className="block text-sm font-medium text-gray-700 mb-1">
             City
           </label>
         <Input placeholder="City" {...register('city')} />
+         {errors.city && (
+          <p className="text-sm text-red-500">{errors.city.message}</p>
+        )}
+
 
         <label className="block text-sm font-medium text-gray-700 mb-1">
             State
           </label>
         <Input placeholder="State" {...register('state')} />
+         {errors.state && (
+          <p className="text-sm text-red-500">{errors.state.message}</p>
+        )}
+
 
         <label className="block text-sm font-medium text-gray-700 mb-1">
             Country
           </label>
         <Input placeholder="Country" {...register('country')} />
+         {errors.country && (
+          <p className="text-sm text-red-500">{errors.country.message}</p>
+        )}
+
 
         <label className="block text-sm font-medium text-gray-700 mb-1">
            Zip Code
           </label>
         <Input placeholder="Zip Code" {...register('zipCode')} />
+         {errors.zipCode && (
+          <p className="text-sm text-red-500">{errors.zipCode.message}</p>
+        )}
+
 
         {/* User Roles Multi-Select */}
         <div>
