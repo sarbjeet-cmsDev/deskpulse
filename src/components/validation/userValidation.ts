@@ -19,8 +19,7 @@ export const userSchemaBase = z.object({
     .nonempty('Username is required'),
 
   email: z.string()
-    .email('Invalid email address')
-    .optional(),
+    .email('Invalid email address'),
 
   firstName: z.string()
     .nonempty('First name is required')
