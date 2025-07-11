@@ -24,6 +24,7 @@ export class CreateTaskDto {
   description?: string;
 
   @IsEnum(TaskTypeEnum)
+  @IsOptional()
   type: TaskTypeEnum;
 
   @IsOptional()

@@ -56,12 +56,6 @@ export class TaskController {
     const limitNumber = parseInt(limit, 10);
     return this.taskService.findByProject(projectId, pageNumber, limitNumber);
   }
-
-  // @Get('assigned/:userId')
-  // async findByAssignedUser(@Param('userId') userId: string): Promise<Task[]> {
-  //   return this.taskService.findByAssignedUser(userId);
-  // }
-
   @Get('report-to/:userId')
   async findByReportToUser(@Param('userId') userId: string): Promise<Task[]> {
     return this.taskService.findByReportToUser(userId);

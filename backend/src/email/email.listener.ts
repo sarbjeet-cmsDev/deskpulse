@@ -18,7 +18,7 @@ export class EmailListener {
     const assignproject = payload.assignproject;
     if (assignproject) {
       for (const user of assignproject) {
-        const projectLink = `${process.env.FRONTEND_URL}projects/${payload.projectDetails._id.toString()}`;
+        const projectLink = `${process.env.FRONTEND_URL}project/${payload.projectDetails._id.toString()}`;
         const templates = `The project "${payload.projectDetails.title}" was successfully assigned to ${user.username} on ${new Date(payload.projectDetails.updatedAt).toLocaleString()}.`;
 
         await this.emailservice.sendEmail({
@@ -40,7 +40,7 @@ export class EmailListener {
 
   @OnEvent('task.status.updated', { async: true })
   async handleTaskStatusUpdatedEvent({ taskDetails, userDetails, projectObj, oldTaskStatus, newTaskStatus }: TaskStatusUpdatedPayload) {
-    const taskLink = `${process.env.FRONTEND_URL}/tasks/${taskDetails.id.toString()}`;
+    const taskLink = `${process.env.FRONTEND_URL}/task/${taskDetails.id.toString()}`;
     this.emailservice.sendEmail({
       to: projectObj.teamLeader.email,
       subject: 'Task Status Updated',
@@ -82,7 +82,7 @@ export class EmailListener {
 
   @OnEvent('task.assigned', { async: true })
   async handleTaskAssignEvent(payload: { taskdetails: any, assigntask: any }) {
-    const taskLink = `${process.env.FRONTEND_URL}/tasks/${payload.taskdetails._id.toString()}`;
+    const taskLink = `${process.env.FRONTEND_URL}/task/${payload.taskdetails._id.toString()}`;
     const assigntask = payload.assigntask;
     this.emailservice.sendEmail({
       to: assigntask.email,
@@ -107,7 +107,7 @@ export class EmailListener {
     const assignmentionUser = payload.assignmentionsuser;
     if (assignmentionUser) {
       for (const user of assignmentionUser) {
-        const commentlink = `${process.env.FRONTEND_URL}comments/${payload.CommentDetails._id.toString()}`;
+        const commentlink = `${process.env.FRONTEND_URL}comment/${payload.CommentDetails._id.toString()}`;
         await this.emailservice.sendEmail({
           to: user.email,
           subject: 'New Comment Notification',

@@ -50,7 +50,7 @@ export const GetKanbonList = () => {
     if (!draggedTask || draggedTask?.status === columnTitle) return;
 
     try {
-      await TaskService.updateTask(draggedTask._id, { status: columnTitle });
+      await TaskService.updateTaskStatus(draggedTask._id, { status: columnTitle });
 
       const updatedTasks = taskList.map((t) =>
         t._id === draggedTask._id ? { ...t, status: columnTitle } : t

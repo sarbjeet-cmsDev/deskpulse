@@ -21,7 +21,7 @@ export class NotificationListener {
       const notifications = assignproject.map(user => ({
         user: user.id.toString(),
         content: `The project "${projectDetails.title}" was successfully assigned by ${user.username} on ${new Date(projectDetails.updatedAt).toLocaleString()}.`,
-        redirect_url: `${process.env.FRONTEND_URL}projects/${payload.projectDetails._id.toString()}`,
+        redirect_url: `${process.env.FRONTEND_URL}project/${payload.projectDetails._id.toString()}`,
       }));
       await Promise.all(notifications.map(notification => this.notificationService.create(notification)));
     }
@@ -33,7 +33,7 @@ export class NotificationListener {
   async handleTaskStatusUpdatedEvent({ taskDetails, userDetails, projectObj, oldTaskStatus, newTaskStatus }: TaskStatusUpdatedPayload) {
     const { id } = taskDetails;
     const templates = `Task status was updated from "${oldTaskStatus}" to "${newTaskStatus}" by ${userDetails?.username || 'Unknown User'} on ${new Date(taskDetails?.updatedAt).toLocaleString()}.`;
-    const taskLink = `${process.env.FRONTEND_URL}/tasks/${id.toString()}`;
+    const taskLink = `${process.env.FRONTEND_URL}/task/${id.toString()}`;
     const notifications: CreateNotificationDto[] = [
       { user: projectObj.teamLeader.id.toString(), content: templates, redirect_url: taskLink },
       { user: projectObj.projectCoordinator.id.toString(), content: templates, redirect_url: taskLink },
@@ -87,8 +87,7 @@ export class NotificationListener {
   @OnEvent('timeline.created', { async: true })
   async handleTimelineCreatedEvent(payload: { taskdata: any, createdTimeline: any }) {
     const templates = `Worked ${payload.createdTimeline.time_spent} hour(s) on task "${payload.taskdata.task.title}" — general updates and review. Comment: ${payload.createdTimeline.comment}. On ${new Date(payload.createdTimeline.date).toLocaleString()} by "${payload.taskdata.userData.username}"`;
-    const timelineLInk = `${process.env.FRONTEND_URL}/tasks/${payload.createdTimeline._id.toString()}`;
-    // log(timelineLInk)
+    const timelineLInk = `${process.env.FRONTEND_URL}/task/${payload.createdTimeline._id.toString()}`;
     const notifications: CreateNotificationDto[] = [
       { user: payload.taskdata.project.team_leader.toString(), content: templates, redirect_url: timelineLInk },
       { user: payload.taskdata.project.project_manager.toString(), content: templates, redirect_url: timelineLInk },

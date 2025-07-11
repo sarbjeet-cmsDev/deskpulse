@@ -95,6 +95,10 @@ const TaskService = {
     const res = await axiosClient.patch(`${API_URL}/tasks/${id}`, data);
     return res.data;
   },
+  async updateTaskStatus(id: string, data: UpdateTaskDto): Promise<ITask> {
+    const res = await axiosClient.patch(`${API_URL}/tasks/status/${id}`, data);
+    return res.data;
+  },
 
   // Delete task by ID
   async deleteTask(id: string): Promise<ITask> {
