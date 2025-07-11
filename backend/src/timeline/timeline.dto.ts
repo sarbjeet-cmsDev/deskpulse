@@ -1,6 +1,6 @@
 import { IsString, IsMongoId, IsOptional, IsNumber, IsBoolean, IsDate, IsEnum, IsNotEmpty } from 'class-validator';
-import { Schema as MongooseSchema } from 'mongoose';
-import { Type } from 'class-transformer';
+import { Schema as MongooseSchema, Types } from 'mongoose';
+import { Transform, Type } from 'class-transformer';
 
 export class CreateTimelineDto {
     @IsMongoId()
@@ -14,13 +14,13 @@ export class CreateTimelineDto {
     @IsDate({ message: 'Date must be a valid Date instance.' })
     date: Date;
 
+    @IsOptional()
     @IsMongoId()
-    @IsNotEmpty({ message: 'User is required.' })
+    @Transform(({ value }) => (value ? new Types.ObjectId(value) : undefined))
     user?: MongooseSchema.Types.ObjectId;
 
-    @IsNumber()
     @IsNotEmpty({ message: 'Time spent is required.' })
-    time_spent?: number;
+    time_spent?: string;
 
     @IsOptional()
     @IsString({ each: false })
@@ -54,9 +54,8 @@ export class UpdateTimelineDto {
     description?: string;
 
 
-    @IsNumber()
     @IsNotEmpty()
-    time_spent?: number; // Time spent in hours
+    time_spent?: string; // Time spent in hours
 
     @IsBoolean()
     @IsOptional()

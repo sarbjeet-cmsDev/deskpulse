@@ -14,7 +14,7 @@ export class TaskListener {
     @OnEvent('timeline.created', { async: true })
     async handleTimelineCreatedEvent(payload: { taskdata: any, createdTimeline: any }) {
         const oldestimated_time = payload.taskdata.task.totaltaskminuts ;
-        const time_spent = payload.createdTimeline.time_spent;
+        const time_spent = parseInt(payload.createdTimeline.time_spent);
         const new_estimation_time = oldestimated_time + time_spent;
         const updateTaskDto: UpdateTaskDto = {
             totaltaskminuts: new_estimation_time
