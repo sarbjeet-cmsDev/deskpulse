@@ -18,11 +18,10 @@ export class AdminProjectController {
 
   // ✅ Create Project
   @Post()
-  async create(@Body() createProjectDto: CreateProjectDto): Promise<any> {
-    const project = await this.projectService.create(createProjectDto);
+  async create(@Body() createProjectDto: CreateProjectDto): Promise<{ message: string}> {
+    await this.projectService.create(createProjectDto);
     return {
       message: 'Project created successfully!',
-      data: project,
     };
   }
 
@@ -53,20 +52,18 @@ export class AdminProjectController {
     @Param('id') id: string,
     @Body() updateProjectDto: UpdateProjectDto,
   ): Promise<any> {
-    const updated = await this.projectService.update(id, updateProjectDto);
+    await this.projectService.update(id, updateProjectDto);
     return {
       message: 'Project updated successfully!',
-      data: updated,
     };
   }
 
   // ✅ Delete Project by ID
   @Delete(':id')
   async remove(@Param('id') id: string): Promise<any> {
-    const deleted = await this.projectService.remove(id);
+    await this.projectService.remove(id);
     return {
       message: 'Project deleted successfully!',
-      data: deleted,
     };
   }
 }

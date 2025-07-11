@@ -19,7 +19,6 @@ export interface Project {
   sort_order: number;
   createdAt: Date;
   updatedAt: Date;
-  project?: string;        
   report_to?: string;  
   avatar?: string;
   created_by: MongooseSchema.Types.ObjectId;

@@ -22,12 +22,18 @@ import { log } from 'console';
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) { }
 
-  @Post()
-  create(@Body() createProjectDto: CreateProjectDto, @CurrentUser() user: any) {
-    createProjectDto.created_by = user.userId;  // Safe, server-side only
-    return this.projectService.create(createProjectDto);
-  }
 
+
+  @Get('me')
+  async getMyProjects(
+    @CurrentUser() user: any,
+  ): Promise<{ message: string; data: Project[] }> {
+    const projects = await this.projectService.findProjectsByUserId(user.userId);
+    return {
+      message: 'Projects fetched successfully!',
+      data: projects,
+    };
+  }
   @Get()
   async findAll(): Promise<Project[]> {
     return this.projectService.findAll();
@@ -43,24 +49,9 @@ export class ProjectController {
 
   }
 
-
   @Get('code/:code')
   async findByCode(@Param('code') code: string): Promise<Project> {
     return this.projectService.findByCode(code);
-  }
-
-  @Put(':id')
-  async update(
-    @Param('id') id: string,
-    @Body() updateProjectDto: UpdateProjectDto,
-    @CurrentUser() user: any
-  ): Promise<{ message: string; data: Project }> {
-    updateProjectDto.updated_by = user.userId;
-    const updatedProject = await this.projectService.update(id, updateProjectDto);
-    return {
-      message: 'Project updated successfully!',
-      data: updatedProject,
-    };
   }
   @Delete(':id')
   async remove(@Param('id') id: string, @CurrentUser() user: any): Promise<{ message: string; data: boolean }> {
@@ -70,9 +61,6 @@ export class ProjectController {
       data: updatedProject,
     };
   }
-
-
-
   @Post('/:id/users/:userId')
   async addUser(
     @Param('id') id: string,
@@ -94,8 +82,4 @@ export class ProjectController {
     return this.projectService.removeUser(id, userId);
   }
 
-  @Get('me')
-  async getMyProjects(@Req() req: any): Promise<Project[]> {
-    return this.projectService.findProjectsByUserId(req.user.userId);
-  }
 }

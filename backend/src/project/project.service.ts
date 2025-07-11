@@ -20,36 +20,6 @@ export class ProjectService {
   async create(createProjectDto: CreateProjectDto): Promise<Project> {
     try {
       const missingRoles: string[] = [];
-      // Check project coordinator
-      await getUserDetailsById(
-        this.userservices,
-        createProjectDto.project_coordinator?.toString(),
-      ).catch(() => {
-        missingRoles.push('project_coordinator');
-      });
-      // Check team leader
-      await getUserDetailsById(
-        this.userservices,
-        createProjectDto.team_leader?.toString(),
-      ).catch(() => {
-        missingRoles.push('team_leader');
-      });
-      // Check project manager
-      await getUserDetailsById(
-        this.userservices,
-        createProjectDto.project_manager?.toString(),
-      ).catch(() => {
-        missingRoles.push('project_manager');
-      });
-
-      await getUserDetailsById(
-        this.userservices,
-        createProjectDto.created_by?.toString(),
-      ).catch(() => {
-        missingRoles.push('created_by');
-      });
-
-
       if (missingRoles.length > 0) {
         throw new NotFoundException(
           `The following users were not found: ${missingRoles.join(', ')}`,
@@ -77,6 +47,7 @@ export class ProjectService {
       if (error.code === 11000 && error.keyPattern?.code) {
         throw new ConflictException('Project code must be unique.');
       }
+      throw new(error)
     }
   }
   async findAll(): Promise<Project[]> {

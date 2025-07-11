@@ -8,7 +8,7 @@ export class Project {
   @Prop({ required: true, unique: true, immutable: true })
   code: string;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   title: string;
 
   @Prop({ required: false })
@@ -18,13 +18,13 @@ export class Project {
   @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'User', required: false }] })
   users: MongooseSchema.Types.ObjectId[];
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: false })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User'})
   project_coordinator: MongooseSchema.Types.ObjectId;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: false })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User' })
   team_leader: MongooseSchema.Types.ObjectId;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: false })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User' })
   project_manager: MongooseSchema.Types.ObjectId;
 
   @Prop({ required: false })
