@@ -23,7 +23,7 @@ export default function CommentList({
 }: CommentProps) {
   const [activeReplyId, setActiveReplyId] = useState<string | null>(null);
   const [activeEditId, setActiveEditId] = useState<string | null>(null);
-console.log(comments,"commentscomments")
+
   const renderMentions = (comment: IComment) => {
     let content = comment.content;
     if (!comment.mentioned_users || comment.mentioned_users.length === 0)
@@ -49,7 +49,11 @@ console.log(comments,"commentscomments")
       : new Date();
     const timeAgo = formatDistanceToNow(createdTime, { addSuffix: true });
 
-    const hasChildren = comments.some((c) => c.parent_comment === comment._id);
+    const hasChildren = comments.some((c) =>
+      Array.isArray(c.parent_comment)
+        ? c.parent_comment.includes(comment._id)
+        : c.parent_comment === comment._id
+    );
 
     return (
       <li
@@ -156,8 +160,13 @@ console.log(comments,"commentscomments")
               </div>
             )}
 
+            {/* Render nested replies */}
             {comments
-              .filter((child) => child.parent_comment === comment._id)
+              .filter((child) =>
+                Array.isArray(child.parent_comment)
+                  ? child.parent_comment.includes(comment._id)
+                  : child.parent_comment === comment._id
+              )
               .map((child) => renderComment(child, true))}
           </div>
         </div>
@@ -165,7 +174,13 @@ console.log(comments,"commentscomments")
     );
   };
 
-  const topLevelComments = comments.filter((c) => c.parent_comment);
+  // Get top-level comments (no parent or empty parent_comment array)
+  const topLevelComments = comments.filter(
+    (comment) =>
+      !comment.parent_comment ||
+      (Array.isArray(comment.parent_comment) &&
+        comment.parent_comment.length === 0)
+  );
 
   return (
     <div className="mt-6">

@@ -1,12 +1,12 @@
-import { createAxiosClient } from '@/utils/createAxiosClient';
+import { createAxiosClient } from "@/utils/createAxiosClient";
 
 const axiosClient = createAxiosClient({ withCreds: false });
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export interface IProject {
-  _id: string;
-  code: string;
-  users: string[]; 
+  _id?: string;
+  code?: string;
+  users: string[];
   notes?: string;
   creds?: string;
   additional_information?: string;
@@ -14,10 +14,12 @@ export interface IProject {
   url_live?: string;
   url_staging?: string;
   url_uat?: string;
-  is_active: boolean;
-  sort_order: number;
+  is_active?: true;
+  sort_order?: number;
   createdAt?: string;
   updatedAt?: string;
+  project?: any;
+  data?: any;
 }
 
 const AdminProjectService = {
@@ -26,7 +28,7 @@ const AdminProjectService = {
     page?: number;
     limit?: number;
     keyword?: string;
-    sortOrder?: 'asc' | 'desc';
+    sortOrder?: "asc" | "desc";
   }): Promise<{ data: IProject[]; total: number }> {
     const res = await axiosClient.get(`${API_URL}/admin/project`, { params });
     return {
@@ -42,7 +44,9 @@ const AdminProjectService = {
   },
 
   //  Create new project
-  async createProject(data: Omit<IProject, '_id' | 'createdAt' | 'updatedAt'>): Promise<IProject> {
+  async createProject(
+    data: Omit<IProject, "_id" | "createdAt" | "updatedAt">
+  ): Promise<IProject> {
     const res = await axiosClient.post(`${API_URL}/admin/project`, data);
     return res.data;
   },

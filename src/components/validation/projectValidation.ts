@@ -1,15 +1,12 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const projectCreateSchema = z.object({
   code: z.string().min(1, "Project code is required"),
-
-  // ✅ required array (no `.default([])`, no `.optional()`)
   users: z.array(z.string(), {
     required_error: "Users are required",
     invalid_type_error: "Users must be an array of strings",
   }),
 
-  // ✅ allow string or number input, convert to number
   sort_order: z
     .union([z.string(), z.number()])
     .transform((val) => Number(val))
@@ -17,8 +14,9 @@ export const projectCreateSchema = z.object({
       message: "Sort order must be a valid number",
     }),
 
-  // ✅ required boolean
-  is_active: z.boolean(),
+  is_active: z.literal(true, {
+    errorMap: () => ({ message: "Active status is required" }),
+  }),
 
   project_coordinator: z.string().optional(),
   team_leader: z.string().optional(),
@@ -31,6 +29,7 @@ export const projectCreateSchema = z.object({
   url_live: z.string().optional(),
   url_staging: z.string().optional(),
   url_uat: z.string().optional(),
+  title: z.string().min(1, "Title is required"),
 });
 
 export const projectUpdateSchema = projectCreateSchema.partial();

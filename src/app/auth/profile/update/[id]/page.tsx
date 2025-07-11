@@ -5,7 +5,10 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { userUpdateSchema } from "@/components/validation/userValidation";
+import {
+  userSchemaBaseUpdate,
+  userUpdateSchema,
+} from "@/components/validation/userValidation";
 import { Input } from "@/components/Form/Input";
 import { Button } from "@/components/Form/Button";
 import { H1 } from "@/components/Heading/H1";
@@ -15,7 +18,7 @@ import UserService from "@/service/user.service";
 import { H2 } from "@/components/Heading/H2";
 import { H3 } from "@/components/Heading/H3";
 
-type UpdateUserInput = z.infer<typeof userUpdateSchema>;
+type UpdateUserInput = z.infer<typeof userSchemaBaseUpdate>;
 
 const UpdateUserProfile = () => {
   const router = useRouter();
@@ -29,7 +32,7 @@ const UpdateUserProfile = () => {
     reset,
     formState: { errors },
   } = useForm<UpdateUserInput>({
-    resolver: zodResolver(userUpdateSchema),
+    resolver: zodResolver(userSchemaBaseUpdate),
   });
 
   // Fetch user details on mount
@@ -37,7 +40,7 @@ const UpdateUserProfile = () => {
     const fetchUser = async () => {
       try {
         const user = await UserService.getUserById();
-        console.log('user UpdateUserProfile ',user)
+        console.log("user UpdateUserProfile ", user);
 
         reset({
           username: user.username ?? "",
@@ -48,7 +51,7 @@ const UpdateUserProfile = () => {
           gender: ["male", "female", "other"].includes(user.gender || "")
             ? (user.gender as "male" | "female" | "other")
             : undefined,
-          userRoles: user.userRoles ?? [],
+          roles: user.userRoles ?? [],
           isActive: user.isActive ?? false,
           aboutUs: user.aboutUs ?? "",
           jobTitle: user.jobTitle ?? "",
@@ -60,7 +63,7 @@ const UpdateUserProfile = () => {
           state: user.state ?? "",
           country: user.country ?? "",
           zipCode: user.zipCode ?? "",
-        //   dateOfBirth: user.dateOfBirth ? user.dateOfBirth.split("T")[0] : "",
+          //   dateOfBirth: user.dateOfBirth ? user.dateOfBirth.split("T")[0] : "",
         });
       } catch (err) {
         console.error("Failed to fetch user", err);
@@ -89,7 +92,7 @@ const UpdateUserProfile = () => {
 
   return (
     <div className="min-h-screen flex-col justify-center items-start pt-10">
-       <div className="flex justify-center items-center p-[24px] border-b border-[#31394f14]">
+      <div className="flex justify-center items-center p-[24px] border-b border-[#31394f14]">
         <div className="w-[2%]">
           <a href="/auth/profile">
             <Image src={leftarrow} alt="Logo" width={16} height={16} />
@@ -98,164 +101,169 @@ const UpdateUserProfile = () => {
         <H3 className="w-[98%] text-center">Update Profile</H3>
       </div>
       <div className="flex justify-center items-center">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="w-full bg-white p-6 rounded shadow space-y-4"
-      > 
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="w-full bg-white p-6 rounded shadow space-y-4"
+        >
+          <label className="block text-sm font-medium text-gray-700 mb-1">
             Username
           </label>
-        <Input placeholder="Username" {...register("username")} />
-        {errors.username && (
-          <p className="text-sm text-red-500">{errors.username.message}</p>
-        )}
-        
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+          <Input placeholder="Username" {...register("username")} />
+          {errors.username && (
+            <p className="text-sm text-red-500">{errors.username.message}</p>
+          )}
+
+          <label className="block text-sm font-medium text-gray-700 mb-1">
             Email
           </label>
-        <Input type="email" placeholder="Email" {...register("email")} readOnly/>
-        {errors.email && (
-          <p className="text-sm text-red-500">{errors.email.message}</p>
-        )}
-        
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+          <Input
+            type="email"
+            placeholder="Email"
+            {...register("email")}
+            readOnly
+          />
+          {errors.email && (
+            <p className="text-sm text-red-500">{errors.email.message}</p>
+          )}
+
+          <label className="block text-sm font-medium text-gray-700 mb-1">
             First Name
           </label>
-        <Input placeholder="First Name" {...register("firstName")} />
-        {errors.firstName && (
-          <p className="text-sm text-red-500">{errors.firstName.message}</p>
-        )}
+          <Input placeholder="First Name" {...register("firstName")} />
+          {errors.firstName && (
+            <p className="text-sm text-red-500">{errors.firstName.message}</p>
+          )}
 
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
             Last Name
           </label>
-        <Input placeholder="Last Name" {...register("lastName")} />
-        {errors.lastName && (
-          <p className="text-sm text-red-500">{errors.lastName.message}</p>
-        )}
-
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-           Phone
-          </label>
-        <Input placeholder="Phone" {...register("phone")} />
-         {errors.phone && (
-          <p className="text-sm text-red-500">{errors.phone.message}</p>
-        )}
-
-        {/* Gender Select */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Gender
-          </label>
-          <select
-            {...register("gender")}
-            className="w-full border rounded px-3 py-2"
-          >
-            <option value="">Select gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="other">Other</option>
-          </select>
-          {errors.gender && (
-            <p className="text-sm text-red-500">{errors.gender.message}</p>
+          <Input placeholder="Last Name" {...register("lastName")} />
+          {errors.lastName && (
+            <p className="text-sm text-red-500">{errors.lastName.message}</p>
           )}
-        </div>
-          
-         <label className="block text-sm font-medium text-gray-700 mb-1">
+
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Phone
+          </label>
+          <Input placeholder="Phone" {...register("phone")} />
+          {errors.phone && (
+            <p className="text-sm text-red-500">{errors.phone.message}</p>
+          )}
+
+          {/* Gender Select */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Gender
+            </label>
+            <select
+              {...register("gender")}
+              className="w-full border rounded px-3 py-2"
+            >
+              <option value="">Select gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
+            {errors.gender && (
+              <p className="text-sm text-red-500">{errors.gender.message}</p>
+            )}
+          </div>
+
+          <label className="block text-sm font-medium text-gray-700 mb-1">
             Address
           </label>
-        <Input placeholder="Address" {...register('address')} />
-        {errors.address && (
-          <p className="text-sm text-red-500">{errors.address.message}</p>
-        )}
+          <Input placeholder="Address" {...register("address")} />
+          {errors.address && (
+            <p className="text-sm text-red-500">{errors.address.message}</p>
+          )}
 
-         <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
             City
           </label>
-        <Input placeholder="City" {...register('city')} />
-         {errors.city && (
-          <p className="text-sm text-red-500">{errors.city.message}</p>
-        )}
+          <Input placeholder="City" {...register("city")} />
+          {errors.city && (
+            <p className="text-sm text-red-500">{errors.city.message}</p>
+          )}
 
-
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
             State
           </label>
-        <Input placeholder="State" {...register('state')} />
-         {errors.state && (
-          <p className="text-sm text-red-500">{errors.state.message}</p>
-        )}
+          <Input placeholder="State" {...register("state")} />
+          {errors.state && (
+            <p className="text-sm text-red-500">{errors.state.message}</p>
+          )}
 
-
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
             Country
           </label>
-        <Input placeholder="Country" {...register('country')} />
-         {errors.country && (
-          <p className="text-sm text-red-500">{errors.country.message}</p>
-        )}
-
-
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-           Zip Code
-          </label>
-        <Input placeholder="Zip Code" {...register('zipCode')} />
-         {errors.zipCode && (
-          <p className="text-sm text-red-500">{errors.zipCode.message}</p>
-        )}
-
-
-        {/* User Roles Multi-Select */}
-        <div>
-          <label className=" hidden block text-sm font-medium text-gray-700 mb-1">
-            User Roles
-          </label>
-          <select
-            multiple
-            {...register("userRoles")}
-            className="hidden w-full border border-gray-300 rounded px-3 py-2"
-          >
-            <option value="admin">Admin</option>
-            <option value="project_manager">Project Manager</option>
-            <option value="team_member">Team Member</option>
-            <option value="client">Client</option>
-            <option value="employee">Employee</option>
-          </select>
-          {errors.userRoles && (
-            <p className="text-sm text-red-500">{errors.userRoles.message}</p>
+          <Input placeholder="Country" {...register("country")} />
+          {errors.country && (
+            <p className="text-sm text-red-500">{errors.country.message}</p>
           )}
-        </div>
 
-        <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Zip Code
+          </label>
+          <Input placeholder="Zip Code" {...register("zipCode")} />
+          {errors.zipCode && (
+            <p className="text-sm text-red-500">{errors.zipCode.message}</p>
+          )}
+
+          {/* User Roles Multi-Select */}
+          <div>
+            <label className=" hidden block text-sm font-medium text-gray-700 mb-1">
+              User Roles
+            </label>
+            <select
+              multiple
+              {...register("roles")}
+              className="hidden w-full border border-gray-300 rounded px-3 py-2"
+            >
+              <option value="admin">Admin</option>
+              <option value="project_manager">Project Manager</option>
+              <option value="team_member">Team Member</option>
+              <option value="client">Client</option>
+              <option value="employee">Employee</option>
+            </select>
+            {errors.roles && (
+              <p className="text-sm text-red-500">{errors.roles.message}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Date of Birth
+            </label>
             <input
-                type="date"
-                {...register('dateOfBirth')}
-                className="w-full border border-gray-300 rounded px-3 py-2"
+              type="date"
+              {...register("dateOfBirth")}
+              className="w-full border border-gray-300 rounded px-3 py-2"
             />
             {errors.dateOfBirth && (
-                <p className="text-sm text-red-500">{errors.dateOfBirth.message}</p>
+              <p className="text-sm text-red-500">
+                {errors.dateOfBirth.message}
+              </p>
             )}
-            </div>
+          </div>
 
-        {/* isActive Checkbox */}
-        <div className="flex items-center space-x-2">
-          <input
-            type="checkbox"
-            {...register("isActive")}
-            className="h-4 w-4 text-blue-600 border-gray-300 rounded"
-          />
-          <label className="text-sm text-gray-700">Is Active</label>
-        </div>
+          {/* isActive Checkbox */}
+          <div className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              {...register("isActive")}
+              className="h-4 w-4 text-blue-600 border-gray-300 rounded"
+            />
+            <label className="text-sm text-gray-700">Is Active</label>
+          </div>
 
-        <Button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
-        >
-          {loading ? "Updating..." : "Update User"}
-        </Button>
-      </form>
+          <Button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
+          >
+            {loading ? "Updating..." : "Update User"}
+          </Button>
+        </form>
       </div>
     </div>
   );

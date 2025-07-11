@@ -15,7 +15,7 @@ export default function MyProjects() {
     const loadProjects = async () => {
       try {
         const data = await ProjectService.getProjectByUserId();
-        setProjects(data);
+        setProjects(data?.data);
       } catch (error) {
         console.error("Error fetching projects:", error);
       } finally {
@@ -25,7 +25,6 @@ export default function MyProjects() {
 
     loadProjects();
   }, []);
-
   return (
     <div className="max-w-6xl mx-auto">
       <div className="main-content">
@@ -45,10 +44,10 @@ export default function MyProjects() {
               ) : projects.length === 0 ? (
                 <p>No projects found.</p>
               ) : (
-                projects.map((project) => (
-                   <Link key={project._id} href={`/project/${project._id}`}>
-                     <ProjectCard project={project} />
-                   </Link>
+                projects?.map((project: any) => (
+                  <Link key={project._id} href={`/project/${project._id}`}>
+                    <ProjectCard project={project} />
+                  </Link>
                 ))
               )}
             </div>

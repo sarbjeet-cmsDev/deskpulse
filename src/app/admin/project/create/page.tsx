@@ -102,7 +102,10 @@ const CreateProjectPage = () => {
         {errors.code && (
           <p className="text-sm text-red-500">{errors.code.message}</p>
         )}
-
+        <Input placeholder="Title" {...register("title")} />
+        {errors.title && (
+          <p className="text-sm text-red-500">{errors.title.message}</p>
+        )}
         <Controller
           name="users"
           control={control}
@@ -150,6 +153,9 @@ const CreateProjectPage = () => {
         />
 
         <Input placeholder="Dev URL" {...register("url_dev")} />
+        {errors.url_dev && (
+          <p className="text-sm text-red-500">{errors.url_dev.message}</p>
+        )}
         <Input placeholder="Live URL" {...register("url_live")} />
         <Input placeholder="Staging URL" {...register("url_staging")} />
         <Input placeholder="UAT URL" {...register("url_uat")} />
@@ -179,22 +185,15 @@ const CreateProjectPage = () => {
 
         <Input placeholder="Avatar URL" {...register("avatar")} />
 
-        <Input
-          type="number"
-          placeholder="Sort Order"
-          {...register("sort_order")}
-        />
-        {errors.sort_order && (
-          <p className="text-sm text-red-500">{errors.sort_order.message}</p>
-        )}
-
         <div>
           <label className="flex items-center gap-2">
             <input type="checkbox" {...register("is_active")} />
             <span>Is Active</span>
           </label>
         </div>
-
+        {errors.is_active && (
+          <p className="text-sm text-red-500">{errors.is_active.message}</p>
+        )}
         <Button
           type="submit"
           disabled={isSubmitting}

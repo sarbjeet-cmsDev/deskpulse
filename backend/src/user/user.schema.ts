@@ -1,19 +1,24 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
-import { IsString, IsOptional, IsBoolean, IsArray, IsDate, IsEnum, IsNumber } from 'class-validator';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Document } from "mongoose";
+import {
+  IsString,
+  IsOptional,
+  IsBoolean,
+  IsArray,
+  IsDate,
+  IsEnum,
+  IsNumber,
+} from "class-validator";
 
 export enum Gender {
-  MALE = 'male',
-  FEMALE = 'female',
-  OTHER = 'other',
+  MALE = "male",
+  FEMALE = "female",
+  OTHER = "other",
 }
 
 export enum UserRole {
-  ADMIN = 'admin',
-  PROJECT_MANAGER = 'project_manager',
-  TEAM_MEMBER = 'team_member',
-  CLIENT = 'client',
-  EMPLOYEE = 'employee',
+  ADMIN = "admin",
+  USER = "user",
 }
 
 export type UserDocument = User & Document;
@@ -100,7 +105,7 @@ export class User {
 
   @IsOptional()
   @IsEnum(UserRole, { each: true })
-  @Prop({ type: [String], enum: UserRole, default: ['employee'] })
+  @Prop({ type: [String], default: ["employee"] })
   userRoles?: UserRole[];
 
   @IsOptional()
