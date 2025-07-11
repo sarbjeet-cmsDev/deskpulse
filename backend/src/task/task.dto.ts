@@ -1,4 +1,4 @@
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsString,
   IsMongoId,
@@ -8,7 +8,7 @@ import {
   IsDate,
   IsEnum,
 } from 'class-validator';
-import { Schema as MongooseSchema } from 'mongoose';
+import { Schema as MongooseSchema, Types } from 'mongoose';
 import { AcceptanceLevelEnum, PriorityEnum, TaskStatusEnum, TaskTypeEnum } from './task.interface';
 
 
@@ -37,10 +37,12 @@ export class CreateTaskDto {
 
   @IsOptional()
   @IsMongoId()
+  @Transform(({ value }) => (value ? new Types.ObjectId(value) : undefined))
   assigned_to?: MongooseSchema.Types.ObjectId;
 
   @IsOptional()
   @IsMongoId()
+  @Transform(({ value }) => (value ? new Types.ObjectId(value) : undefined))
   report_to?: MongooseSchema.Types.ObjectId;
 
   @IsOptional()
@@ -67,6 +69,17 @@ export class CreateTaskDto {
   @IsOptional()
   @IsEnum(AcceptanceLevelEnum)
   acceptance?: AcceptanceLevelEnum;
+
+
+  @IsOptional()
+  @IsNumber()
+  estimated_time?: number;
+
+  @IsOptional()
+  @IsNumber()
+  totaltaskminuts?: number;
+
+
 }
 
 export class UpdateTaskDto {
@@ -96,7 +109,9 @@ export class UpdateTaskDto {
 
   @IsOptional()
   @IsMongoId()
+  @Transform(({ value }) => (value ? new Types.ObjectId(value) : undefined))
   report_to?: MongooseSchema.Types.ObjectId;
+
 
   @IsOptional()
   @IsMongoId()
@@ -122,6 +137,16 @@ export class UpdateTaskDto {
   @IsOptional()
   @IsEnum(AcceptanceLevelEnum)
   acceptance?: AcceptanceLevelEnum;
+
+
+  @IsOptional()
+  @IsNumber()
+  estimated_time?: number;
+
+  @IsOptional()
+  @IsNumber()
+  totaltaskminuts?: number;
+
 }
 
 export class UpdateTaskStatusUpdateDto {
@@ -129,6 +154,14 @@ export class UpdateTaskStatusUpdateDto {
   status: TaskStatusEnum;
 
   @IsOptional()
+  @IsEnum(AcceptanceLevelEnum)
+  acceptance?: AcceptanceLevelEnum;
+
+  @IsOptional()
   @IsNumber()
   revision?: number; // corrected typo
+
+  @IsOptional()
+  @IsNumber()
+  totaltaskminuts?: number;
 }

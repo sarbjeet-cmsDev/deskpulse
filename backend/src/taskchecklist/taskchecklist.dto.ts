@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import {
   IsString,
   IsOptional,
@@ -7,7 +8,7 @@ import {
   IsNumber,
   IsNotEmpty,
 } from 'class-validator';
-import { Schema as MongooseSchema } from 'mongoose';
+import { Schema as MongooseSchema, Types } from 'mongoose';
 
 // ----------- CREATE DTO -----------
 export class CreateTaskChecklistDto {
@@ -23,8 +24,11 @@ export class CreateTaskChecklistDto {
   @IsMongoId({ message: 'Task must be a valid Mongo ID' })
   task: string;
 
-  @IsMongoId({ message: 'Created by must be a valid Mongo ID' })
-  created_by: string;
+  @IsOptional()
+    @Transform(({ value }) => (value ? new Types.ObjectId(value) : undefined))
+  @IsMongoId()
+  
+  created_by: MongooseSchema.Types.ObjectId;
   
   @IsOptional()
   @IsMongoId({ message: 'Completed by must be a valid Mongo ID' })

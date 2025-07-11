@@ -40,7 +40,6 @@ export class EmailProcessor {
     }
     try {
       await this.transporter.sendMail(mailOptions);
-      console.log('Email sent successfully.');
     } catch (err) {
       console.error('Failed to send email:', err);
     }
@@ -48,7 +47,6 @@ export class EmailProcessor {
 
   @Process('send-email')
   async handleSendEmail(job: Job<IEmailSender>) {
-    console.log('[Processor] Handling job:', job.id);
     await this.sendEmail(job.data);
   }
 

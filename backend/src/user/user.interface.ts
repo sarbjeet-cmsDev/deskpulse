@@ -1,6 +1,5 @@
-import { Document, Types } from 'mongoose';
-
-export type UserRole = 'admin' | 'project_manager' | 'team_member' | 'client' | 'employee';
+import { Document } from 'mongoose';
+export type UserRole = 'admin' | 'user';
 export type Gender = 'male' | 'female' | 'other';
 
 export interface User {
@@ -16,5 +15,4 @@ export interface User {
   createdAt: Date;
   updatedAt: Date;
 }
-
 export interface UserDocument extends User, Document {}

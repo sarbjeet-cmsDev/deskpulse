@@ -1,5 +1,6 @@
+import { Transform } from 'class-transformer';
 import { IsString, IsMongoId, IsOptional, IsArray } from 'class-validator';
-import { Schema as MongooseSchema } from 'mongoose';
+import { Schema as MongooseSchema, Types } from 'mongoose';
 
 export class CreateCommentDto {
   @IsString()
@@ -11,12 +12,15 @@ export class CreateCommentDto {
   @IsOptional()
   @IsArray()
   @IsMongoId({ each: true })
-  mentioned?: MongooseSchema.Types.ObjectId[];
+  mentioned?: any;
 
   @IsOptional()
   @IsMongoId({ each: true })
   parent_comment?: MongooseSchema.Types.ObjectId[];
 
+
+  @IsOptional()
+   @Transform(({ value }) => (value ? new Types.ObjectId(value) : undefined))
   @IsMongoId()
   created_by: MongooseSchema.Types.ObjectId;
 }

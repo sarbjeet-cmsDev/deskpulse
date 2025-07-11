@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Comment, CommentDocument } from './comment.schema';
 import { TaskService } from 'src/task/task.service';
 import { validateTaskId } from './comment.helper';
 import { UserService } from 'src/user/user.service';
-import { extractTextFromHtml, getUserDetailsById } from 'src/shared/commonhelper';
+import { extractTextFromHtml, getUserDetailsById, getUserDetailsById1 } from 'src/shared/commonhelper';
 import { log } from 'console';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 
@@ -28,6 +28,7 @@ export class CommentService {
           return userData;
         })
       );
+    
       this.eventEmitter.emit('comments.mention', {
         CommentDetails: createdComment,
         commentContent: extractTextFromHtml(createdComment.content),
@@ -64,29 +65,39 @@ export class CommentService {
     return this.commentModel.findById(id).exec();
   }
 
-  async findByTask(
-    taskId: string,
-    page: number,
-    limit: number
-  ): Promise<{ data: Comment[]; total: number; page: number; limit: number }> {
-    const skip = (page - 1) * limit;
-    const [data, total] = await Promise.all([
-      this.commentModel
-        .find({ task: taskId })
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit)
-        .exec(),
-      this.commentModel.countDocuments({ task: taskId }),
-    ]);
-    return {
-      data,
-      total,
-      page,
-      limit,
-    };
-    // return this.commentModel.find({ task: taskId }).exec();
-  }
+ async findByTask(
+  taskId: string,
+  page: number,
+  limit: number
+): Promise<{ data: any[]; total: number; page: number; limit: number }> {
+  const skip = (page - 1) * limit;
+
+  const [comments, total] = await Promise.all([
+    this.commentModel
+      .find({ task: new Types.ObjectId(taskId) })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean()
+      .exec(),
+    this.commentModel.countDocuments({ task: new Types.ObjectId(taskId) }),
+  ]);
+
+  const data = await Promise.all(
+    comments.map(async (comment) => {
+      const userDetails = await getUserDetailsById1(
+        this.userservices,
+        comment.created_by.toString()
+      );
+
+      return {
+        ...comment,
+        created_by: userDetails, // Replace ID with full user details
+      };
+    })
+  );
+  return { data, total, page, limit };
+}
 
   async findByParentComment(parentId: string): Promise<Comment[]> {
     return this.commentModel.find({ parent_comment: parentId }).exec();

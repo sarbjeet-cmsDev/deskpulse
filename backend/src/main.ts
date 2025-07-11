@@ -4,7 +4,6 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as dotenv from 'dotenv';
 import * as express from 'express';
 import { UnprocessableEntityException, ValidationPipe } from '@nestjs/common';
-
 import { join } from 'path';
 import { AllExceptionsFilter } from './shared/http-exception.filter';
 

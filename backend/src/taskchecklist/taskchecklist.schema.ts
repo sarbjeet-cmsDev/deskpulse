@@ -32,7 +32,6 @@ export class TaskChecklist {
   @Prop({
     type: MongooseSchema.Types.ObjectId,
     ref: 'User',
-    required: [true, 'Created by user is required'],
   })
   created_by: MongooseSchema.Types.ObjectId;
 

@@ -37,6 +37,8 @@ export enum TaskStatusEnum {
   TO_DEPLOY = 'todeploy',
   DONE = 'done',
 }
+
+
 export interface Task extends Document {
   title: string;
   description?: string;
@@ -47,8 +49,8 @@ export interface Task extends Document {
   report_to: MongooseSchema.Types.ObjectId;
   due_date?: Date;
   is_active: boolean;
-  priority: 'low' | 'medium' | 'high';
-  status: 'pending' | 'inprogress' | 'completed';
+  priority: PriorityEnum;
+  status: TaskStatusEnum;
   acceptance?: AcceptanceLevelEnum;
   createdAt: Date;
   rivision: number;

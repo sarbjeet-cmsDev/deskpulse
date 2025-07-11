@@ -14,8 +14,8 @@ export class Timeline {
   @Prop({ required: true })
   date: Date;
 
-  @Prop({ required: true, min: 0 })
-  time_spent: string; // Time spent in hours
+    @Prop({ type: Number })
+  time_spent: number; // Time spent in hours
 
   @Prop()
   is_active: boolean;

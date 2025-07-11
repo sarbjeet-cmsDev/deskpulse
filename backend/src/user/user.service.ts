@@ -4,8 +4,12 @@ import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { checkUserExists, comparePassword, hashPassword } from './user.helper';
 import { Types } from 'mongoose';
+import { log } from 'console';
 @Injectable()
 export class UserService {
+    static create(adminData: any) {
+        throw new Error("Method not implemented.");
+    }
     constructor(
         @InjectModel('User') private readonly userModel: Model<UserDocument>,
     ) { }
@@ -17,6 +21,8 @@ export class UserService {
         const createdUser = new this.userModel(createUserDto);
         return createdUser.save();
     }
+
+
 
 
 

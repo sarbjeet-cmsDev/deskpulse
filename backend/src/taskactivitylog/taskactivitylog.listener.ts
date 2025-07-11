@@ -34,12 +34,12 @@ export class TaskActivityLogListener {
   }
 
   @OnEvent('task.status.updated', { async: true })
-  async handleTaskStatusUpdatedEvent({ taskDetails, userDetails, oldTaskStatus, newTaskStatus }: TaskStatusUpdatedPayload) {
-    const { id } = taskDetails;
+  async handleTaskStatusUpdatedEvent(payload: { new_data: any }) {
+    // log(payload.new_data[0]);    
     const updateTaskActivityLogDto: CreateTaskActivityLogDto = {
-      project: taskDetails.project,
-      task: id,
-      description: `Task status was updated from "${oldTaskStatus}" to "${newTaskStatus}" by ${userDetails?.username || 'Unknown User'} on ${new Date(taskDetails?.updatedAt).toLocaleString()}.`,
+      project: payload.new_data[0].taskdata.project._id.toString(),
+      task: payload.new_data[0].taskdata.task._id.toString(),
+      description: `Task status was updated from "${payload.new_data[0].oldTaskStatus}" to "${payload.new_data[0].updateTaskStatus}" by ${payload.new_data[0].userData.username} on ${new Date(payload.new_data[0].taskdata.task.updatedAt).toLocaleString()}.`,
     };
     try {
       await this.taskactivitylogService.create(updateTaskActivityLogDto);
@@ -54,7 +54,9 @@ export class TaskActivityLogListener {
     const updateTaskActivityLogDto: CreateTaskActivityLogDto = {
       project: payload.taskdetails.project,
       task: payload.taskdetails._id.toString(),
-      description: ` Task "${payload.taskdetails.title}" was assigned to ${payload.assigntask.username} — Due by ${new Date(payload.taskdetails.due_date).toLocaleString()}, Priority: ${payload.taskdetails.priority}, Status: ${payload.taskdetails.status}`,
+      description: ` Task "${payload.taskdetails.title}" was assigned to ${payload.assigntask.username} — Due by ${payload.taskdetails.due_date 
+   ? new Date(payload.taskdetails.due_date).toLocaleString()
+   : 'No due date'}, Priority: ${payload.taskdetails.priority}, Status: ${payload.taskdetails.status}`,
     };
     try {
       await this.taskactivitylogService.create(updateTaskActivityLogDto);

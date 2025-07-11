@@ -3,6 +3,7 @@ import { UserService } from "src/user/user.service";
 import * as cheerio from 'cheerio';
 import { TaskService } from "src/task/task.service";
 import { ProjectService } from "src/project/project.service";
+import { log } from "node:console";
 
 // ✅ Reusable helper to get a user’s basic details
 const getUser = async (userService: UserService, userId: string) => {
@@ -18,6 +19,13 @@ export const getUserDetailsById = async (userService: UserService, userId: strin
   if (!user) throw new NotFoundException(`User with ID "${userId}" was not found.`);
   return user;
 };
+
+export const getUserDetailsById1 = async (userService: UserService, userId: string) => {
+  const user = await getUser(userService, userId);
+  if (!user) throw new NotFoundException(`User with ID "${userId}" was not found.`);
+  return user.username;
+};
+
 
 // ✅ Extract plain text from HTML string
 export function extractTextFromHtml(html: string): string {
@@ -84,3 +92,48 @@ export async function fetchTaskProjectUserDetailsByTaskID(
   };
 }
 
+
+export async function fetchProjectUserDetailsByTaskData({ projectService, userService, updatedTask }) {
+  // Helper to get user by ID with safe null handling
+  // Fetch project
+  const project = await projectService.findOne(updatedTask.project?.toString());
+  if (!project) {
+    throw new NotFoundException(`Project with ID "${updatedTask.project}" not found.`);
+  }
+
+  // Task-related users
+  const taskUserFields = [
+    { field: 'assigned_to', alias: 'assignedUser' },
+    { field: 'report_to', alias: 'reportToUser' },
+  ];
+
+  const taskUsers = {};
+  for (const { field, alias } of taskUserFields) {
+    const userId = updatedTask[field];
+    taskUsers[alias] = userId ? await getUser(userService, userId.toString()) : null;
+  }
+
+  // Project-related users
+  const projectUserFields = [
+    { field: 'project_coordinator', alias: 'projectCoordinator' },
+    { field: 'team_leader', alias: 'teamLeader' },
+    { field: 'project_manager', alias: 'projectManager' },
+  ];
+
+  const projectUsers = {};
+  for (const { field, alias } of projectUserFields) {
+    const userId = project[field];
+    projectUsers[alias] = userId ? await getUser(userService, userId.toString()) : null;
+  }
+
+  return {
+    task: {
+      ...updatedTask,
+      ...taskUsers,
+    },
+    project: {
+      ...project,
+      ...projectUsers,
+    },
+  };
+}

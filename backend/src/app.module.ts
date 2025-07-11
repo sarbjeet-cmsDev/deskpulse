@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { FaqModule } from './faq/faq.module';
 import { ProjectModule } from './project/project.module';
 import { TaskModule } from './task/task.module';
 import { TimelineModule } from './timeline/timeline.module';
@@ -16,6 +15,8 @@ import { TaskactivitylogModule } from './taskactivitylog/taskactivitylog.module'
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { BullModule } from '@nestjs/bull';
 import { EmailModule } from './email/email.module';
+import { PerformanceModule } from './performance/performance.module';
+import { FaqModule } from './faq/faq.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -42,21 +43,22 @@ import { EmailModule } from './email/email.module';
       }),
     }),
     FaqModule,
+    EventEmitterModule.forRoot(),
+    AuthModule,
+    UserModule,
     ProjectModule,
     TaskModule,
     TimelineModule,
     CommentModule,
-    UserModule,
     ProjectKanbanModule,
-    AuthModule,
     RemindersModule,
     TaskChecklistModule,
     NotificationModule,
     TaskactivitylogModule,
-    EventEmitterModule.forRoot(),
-    EmailModule
+    EmailModule,
+    PerformanceModule,
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule { }

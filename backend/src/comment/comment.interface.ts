@@ -5,7 +5,7 @@ export interface Comment {
   task: MongooseSchema.Types.ObjectId;
   mentioned?: MongooseSchema.Types.ObjectId[];
   parent_comment?: MongooseSchema.Types.ObjectId[];
-  created_by: MongooseSchema.Types.ObjectId;
+  created_by: any;
   createdAt: Date;
   updatedAt: Date;
 }

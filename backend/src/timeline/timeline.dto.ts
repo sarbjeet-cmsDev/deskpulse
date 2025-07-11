@@ -18,9 +18,9 @@ export class CreateTimelineDto {
     @IsNotEmpty({ message: 'User is required.' })
     user?: MongooseSchema.Types.ObjectId;
 
-    @IsString()
+    @IsNumber()
     @IsNotEmpty({ message: 'Time spent is required.' })
-    time_spent?: string;
+    time_spent?: number;
 
     @IsOptional()
     @IsString({ each: false })
@@ -54,9 +54,9 @@ export class UpdateTimelineDto {
     description?: string;
 
 
-    @IsString()
+    @IsNumber()
     @IsNotEmpty()
-    time_spent?: string; // Time spent in hours
+    time_spent?: number; // Time spent in hours
 
     @IsBoolean()
     @IsOptional()

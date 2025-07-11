@@ -1,8 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { EmailService } from './email.service';
 import { OnEvent } from '@nestjs/event-emitter';
-import { TaskStatusUpdatedPayload } from 'src/taskactivitylog/taskactivitylog.interface';
-import { log } from 'console';
 
 @Injectable()
 export class EmailListener {
@@ -39,45 +37,52 @@ export class EmailListener {
   }
 
   @OnEvent('task.status.updated', { async: true })
-  async handleTaskStatusUpdatedEvent({ taskDetails, userDetails, projectObj, oldTaskStatus, newTaskStatus }: TaskStatusUpdatedPayload) {
-    const taskLink = `${process.env.FRONTEND_URL}/task/${taskDetails.id.toString()}`;
-    this.emailservice.sendEmail({
-      to: projectObj.teamLeader.email,
+  async handleTaskStatusUpdatedEvent(payload: { new_data: any[] }) {
+    const data = payload.new_data[0];
+    const oldTaskStatus = data.oldTaskStatus;
+    const newTaskStatus = data.updateTaskStatus;
+    const userDetails = data.userData;
+    const taskDetails = data.taskdata.task;
+    const taskLink = `${process.env.FRONTEND_URL}/task/${taskDetails._id.toString()}`;
+    const updatedAt = new Date(taskDetails.updatedAt).toLocaleString();
+    const recipients = [
+      data.taskdata.project.teamLeader?.email,
+      data.taskdata.project.projectCoordinator?.email,
+      data.taskdata.project.projectManager?.email,
+    ].filter(Boolean); // Remove any undefined/null emails
+
+    const emailPayloads = recipients.map((to) => ({
+      to,
       subject: 'Task Status Updated',
       template: 'templates/task-status-updated.mjml',
-      variables: {
-        oldTaskStatus: oldTaskStatus,
-        newTaskStatus: newTaskStatus,
-        username: userDetails.username || 'Unknown User',
-        updatedAt: new Date(taskDetails?.updatedAt).toLocaleString(),
-        taskLink: taskLink
-      }
-    })
-    this.emailservice.sendEmail({
-      to: projectObj.projectCoordinator.email,
-      subject: 'Task Status Updated',
-      template: 'templates/task-status-updated.mjml',
-      variables: {
-        oldTaskStatus: oldTaskStatus,
-        newTaskStatus: newTaskStatus,
-        username: userDetails.username || 'Unknown User',
-        updatedAt: new Date(taskDetails?.updatedAt).toLocaleString(),
-        taskLink: taskLink
-      }
-    })
-    this.emailservice.sendEmail({
-      to: projectObj.projectManager.email,
-      subject: 'Task Status Updated',
-      template: 'templates/task-status-updated.mjml',
-      variables: {
-        oldTaskStatus: oldTaskStatus,
-        newTaskStatus: newTaskStatus,
-        username: userDetails.username || 'Unknown User',
-        updatedAt: new Date(taskDetails?.updatedAt).toLocaleString(),
-        taskLink: taskLink
-      }
-    })
-    this.logger.log(`Task Status  Updation Email Notification `);
+    }));
+
+    try {
+      this.logger.log('Creating notifications for task status update...');
+
+      await Promise.all(
+        emailPayloads.map((email) =>
+          this.emailservice.sendEmail({
+            to: email.to,
+            subject: email.subject,
+            template: email.template,
+            variables: {
+              oldTaskStatus,
+              newTaskStatus,
+              username: userDetails?.username || 'Unknown User',
+              updatedAt,
+              taskLink,
+            },
+          }),
+        ),
+      );
+      this.logger.log('Emails sent for task status update.');
+    } catch (error) {
+      this.logger.error(
+        'Failed to create notifications or send emails',
+        error.stack,
+      );
+    }
   }
 
   @OnEvent('task.assigned', { async: true })
@@ -92,7 +97,7 @@ export class EmailListener {
         userName: assigntask.username,
         taskTitle: payload.taskdetails.title,
         taskDescription: payload.taskdetails.description,
-        dueDate: new Date(payload.taskdetails.due_date).toLocaleString(),
+        dueDate: payload.taskdetails.due_date? new Date(payload.taskdetails.due_date).toLocaleString(): 'No due date',
         priority: payload.taskdetails.priority,
         status: payload.taskdetails.status,
         tasklink: taskLink,
@@ -141,14 +146,14 @@ export class EmailListener {
         template: 'templates/timeline/timeline-notification.mjml',
         variables: {
           User: recipient.username,
-          timeline_template:templates,
+          timeline_template: templates,
           timelineLink: timelineLink,
         },
       });
     }
     this.logger.log(`timeline.created Email Sent NOtification`);
   }
-  
+
 
 }
 

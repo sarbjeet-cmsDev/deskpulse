@@ -19,8 +19,8 @@ export class Comment {
   @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Comment' }] }) // Changed to an array of ObjectIds
   parent_comment: MongooseSchema.Types.ObjectId[];
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
-  created_by: MongooseSchema.Types.ObjectId;
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User'})
+  created_by: any;
 
   @Prop()
   createdAt: Date;

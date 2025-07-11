@@ -16,7 +16,7 @@ export class Task {
   @Prop({
     type: String,
     enum: Object.values(TaskTypeEnum),
-    // required: true,
+    default: TaskTypeEnum.BACKEND,
   })
   type: TaskTypeEnum;
 
@@ -29,7 +29,7 @@ export class Task {
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User' })
   assigned_to: MongooseSchema.Types.ObjectId;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User'})
   report_to: MongooseSchema.Types.ObjectId;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'ProjectKanban' })
@@ -64,9 +64,12 @@ export class Task {
   })
   acceptance: AcceptanceLevelEnum;
 
-  @Prop({ type: Number })
-  revision: number; // ✅ fixed typo
+  @Prop({ type: Number, default: 0 })
+  rivision: { type: Number, default: 0 }
 
+
+  @Prop({ type: Number, default: 0 })
+  totaltaskminuts: { type: Number, default: 0 }
 }
 
 export const TaskSchema = SchemaFactory.createForClass(Task);

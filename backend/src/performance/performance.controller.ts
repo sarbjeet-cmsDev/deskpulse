@@ -4,7 +4,7 @@ import { JwtAuthGuard } from 'src/guard/jwt-auth.guard';
 
 @Controller('api/notifications')
 @UseGuards(JwtAuthGuard)
-export class NotificationController {
-  constructor(private readonly notificationService: PerformanceService) {}
+export class PerformanceController {
+  constructor(private readonly performanceService: PerformanceService) {}
 
 }

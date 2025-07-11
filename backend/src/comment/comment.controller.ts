@@ -7,17 +7,23 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { CreateCommentDto, UpdateCommentDto } from './comment.dto';
+import { JwtAuthGuard } from 'src/guard/jwt-auth.guard';
 import { Comment } from './comment.interface';
+import { CurrentUser } from 'src/shared/current-user.decorator';
+import { log } from 'console';
 
 @Controller('api/comments')
+@UseGuards(JwtAuthGuard)
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
   @Post()
-  async create(@Body() createCommentDto: CreateCommentDto): Promise<Comment> {
+  async create(@Body() createCommentDto: CreateCommentDto,@CurrentUser() user: any): Promise<Comment> {
+    createCommentDto.created_by = user.userId
     return this.commentService.create(createCommentDto);
   }
 

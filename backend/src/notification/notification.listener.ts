@@ -30,26 +30,51 @@ export class NotificationListener {
 
   // When the Task Status Updated event is triggered
   @OnEvent('task.status.updated', { async: true })
-  async handleTaskStatusUpdatedEvent({ taskDetails, userDetails, projectObj, oldTaskStatus, newTaskStatus }: TaskStatusUpdatedPayload) {
-    const { id } = taskDetails;
-    const templates = `Task status was updated from "${oldTaskStatus}" to "${newTaskStatus}" by ${userDetails?.username || 'Unknown User'} on ${new Date(taskDetails?.updatedAt).toLocaleString()}.`;
-    const taskLink = `${process.env.FRONTEND_URL}/task/${id.toString()}`;
+  async handleTaskStatusUpdatedEvent(payload: { new_data: any[] }) {
+    const data = payload.new_data[0];
+    const oldStatus = data.oldTaskStatus;
+    const newStatus = data.updateTaskStatus;
+    const username = data.userData.username;
+    const updatedAt = new Date(data.taskdata.task.updatedAt).toLocaleString();
+    const taskId = data.taskdata.task._id.toString();
+    const taskLink = `${process.env.FRONTEND_URL}/task/${taskId}`;
+    const content = `Task status was updated from "${oldStatus}" to "${newStatus}" by ${username} on ${updatedAt}.`;
     const notifications: CreateNotificationDto[] = [
-      { user: projectObj.teamLeader.id.toString(), content: templates, redirect_url: taskLink },
-      { user: projectObj.projectCoordinator.id.toString(), content: templates, redirect_url: taskLink },
-      { user: projectObj.projectManager.id.toString(), content: templates, redirect_url: taskLink },
+      {
+        user: data.taskdata.project.teamLeader.id.toString(),
+        content,
+        redirect_url: taskLink,
+      },
+      {
+        user: data.taskdata.project.projectCoordinator.id.toString(),
+        content,
+        redirect_url: taskLink,
+      },
+      {
+        user: data.taskdata.project.projectManager.id.toString(),
+        content,
+        redirect_url: taskLink,
+      },
     ];
+
     try {
-      await Promise.all(notifications.map(notification => this.notificationService.create(notification)));
-      this.logger.log(`Notification created for the teamLeaderNotification `);
+      await Promise.all(
+        notifications.map((notification) =>
+          this.notificationService.create(notification),
+        ),
+      );
+      this.logger.log(`Notifications created for task status update.`);
     } catch (error) {
-      this.logger.error('Failed to create notification', error.stack);
+      this.logger.error('Failed to create notifications', error.stack);
     }
   }
 
+
   @OnEvent('task.assigned', { async: true })
   async handleTaskAssignEvent(payload: { taskdetails: any, assigntask: any }) {
-    const templates = ` Task "${payload.taskdetails.title}" was assigned to ${payload.assigntask.username} — Due by ${new Date(payload.taskdetails.due_date).toLocaleString()}, Priority: ${payload.taskdetails.priority}, Status: ${payload.taskdetails.status}`;
+    const templates = ` Task "${payload.taskdetails.title}" was assigned to ${payload.assigntask.username} — Due by ${payload.taskdetails.due_date
+      ? new Date(payload.taskdetails.due_date).toLocaleString()
+      : 'No due date'}, Priority: ${payload.taskdetails.priority}, Status: ${payload.taskdetails.status}`;
     const taskLink = `${process.env.FRONTEND_URL}tasks/${payload.taskdetails._id}`;
     const assigntask = payload.assigntask;
     const notifications: CreateNotificationDto[] = [

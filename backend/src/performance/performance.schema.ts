@@ -12,13 +12,6 @@ export class Performance {
     task: MongooseSchema.Types.ObjectId;
 
     @Prop({
-        type: MongooseSchema.Types.ObjectId,
-        ref: 'Task',
-        required: [true, 'User reference is required'],
-    })
-    user: MongooseSchema.Types.ObjectId;
-
-    @Prop({
         required: [true, 'result is required'],
     })
     result: string;

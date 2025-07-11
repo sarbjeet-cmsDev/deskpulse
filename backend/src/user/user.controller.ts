@@ -10,13 +10,11 @@ import { multerOptions } from "../shared/multer.config";
 
 @Controller("api/user")
 export class UserController {
-  constructor(private readonly userService: UserService) {}
-
+  constructor(private readonly userService: UserService) { }
   @Post("create")
   async create(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.userService.create(createUserDto);
   }
-
   @Get()
   async findAll(): Promise<User[]> {
     return this.userService.findAll();

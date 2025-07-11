@@ -6,13 +6,14 @@ import { TaskSchema } from './task.schema';
 import { ProjectModule } from '../project/project.module';
 import { TaskactivitylogModule } from 'src/taskactivitylog/taskactivitylog.module';
 import { UserModule } from 'src/user/user.module';
+import { TaskListener } from './task.listener';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: 'Task', schema: TaskSchema }]),
     ProjectModule, UserModule],
   controllers: [TaskController],
-  providers: [TaskService, TaskactivitylogModule,
+  providers: [TaskService, TaskactivitylogModule, TaskListener
   ],
   exports: [TaskService],
 })
