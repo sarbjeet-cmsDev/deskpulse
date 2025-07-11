@@ -39,20 +39,20 @@ export interface UpdateTaskDto {
 const TaskService = {
   // Create a new task
   async createTask(data: CreateTaskDto): Promise<ITask> {
-    const res = await axiosPrivateClient.post(`${API_URL}/tasks`, data);
+    const res = await axiosClient.post(`${API_URL}/tasks`, data);
     return res.data.data;
   },
 
   // Get all tasks
   async getAllTasks(): Promise<ITask[]> {
-    const res = await axiosPrivateClient.get(`${API_URL}/tasks`);
+    const res = await axiosClient.get(`${API_URL}/tasks`);
     console.log(res);
     return res.data;
   },
 
   // Get a task by ID
   async getTaskById(id: string): Promise<ITask> {
-    const res = await axiosPrivateClient.get(`${API_URL}/tasks/fetch/${id}`);
+    const res = await axiosClient.get(`${API_URL}/tasks/fetch/${id}`);
     return res.data;
   },
 
@@ -64,7 +64,7 @@ const TaskService = {
     sortField: string = "createdAt",
     sortOrder: "asc" | "desc" = "desc"
   ): Promise<ITaskResponse> {
-    const res = await axiosPrivateClient.get(
+    const res = await axiosClient.get(
       `${API_URL}/tasks/project/${projectId}`,
       {
         params: {
@@ -108,7 +108,7 @@ const TaskService = {
 
   // Get logged-in user's tasks (JWT protected)
   async getMyTasks(page = 1, limit = 5): Promise<ITaskResponse> {
-    const res = await axiosPrivateClient.get(
+    const res = await axiosClient.get(
       `${API_URL}/tasks/me?page=${page}&limit=${limit}`
     );
     return res.data;

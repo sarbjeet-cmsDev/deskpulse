@@ -144,9 +144,18 @@ export class ProjectService {
     return project;
   }
 
-
-  async findProjectsByUserId(userId: string): Promise<Project[]> {
-    return this.projectModel.find({ users: userId }).exec();
+  async findProjectsByUserId(userId: string, page: number, limit: number): Promise< { data: Project[]; total: number; page: number; limit: number }> {
+    const skip = (page - 1) * limit;
+    const [data, total] = await Promise.all([
+      this.projectModel.find({ users: userId }).skip(skip).limit(limit).sort({ createdAt: -1 }).exec(),
+      this.projectModel.countDocuments({ users: userId }),
+    ]);
+    return {
+      data,
+      page,
+      limit,
+      total,
+    };
   }
 
   async findAllPaginated(

@@ -10,6 +10,7 @@ import CommentList from "@/components/Comment/CommnetList";
 import { IUserRedux } from "@/types/user.interface";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import Link from "next/link";
 
 export default function MyCommentList() {
   const [comments, setComments] = useState<IComment[]>([]);
@@ -37,9 +38,9 @@ export default function MyCommentList() {
     <div className="max-w-6xl mx-auto">
       <div className="flex justify-center items-center p-[24px] border-b border-[#31394f14]">
         <div className="w-[2%]">
-          <a href="/">
+          <Link href="/">
             <Image src={leftarrow} alt="Back" width={16} height={16} />
-          </a>
+          </Link>
         </div>
         <H3 className="w-[98%] text-center">Inbox</H3>
       </div>

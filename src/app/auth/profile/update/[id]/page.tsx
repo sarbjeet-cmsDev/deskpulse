@@ -17,6 +17,7 @@ import AdminUserService, { IUser } from "@/service/adminUser.service";
 import UserService from "@/service/user.service";
 import { H2 } from "@/components/Heading/H2";
 import { H3 } from "@/components/Heading/H3";
+import Link from "next/link";
 
 type UpdateUserInput = z.infer<typeof userSchemaBaseUpdate>;
 
@@ -94,9 +95,9 @@ const UpdateUserProfile = () => {
     <div className="min-h-screen flex-col justify-center items-start pt-10">
       <div className="flex justify-center items-center p-[24px] border-b border-[#31394f14]">
         <div className="w-[2%]">
-          <a href="/auth/profile">
+          <Link href="/auth/profile">
             <Image src={leftarrow} alt="Logo" width={16} height={16} />
-          </a>
+          </Link>
         </div>
         <H3 className="w-[98%] text-center">Update Profile</H3>
       </div>

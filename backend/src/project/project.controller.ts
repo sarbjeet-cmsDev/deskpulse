@@ -9,6 +9,7 @@ import {
   UseGuards,
   Req,
   Put,
+  Query
 } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { CreateProjectDto, UpdateProjectDto } from './project.dto';
@@ -27,13 +28,14 @@ export class ProjectController {
   @Get('me')
   async getMyProjects(
     @CurrentUser() user: any,
-  ): Promise<{ message: string; data: Project[] }> {
-    const projects = await this.projectService.findProjectsByUserId(user.userId);
-    return {
-      message: 'Projects fetched successfully!',
-      data: projects,
-    };
+     @Query("page") page: string = "1",
+     @Query("limit") limit: string = "5",
+  ): Promise<{  data: Project[]; total: number; page: number; limit: number }> {
+    const pageNumber = parseInt(page, 10);
+    const limitNumber = parseInt(limit, 10);
+    return this.projectService.findProjectsByUserId(user.userId, pageNumber, limitNumber);
   }
+
   @Get()
   async findAll(): Promise<Project[]> {
     return this.projectService.findAll();
@@ -82,4 +84,4 @@ export class ProjectController {
     return this.projectService.removeUser(id, userId);
   }
 
-}
+  }

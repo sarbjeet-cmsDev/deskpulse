@@ -8,6 +8,7 @@ import { P } from "@/components/ptag";
 import { IReminder } from "@/types/reminder.interface";
 import Image from "next/image";
 import leftarrow from "@/assets/images/back.png";
+import Link from "next/link";
 
 export default function MyRemindersPage() {
   const [reminders, setReminders] = useState<IReminder[]>([]);
@@ -33,9 +34,9 @@ export default function MyRemindersPage() {
     <div className="max-w-6xl mx-auto p-6">
       <div className="flex justify-center items-center p-[24px] border-b border-[#31394f14]">
         <div className="w-[2%]">
-          <a href="/">
+          <Link href="/">
             <Image src={leftarrow} alt="Back" width={16} height={16} />
-          </a>
+          </Link>
         </div>
         <H3 className="w-[98%] text-center">My Reminders</H3>
       </div>

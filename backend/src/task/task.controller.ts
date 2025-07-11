@@ -86,6 +86,7 @@ export class TaskController {
   async remove(@Param('id') id: string): Promise<Task> {
     return this.taskService.remove(id);
   }
+  
   @Get('get-due-task')
   async FetchDueTask(@CurrentUser() user: any): Promise<any> {
     const tasks = await this.taskService.FetchDueTask(user.userId);

@@ -15,6 +15,7 @@ import { RootState } from "@/store/store";
 import { useEffect, useState } from "react";
 import UserService from "@/service/user.service";
 import { IUser } from "@/service/adminUser.service";
+import LeftMenuDrawer from "../HeaderMenuDrawer/leftmenudrawer";
 
 
 
@@ -49,9 +50,9 @@ export default function TopHeader() {
             <Image
               src={avatarUrl}
               alt="avatar-image"
-              width={52}  
-              height={52}   
-              className="rounded-full object-cover"
+              width={100}  
+              height={100}   
+              className="w-[45px] h-[45px] rounded-full object-cover"
             />
             <span className="dot-status w-[12px] h-[12px] border border-[#7980ff] bg-[#48bd69] rounded-[20px] absolute top-0 right-0"></span>
           </div>
@@ -62,45 +63,9 @@ export default function TopHeader() {
         </div>
         <div className="flex justify-center items-center gap-2">
           <div>
-            <a href="#">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 20 20"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <g opacity="1">
-                  <path
-                    d="M2.5 10H17.5"
-                    stroke="#FFF"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M2.5 5H17.5"
-                    stroke="#FFF"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M2.5 15H17.5"
-                    stroke="#FFF"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </g>
-              </svg>
-            </a>
+            <LeftMenuDrawer/>
           </div>
           <div>
-            {/* <a href="" className="box-noti">
-                        <Image src={bell} alt="bell-icon" className="invert"/>
-                        <span className="dot-danger"></span>
-                    </a> */}
             <Button
               variant="light"
               onPress={() =>

@@ -1,25 +1,24 @@
-import { createAxiosClient } from "@/utils/createAxiosClient";
-import axios from "axios";
-import { log } from "console";
+import { IProjectResponse } from '@/types/project.interface';
+import { createAxiosClient } from '@/utils/createAxiosClient';
+import axios from 'axios'
+import { log } from 'console';
 
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
-const axiosClient = createAxiosClient({ withCreds: true });
+const axiosClient = createAxiosClient({withCreds:true});
 
 const ProjectService = {
-  async getProjectByUserId() {
+  async getProjectByUserId(page = 1, limit = 5): Promise<IProjectResponse>  {
     try {
-      const response = await axiosClient.get(`${API_URL}/projects/me`);
+      const response = await axiosClient.get(`${API_URL}/projects/me?page=${page}&limit=${limit}` );
       return response.data;
     } catch (error) {
-      throw new Error("Failed to fetch user videos");
+      throw new Error('Failed to fetch user videos');
     }
   },
   async getProjectById(projectId: string) {
-    const response = await axiosClient.get(
-      `${API_URL}/projects/fetch/${projectId}`
-    );
+    const response = await axiosClient.get(`${API_URL}/projects/fetch/${projectId}`);
     return response.data;
-  },
+  }
 };
 
 export default ProjectService;

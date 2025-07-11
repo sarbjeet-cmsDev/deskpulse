@@ -84,9 +84,9 @@ export default function MyProjectDetails() {
           <div className="flex justify-between items-center p-[24px] border-b border-[#31394f14]">
             <div className="flex items-center gap-4">
               <div className="">
-                <a href="/project/list">
+                <Link href="/project/list">
                   <Image src={leftarrow} alt="Logo" width={16} height={16} />
-                </a>
+                </Link>
               </div>
               <H5 className="w-[98%] text-center">{project.code}</H5>
             </div>

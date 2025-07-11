@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import UserService from "@/service/user.service";
 import { IUser } from "@/service/user.service";
+import Link from "next/link";
 
 export default function AuthProfilePage() {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -64,9 +65,9 @@ export default function AuthProfilePage() {
     <div className="max-w-6xl mx-auto">
       <div className="flex justify-center items-center p-[24px] border-b border-[#31394f14]">
         <div className="w-[2%]">
-          <a href="/">
+          <Link href="/">
             <Image src={leftarrow} alt="Logo" width={16} height={16} />
-          </a>
+          </Link>
         </div>
         <H5 className="w-[98%] text-center">Profile</H5>
       </div>

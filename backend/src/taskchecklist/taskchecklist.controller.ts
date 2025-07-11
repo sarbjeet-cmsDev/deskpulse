@@ -27,13 +27,7 @@ export class TaskChecklistController {
     @Get('task/:taskId')
     async findByTaskId(@Param('taskId') taskId: string, @Req() req): Promise<{ checklists: TaskChecklist[] }> {
         const checklists = await this.taskChecklistService.findByTaskId(taskId);
-        if (!checklists || checklists.length === 0) {
-            throw new NotFoundException('No task checklists found for this task');
-        }
-        return { 
-            // message: 'Task checklists fetched successfully', 
-            checklists 
-        };
+        return { checklists };
     }
 
 

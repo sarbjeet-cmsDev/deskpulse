@@ -15,6 +15,7 @@ import { Input } from '@/components/Form/Input';
 import { H3 } from '@/components/Heading/H3';
 import AuthService from '@/service/auth.service';
 import { signIn } from '@/store/slices/authSlice';
+import Link from 'next/link';
 
 type LoginInput = z.infer<typeof userLoginSchema>;
 
@@ -78,9 +79,9 @@ export default function AuthLoginPage() {
       <div className="w-full max-w-md space-y-6">
         <div className="flex justify-center items-center p-[24px] border-b border-[#31394f14]">
         <div className="w-[2%]">
-          <a href="/auth/profile">
+          <Link href="/auth/profile">
             <Image src={leftarrow} alt="Logo" width={16} height={16} />
-          </a>
+          </Link>
         </div>
         <H3 className="w-[98%] text-center">Sign In</H3>
       </div>

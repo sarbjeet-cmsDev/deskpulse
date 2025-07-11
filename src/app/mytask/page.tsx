@@ -7,6 +7,7 @@ import Pagination from "@/components/Pagination/pagination";
 import { useEffect, useState } from "react";
 import TaskService, { ITask } from "@/service/task.service";
 import SubTasks from "@/components/ProjectDetails/SubTaskList";
+import Link from "next/link";
 
 export default function MyTask() {
   const [tasks, setTasks] = useState<ITask[]>([]);
@@ -40,9 +41,9 @@ export default function MyTask() {
     <div className="max-w-6xl mx-auto">
       <div className="flex justify-center items-center p-[24px] border-b border-[#31394f14]">
         <div className="w-[2%]">
-          <a href="/project/list">
+          <Link href="/">
             <Image src={leftarrow} alt="Back" width={16} height={16} />
-          </a>
+          </Link>
         </div>
         <H3 className="w-[98%] text-center">My Task</H3>
       </div>

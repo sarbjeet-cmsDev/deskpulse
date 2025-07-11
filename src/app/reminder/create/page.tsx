@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { createReminderSchema, CreateReminderFormData } from "@/components/validation/reminder.schema";
 import ReminderService from "@/service/reminder.service";
 import { useState } from "react";
+import Link from "next/link";
 
 export default function CreateReminder() {
   const [loading, setLoading] = useState(false);
@@ -41,9 +42,9 @@ export default function CreateReminder() {
       {/* Header Section */}
       <div className="flex justify-center items-center p-[24px] border-b border-[#31394f14]">
         <div className="w-[2%]">
-          <a href="/">
+          <Link href="/">
             <Image src={leftarrow} alt="Back" width={16} height={16} />
-          </a>
+          </Link>
         </div>
         <H3 className="w-[98%] text-center">Create Reminder</H3>
       </div>
@@ -87,10 +88,10 @@ export default function CreateReminder() {
             {errors.alert_before && <p className="text-red-500 text-sm">{errors.alert_before.message}</p>}
           </div>
 
-          <div>
+          {/* <div>
             <label className="block mb-1">Sort Order</label>
             <input type="number" {...register("sort_order", { valueAsNumber: true })} className="border p-2 w-full rounded" />
-          </div>
+          </div> */}
 
           <button
             type="submit"

@@ -160,11 +160,11 @@ const UpdateProjectPage = () => {
         <Input type="text" placeholder="Project Manager ID" {...register('project_manager')} />
 
         <Input placeholder="Avatar URL" {...register('avatar')} />
-
+{/* 
         <Input type="number" placeholder="Sort Order" {...register('sort_order')} />
         {errors.sort_order && (
           <p className="text-sm text-red-500">{errors.sort_order.message}</p>
-        )}
+        )} */}
 
         <div>
           <label className="flex items-center gap-2">
