@@ -15,80 +15,95 @@ const numbersOnlyRegex = /^[0-9]+$/;
 
 // ✅ Base Schema
 export const userSchemaBase = z.object({
-  username: z.string().min(1, 'Username is required'),
-  email: z.string().email('Invalid email address'),
+  username: z.string()
+    .nonempty('Username is required'),
+
+  email: z.string()
+    .email('Invalid email address')
+    .optional(),
 
   firstName: z.string()
-    .min(1, 'First name is required')
+    .nonempty('First name is required')
     .regex(lettersAndSpacesRegex, 'First name must contain only letters and spaces'),
 
   lastName: z.string()
-    .min(1, 'Last name is required')
+    .nonempty('Last name is required')
     .regex(lettersAndSpacesRegex, 'Last name must contain only letters and spaces'),
 
   phone: z.string()
-    .min(1, 'Phone number is required')
-    .regex(numbersOnlyRegex, 'Phone number must contain only digits'),
+    .nonempty('Phone number is required')
+    .regex(numbersOnlyRegex, 'Phone number must contain only digits')
+    .min(10, 'Phone number must be at least 10 digit'),
 
-  gender: genderEnum,
+  gender: genderEnum.optional(),
 
-  userRoles: z.array(userRoleEnum),
+  userRoles: z.array(userRoleEnum).optional(),
 
-  isActive: z.boolean(),
+  isActive: z.boolean().optional(),
+
   address: z.string()
-  .min(1, 'Address is required')
-  .regex(lettersAndSpacesRegex, 'Address must contain only letters and spaces'),
-  
+    .nonempty('Address is required')
+    .regex(lettersAndSpacesRegex, 'Address must contain only letters and spaces'),
+
   city: z.string()
-  .min(1, 'City is required')
+    .nonempty('City is required')
     .regex(lettersAndSpacesRegex, 'City must contain only letters and spaces'),
 
   state: z.string()
-  .min(1, 'State is required')
+    .nonempty('State is required')
     .regex(lettersAndSpacesRegex, 'State must contain only letters and spaces'),
 
   country: z.string()
-  .min(1, 'Country is required')
+    .nonempty('Country is required')
     .regex(lettersAndSpacesRegex, 'Country must contain only letters and spaces'),
 
   zipCode: z.string()
-  .min(1, 'ZipCode is required'),
+    .nonempty('Zip code is required')
+    .regex(numbersOnlyRegex, 'Zip code must contain only digits'),
 
   dateOfBirth: z.union([z.string(), z.date()])
-    .transform((val) => (typeof val === 'string' ? new Date(val) : val)),
+    .transform((val) => (typeof val === 'string' ? new Date(val) : val))
+    .optional(),
 
-  profileImage: z.string().url('Invalid image URL'),
+  profileImage: z.string().url('Invalid image URL').optional(),
 
-  roles: z.array(z.string()),
+  roles: z.array(z.string()).optional(),
 
-  hobbies: z.array(z.string()),
-  aboutUs: z.string(),
-  jobTitle: z.string(),
-  department: z.string(),
-  managerId: z.string(),
+  hobbies: z.array(z.string()).optional(),
+  aboutUs: z.string().optional(),
+  jobTitle: z.string().optional(),
+  department: z.string().optional(),
+  managerId: z.string().optional(),
 
   joinedDate: z.union([z.string(), z.date()])
-    .transform((val) => (typeof val === 'string' ? new Date(val) : val)),
+    .transform((val) => (typeof val === 'string' ? new Date(val) : val))
+    .optional(),
 
   lastLogin: z.union([z.string(), z.date()])
-    .transform((val) => (typeof val === 'string' ? new Date(val) : val)),
+    .transform((val) => (typeof val === 'string' ? new Date(val) : val))
+    .optional(),
 
-  timezone: z.string(),
-  languagePreference: z.string(),
-  receiveEmailNotifications: z.boolean(),
+  timezone: z.string().optional(),
+  languagePreference: z.string().optional(),
+  receiveEmailNotifications: z.boolean().optional(),
 });
 
-// ✅ For Create (unchanged)
+// Create Schema
 export const userCreateSchema = userSchemaBase.extend({
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-  confirmPassword: z.string().min(6, 'Confirm Password is required'),
+  password: z.string()
+    .nonempty('Password is required')
+    .min(6, 'Password must be at least 6 characters'),
+
+  confirmPassword: z.string()
+    .nonempty('Confirm password is required')
+    .min(6, 'Confirm password must be at least 6 characters'),
 }).refine((data) => data.password === data.confirmPassword, {
   message: 'Passwords do not match',
   path: ['confirmPassword'],
 });
 
-// ✅ For Update (all fields required + specific validations applied)
-export const userUpdateSchema = userSchemaBase;
+// For Update (all fields required + specific validations applied)
+export const userUpdateSchema = userSchemaBase.partial();
 
 export const userResetPasswordSchema = z.object({
   newPassword: z.string().min(6, 'Password must be at least 6 characters'),
