@@ -9,7 +9,9 @@
     "build": "next build && cd backend && nest build",
     "start": "concurrently \"next start\" \"cd backend && nest start\"",
     "lint": "eslint \"{src,backend}/**/*.{ts,tsx}\"",
-    "test": "jest"
+    "test": "jest",
+    "seed": "node backend/dist/seeder",
+    "seed:refresh": "node backend/dist/seeder --refresh"
   },
   "dependencies": {
     "@ckeditor/ckeditor5-basic-styles": "^45.2.1",
@@ -123,6 +125,7 @@
     "eslint-plugin-react-hooks": "5.2.0",
     "eslint-plugin-unused-imports": "4.1.4",
     "globals": "16.0.0",
+    "nestjs-seeder": "^0.3.2",
     "postcss": "8.5.3",
     "prettier": "3.5.3",
     "tailwind-variants": "0.3.0",
