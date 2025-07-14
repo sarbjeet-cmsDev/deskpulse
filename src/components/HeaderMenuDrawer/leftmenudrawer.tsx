@@ -21,6 +21,8 @@ import { getGreeting } from "@/utils/greetings";
 import { useDispatch } from "react-redux";
 import { signOut } from "@/store/slices/authSlice";
 import router from "next/router";
+import { useRouter } from "next/navigation";
+// import Cookies from "js-cookie";
 
 export default function LeftMenuDrawer() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -44,16 +46,16 @@ export default function LeftMenuDrawer() {
     { label: "MY Task", href: "/mytask" },
     { label: "Reminder", href: "/reminder" },
     { label: "Create Reminder", href: "/reminder/create" },
-    { label: "Logout", href: "/auth/profile" },
+    { label: "Logout", href: "#" },
   ];
-
+  const router = useRouter();
   const handleLogout = () => {
     dispatch(signOut());
     localStorage.removeItem("token");
     localStorage.removeItem("type");
+    // Cookies.remove("token");
     router.push("/auth/login");
   };
-
 
   const handleOpen = (placement: "left" | "right" | "top" | "bottom") => {
     setPlacement(placement);
@@ -142,7 +144,12 @@ export default function LeftMenuDrawer() {
                   <P
                     key={index}
                     className="text-start font-semibold text-black text-[16px] hover:text-[#7980ff] cursor-pointer transition-colors duration-200"
-                    onClick={() => onClose()}
+                    onClick={() => {
+                      onClose();
+                      if (item.label === "Logout") {
+                        handleLogout();
+                      }
+                    }}
                   >
                     <Link href={item.href}>{item.label}</Link>
                   </P>
