@@ -11,6 +11,8 @@ import AdminUserService, { IUser } from "@/service/adminUser.service";
 import CommentService from "@/service/comment.service";
 import { Button } from "@/components/Form/Button";
 import QuillEditorWrapper from "./QuillEditorWrapper";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 if (
   typeof window !== "undefined" &&
@@ -23,7 +25,7 @@ if (
 
 interface CommentInputProps {
   taskId: string;
-  createdBy: string;
+  createdBy?: string;
   onCommentCreated: () => void;
   onCancel?: () => void;
   inline: boolean;
@@ -35,7 +37,6 @@ interface CommentInputProps {
 
 export default function CommentInputSection({
   taskId,
-  createdBy,
   onCommentCreated,
   onCancel,
   inline = false,
@@ -49,7 +50,8 @@ export default function CommentInputSection({
   const [error, setError] = useState<string | null>(null);
   const quillRef = useRef<any>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
-
+  const user = useSelector((state: RootState) => state.user.data);
+  console.log(user, "useruseruser");
   useEffect(() => {
     if (isEditing && defaultValue) {
       setContent(defaultValue); // contains HTML with mention spans
@@ -144,11 +146,13 @@ export default function CommentInputSection({
     setLoading(true);
     try {
       const mentionedUserIds = extractMentionedUserIds(html);
-
+      if (!user?._id) {
+        throw new Error("User ID is required to create a comment.");
+      }
       const payload = {
         content: html,
         task: taskId,
-        created_by: createdBy,
+        created_by: user?._id,
         mentioned: mentionedUserIds,
         parent_comment: parent_comment,
       };

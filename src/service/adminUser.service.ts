@@ -25,6 +25,8 @@ export interface IUser {
   roles?: any;
   data?: any;
   profileImage?: any;
+  id?: string;
+  payload?: any;
 }
 
 const AdminUserService = {

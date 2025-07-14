@@ -146,7 +146,6 @@ export default function CommentList({
                 <CommentInputSection
                   defaultValue=""
                   taskId={comment.task}
-                  createdBy={comment.created_by || ""}
                   onCommentCreated={() => {
                     setActiveReplyId(null);
                     refreshComments();
