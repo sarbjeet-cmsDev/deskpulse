@@ -89,11 +89,9 @@ export class PerformanceService {
     const priorityScore = (priorityWeight / priorityMax) * priorityPercent;
     const acceptanceScore = (acceptanceWeight / acceptanceMax) * acceptancePercent;
     const revisionScore = (revisionWeight / revisionMax) * revisionPercent;
-     log(taskTypeScore ,taskStatusScore , priorityScore , acceptanceScore , revisionScore)
     const totalScore = Math.round(
       taskTypeScore + taskStatusScore + priorityScore + acceptanceScore + revisionScore
     );
-        log(taskTypeScore + taskStatusScore + priorityScore + acceptanceScore + revisionScore)
     const createPerformanceDto: CreatePerformanceDto = {
       task: TaskObj._id.toString(),
       result: totalScore.toString()

@@ -30,33 +30,42 @@ export class NotificationListener {
 
   // When the Task Status Updated event is triggered
   @OnEvent('task.status.updated', { async: true })
-  async handleTaskStatusUpdatedEvent(payload: { new_data: any[] }) {
-    const data = payload.new_data[0];
-    const oldStatus = data.oldTaskStatus;
-    const newStatus = data.updateTaskStatus;
-    const username = data.userData.username;
-    const updatedAt = new Date(data.taskdata.task.updatedAt).toLocaleString();
-    const taskId = data.taskdata.task._id.toString();
-    const taskLink = `${process.env.FRONTEND_URL}/task/${taskId}`;
-    const content = `Task status was updated from "${oldStatus}" to "${newStatus}" by ${username} on ${updatedAt}.`;
-    const notifications: CreateNotificationDto[] = [
-      {
-        user: data.taskdata.project.teamLeader.id.toString(),
+  async handleTaskStatusUpdatedEvent(payload: { taskdetails: any, oldTaskStatus: string, updatedBy: any, TaskDetailsObj: any }) {
+    const taskdetails = payload.taskdetails
+    const oldTaskStatus = payload.oldTaskStatus
+    const updatedBy = payload.updatedBy
+    const TaskDetailsObj = payload.TaskDetailsObj
+    const updatedAt = new Date(taskdetails.updatedAt).toLocaleString();
+    // const taskId = data.taskdata.task._id.toString();
+    const taskLink = `${process.env.FRONTEND_URL}/task/${taskdetails._id.toString()}`;
+    const content = `Task status was updated from "${oldTaskStatus}" to "${taskdetails.status}" by ${updatedBy.username} on ${updatedAt}.`;
+    const notifications: CreateNotificationDto[] = [];
+    // TEAM LEADER
+    if (TaskDetailsObj.team_leader?.id) {
+      notifications.push({
+        user: TaskDetailsObj.team_leader.id.toString(),
         content,
         redirect_url: taskLink,
-      },
-      {
-        user: data.taskdata.project.projectCoordinator.id.toString(),
-        content,
-        redirect_url: taskLink,
-      },
-      {
-        user: data.taskdata.project.projectManager.id.toString(),
-        content,
-        redirect_url: taskLink,
-      },
-    ];
+      });
+    }
 
+    // PROJECT MANAGER
+    if (TaskDetailsObj.project_manager?.id) {
+      notifications.push({
+        user: TaskDetailsObj.project_manager.id.toString(),
+        content,
+        redirect_url: taskLink,
+      });
+    }
+
+    // PROJECT COORDINATOR
+    if (TaskDetailsObj.project_coordinator?.id) {
+      notifications.push({
+        user: TaskDetailsObj.project_coordinator.id.toString(),
+        content,
+        redirect_url: taskLink,
+      });
+    }
     try {
       await Promise.all(
         notifications.map((notification) =>

@@ -12,12 +12,10 @@ export class PerformanceListener {
 
 
   @OnEvent('task.status.updated', { async: true })
-  async handleTaskStatusUpdatedEvent(payload: { new_data: any[] }) {
-
-    const data = payload.new_data[0];
-    const task = data.taskdata.task;
+  async handleTaskStatusUpdatedEvent(payload: { taskdetails: any, oldTaskStatus: string, updatedBy: any, TaskDetailsObj: any }) {
+        const taskdetails = payload.taskdetails
     try {
-      await this.performanceService.createPerformance(task);
+      await this.performanceService.createPerformance(taskdetails);
 
     } catch (error) {
       this.logger.error('Failed to create project assign log', error.stack);

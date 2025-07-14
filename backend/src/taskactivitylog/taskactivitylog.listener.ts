@@ -34,12 +34,14 @@ export class TaskActivityLogListener {
   }
 
   @OnEvent('task.status.updated', { async: true })
-  async handleTaskStatusUpdatedEvent(payload: { new_data: any }) {
-    // log(payload.new_data[0]);    
+  async handleTaskStatusUpdatedEvent(payload: { taskdetails: any, oldTaskStatus:string, updatedBy: any }) {
+    const taskdetails = payload.taskdetails
+    const oldTaskStatus = payload.oldTaskStatus
+    const updatedBy = payload.updatedBy
     const updateTaskActivityLogDto: CreateTaskActivityLogDto = {
-      project: payload.new_data[0].taskdata.project._id.toString(),
-      task: payload.new_data[0].taskdata.task._id.toString(),
-      description: `Task status was updated from "${payload.new_data[0].oldTaskStatus}" to "${payload.new_data[0].updateTaskStatus}" by ${payload.new_data[0].userData.username} on ${new Date(payload.new_data[0].taskdata.task.updatedAt).toLocaleString()}.`,
+      project: taskdetails.project._id.toString(),
+      task: taskdetails._id.toString(),
+      description: `Task status was updated from "${oldTaskStatus}" to "${taskdetails.status}" by ${updatedBy.username} on ${new Date(taskdetails.updatedAt).toLocaleString()}.`,
     };
     try {
       await this.taskactivitylogService.create(updateTaskActivityLogDto);
@@ -47,8 +49,9 @@ export class TaskActivityLogListener {
     } catch (error) {
       this.logger.error('Failed to create task status update log', error.stack);
     }
-
   }
+
+  
   @OnEvent('task.assigned', { async: true })
   async handleTaskAsssignEvent(payload: { taskdetails: any, assigntask: any }) {
     const updateTaskActivityLogDto: CreateTaskActivityLogDto = {

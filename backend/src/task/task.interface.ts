@@ -56,3 +56,9 @@ export interface Task extends Document {
   rivision: number;
   updatedAt: Date;
 }
+
+interface TaskDetails {
+  team_leader: any; // or a specific user type
+  project_manager: any;
+  project_coordinator: any;
+}

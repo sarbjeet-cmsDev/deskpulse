@@ -20,9 +20,8 @@ export class CreateCommentDto {
 
 
   @IsOptional()
-   @Transform(({ value }) => (value ? new Types.ObjectId(value) : undefined))
   @IsMongoId()
-  created_by: MongooseSchema.Types.ObjectId;
+  created_by: string;
 }
 
 export class UpdateCommentDto {

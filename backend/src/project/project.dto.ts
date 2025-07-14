@@ -11,6 +11,7 @@ import {
 import { Schema as MongooseSchema, Types } from 'mongoose';
 
 export class CreateProjectDto {
+  @IsOptional()
   @IsString()
   @Prop({ required: true, unique: true })
   code: string;
@@ -31,18 +32,15 @@ export class CreateProjectDto {
 
   @IsOptional()
   @IsMongoId()
-  @Transform(({ value }) => (value ? new Types.ObjectId(value) : undefined))
-  project_coordinator?: MongooseSchema.Types.ObjectId;
+  project_coordinator?: string;
 
   @IsOptional()
   @IsMongoId()
-  @Transform(({ value }) => (value ? new Types.ObjectId(value) : undefined))
-  project_manager?: MongooseSchema.Types.ObjectId;
+  project_manager?:string;
 
   @IsOptional()
   @IsMongoId()
-  @Transform(({ value }) => (value ? new Types.ObjectId(value) : undefined))
-  team_leader?: MongooseSchema.Types.ObjectId;
+  team_leader?: string;
 
   @IsString()
   @IsOptional()

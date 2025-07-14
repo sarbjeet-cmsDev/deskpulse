@@ -5,7 +5,7 @@ import { Project, ProjectDocument } from './project.schema';
 import { ProjectKanbanService } from '../project-kanban/project_kanban.service';
 import { UserService } from 'src/user/user.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { CreateProjectDto } from './project.dto';
+import { CreateProjectDto, UpdateProjectDto } from './project.dto';
 import { getUserDetailsById } from 'src/shared/commonhelper';
 import { log } from 'console';
 
@@ -70,7 +70,7 @@ export class ProjectService {
     return project;
   }
 
-  async update(id: string, updateProjectDto: Partial<Project>): Promise<Project> {
+  async update(id: string, updateProjectDto: UpdateProjectDto): Promise<Project> {
     const updatedProject = await this.projectModel
       .findByIdAndUpdate(id, updateProjectDto, { new: true })
       .exec();
