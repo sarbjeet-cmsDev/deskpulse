@@ -10,14 +10,18 @@ import { openDrawer } from "@/store/slices/drawerSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { CommonDrawer } from "../common/Drawer/Drawer";
 import { Notification } from "../Notification/Notification";
-import { RootState } from "@/store/store";
+import { AppDispatch, RootState } from "@/store/store";
 import { useState, useEffect } from "react";
 import LeftMenuDrawer from "../HeaderMenuDrawer/leftmenudrawer";
+import { fetchUserProfile } from "@/store/slices/userSlice";
 
 export default function TopHeader() {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
+  useEffect(() => {
+    dispatch(fetchUserProfile());
+  }, [dispatch]);
   const user = useSelector((state: RootState) => state.user.data);
-  const [version, setVersion] = useState(Date.now()); // for cache busting
+  const [version, setVersion] = useState(Date.now());
 
   // Cache-busting when image changes
   useEffect(() => {
@@ -39,7 +43,7 @@ export default function TopHeader() {
         <div className="flex justify-center items-center gap-2">
           <div className="relative">
             <Image
-              key={avatarUrl} // force image re-render
+              key={avatarUrl}
               src={avatarUrl}
               alt="avatar-image"
               width={100}
