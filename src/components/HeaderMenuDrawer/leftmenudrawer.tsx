@@ -14,13 +14,17 @@ import avatar from "@/assets/images/avt1.jpg";
 import { H5 } from "@/components/Heading/H5";
 import { P } from "@/components/ptag";
 import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
+import { RootState, AppDispatch } from "@/store/store";
 import { IUserRedux } from "@/types/user.interface";
 import Link from "next/link";
 import { getGreeting } from "@/utils/greetings";
+import { useDispatch } from "react-redux";
+import { signOut } from "@/store/slices/authSlice";
+import router from "next/router";
 
 export default function LeftMenuDrawer() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const dispatch = useDispatch<AppDispatch>();
   const [placement, setPlacement] = React.useState<
     "left" | "right" | "top" | "bottom"
   >("left");
@@ -42,6 +46,14 @@ export default function LeftMenuDrawer() {
     { label: "Create Reminder", href: "/reminder/create" },
     { label: "Logout", href: "/auth/profile" },
   ];
+
+  const handleLogout = () => {
+    dispatch(signOut());
+    localStorage.removeItem("token");
+    localStorage.removeItem("type");
+    router.push("/auth/login");
+  };
+
 
   const handleOpen = (placement: "left" | "right" | "top" | "bottom") => {
     setPlacement(placement);
@@ -135,16 +147,7 @@ export default function LeftMenuDrawer() {
                     <Link href={item.href}>{item.label}</Link>
                   </P>
                 ))}
-                {/* <AccordionMenu/> */}
               </DrawerBody>
-              {/* <DrawerFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Close
-                </Button>
-                <Button color="primary" onPress={onClose}>
-                  Action
-                </Button>
-              </DrawerFooter> */}
             </>
           )}
         </DrawerContent>

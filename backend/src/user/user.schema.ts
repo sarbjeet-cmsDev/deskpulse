@@ -105,7 +105,7 @@ export class User {
 
   @IsOptional()
   @IsEnum(UserRole, { each: true })
-  @Prop({ type: [String], default: ["employee"] })
+  @Prop({ type: [String], default: ["user"] })
   userRoles?: UserRole[];
 
   @IsOptional()

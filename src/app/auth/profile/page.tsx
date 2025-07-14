@@ -21,7 +21,7 @@ export default function AuthProfilePage() {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const user = useSelector((state: RootState) => state.user.data);
-  const [version, setVersion] = useState<number>(Date.now()); // 👈 tracks cache-busting version
+  const [version, setVersion] = useState<number>(Date.now()); 
 
   const handleLogout = () => {
     dispatch(signOut());
@@ -33,7 +33,7 @@ export default function AuthProfilePage() {
   const handleAvatarChange = async (file: File) => {
     try {
       await dispatch(updateUserAvatar(file)).unwrap();
-      setVersion(Date.now()); // 👈 Trigger new image version after upload
+      setVersion(Date.now()); 
     } catch (error) {
       console.error("Image upload failed:", error);
     }
@@ -61,7 +61,7 @@ export default function AuthProfilePage() {
         <div className="flex justify-center items-center flex-col gap-2">
           <div className="relative">
             <Image
-              key={avatarUrl} // 👈 force Image re-render when avatarUrl changes
+              key={avatarUrl}
               src={avatarUrl}
               alt="avatar"
               width={100}

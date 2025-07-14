@@ -212,26 +212,7 @@ const UpdateUserProfile = () => {
             <p className="text-sm text-red-500">{errors.zipCode.message}</p>
           )}
 
-          {/* User Roles Multi-Select */}
-          <div>
-            <label className=" hidden block text-sm font-medium text-gray-700 mb-1">
-              User Roles
-            </label>
-            <select
-              multiple
-              {...register("roles")}
-              className="hidden w-full border border-gray-300 rounded px-3 py-2"
-            >
-              <option value="admin">Admin</option>
-              <option value="project_manager">Project Manager</option>
-              <option value="team_member">Team Member</option>
-              <option value="client">Client</option>
-              <option value="employee">Employee</option>
-            </select>
-            {errors.roles && (
-              <p className="text-sm text-red-500">{errors.roles.message}</p>
-            )}
-          </div>
+         
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">

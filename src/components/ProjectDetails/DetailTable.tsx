@@ -51,14 +51,6 @@ export default function Details({ project, taskId, onTaskUpdate }: DetailsProps)
   const handleAssignUser = async (userId: string) => {
     try {
         await TaskService.updateTask(taskId, { assigned_to: userId });
-        //  const taskLink = `${process.env.NEXT_PUBLIC_FRONTEND_URL}tasks/${taskId}`;
-        //  console.log(taskLink,'tasklink')
-        // await NotificationService.createNotification({
-        //   content: "You have been assigned a new task.",
-        //   user: userId,                        
-        //   redirect_url: taskLink,                 
-        //   is_read: false,   
-        // })
         Swal.fire("Assigned!", "The task has been assigned.", "success");
         if (onTaskUpdate) onTaskUpdate();
         handleCloseModal();
@@ -149,7 +141,7 @@ export default function Details({ project, taskId, onTaskUpdate }: DetailsProps)
             </div>
           </div>
         </li>
-        <li className="mt-[20px]">
+        {/* <li className="mt-[20px]">
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-4 w-[35%]">
               <svg
@@ -181,7 +173,7 @@ export default function Details({ project, taskId, onTaskUpdate }: DetailsProps)
               </a>
             </div>
           </div>
-        </li>
+        </li> */}
         <li className="mt-[10px]">
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-4 w-[35%]">
@@ -211,7 +203,7 @@ export default function Details({ project, taskId, onTaskUpdate }: DetailsProps)
             </div>
           </div>
         </li>
-        <li className="mt-[10px]">
+        {/* <li className="mt-[10px]">
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-4 w-[35%]">
               <svg
@@ -238,25 +230,17 @@ export default function Details({ project, taskId, onTaskUpdate }: DetailsProps)
               <div className="text-[#7980ff] border border-[#7980ff] py-[2px] px-[8px] rounded-[8px] text-[10px] leading-[16px]">
                 Refereences.pdf
               </div>
-              {/* <Input
+              <Input
                     type="file"
                     classNames={{
                         inputWrapper: "p-7 bg-[#7980ff] data-[hover=true]:bg-[#7980ff]",
                       }}
-                    /> */}
+                    />
             </div>
           </div>
-        </li>
+        </li> */}
       </ul>
     </div>
   );
 }
-
-  // onCommentCreated={handleCommentCreated}
-  // userOptions={team.map((member) => ({
-  //   label: `${member.firstName} ${member.lastName} (${member.email})`,
-  //   value: member._id,
-  // }))}
-  // enableUserSearch={false} onAssigned={function (userId: string): void {
-  //   throw new Error("Function not implemented.");
-  // } }            
+          

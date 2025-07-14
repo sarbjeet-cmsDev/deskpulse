@@ -108,7 +108,8 @@ const UpdateProjectPage = () => {
 
         <Input placeholder="Project Code" {...register('code')} />
         {errors.code && <p className="text-sm text-red-500">{errors.code.message}</p>}
-
+<Input placeholder="Title" {...register('title')} />
+        {errors.title && <p className="text-sm text-red-500">{errors.title.message}</p>}
         {/* Assign Users */}
         <Controller
           name="users"

@@ -55,7 +55,7 @@ const ProjectListPage = () => {
 
   const headers = [
     { id: "code", title: "Code", is_sortable: true },
-    { id: "notes", title: "Notes" },
+    { id: "title", title: "Title" },
     { id: "avatar", title: "Avatar" },
   ];
 
