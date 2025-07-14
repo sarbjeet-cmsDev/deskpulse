@@ -86,7 +86,7 @@ const UpdateUserPage = () => {
           <p className="text-sm text-red-500">{errors.username.message}</p>
         )}
 
-        <Input type="email" placeholder="Email" {...register("email")} />
+        <Input type="email" placeholder="Email" {...register("email")} readOnly />
         {errors.email && (
           <p className="text-sm text-red-500">{errors.email.message}</p>
         )}

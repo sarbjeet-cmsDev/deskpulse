@@ -9,7 +9,7 @@ import {
   Query,
   UseGuards,
 } from "@nestjs/common";
-import { CreateTimelineDto } from "./timeline.dto";
+import { CreateTimelineDto, UpdateTimelineDto } from "./timeline.dto";
 import { Timeline } from "./timeline.interface";
 import { TimelineService } from "./timeline.service";
 import { CurrentUser } from "src/shared/current-user.decorator";
@@ -25,6 +25,7 @@ export class TimelineController {
     @Body() createTimelineDto: CreateTimelineDto,@CurrentUser() user: any
   ): Promise<{ message: string; data: Timeline}> {
     createTimelineDto.created_by = user.userId;  // Safe, server-side only
+    log(createTimelineDto)
     const createdTimeline = await this.timelineService.create(createTimelineDto);
     return {
       message: 'Timeline created successfully!',
@@ -49,7 +50,7 @@ export class TimelineController {
   @Patch(":id")
   async update(
     @Param("id") id: string,
-    @Body() updateTimelineDto: CreateTimelineDto
+    @Body() updateTimelineDto: UpdateTimelineDto
   ): Promise<Timeline> {
     return this.timelineService.update(id, updateTimelineDto);
   }

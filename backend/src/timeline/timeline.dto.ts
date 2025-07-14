@@ -16,8 +16,7 @@ export class CreateTimelineDto {
 
     @IsOptional()
     @IsMongoId()
-    @Transform(({ value }) => (value ? new Types.ObjectId(value) : undefined))
-    user?: MongooseSchema.Types.ObjectId;
+    user?: string;
 
     @IsNotEmpty({ message: 'Time spent is required.' })
     time_spent?: string;
