@@ -95,4 +95,16 @@ export class RemindersController {
       reminder: updatedReminder,
     };
   }
+
+    // @Get('me')
+    // async getMyReminders(
+    //   @Req() req: any,
+    //   @Query("page") page: string = "1",
+    //   @Query("limit") limit: string = "5"
+    // )
+    //   : Promise<{ data: Reminder[]; total: number; page: number; limit: number }> {
+    //   const pageNumber = parseInt(page, 10);
+    //   const limitNumber = parseInt(limit, 10);
+    //   return this.remindersService.findByAssignedUser(req.user.userId, pageNumber, limitNumber);
+    // }
 }

@@ -97,9 +97,9 @@ const DataGrid: React.FC<DataGridProps> = ({
                   onClick={() => header.is_sortable && onSort?.(header.id)}
                 >
                   {header.title}
-                  {sort?.field === header.id && (
+                  {/* {sort?.field === header.id && (
                     <span>{sort.order === 'asc' ? ' 🔼' : ' 🔽'}</span>
-                  )}
+                  )} */}
                 </th>
               ))}
               <th className="px-4 py-2">Actions</th>
