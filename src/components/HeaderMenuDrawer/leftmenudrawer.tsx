@@ -17,6 +17,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { IUserRedux } from "@/types/user.interface";
 import Link from "next/link";
+import { getGreeting } from "@/utils/greetings";
 
 export default function LeftMenuDrawer() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -119,8 +120,8 @@ export default function LeftMenuDrawer() {
                     <H5 className="text-black">{fullName}</H5>
                     <P className="text-black text-start">
                       {userProfile?.firstName
-                        ? `Hi ${userProfile.firstName}, Good Morning!`
-                        : "Welcome!"}
+                        ? `Hi ${userProfile.firstName}, ${getGreeting()}!`
+                        : `Welcome!`}
                     </P>
                   </div>
                 </div>

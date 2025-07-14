@@ -14,6 +14,7 @@ import { AppDispatch, RootState } from "@/store/store";
 import { useState, useEffect } from "react";
 import LeftMenuDrawer from "../HeaderMenuDrawer/leftmenudrawer";
 import { fetchUserProfile } from "@/store/slices/userSlice";
+import { getGreeting } from "@/utils/greetings";
 
 export default function TopHeader() {
   const dispatch = useDispatch<AppDispatch>();
@@ -23,7 +24,6 @@ export default function TopHeader() {
   const user = useSelector((state: RootState) => state.user.data);
   const [version, setVersion] = useState(Date.now());
 
-  // Cache-busting when image changes
   useEffect(() => {
     if (user?.profileImage) {
       setVersion(Date.now());
@@ -56,8 +56,8 @@ export default function TopHeader() {
             <H5 className="text-white">{fullName}</H5>
             <P className="text-white text-start">
               {user?.firstName
-                ? `Hi ${user.firstName}, Good Morning!`
-                : "Welcome!"}
+                ? `Hi ${user.firstName}, ${getGreeting()}!`
+                : `Welcome!`}
             </P>
           </div>
         </div>
