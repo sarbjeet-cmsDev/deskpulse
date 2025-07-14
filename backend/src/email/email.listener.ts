@@ -135,12 +135,12 @@ export class EmailListener {
   async handleTimelineCreatedEvent(payload: { taskdata: any, createdTimeline: any }) {
     const { taskdata, createdTimeline } = payload;
     const templates = `Worked ${createdTimeline.time_spent} hour(s) on task "${taskdata.task.title}" — general updates and review. Comment: ${createdTimeline.comment}. On ${new Date(createdTimeline.date).toLocaleString()} by "${taskdata.userData.username}"`;
-    const timelineLink = `${process.env.FRONTEND_URL}timeline/${createdTimeline._id.toString()}`;
+      const timelineLink = `${process.env.FRONTEND_URL}timeline/${createdTimeline._id.toString()}`;
     const recipients = [
       taskdata.project.projectCoordinator,
       taskdata.project.teamLeader,
       taskdata.project.projectManager,
-    ];
+    ].filter(Boolean).filter((recipient) => recipient.email);
     for (const recipient of recipients) {
       await this.emailservice.sendEmail({
         to: recipient.email,
@@ -154,6 +154,7 @@ export class EmailListener {
       });
     }
     this.logger.log(`timeline.created Email Sent NOtification`);
+  // }
   }
 
 

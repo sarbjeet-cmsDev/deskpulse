@@ -23,7 +23,6 @@ export class TimelineService {
   ) { }
   async create(createTimelineDto: CreateTimelineDto): Promise<Timeline> {
     const taskdata = await fetchTaskProjectUserDetailsByTaskID({ taskService: this.taskService, projectService: this.projectService , userService: this.userService},{ taskId: createTimelineDto.task.toString() , userId: createTimelineDto.created_by.toString() });
-    log(taskdata)
     const createdTimeline = new this.timelineModel(createTimelineDto);
     this.eventEmitter.emit('timeline.created', {
       taskdata: taskdata,

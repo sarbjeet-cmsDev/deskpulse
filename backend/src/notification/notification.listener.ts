@@ -122,11 +122,31 @@ export class NotificationListener {
   async handleTimelineCreatedEvent(payload: { taskdata: any, createdTimeline: any }) {
     const templates = `Worked ${payload.createdTimeline.time_spent} hour(s) on task "${payload.taskdata.task.title}" — general updates and review. Comment: ${payload.createdTimeline.comment}. On ${new Date(payload.createdTimeline.date).toLocaleString()} by "${payload.taskdata.userData.username}"`;
     const timelineLInk = `${process.env.FRONTEND_URL}/task/${payload.createdTimeline._id.toString()}`;
-    const notifications: CreateNotificationDto[] = [
-      { user: payload.taskdata.project.team_leader.toString(), content: templates, redirect_url: timelineLInk },
-      { user: payload.taskdata.project.project_manager.toString(), content: templates, redirect_url: timelineLInk },
-      { user: payload.taskdata.project.project_coordinator.toString(), content: templates, redirect_url: timelineLInk },
-    ];
+    const notifications: CreateNotificationDto[] = [];
+    // TEAM LEADER
+    if (payload.taskdata.project.team_leader?.id) {
+      notifications.push({
+        user: payload.taskdata.project.team_leader.id.toString(),
+        content: templates,
+        redirect_url: timelineLInk,
+      });
+    }
+
+    if (payload.taskdata.project.projectManager?.id) {
+      notifications.push({
+        user: payload.taskdata.project.projectManager.id.toString(),
+        content: templates,
+        redirect_url: timelineLInk,
+      });
+    }
+    if (payload.taskdata.project.projectCoordinator?.id) {
+      notifications.push({
+        user: payload.taskdata.project.projectCoordinator.id.toString(),
+        content: templates,
+        redirect_url: timelineLInk,
+      });
+    }
+
     try {
       await Promise.all(notifications.map(notification => this.notificationService.create(notification)));
       this.logger.log(`Event For timeline.created Notification`);

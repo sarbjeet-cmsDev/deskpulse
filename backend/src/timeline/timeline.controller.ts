@@ -25,7 +25,6 @@ export class TimelineController {
     @Body() createTimelineDto: CreateTimelineDto,@CurrentUser() user: any
   ): Promise<{ message: string; data: Timeline}> {
     createTimelineDto.created_by = user.userId;  // Safe, server-side only
-    log(createTimelineDto)
     const createdTimeline = await this.timelineService.create(createTimelineDto);
     return {
       message: 'Timeline created successfully!',
