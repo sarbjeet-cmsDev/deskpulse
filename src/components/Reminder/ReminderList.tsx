@@ -21,7 +21,7 @@ export default function ReminderList({ reminders }: ReminderListProps) {
           key={reminder._id}
           className="bg-[#f8fafc] w-full py-[15px] px-[20px] rounded-[8px] border-l-[8px] border-l-[#5fd788] mt-[16px]"
         >
-          <Link href={`/reminder/${reminder._id}`} className="flex justify-between items-center">
+          <Link href={`#`} className="flex justify-between items-center">
             <span className="text-[#333] font-medium">{reminder.title}</span>
             <Image
               src={info}

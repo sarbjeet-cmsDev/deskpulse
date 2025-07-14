@@ -1,4 +1,4 @@
-import { CreateReminderDto, IReminder, UpdateReminderDto } from "@/types/reminder.interface";
+import { CreateReminderDto, IReminder, IReminderResponse, UpdateReminderDto } from "@/types/reminder.interface";
 import { createAxiosClient } from "@/utils/createAxiosClient";
 
 const axiosClient = createAxiosClient({ withCreds: true });
@@ -13,9 +13,23 @@ const ReminderService = {
   },
 
  
-  async getAllReminders(): Promise<{ message: string; reminders: IReminder[] }> {
-    const res = await axiosClient.get(`${API_URL}`);
-    console.log("res.data---",res.data)
+  async getAllReminders(
+    page = 1,
+    limit = 5,
+    sortField: string = "createdAt",
+    sortOrder: "asc" | "desc" = "desc"
+  ): Promise<{ message: string; reminders: any,total:any,page:any }> {
+    const res = await axiosClient.get(`${API_URL}`,
+       {
+        params: {
+          page,
+          limit,
+          sortField,
+          sortOrder,
+        },
+      }
+    );
+    console.log("res.data 22222---",res.data)
     return res.data;
   },
 

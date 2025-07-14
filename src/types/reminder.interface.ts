@@ -26,3 +26,10 @@ export interface UpdateReminderDto {
   dueDate?: string;
   status?: string;
 }
+
+export interface IReminderResponse {
+  reminders?:any
+  total: number;
+  page: number;
+  limit: number;
+}

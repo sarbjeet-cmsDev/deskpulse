@@ -9,17 +9,26 @@ import { IReminder } from "@/types/reminder.interface";
 import Image from "next/image";
 import leftarrow from "@/assets/images/back.png";
 import Link from "next/link";
+import Pagination from "@/components/Pagination/pagination";
 
 export default function MyRemindersPage() {
   const [reminders, setReminders] = useState<IReminder[]>([]);
   const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalItems, setTotalItems] = useState<number>(0);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     const fetchReminders = async () => {
       try {
         setLoading(true);
-        const res = await ReminderService.getAllReminders();
-        setReminders(res.reminders);
+        const res = await ReminderService.getAllReminders(
+          currentPage,
+          itemsPerPage
+        );
+        const { reminders, total} = res;
+        setReminders(reminders);
+        setTotalItems(total);
       } catch (error) {
         console.error("Failed to fetch reminders:", error);
       } finally {
@@ -28,7 +37,11 @@ export default function MyRemindersPage() {
     };
 
     fetchReminders();
-  }, []);
+  }, [currentPage]);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   return (
     <div className="max-w-6xl mx-auto p-6">
@@ -46,6 +59,13 @@ export default function MyRemindersPage() {
       ) : (
         <ReminderList reminders={reminders} />
       )}
+
+      <Pagination
+        currentPage={currentPage}
+        totalItems={totalItems}
+        itemsPerPage={itemsPerPage}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 }

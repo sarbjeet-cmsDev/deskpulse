@@ -9,10 +9,11 @@ import { createReminderSchema, CreateReminderFormData } from "@/components/valid
 import ReminderService from "@/service/reminder.service";
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function CreateReminder() {
   const [loading, setLoading] = useState(false);
-
+   const router=useRouter()
   const { register, handleSubmit, formState: { errors }, reset } = useForm<CreateReminderFormData>({
     resolver: zodResolver(createReminderSchema),
     defaultValues: {
@@ -29,6 +30,7 @@ export default function CreateReminder() {
       const response = await ReminderService.createReminder(data);
       console.log(response.message, response.reminder);
       reset()
+      router.push("/reminder")
     } catch (error) {
       console.error("Failed to create reminder:", error);
       alert("Something went wrong!");
