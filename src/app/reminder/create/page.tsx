@@ -71,13 +71,13 @@ export default function CreateReminder() {
             <input type="datetime-local" {...register("end")} className="border p-2 w-full rounded" />
           </div>
 
-          <div>
+          {/* <div>
             <label className="block mb-1">Status</label>
             <select {...register("status")} className="border p-2 w-full rounded">
               <option value="pending">Pending</option>
               <option value="complete">Complete</option>
             </select>
-          </div>
+          </div> */}
 
           <div className="flex items-center gap-2">
             <input type="checkbox" {...register("alert")} id="alert" />

@@ -148,7 +148,7 @@ console.log(comments,"ksdjflkdjslkjflksdklj")
               <H5 className="w-[98%] text-center">{task?.title}</H5>
             </div>
             <div className="">
-              <DropDownOptions />
+              {/* <DropDownOptions /> */}
             </div>
           </div>
 
@@ -156,9 +156,9 @@ console.log(comments,"ksdjflkdjslkjflksdklj")
             <H5 className="mt-[20px]">Description</H5>
             <P className="text-start">
               {project?.notes || "No description provided."}
-              <a href="#" className="text-primary mt-[12px]">
+              {/* <a href="#" className="text-primary mt-[12px]">
                 See Details
-              </a>
+              </a> */}
             </P>
 
             <Details 

@@ -8,7 +8,7 @@ import Details from "@/components/ProjectDetails/DetailTable";
 import SubTasks from "@/components/ProjectDetails/SubTaskList";
 import DropDownOptions from "@/components/ProjectDetails/DropDown";
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import ProjectService from "@/service/project.service";
 import TaskService, { ITask } from "@/service/task.service";
 import CreateTaskModal from "@/components/Task/createTaskModal";
@@ -17,11 +17,12 @@ import { useSelector } from "react-redux";
 import { IUserRedux } from "@/types/user.interface";
 import Link from "next/link";
 import Pagination from "@/components/Pagination/pagination";
-
+import { Button } from "@heroui/button";
 
 export default function MyProjectDetails() {
   const params = useParams();
   const projectId = params?.projectId as string;
+  const router = useRouter();
   const [project, setProject] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [tasks, setTasks] = useState<ITask[]>([]);
@@ -91,7 +92,10 @@ export default function MyProjectDetails() {
               <H5 className="w-[98%] text-center">{project.code}</H5>
             </div>
             <div className="">
-              <DropDownOptions />
+              <Button onPress={
+                ()=>router.push(`/project/projectDetail/${projectId}`)
+              }>View Kanban</Button>
+              {/* <DropDownOptions /> */}
             </div>
           </div>
           <div className="">
@@ -106,21 +110,21 @@ export default function MyProjectDetails() {
               <H5 className="mt-[20px]">Description</H5>
               <P className="text-start">
                 {project?.notes || "No description provided."}
-                <a href="#" className="text-primary mt-[12px]">
+                {/* <a href="#" className="text-primary mt-[12px]">
                   See Details
-                </a>
+                </a> */}
               </P>
               <Details project={project} taskId={''}
             onTaskUpdate={() => fetchTasks(project?._id)} 
             />
-              <div className="mt-[20px]">
+              {/* <div className="mt-[20px]">
                 <a
                   href="#"
                   className="text-[#7980ff] bg-[#7980ff1f] py-[16px] px-[28px] rounded-[12px] w-full text-[14px] leading-[16px] font-bold text-center block"
                 >
                   Add Custom Section
                 </a>
-              </div>
+              </div> */}
               <div className="mt-[28px]">
                 <H5>Tasks</H5>
                 <SubTasks tasks={tasks} />

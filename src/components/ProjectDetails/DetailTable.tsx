@@ -106,7 +106,7 @@ export default function Details({ project, taskId, onTaskUpdate }: DetailsProps)
             </div>
           </div>
         </li>
-        <li className="mt-[20px]">
+        {/* <li className="mt-[20px]">
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-4 w-[35%]">
               <svg
@@ -140,7 +140,7 @@ export default function Details({ project, taskId, onTaskUpdate }: DetailsProps)
               <span className="text-[#31394f] font-500 text-[12px] leading-[18px]"></span>
             </div>
           </div>
-        </li>
+        </li> */}
         {/* <li className="mt-[20px]">
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-4 w-[35%]">
@@ -174,7 +174,7 @@ export default function Details({ project, taskId, onTaskUpdate }: DetailsProps)
             </div>
           </div>
         </li> */}
-        <li className="mt-[10px]">
+        {/* <li className="mt-[10px]">
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-4 w-[35%]">
               <svg
@@ -202,7 +202,7 @@ export default function Details({ project, taskId, onTaskUpdate }: DetailsProps)
               <DatePickerInput />
             </div>
           </div>
-        </li>
+        </li> */}
         {/* <li className="mt-[10px]">
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-4 w-[35%]">

@@ -56,7 +56,7 @@ export default function CommentList({
     );
 
     return (
-      <li
+      <div
         key={comment._id}
         className={`bg-white border border-gray-100 rounded p-4 shadow-sm hover:shadow-md comment-section ${
           isChild ? "ml-10 mt-2" : "mt-4"
@@ -133,12 +133,12 @@ export default function CommentList({
                 </>
               )}
 
-              <Link
+              {/* <Link
                 href={`/task/${comment.task}`}
                 className="hover:text-indigo-600 flex items-center gap-1 ml-auto"
               >
                 <Image src={info} alt="Details" width={16} height={16} />
-              </Link>
+              </Link> */}
             </div>
 
             {isReplying && (
@@ -169,7 +169,7 @@ export default function CommentList({
               .map((child) => renderComment(child, true))}
           </div>
         </div>
-      </li>
+      </div>
     );
   };
 

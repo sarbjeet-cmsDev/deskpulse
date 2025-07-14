@@ -88,12 +88,12 @@ export const Notification = () => {
                   src={userAvtar?.src}
                   alt="User Avatar"
                   className="w-10 h-10 rounded-full"
-                  onClick={() => router.push(item?.redirect_url)}
+                  // onClick={() => router.push(item?.redirect_url)}
                 />
 
                 <div
                   className="flex-1 text-sm text-gray-700"
-                  onClick={() => router.push(item?.redirect_url)}
+                  // onClick={() => router.push(item?.redirect_url)}
                 >
                   <p className="mb-1">
                     <span className="font-medium text-indigo-600 cursor-pointer">
