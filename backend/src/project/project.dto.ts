@@ -32,14 +32,23 @@ export class CreateProjectDto {
 
   @IsOptional()
   @IsMongoId()
+  @Transform(({ value }) => (value === '' ? undefined : value?.toString()))
+
+
   project_coordinator?: string;
 
   @IsOptional()
   @IsMongoId()
-  project_manager?:string;
+  @Transform(({ value }) => (value === '' ? undefined : value?.toString()))
+
+
+  project_manager?: string;
 
   @IsOptional()
   @IsMongoId()
+  @Transform(({ value }) => (value === '' ? undefined : value?.toString()))
+
+
   team_leader?: string;
 
   @IsString()
@@ -89,4 +98,4 @@ export class CreateProjectDto {
   updated_by?: MongooseSchema.Types.ObjectId;
 }
 
-export class UpdateProjectDto extends CreateProjectDto {}
+export class UpdateProjectDto extends CreateProjectDto { }

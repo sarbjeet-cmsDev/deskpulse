@@ -19,15 +19,9 @@ export class ProjectService {
   ) { }
   async create(createProjectDto: CreateProjectDto): Promise<Project> {
     try {
-      const missingRoles: string[] = [];
-      if (missingRoles.length > 0) {
-        throw new NotFoundException(
-          `The following users were not found: ${missingRoles.join(', ')}`,
-        );
-      }
       const createdProject = new this.projectModel(createProjectDto);
       const savedProject = await createdProject.save();
-      if (createProjectDto.users) {
+      if (createProjectDto.users && createProjectDto.users.length > 0) {
         // log(createProjectDto)
         const assignproject = await Promise.all(
           createProjectDto.users.map(async (userId) => {
@@ -47,7 +41,7 @@ export class ProjectService {
       if (error.code === 11000 && error.keyPattern?.code) {
         throw new ConflictException('Project code must be unique.');
       }
-      throw new(error)
+      throw new (error)
     }
   }
   async findAll(): Promise<Project[]> {
@@ -77,18 +71,18 @@ export class ProjectService {
     if (!updatedProject) {
       throw new NotFoundException(`Project with ID ${id} not found.`);
     }
-      if (updateProjectDto.users) {
-        const assignproject = await Promise.all(
-          updateProjectDto.users.map(async (userId) => {
-            const userData = await getUserDetailsById(this.userservices, userId.toString());
-            return userData;
-          })
-        );
-        this.eventEmitter.emit('project.assigned', {
-          projectDetails: updatedProject,
-          assignproject: assignproject
-        });
-      }
+    if (updateProjectDto.users) {
+      const assignproject = await Promise.all(
+        updateProjectDto.users.map(async (userId) => {
+          const userData = await getUserDetailsById(this.userservices, userId.toString());
+          return userData;
+        })
+      );
+      this.eventEmitter.emit('project.assigned', {
+        projectDetails: updatedProject,
+        assignproject: assignproject
+      });
+    }
     return updatedProject;
   }
 
@@ -144,7 +138,7 @@ export class ProjectService {
     return project;
   }
 
-  async findProjectsByUserId(userId: string, page: number, limit: number): Promise< { data: Project[]; total: number; page: number; limit: number }> {
+  async findProjectsByUserId(userId: string, page: number, limit: number): Promise<{ data: Project[]; total: number; page: number; limit: number }> {
     const skip = (page - 1) * limit;
     const [data, total] = await Promise.all([
       this.projectModel.find({ users: userId }).skip(skip).limit(limit).sort({ createdAt: -1 }).exec(),
