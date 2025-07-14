@@ -5,9 +5,8 @@ import { Comment, CommentDocument } from './comment.schema';
 import { TaskService } from 'src/task/task.service';
 import { validateTaskId } from './comment.helper';
 import { UserService } from 'src/user/user.service';
-import { extractTextFromHtml, getUserDetailsById, getUserDetailsById1 } from 'src/shared/commonhelper';
-import { log } from 'console';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { log } from 'console';
 
 @Injectable()
 export class CommentService {
@@ -22,18 +21,10 @@ export class CommentService {
     await validateTaskId(this.taskService, createCommentDto.task.toString());
     const createdComment = new this.commentModel(createCommentDto);
     if (createCommentDto.mentioned) {
-      const assignmentionsuser = await Promise.all(
-        createCommentDto.mentioned.map(async (userId) => {
-          const userData = await getUserDetailsById(this.userservices, userId.toString());
-          return userData;
-        })
-      );
-    
       this.eventEmitter.emit('comments.mention', {
-        CommentDetails: createdComment,
-        commentContent: extractTextFromHtml(createdComment.content),
-        assignmentionsuser: assignmentionsuser
+        CommentObj: createdComment,
       });
+  
     }
     return createdComment.save();
   }
@@ -85,14 +76,10 @@ export class CommentService {
 
   const data = await Promise.all(
     comments.map(async (comment) => {
-      const userDetails = await getUserDetailsById1(
-        this.userservices,
-        comment.created_by.toString()
-      );
-
+      const userDetails = await this.userservices.findOne(comment.created_by.toString());
       return {
         ...comment,
-        created_by: userDetails, // Replace ID with full user details
+        created_by: userDetails?.username, // Replace ID with full user details
       };
     })
   );

@@ -21,8 +21,9 @@ export class CreateProjectDto {
   @Prop({ required: false })
   title?: string;
 
-  @IsString()
+
   @IsOptional()
+  @IsString()
   description?: string;
 
   @IsOptional()
@@ -31,28 +32,19 @@ export class CreateProjectDto {
   users?: MongooseSchema.Types.ObjectId[];
 
   @IsOptional()
-  @IsMongoId()
-  @Transform(({ value }) => (value === '' ? undefined : value?.toString()))
-
-
-  project_coordinator?: string;
-
-  @IsOptional()
-  @IsMongoId()
-  @Transform(({ value }) => (value === '' ? undefined : value?.toString()))
-
-
-  project_manager?: string;
-
-  @IsOptional()
-  @IsMongoId()
-  @Transform(({ value }) => (value === '' ? undefined : value?.toString()))
-
-
-  team_leader?: string;
-
   @IsString()
+  project_coordinator?: MongooseSchema.Types.ObjectId;
+
   @IsOptional()
+  @IsString()
+  team_leader?: MongooseSchema.Types.ObjectId;
+
+  @IsOptional()
+  @IsString()
+  project_manager?: MongooseSchema.Types.ObjectId;
+
+  @IsOptional()
+  @IsString()
   notes?: string;
 
   @IsString()

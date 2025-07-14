@@ -11,21 +11,30 @@ export class TaskListener {
     constructor(private readonly taskService: TaskService) { }
 
 
+
     @OnEvent('timeline.created', { async: true })
-    async handleTimelineCreatedEvent(payload: { taskdata: any, createdTimeline: any }) {
-        const oldestimated_time = payload.taskdata.task.totaltaskminuts ;
-        const time_spent = parseInt(payload.createdTimeline.time_spent);
+    async handleTimelineCreatedEvent(payload: { timeLineObj: any }) {
+
+        const timeLineObj = payload.timeLineObj;
+        const TaskObj = await this.taskService.findOne(timeLineObj.task.toString())
+        const oldestimated_time = TaskObj.totaltaskminutes; // ✅ correct property name
+        console.log('oldestimated_time Task Object:', oldestimated_time);
+        const totaltaskminutes = TaskObj?.totaltaskminutes;
+        if (totaltaskminutes === undefined || totaltaskminutes === null) {
+            throw new Error('Task object is missing `totaltaskminutes`');
+        }
+        const time_spent = parseInt(timeLineObj.time_spent);
         const new_estimation_time = oldestimated_time + time_spent;
+
         const updateTaskDto: UpdateTaskDto = {
-            totaltaskminuts: new_estimation_time
+            totaltaskminutes: new_estimation_time
         }
         try {
-            await this.taskService.update(payload.taskdata.task._id.toString(), updateTaskDto);
-              this.logger.log(`Event For timeline.created in the TaskListener`);
+            await this.taskService.update(TaskObj._id.toString(), updateTaskDto);
+            this.logger.log(`Event For timeline.created in the TaskListener`);
         } catch (error) {
             this.logger.error('Failed to create project assign log', error.stack);
         }
-        // this.taskService.update(payload.taskdata._id.toString(), updateTaskDto);
     }
 }
 

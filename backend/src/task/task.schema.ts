@@ -69,7 +69,7 @@ export class Task {
 
 
   @Prop({ type: Number, default: 0 })
-  totaltaskminuts: { type: Number, default: 0 }
+  totaltaskminutes: { type: Number, default: 0 }
 }
 
 export const TaskSchema = SchemaFactory.createForClass(Task);

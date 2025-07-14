@@ -5,154 +5,179 @@ import { NotificationService } from './notification.service';
 import { TaskStatusUpdatedPayload } from 'src/taskactivitylog/taskactivitylog.interface';
 import { log } from 'console';
 import { template } from 'lodash';
+import { UserService } from 'src/user/user.service';
+import { ProjectService } from 'src/project/project.service';
+import { TaskService } from 'src/task/task.service';
+import { extractTextFromHtml } from 'src/shared/commonhelper';
 
 @Injectable()
 export class NotificationListener {
   private readonly logger = new Logger(NotificationListener.name);
 
-  constructor(private readonly notificationService: NotificationService) { }
+  constructor(private readonly notificationService: NotificationService
+    , private readonly userservices: UserService,
+    private readonly projectService: ProjectService,
+    private readonly taskServices: TaskService,
+  ) { }
 
-  // When the PRoject Assign event is triggered
+  // When the Project Assign event is triggered
   @OnEvent('project.assigned', { async: true })
-  async handleProjectUpdatedEvent(payload: { projectDetails: any; assignproject: any; }) {
-    const { projectDetails } = payload;
-    const assignproject = payload.assignproject;
-    if (assignproject) {
-      const notifications = assignproject.map(user => ({
-        user: user.id.toString(),
-        content: `The project "${projectDetails.title}" was successfully assigned by ${user.username} on ${new Date(projectDetails.updatedAt).toLocaleString()}.`,
-        redirect_url: `${process.env.FRONTEND_URL}project/${payload.projectDetails._id.toString()}`,
-      }));
-      await Promise.all(notifications.map(notification => this.notificationService.create(notification)));
+  async handleProjectAssignedEvent(payload: { projectObj: any }) {
+    const { projectObj } = payload;
+    const assignedUserIds = projectObj.users;
+    const notifications: CreateNotificationDto[] = [];
+    for (const user of assignedUserIds) {
+      const UserData = await this.userservices.findOne(user.toString())
+      notifications.push({
+        user: user._id.toString(),
+        content: `The project "${projectObj.title}" was successfully assigned by ${UserData.username} on ${new Date(projectObj.updatedAt).toLocaleString()}.`,
+        redirect_url: `${process.env.FRONTEND_URL}project/${projectObj._id.toString()}`,
+      })
     }
-    this.logger.log(`Project Assign Notification created successfully`);
+    try {
+      await Promise.all(notifications.map(notification => this.notificationService.create(notification)));
+      this.logger.log(`Project assignment notification created.`);
+    } catch (error) {
+      this.logger.error('Failed to create project assign log', error.stack);
+    }
+  }
+
+
+  // On Task Assign 
+  @OnEvent('task.assigned', { async: true })
+  async handleTaskAsssignEvent(payload: { taskObj: any; }) {
+    const { taskObj } = payload;
+    const taskUsers = taskObj.assigned_to
+    const UserData = await this.userservices.findOne(taskUsers.toString())
+    const TaskAssignDto: CreateNotificationDto = {
+      user: UserData.id.toString(),
+      content: `Task "${taskObj.title}" was assigned to ${UserData.username} — Due by ${taskObj.due_date ? new Date(taskObj.due_date).toLocaleString() : 'No due date'}, Priority: ${taskObj.priority}, Status: ${taskObj.status}`,
+      redirect_url: `${process.env.FRONTEND_URL}task/${taskObj._id.toString()}`
+    }
+    try {
+      await this.notificationService.create(TaskAssignDto);
+      this.logger.log(`Task assignment Notification created.`);
+    } catch (error) {
+      this.logger.error('Failed to create project assign log', error.stack);
+    }
   }
 
   // When the Task Status Updated event is triggered
   @OnEvent('task.status.updated', { async: true })
-  async handleTaskStatusUpdatedEvent(payload: { taskdetails: any, oldTaskStatus: string, updatedBy: any, TaskDetailsObj: any }) {
-    const taskdetails = payload.taskdetails
-    const oldTaskStatus = payload.oldTaskStatus
-    const updatedBy = payload.updatedBy
-    const TaskDetailsObj = payload.TaskDetailsObj
-    const updatedAt = new Date(taskdetails.updatedAt).toLocaleString();
-    // const taskId = data.taskdata.task._id.toString();
-    const taskLink = `${process.env.FRONTEND_URL}/task/${taskdetails._id.toString()}`;
-    const content = `Task status was updated from "${oldTaskStatus}" to "${taskdetails.status}" by ${updatedBy.username} on ${updatedAt}.`;
+  async handleTaskStatusUpdatedEvent(payload: { taskObj: any; oldTaskStatus: string, updatedBy: any }) {
+    const taskObj = payload.taskObj;
+    const oldTaskStatus = payload.oldTaskStatus;
+    const ProjectObj = await this.projectService.findOne(taskObj.project.toString())
+    const UserData = await this.userservices.findOne(payload.updatedBy.toString())
+    const taskLink = `${process.env.FRONTEND_URL}/task/${taskObj._id.toString()}`;
+    const content = `Task status was updated from "${oldTaskStatus}" to "${taskObj.status}" by ${UserData.username} on ${new Date(taskObj.updatedAt).toLocaleString()}.`;
     const notifications: CreateNotificationDto[] = [];
-    // TEAM LEADER
-    if (TaskDetailsObj.team_leader?.id) {
+    if (ProjectObj.project_coordinator) {
+      // PROJECT COORDINATOR
       notifications.push({
-        user: TaskDetailsObj.team_leader.id.toString(),
+        user: ProjectObj.project_coordinator,
+        content,
+        redirect_url: taskLink,
+      });
+    }
+    if (ProjectObj.team_leader) {
+      // PROJECT COORDINATOR
+      notifications.push({
+        user: ProjectObj.team_leader,
         content,
         redirect_url: taskLink,
       });
     }
 
-    // PROJECT MANAGER
-    if (TaskDetailsObj.project_manager?.id) {
+    if (ProjectObj.project_manager) {
+      // PROJECT COORDINATOR
       notifications.push({
-        user: TaskDetailsObj.project_manager.id.toString(),
-        content,
-        redirect_url: taskLink,
-      });
-    }
-
-    // PROJECT COORDINATOR
-    if (TaskDetailsObj.project_coordinator?.id) {
-      notifications.push({
-        user: TaskDetailsObj.project_coordinator.id.toString(),
+        user: ProjectObj.project_manager,
         content,
         redirect_url: taskLink,
       });
     }
     try {
-      await Promise.all(
-        notifications.map((notification) =>
-          this.notificationService.create(notification),
-        ),
-      );
-      this.logger.log(`Notifications created for task status update.`);
+      await Promise.all(notifications.map(notification => this.notificationService.create(notification)));
+      this.logger.log(`task.status.updated Notification Trigger.`);
     } catch (error) {
       this.logger.error('Failed to create notifications', error.stack);
     }
   }
 
 
-  @OnEvent('task.assigned', { async: true })
-  async handleTaskAssignEvent(payload: { taskdetails: any, assigntask: any }) {
-    const templates = ` Task "${payload.taskdetails.title}" was assigned to ${payload.assigntask.username} — Due by ${payload.taskdetails.due_date
-      ? new Date(payload.taskdetails.due_date).toLocaleString()
-      : 'No due date'}, Priority: ${payload.taskdetails.priority}, Status: ${payload.taskdetails.status}`;
-    const taskLink = `${process.env.FRONTEND_URL}tasks/${payload.taskdetails._id}`;
-    const assigntask = payload.assigntask;
-    const notifications: CreateNotificationDto[] = [
-      { user: assigntask.id.toString(), content: templates, redirect_url: taskLink },
-    ]
+
+  @OnEvent('timeline.created', { async: true })
+  async handleTimelineCreatedEvent(payload: { timeLineObj: any }) {
+
+    const timeLineObj = payload.timeLineObj;
+    const timeLineCreatedBy = await this.userservices.findOne(timeLineObj.created_by.toString());
+    const TaskObj = await this.taskServices.findOne(timeLineObj.task.toString())
+
+    const ProjectObj = await this.projectService.findOne(TaskObj.project.toString())
+    const content = `Worked ${timeLineObj.time_spent} hour(s) on task "${TaskObj.title}" — general updates and review. Comment: ${timeLineObj.comment}. On ${new Date(timeLineObj.date).toLocaleString()} by "${timeLineCreatedBy.username}"`;
+    const timelineLInk = `${process.env.FRONTEND_URL}/task/${timeLineObj._id.toString()}`;
+    const timelineCreatednotifications: CreateNotificationDto[] = [];
+    if (ProjectObj.project_coordinator) {
+      // PROJECT COORDINATOR
+      timelineCreatednotifications.push({
+        user: ProjectObj.project_coordinator,
+        content,
+        redirect_url: timelineLInk,
+      });
+    }
+
+    if (ProjectObj.team_leader) {
+      // PROJECT COORDINATOR
+      timelineCreatednotifications.push({
+        user: ProjectObj.team_leader,
+        content,
+        redirect_url: timelineLInk,
+      });
+    }
+
+    if (ProjectObj.project_manager) {
+      // PROJECT COORDINATOR
+      timelineCreatednotifications.push({
+        user: ProjectObj.project_manager,
+        content,
+        redirect_url: timelineLInk,
+      });
+    }
+
     try {
-      await Promise.all(notifications.map(notification => this.notificationService.create(notification)));
-      this.logger.log(`Notification created for the teamLeaderNotification `);
+      await Promise.all(timelineCreatednotifications.map(notification => this.notificationService.create(notification)));
+      this.logger.log(`timeline.created Notification Trigger.`);
     } catch (error) {
-      this.logger.error('Failed to create notification', error.stack);
+      this.logger.error('Failed to create notifications', error.stack);
     }
   }
 
   @OnEvent('comments.mention', { async: true })
-  async handleCommentsMentionEvent(payload: { CommentDetails: any; assignmentionsuser: any; commentContent: string }) {
-    const { CommentDetails, commentContent } = payload;
-    const assignmentionUser = payload.assignmentionsuser;
-    if (assignmentionUser) {
-      for (const user of assignmentionUser) {
-        const updateProjectActivityLogDto: CreateNotificationDto = {
-          user: user.id.toString(),
-          content: `${user.username} commented "${commentContent}" — ${new Date(CommentDetails.createdAt).toLocaleString()}`,
-          redirect_url: `${process.env.FRONTEND_URL}comments/${payload.CommentDetails._id.toString()}`,
-        };
-        try {
-          await this.notificationService.create(updateProjectActivityLogDto);
-
-        } catch (error) {
-          this.logger.error('Failed to create project assign log', error.stack);
-        }
-      }
-      this.logger.log(`Task Activity Log created for project assign`);
-    }
-  }
-  @OnEvent('timeline.created', { async: true })
-  async handleTimelineCreatedEvent(payload: { taskdata: any, createdTimeline: any }) {
-    const templates = `Worked ${payload.createdTimeline.time_spent} hour(s) on task "${payload.taskdata.task.title}" — general updates and review. Comment: ${payload.createdTimeline.comment}. On ${new Date(payload.createdTimeline.date).toLocaleString()} by "${payload.taskdata.userData.username}"`;
-    const timelineLInk = `${process.env.FRONTEND_URL}/task/${payload.createdTimeline._id.toString()}`;
-    const notifications: CreateNotificationDto[] = [];
-    // TEAM LEADER
-    if (payload.taskdata.project.team_leader?.id) {
-      notifications.push({
-        user: payload.taskdata.project.team_leader.id.toString(),
-        content: templates,
-        redirect_url: timelineLInk,
-      });
-    }
-
-    if (payload.taskdata.project.projectManager?.id) {
-      notifications.push({
-        user: payload.taskdata.project.projectManager.id.toString(),
-        content: templates,
-        redirect_url: timelineLInk,
-      });
-    }
-    if (payload.taskdata.project.projectCoordinator?.id) {
-      notifications.push({
-        user: payload.taskdata.project.projectCoordinator.id.toString(),
-        content: templates,
-        redirect_url: timelineLInk,
-      });
+  async handleCommentsMentionEvent(payload: { CommentObj: any; }) {
+    const CommentObj = payload.CommentObj;
+    // const oldTaskStatus = payload.oldTaskStatus;
+    const updatedBy = await this.userservices.findOne(CommentObj.created_by.toString());
+    const TaskObj = await this.taskServices.findOne(CommentObj.task.toString())
+    const commentContent = extractTextFromHtml(CommentObj.content);
+    const mentionedUsers = CommentObj.mentioned
+    const notificationDtoForComments: CreateNotificationDto[] = [];
+    for (const user of mentionedUsers) {
+      const UserData = await this.userservices.findOne(user.toString())
+      notificationDtoForComments.push({
+        user: user.toString(),
+        content: `${UserData.username} commented "${commentContent}" — ${new Date(CommentObj.createdAt).toLocaleString()} : Created BY ${updatedBy.username}`,
+        redirect_url: `${process.env.FRONTEND_URL}comment/${payload.CommentObj._id.toString()}`,
+      })
     }
 
     try {
-      await Promise.all(notifications.map(notification => this.notificationService.create(notification)));
-      this.logger.log(`Event For timeline.created Notification`);
+      await Promise.all(notificationDtoForComments.map(notification => this.notificationService.create(notification)));
+      this.logger.log(`timeline.created Notification Trigger.`);
     } catch (error) {
-      this.logger.error('Failed to create notification', error.stack);
+      this.logger.error('Failed to create notifications', error.stack);
     }
   }
+
 }
 

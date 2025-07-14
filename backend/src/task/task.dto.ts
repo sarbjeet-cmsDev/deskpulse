@@ -143,7 +143,7 @@ export class UpdateTaskDto {
 
   @IsOptional()
   @IsNumber()
-  totaltaskminuts?: number;
+  totaltaskminutes?: number;
 
 }
 
@@ -161,5 +161,5 @@ export class UpdateTaskStatusUpdateDto {
 
   @IsOptional()
   @IsNumber()
-  totaltaskminuts?: number;
+  totaltaskminutes?: number;
 }

@@ -1,16 +1,22 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Taskactivitylog, TaskChecklistSchema } from './taskactivitylog.schema';
 import { TaskactivitylogController } from './taskactivitylog.controller';
+import { Taskactivitylog, TaskChecklistSchema } from './taskactivitylog.schema';
 import { TaskactivitylogService } from './taskactivitylog.service';
-import { TaskActivityLogListener } from './taskactivitylog.listener';  // Import your listener
+import { TaskActivityLogListener } from './taskactivitylog.listener';
+import { UserModule } from 'src/user/user.module';
+import { TaskModule } from 'src/task/task.module';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Taskactivitylog.name, schema: TaskChecklistSchema }]),
+    MongooseModule.forFeature([
+      { name: Taskactivitylog.name, schema: TaskChecklistSchema },
+    ]),
+    UserModule,
+    forwardRef(() => TaskModule), // ✅ Use forwardRef here
   ],
   controllers: [TaskactivitylogController],
-  providers: [TaskactivitylogService, TaskActivityLogListener],  // add listener here
+  providers: [TaskactivitylogService, TaskActivityLogListener],
   exports: [TaskactivitylogService],
 })
 export class TaskactivitylogModule {}

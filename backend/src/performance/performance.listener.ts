@@ -7,16 +7,13 @@ import { CreatePerformanceDto } from './performance.dto';
 @Injectable()
 export class PerformanceListener {
   private readonly logger = new Logger(PerformanceListener.name);
-
   constructor(private readonly performanceService: PerformanceService) { }
-
-
   @OnEvent('task.status.updated', { async: true })
-  async handleTaskStatusUpdatedEvent(payload: { taskdetails: any, oldTaskStatus: string, updatedBy: any, TaskDetailsObj: any }) {
-        const taskdetails = payload.taskdetails
+  async handleTaskStatusUpdatedEvent(payload: { taskObj: any; oldTaskStatus: string, updatedBy: any }) {
+    const taskObj = payload.taskObj;
     try {
-      await this.performanceService.createPerformance(taskdetails);
-
+      await this.performanceService.createPerformance(taskObj);
+      this.logger.log(`performanceService`);
     } catch (error) {
       this.logger.error('Failed to create project assign log', error.stack);
     }

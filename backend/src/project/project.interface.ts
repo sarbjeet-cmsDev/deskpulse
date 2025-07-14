@@ -4,10 +4,10 @@ export interface Project {
   code: string;
   title: string;
   description?: string;
-  users: MongooseSchema.Types.ObjectId[];
-  project_coordinator: MongooseSchema.Types.ObjectId;
-  team_leader: MongooseSchema.Types.ObjectId;
-  project_manager: MongooseSchema.Types.ObjectId;
+  users?: MongooseSchema.Types.ObjectId[];
+  project_coordinator?: MongooseSchema.Types.ObjectId;
+  team_leader?: MongooseSchema.Types.ObjectId;
+  project_manager?: MongooseSchema.Types.ObjectId;
   notes?: string;
   creds?: string;
   additional_information?: string;

@@ -2,79 +2,104 @@ import { Injectable, Logger } from '@nestjs/common';
 import { EmailService } from './email.service';
 import { OnEvent } from '@nestjs/event-emitter';
 import { log } from 'console';
+import { UserService } from 'src/user/user.service';
+import { ProjectService } from 'src/project/project.service';
+import { TaskService } from 'src/task/task.service';
+import { extractTextFromHtml } from 'src/shared/commonhelper';
 
 @Injectable()
 export class EmailListener {
   private readonly logger = new Logger(EmailListener.name);
 
-  constructor(private readonly emailservice: EmailService) { }
+  constructor(private readonly emailservice: EmailService
+    , private readonly userservices: UserService,
+    private readonly projectService: ProjectService,
+    private readonly taskServices: TaskService,
+  ) { }
 
-
-  // When the Project Assign Notification is triggered 
+  // When the Project Assign event is triggered
   @OnEvent('project.assigned', { async: true })
-  async handleProjectUpdatedEvent(payload: { projectDetails: any; assignproject: any; }) {
-    const { projectDetails } = payload;
-    const assignproject = payload.assignproject;
-    if (assignproject) {
-      for (const user of assignproject) {
-        const projectLink = `${process.env.FRONTEND_URL}project/${payload.projectDetails._id.toString()}`;
-        const templates = `The project "${payload.projectDetails.title}" was successfully assigned to ${user.username} on ${new Date(payload.projectDetails.updatedAt).toLocaleString()}.`;
-
+  async handleProjectAssignedEvent({ projectObj }: { projectObj: any }) {
+    for (const userId of projectObj.users) {
+      try {
+        const user = await this.userservices.findOne(userId.toString());
         await this.emailservice.sendEmail({
           to: user.email,
-          subject: 'Project Assign Notification',
+          subject: 'Project Assigned',
           template: 'templates/project-template.mjml',
           variables: {
-            project_template: templates,
-            projectName: payload.projectDetails.title,
+            project_template: `Project "${projectObj.title}" was assigned to ${user.username} on ${new Date(projectObj.updatedAt).toLocaleString()}.`,
+            projectName: projectObj.title,
             userName: user.username,
-            projectTitle: payload.projectDetails.title,
-            projectLink,
+            projectLink: `${process.env.FRONTEND_URL}project/${projectObj._id}`,
+          },
+        });
+        this.logger.log(`Project assignment Email Notification sent.`);
+      } catch (err) {
+        this.logger.error(`Failed to send email to ${userId}: ${err.message}`);
+      }
+    }
+    this.logger.log(`All project assignment emails processed.`);
+  }
+
+  // On Task Assign 
+  @OnEvent('task.assigned', { async: true })
+  async handleTaskAsssignEvent(payload: { taskObj: any; }) {
+    const { taskObj } = payload;
+    const taskUsers = taskObj.assigned_to
+    const UserData = await this.userservices.findOne(taskUsers.toString())
+    try {
+      this.emailservice.sendEmail({
+        to: UserData.email,
+        subject: 'Task Assign Notification',
+        template: 'templates/task/task-assign-email-template.mjml',
+        variables: {
+          userName: UserData.username,
+          taskTitle: taskObj.title,
+          taskDescription: taskObj.description ?? '',
+          dueDate: taskObj.due_date ? new Date(taskObj.due_date).toLocaleString() : 'No due date',
+          priority: taskObj.priority,
+          status: taskObj.status,
+          tasklink: `${process.env.FRONTEND_URL}/task/${taskObj._id.toString()}`,
+        },
+      })
+      this.logger.log(`Task assignment Email Notification sent.`);
+    } catch (err) {
+      this.logger.error(`Failed to send email to ${UserData.username}: ${err.message}`);
+    }
+  }
+
+
+  // When the Task Status Updated event is triggered
+  @OnEvent('task.status.updated', { async: true })
+  async handleTaskStatusUpdatedEvent(payload: { taskObj: any; oldTaskStatus: string, updatedBy: any }) {
+    const taskObj = payload.taskObj;
+    const oldTaskStatus = payload.oldTaskStatus;
+    const ProjectObj = await this.projectService.findOne(taskObj.project.toString())
+    const email = [];
+    const roles = ['project_coordinator', 'team_leader', 'project_manager'];
+    for (const role of roles) {
+      if (ProjectObj[role]) {
+        const userData = await this.userservices.findOne(ProjectObj[role].toString());
+        email.push({
+          to: userData.email,
+          subject: 'Task Status Updated',
+          template: 'templates/task-status-updated.mjml',
+          variables: {
+            userName: userData.username,
+            taskTitle: taskObj.title,
+            oldTaskStatus,
+            newTaskStatus: taskObj.status,
+            updatedAt: new Date(taskObj.updatedAt).toLocaleString(),
+            tasklink: `${process.env.FRONTEND_URL}/task/${taskObj._id}`,
           },
         });
       }
     }
-    this.logger.log(`Project Assign Notification created successfully`);
-  }
-
-  @OnEvent('task.status.updated', { async: true })
-  async handleTaskStatusUpdatedEvent(payload: { taskdetails: any, oldTaskStatus: string, updatedBy: any, TaskDetailsObj: any }) {
-    const taskdetails = payload.taskdetails;
-    const oldTaskStatus = payload.oldTaskStatus;
-    const updatedBy = payload.updatedBy;
-    const taskDetailsObj = payload.TaskDetailsObj;
-
-    const taskLink = `${process.env.FRONTEND_URL}/task/${taskdetails._id.toString()}`;
-    const updatedAt = new Date(taskdetails.updatedAt).toLocaleString();
-
-    const recipients = [
-      taskDetailsObj.team_leader,
-      taskDetailsObj.project_manager,
-      taskDetailsObj.project_coordinator,
-    ].filter(Boolean).filter((recipient) => recipient.email);
-    ;
-
-    const emailPayloads = recipients.map((recipient) => ({
-      to: recipient.email,
-      subject: 'Task Status Updated',
-      username: recipient.username,
-      template: 'templates/task-status-updated.mjml',
-    }));
     try {
       await Promise.all(
-        emailPayloads.map((email) =>
-          this.emailservice.sendEmail({
-            to: email.to,
-            subject: email.subject,
-            template: email.template,
-            variables: {
-              oldTaskStatus,
-              newTaskStatus: taskdetails.status,
-              username: email.username,
-              updatedAt,
-              taskLink,
-            },
-          }),
+        email.map((email) =>
+          this.emailservice.sendEmail(email),
         ),
       );
       this.logger.log('All notification emails sent for task status update.');
@@ -87,76 +112,84 @@ export class EmailListener {
 
   }
 
-  @OnEvent('task.assigned', { async: true })
-  async handleTaskAssignEvent(payload: { taskdetails: any, assigntask: any }) {
-    const taskLink = `${process.env.FRONTEND_URL}/task/${payload.taskdetails._id.toString()}`;
-    const assigntask = payload.assigntask;
-    this.emailservice.sendEmail({
-      to: assigntask.email,
-      subject: 'Task Assign Notification',
-      template: 'templates/task/task-assign-email-template.mjml',
-      variables: {
-        userName: assigntask.username,
-        taskTitle: payload.taskdetails.title,
-        taskDescription: payload.taskdetails.description,
-        dueDate: payload.taskdetails.due_date ? new Date(payload.taskdetails.due_date).toLocaleString() : 'No due date',
-        priority: payload.taskdetails.priority,
-        status: payload.taskdetails.status,
-        tasklink: taskLink,
-      },
-    })
-    this.logger.log(`Task Assign Notification created successfully`);
-  }
+  @OnEvent('timeline.created', { async: true })
+  async handleTimelineCreatedEvent(payload: { timeLineObj: any }) {
 
-  @OnEvent('comments.mention', { async: true })
-  async handleCommentsMentionEvent(payload: { CommentDetails: any; assignmentionsuser: any; commentContent: string }) {
-    const { CommentDetails, commentContent } = payload;
-    const assignmentionUser = payload.assignmentionsuser;
-    if (assignmentionUser) {
-      for (const user of assignmentionUser) {
-        const commentlink = `${process.env.FRONTEND_URL}comment/${payload.CommentDetails._id.toString()}`;
-        await this.emailservice.sendEmail({
-          to: user.email,
-          subject: 'New Comment Notification',
-          template: 'templates/commnets/comments.notify.mjml',
+    const timeLineObj = payload.timeLineObj;
+    const timeLineCreatedBy = await this.userservices.findOne(timeLineObj.created_by.toString());
+    const TaskObj = await this.taskServices.findOne(timeLineObj.task.toString())
+    const ProjectObj = await this.projectService.findOne(TaskObj.project.toString())
+    const rolesToNotify = ['project_coordinator', 'team_leader', 'project_manager'];
+    const content = `Worked ${timeLineObj.time_spent} hour(s) on task "${TaskObj.title}" — general updates and review. Comment: ${timeLineObj.comment}. On ${new Date(timeLineObj.date).toLocaleString()} by "${timeLineCreatedBy.username}"`;
+    const timelineLInk = `${process.env.FRONTEND_URL}/task/${timeLineObj._id.toString()}`;
+    const email = [];
+    for (const role of rolesToNotify) {
+      if (ProjectObj[role]) {
+        const userData = await this.userservices.findOne(ProjectObj[role].toString());
+        email.push({
+          to: userData.email,
+          subject: 'Timeline Notification',
+          template: 'templates/timeline/timeline-notification.mjml',
           variables: {
-            userName: user.username,
-            commentMessage: commentContent,
-            commentDate: new Date(CommentDetails.createdAt).toLocaleString(),
-            commentlink: commentlink
+            User: userData.username,
+            timeline_template: content,
+            timelineLink: timelineLInk,
           },
         });
       }
     }
-    this.logger.log(`comments Mentioned Notification created successfully`);
-  }
-
-  @OnEvent('timeline.created', { async: true })
-  async handleTimelineCreatedEvent(payload: { taskdata: any, createdTimeline: any }) {
-    const { taskdata, createdTimeline } = payload;
-    const templates = `Worked ${createdTimeline.time_spent} hour(s) on task "${taskdata.task.title}" — general updates and review. Comment: ${createdTimeline.comment}. On ${new Date(createdTimeline.date).toLocaleString()} by "${taskdata.userData.username}"`;
-      const timelineLink = `${process.env.FRONTEND_URL}timeline/${createdTimeline._id.toString()}`;
-    const recipients = [
-      taskdata.project.projectCoordinator,
-      taskdata.project.teamLeader,
-      taskdata.project.projectManager,
-    ].filter(Boolean).filter((recipient) => recipient.email);
-    for (const recipient of recipients) {
-      await this.emailservice.sendEmail({
-        to: recipient.email,
-        subject: 'Timeline Notification',
-        template: 'templates/timeline/timeline-notification.mjml',
-        variables: {
-          User: recipient.username,
-          timeline_template: templates,
-          timelineLink: timelineLink,
-        },
-      });
+    try {
+      await Promise.all(
+        email.map((email) =>
+          this.emailservice.sendEmail(email),
+        ),
+      );
+      this.logger.log('All notification emails sent for task status update.');
+    } catch (error) {
+      this.logger.error(
+        'Failed to create notifications or send emails',
+        error.stack || error,
+      );
     }
-    this.logger.log(`timeline.created Email Sent NOtification`);
-  // }
   }
+  @OnEvent('comments.mention', { async: true })
+  async handleCommentsMentionEvent(payload: { CommentObj: any }) {
+    try {
+      const comment = payload.CommentObj;
+      const commentText = extractTextFromHtml(comment.content);
+      const mentionedUserIds = comment.mentioned;
+      for (const userId of mentionedUserIds) {
+        try {
+          const mentionedUser = await this.userservices.findOne(userId.toString());
 
+          if (!mentionedUser) {
+            this.logger.warn(`Mentioned user with ID ${userId} not found.`);
+            continue;
+          }
+          await this.emailservice.sendEmail({
+            to: mentionedUser.email,
+            subject: 'You were mentioned in a comment',
+            template: 'templates/comments/comments.notify.mjml',
+            variables: {
+              userName: mentionedUser.username,
+              commentMessage: commentText,
+              commentDate: new Date(comment.createdAt).toLocaleString(),
+              commentLink: `${process.env.FRONTEND_URL}comment/${comment._id.toString()}`,
+            },
+          });
+          this.logger.log(`Notification sent to ${mentionedUser.email}`);
+        } catch (innerError) {
+          this.logger.error(`Failed to notify mentioned user ID ${userId}:`, innerError);
+        }
+      }
 
+      this.logger.log('All notifications for mentioned users have been processed.');
+    } catch (error) {
+      this.logger.error('Error handling comment mention event:', error);
+    }
+  }
 }
+
+
+
 

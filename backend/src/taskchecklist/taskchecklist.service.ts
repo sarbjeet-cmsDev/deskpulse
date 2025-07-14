@@ -1,4 +1,4 @@
-import { Injectable,NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateTaskChecklistDto, UpdateTaskChecklistDto } from './taskchecklist.dto';
@@ -17,11 +17,6 @@ export class TaskChecklistService {
     ) { }
 
     async create(CreateTaskChecklistDto: CreateTaskChecklistDto): Promise<TaskChecklistDocument> {
-        await validateFields(CreateTaskChecklistDto, {
-            task: (value) => validateTaskId(this.taskService, value),
-            created_by: (value, field) => validateUserId(this.userService, value, field),
-            completed_by: (value, field) => validateUserId(this.userService, value, field),
-        });
         return this.taskChecklistModel.create(CreateTaskChecklistDto);
     }
     async findAll(filter?: Partial<TaskChecklist>): Promise<TaskChecklistDocument[]> {
@@ -38,19 +33,14 @@ export class TaskChecklistService {
     }
 
     async update(id: string, updateTaskChecklistDto: UpdateTaskChecklistDto): Promise<TaskChecklistDocument | null> {
-        await validateFields(updateTaskChecklistDto, {
-            task: (value) => validateTaskId(this.taskService, value),
-            created_by: (value, field) => validateUserId(this.userService, value, field),
-            completed_by: (value, field) => validateUserId(this.userService, value, field),
-        });
         return this.taskChecklistModel.findByIdAndUpdate(id, updateTaskChecklistDto, { new: true }).exec();
     }
 
     async remove(id: string): Promise<TaskChecklistDocument> {
-    const checklist = await this.taskChecklistModel.findByIdAndDelete(id).exec();
-    if (!checklist) {
-        throw new NotFoundException(`Task checklist with ID ${id} not found.`);
-    }
-    return checklist;
+        const checklist = await this.taskChecklistModel.findByIdAndDelete(id).exec();
+        if (!checklist) {
+            throw new NotFoundException(`Task checklist with ID ${id} not found.`);
+        }
+        return checklist;
     }
 }

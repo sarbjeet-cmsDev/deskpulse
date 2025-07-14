@@ -6,10 +6,9 @@ import { ProjectKanbanService } from '../project-kanban/project_kanban.service';
 import { UserService } from 'src/user/user.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CreateProjectDto, UpdateProjectDto } from './project.dto';
-import { getUserDetailsById } from 'src/shared/commonhelper';
-import { log } from 'console';
 
 @Injectable()
+
 export class ProjectService {
   constructor(
     @InjectModel(Project.name) private projectModel: Model<ProjectDocument>,
@@ -17,26 +16,35 @@ export class ProjectService {
     private eventEmitter: EventEmitter2,
     private readonly userservices: UserService,
   ) { }
+  private sanitizeObjectIds(payload: any) {
+    const keysToSanitize = [
+      'team_leader',
+      'project_manager',
+      'project_coordinator',
+      'created_by',
+      'updated_by'
+    ];
+    keysToSanitize.forEach(key => {
+      if (payload[key] === '') {
+        payload[key] = undefined;
+      }
+    });
+    return payload;
+  }
   async create(createProjectDto: CreateProjectDto): Promise<Project> {
     try {
-      const createdProject = new this.projectModel(createProjectDto);
+      const sanitized = this.sanitizeObjectIds(createProjectDto);
+      const createdProject = new this.projectModel(sanitized);
       const savedProject = await createdProject.save();
+      // const savedProject = await createdProject.save();
       if (createProjectDto.users && createProjectDto.users.length > 0) {
-        // log(createProjectDto)
-        const assignproject = await Promise.all(
-          createProjectDto.users.map(async (userId) => {
-            const userData = await getUserDetailsById(this.userservices, userId.toString());
-            return userData;
-          })
-        );
         this.eventEmitter.emit('project.assigned', {
-          projectDetails: savedProject,
-          assignproject: assignproject
+          projectObj: savedProject,
         });
-
       }
       await this.kanbanService.createDefaults(savedProject._id.toString());
       return savedProject;
+
     } catch (error) {
       if (error.code === 11000 && error.keyPattern?.code) {
         throw new ConflictException('Project code must be unique.');
@@ -65,22 +73,16 @@ export class ProjectService {
   }
 
   async update(id: string, updateProjectDto: UpdateProjectDto): Promise<Project> {
+    const sanitized = this.sanitizeObjectIds(updateProjectDto);
     const updatedProject = await this.projectModel
-      .findByIdAndUpdate(id, updateProjectDto, { new: true })
+      .findByIdAndUpdate(id, sanitized, { new: true })
       .exec();
     if (!updatedProject) {
       throw new NotFoundException(`Project with ID ${id} not found.`);
     }
-    if (updateProjectDto.users) {
-      const assignproject = await Promise.all(
-        updateProjectDto.users.map(async (userId) => {
-          const userData = await getUserDetailsById(this.userservices, userId.toString());
-          return userData;
-        })
-      );
+    if (updateProjectDto.users && updateProjectDto.users.length > 0) {
       this.eventEmitter.emit('project.assigned', {
-        projectDetails: updatedProject,
-        assignproject: assignproject
+        projectObj: updatedProject,
       });
     }
     return updatedProject;

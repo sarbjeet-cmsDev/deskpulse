@@ -6,7 +6,6 @@ import { TaskService } from "src/task/task.service";
 import { validateTaskId } from "./task.helpers";
 import { CreateTimelineDto, UpdateTimelineDto } from "./timeline.dto";
 import { EventEmitter2 } from "@nestjs/event-emitter";
-import { fetchTaskProjectUserDetailsByTaskID } from "src/shared/commonhelper";
 import { ProjectService } from "src/project/project.service";
 import { log } from "console";
 import { UserService } from "src/user/user.service";
@@ -22,11 +21,9 @@ export class TimelineService {
     private eventEmitter: EventEmitter2,
   ) { }
   async create(createTimelineDto: CreateTimelineDto): Promise<Timeline> {
-    const taskdata = await fetchTaskProjectUserDetailsByTaskID({ taskService: this.taskService, projectService: this.projectService , userService: this.userService},{ taskId: createTimelineDto.task.toString() , userId: createTimelineDto.created_by.toString() });
     const createdTimeline = new this.timelineModel(createTimelineDto);
     this.eventEmitter.emit('timeline.created', {
-      taskdata: taskdata,
-      createdTimeline:createdTimeline
+      timeLineObj: createdTimeline,
     });
     return createdTimeline.save();
   }

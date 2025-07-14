@@ -11,7 +11,6 @@ import { ProjectService } from "../project/project.service";
 import { validateProjectId } from "./task.helpers";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { UserService } from "src/user/user.service";
-import { getUserDetailsById } from "src/shared/commonhelper";
 import { log } from "console";
 
 @Injectable()
@@ -30,13 +29,8 @@ export class TaskService {
     );
     const createdTask = new this.taskModel(createTaskDto);
     if (createTaskDto.assigned_to) {
-      const assigntask = await getUserDetailsById(
-        this.userservices,
-        createTaskDto.assigned_to?.toString()
-      );
       this.eventEmitter.emit("task.assigned", {
-        taskdetails: createdTask,
-        assigntask: assigntask,
+        taskObj: createdTask,
       });
     }
     return createdTask.save();
@@ -57,7 +51,7 @@ export class TaskService {
   }
 
   async findOne(id: string): Promise<Task> {
-    const task = await this.taskModel.findById(id).lean();
+    const task = await this.taskModel.findById(id).exec();
     if (!task) {
       throw new NotFoundException(`Task with ID ${id} not found.`);
     }
@@ -129,13 +123,8 @@ export class TaskService {
       throw new NotFoundException(`Task with ID ${id} not found.`);
     }
     if (updateTaskDto.assigned_to) {
-      const assigntask = await getUserDetailsById(
-        this.userservices,
-        updateTaskDto.assigned_to?.toString()
-      );
       this.eventEmitter.emit("task.assigned", {
-        taskdetails: task,
-        assigntask: assigntask,
+        taskObj: task,
       });
     }
     return task;
@@ -162,43 +151,11 @@ export class TaskService {
     const updatedTask = await this.taskModel
       .findByIdAndUpdate(id, updateTaskDto, { new: true })
       .exec();
-
-    const projectObj = await validateProjectId(
-      this.projectService,
-      updatedTask.project.toString()
-    );
-
-    const { team_leader, project_manager, project_coordinator } = projectObj;
-
-    const getDetails = async (id) =>
-      id ? await getUserDetailsById(this.userservices, id.toString()) : {};
-    const TaskDetailsObj = {
-      team_leader: await getDetails(team_leader),
-      project_manager: await getDetails(project_manager),
-      project_coordinator: await getDetails(project_coordinator),
-    };
     this.eventEmitter.emit("task.status.updated", {
-      taskdetails: updatedTask,
-      TaskDetailsObj: TaskDetailsObj,
+      taskObj: updatedTask,
       oldTaskStatus: oldTaskStatus,
-      updatedBy: await getDetails(userData.userId),
+      updatedBy: userData.userId
     });
-    // const projectObj = await (async ({ team_leader, project_coordinator, users, project_manager }) => {
-    //   return {
-    //     teamLeader: await getUserDetailsById(this.userservices, team_leader?.toString()),
-    //     projectCoordinator: await getUserDetailsById(this.userservices, project_coordinator?.toString()),
-    //     projectManager: await getUserDetailsById(this.userservices, project_manager?.toString()),
-    //     users
-    //   };
-    // })(await validateProjectId(this.projectService, task.project.toString()));
-    // const userDataObj = await getUserDetailsById(this.userservices, userData.userId?.toString());
-    // this.eventEmitter.emit('task.status.updated', {
-    //   taskDetails: updatedTask,
-    //   userDetails: userDataObj,
-    //   oldTaskStatus: oldTaskStatus,
-    //   newTaskStatus: updateTaskDto.status,
-    //   projectObj: projectObj
-    // });
 
     return updatedTask;
   }
