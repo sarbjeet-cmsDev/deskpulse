@@ -2,26 +2,27 @@
 
 import Image from "next/image";
 import leftarrow from "@/assets/images/back.png";
-import avatar from "@/assets/images/avt1.jpg";
+import defaultAvatar from "@/assets/images/avt1.jpg";
 import { H5 } from "@/components/Heading/H5";
 import DrawerFunction from "@/components/drawer";
 import { P } from "@/components/ptag";
 import { Button } from "@/components/Form/Button";
 import FullDrawerPage from "@/components/FullDrawer";
 import ModalDiv from "@/components/Modal";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { signOut } from "@/store/slices/authSlice";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import UserService from "@/service/user.service";
-import { IUser } from "@/service/user.service";
+import { RootState, AppDispatch } from "@/store/store";
+import { fetchUserProfile, updateUserAvatar } from "@/store/slices/userSlice";
 import Link from "next/link";
 
 export default function AuthProfilePage() {
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [user, setUser] = useState<IUser | null>(null);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
+  const user = useSelector((state: RootState) => state.user.data);
+  const [version, setVersion] = useState<number>(Date.now()); // 👈 tracks cache-busting version
+
   const handleLogout = () => {
     dispatch(signOut());
     localStorage.removeItem("token");
@@ -29,37 +30,22 @@ export default function AuthProfilePage() {
     router.push("/auth/login");
   };
 
-  const handleAvatarChange = async(file: File) => {
+  const handleAvatarChange = async (file: File) => {
     try {
-      const imageUrl = URL.createObjectURL(file);
-      setAvatarUrl(imageUrl);
-      const data = await UserService.uploadAvatar(file);
-      setUser(data); 
-      
+      await dispatch(updateUserAvatar(file)).unwrap();
+      setVersion(Date.now()); // 👈 Trigger new image version after upload
     } catch (error) {
-       console.error("Image upload failed:", error);
+      console.error("Image upload failed:", error);
     }
-};
+  };
 
-  useEffect(()=>{
-    const FetchUser = async () => {
-      try {
-        const data = await UserService.getUserById();
-        if (data.profileImage) {
-          setAvatarUrl(avatar.src); 
-          setAvatarUrl(`${process.env.NEXT_PUBLIC_BACKEND_HOST}${data.profileImage}`);
-        } else {
-          setAvatarUrl(avatar.src); 
-        }
-        setUser(data);
-      } catch (error) {
-        console.error("Error fetching projects:", error);
-      } finally {
-      }
-    };
+  useEffect(() => {
+    dispatch(fetchUserProfile());
+  }, [dispatch]);
 
-    FetchUser();
-  },[])
+  const avatarUrl = user?.profileImage
+    ? `${process.env.NEXT_PUBLIC_BACKEND_HOST}${user.profileImage}?v=${version}`
+    : defaultAvatar.src;
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -74,19 +60,28 @@ export default function AuthProfilePage() {
       <div className="mt-[24px] px-[24px]">
         <div className="flex justify-center items-center flex-col gap-2">
           <div className="relative">
-            <Image src={avatarUrl ?? avatar} alt="avatar"  width={100} height={100} className="w-[100px] h-[100px] rounded-full object-cover" priority/>
+            <Image
+              key={avatarUrl} // 👈 force Image re-render when avatarUrl changes
+              src={avatarUrl}
+              alt="avatar"
+              width={100}
+              height={100}
+              className="w-[100px] h-[100px] rounded-full object-cover"
+              priority
+            />
             <div className="absolute right-0 bottom-0">
               <DrawerFunction onImageSelect={handleAvatarChange} />
             </div>
           </div>
           <H5>{user?.username}</H5>
           <P className="mt-[-10px]">{user?.email}</P>
-          <Button className="text-white bg-[#7980ff] p-[25px] mt-[10px] text-[14px] leading-[16px] font-bold w-full" 
-          onClick={() => {
-            if (user?._id) {
-              router.push(`/auth/profile/update/${user._id}`);
-            }
-          }}
+          <Button
+            className="text-white bg-[#7980ff] p-[25px] mt-[10px] text-[14px] leading-[16px] font-bold w-full"
+            onClick={() => {
+              if (user?._id) {
+                router.push(`/auth/profile/update/${user._id}`);
+              }
+            }}
           >
             Edit Profile
           </Button>

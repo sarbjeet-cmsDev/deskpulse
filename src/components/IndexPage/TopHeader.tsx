@@ -1,46 +1,37 @@
 "use client";
+
 import Image from "next/image";
-import avatar from "@/assets/images/avt1.jpg";
+import avatarFallback from "@/assets/images/avt1.jpg";
 import bell from "@/assets/images/bell.png";
 import { H5 } from "@/components/Heading/H5";
 import { P } from "@/components/ptag";
 import { Button } from "@heroui/button";
 import { openDrawer } from "@/store/slices/drawerSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { CommonDrawer } from "../common/Drawer/Drawer";
 import { Notification } from "../Notification/Notification";
-import { IUserRedux } from "@/types/user.interface";
-import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { useEffect, useState } from "react";
-import UserService from "@/service/user.service";
-import { IUser } from "@/service/adminUser.service";
+import { useState, useEffect } from "react";
 import LeftMenuDrawer from "../HeaderMenuDrawer/leftmenudrawer";
 
-
-
 export default function TopHeader() {
-  const[userData, setUserData] = useState<IUser | null>(null);
-  const [avatarUrl, setAvatarUrl] = useState<string>(avatar.src);
-  const user: IUserRedux | null = useSelector((state: RootState) => state.auth.user);
-  let userId = user?.id
   const dispatch = useDispatch();
+  const user = useSelector((state: RootState) => state.user.data);
+  const [version, setVersion] = useState(Date.now()); // for cache busting
 
-  const fetchUserData = async () => {
-    try {
-      const data = await UserService.getUserById();
-      setUserData(data);
-      setAvatarUrl(data.profileImage ? `${process.env.NEXT_PUBLIC_BACKEND_HOST}${data.profileImage}` : avatar.src);
-    } catch (error) {
-      console.error("Failed to fetch user:", error);
-    }
-  };
-
+  // Cache-busting when image changes
   useEffect(() => {
-    if (userId) fetchUserData();
-  }, []);
+    if (user?.profileImage) {
+      setVersion(Date.now());
+    }
+  }, [user?.profileImage]);
 
-  const fullName = `${userData?.firstName ?? ""} ${userData?.lastName ?? ""}`.trim() || "User";
+  const avatarUrl = user?.profileImage
+    ? `${process.env.NEXT_PUBLIC_BACKEND_HOST}${user.profileImage}?v=${version}`
+    : avatarFallback.src;
+
+  const fullName =
+    `${user?.firstName ?? ""} ${user?.lastName ?? ""}`.trim() || "User";
 
   return (
     <div className="bg-[#7980ff] p-4">
@@ -48,37 +39,37 @@ export default function TopHeader() {
         <div className="flex justify-center items-center gap-2">
           <div className="relative">
             <Image
+              key={avatarUrl} // force image re-render
               src={avatarUrl}
               alt="avatar-image"
-              width={100}  
-              height={100}   
+              width={100}
+              height={100}
               className="w-[45px] h-[45px] rounded-full object-cover"
             />
             <span className="dot-status w-[12px] h-[12px] border border-[#7980ff] bg-[#48bd69] rounded-[20px] absolute top-0 right-0"></span>
           </div>
           <div>
             <H5 className="text-white">{fullName}</H5>
-            <P className="text-white text-start">{userData?.firstName ? `Hi ${userData.firstName}, Good Morning!` : "Welcome!"}</P>
+            <P className="text-white text-start">
+              {user?.firstName
+                ? `Hi ${user.firstName}, Good Morning!`
+                : "Welcome!"}
+            </P>
           </div>
         </div>
         <div className="flex justify-center items-center gap-2">
-          <div>
-            <LeftMenuDrawer/>
-          </div>
-          <div>
-            <Button
-              variant="light"
-              onPress={() =>
-                dispatch(openDrawer({ size: "md", type: "notification" }))
-              }
-            >
-              <Image src={bell} alt="notification" className="cursor-pointer" />
-            </Button>
-
-            <CommonDrawer type="notification">
-              <Notification />
-            </CommonDrawer>
-          </div>
+          <LeftMenuDrawer />
+          <Button
+            variant="light"
+            onPress={() =>
+              dispatch(openDrawer({ size: "md", type: "notification" }))
+            }
+          >
+            <Image src={bell} alt="notification" className="cursor-pointer" />
+          </Button>
+          <CommonDrawer type="notification">
+            <Notification />
+          </CommonDrawer>
         </div>
       </div>
     </div>

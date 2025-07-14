@@ -131,14 +131,7 @@ export const userSchemaBaseUpdate = z.object({
 
   isActive: z.boolean().optional(),
 
-  address: z
-    .string()
-    .nonempty("Address is required")
-    .regex(
-      lettersAndSpacesRegex,
-      "Address must contain only letters and spaces"
-    ),
-
+  address: z.string().nonempty("Address is required"),
   city: z
     .string()
     .nonempty("City is required")
@@ -164,7 +157,12 @@ export const userSchemaBaseUpdate = z.object({
 
   dateOfBirth: z
     .union([z.string(), z.date()])
-    .transform((val) => (typeof val === "string" ? new Date(val) : val))
+    .transform(
+      (val) =>
+        val instanceof Date
+          ? val.toISOString().split("T")[0] // convert Date to "YYYY-MM-DD"
+          : val // assume string already in "YYYY-MM-DD"
+    )
     .optional(),
 
   profileImage: z.string().url("Invalid image URL").optional(),
@@ -214,8 +212,14 @@ export const userUpdateSchema = userSchemaBase.partial();
 
 export const userResetPasswordSchema = z
   .object({
-    newPassword: z.string().min(6, "Password must be at least 6 characters"),
-    confirmPassword: z.string().min(6, "Confirm Password is required"),
+    newPassword: z
+      .string()
+      .nonempty("Password is required")
+      .min(6, "Password must be at least 6 characters"),
+    confirmPassword: z
+      .string()
+      .nonempty("Confirm password is required")
+      .min(6, "Confirm Password must be at least 6 characters"),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
     message: "Passwords do not match",

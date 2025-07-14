@@ -23,6 +23,8 @@ export interface IUser {
   createdAt: string;
   updatedAt: string;
   roles?: any;
+  data?: any;
+  profileImage?: any;
 }
 
 const AdminUserService = {

@@ -4,10 +4,12 @@ import storage from "redux-persist/lib/storage";
 import authReducer from "@/store/slices/authSlice";
 import { combineReducers } from "redux";
 import drawerReducer from "@/store/slices/drawerSlice";
+import userReducer from "@/store/slices/userSlice";
 
 const rootReducer = combineReducers({
   auth: authReducer,
   drawer: drawerReducer,
+  user: userReducer,
 });
 
 const persistConfig = {

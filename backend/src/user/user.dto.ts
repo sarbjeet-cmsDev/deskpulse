@@ -1,4 +1,5 @@
 import { Prop } from "@nestjs/mongoose";
+import { Type } from "class-transformer";
 import {
   IsString,
   IsOptional,
@@ -210,7 +211,8 @@ export class UpdateUserDto {
 
   @IsOptional()
   @IsDate()
-  @Prop()
+  @Type(() => Date)
+  @Prop({ type: Date })
   dateOfBirth?: Date;
 
   @IsOptional()

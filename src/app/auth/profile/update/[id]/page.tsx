@@ -42,7 +42,9 @@ const UpdateUserProfile = () => {
       try {
         const user = await UserService.getUserById();
         console.log("user UpdateUserProfile ", user);
-
+        const defaultDateOfBirth = user.dateOfBirth
+          ? new Date(user.dateOfBirth).toISOString().split("T")[0] // "YYYY-MM-DD"
+          : "";
         reset({
           username: user.username ?? "",
           email: user.email ?? "",
@@ -64,7 +66,7 @@ const UpdateUserProfile = () => {
           state: user.state ?? "",
           country: user.country ?? "",
           zipCode: user.zipCode ?? "",
-          //   dateOfBirth: user.dateOfBirth ? user.dateOfBirth.split("T")[0] : "",
+          dateOfBirth: defaultDateOfBirth,
         });
       } catch (err) {
         console.error("Failed to fetch user", err);
