@@ -37,13 +37,11 @@ export class CreateTaskDto {
 
   @IsOptional()
   @IsMongoId()
-  @Transform(({ value }) => (value ? new Types.ObjectId(value) : undefined))
-  assigned_to?: MongooseSchema.Types.ObjectId;
+  assigned_to?: string;
 
   @IsOptional()
   @IsMongoId()
-  @Transform(({ value }) => (value ? new Types.ObjectId(value) : undefined))
-  report_to?: MongooseSchema.Types.ObjectId;
+  report_to?:string;
 
   @IsOptional()
   @IsMongoId()
@@ -105,7 +103,7 @@ export class UpdateTaskDto {
 
   @IsOptional()
   @IsMongoId()
-  assigned_to?: MongooseSchema.Types.ObjectId;
+  assigned_to?: string;;
 
   @IsOptional()
   @IsMongoId()
