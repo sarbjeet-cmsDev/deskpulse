@@ -3,12 +3,14 @@ import { CreateTaskChecklistDto, UpdateTaskChecklistDto } from './taskchecklist.
 import { JwtAuthGuard } from 'src/guard/jwt-auth.guard';
 import { TaskChecklistService } from './taskchecklist.service';
 import { TaskChecklist } from './taskchecklist.schema';
+import { CurrentUser } from 'src/shared/current-user.decorator';
 @Controller('api/taskchecklist')
 @UseGuards(JwtAuthGuard)
 export class TaskChecklistController {
   constructor(private readonly taskChecklistService: TaskChecklistService) {}
   @Post()
-  async create(@Body() createTaskChecklistDto: CreateTaskChecklistDto): Promise<{ message: string; checklist: TaskChecklist }> {
+  async create(@Body() createTaskChecklistDto: CreateTaskChecklistDto,@CurrentUser() user: any): Promise<{ message: string; checklist: TaskChecklist }> {
+     createTaskChecklistDto.created_by = user.userId;  // Safe, server-side only
     const checklist = await this.taskChecklistService.create(createTaskChecklistDto);
     return { message: 'Task checklist created successfully', checklist };
   }

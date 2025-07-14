@@ -8,7 +8,6 @@ import {
   IsNumber,
   IsNotEmpty,
 } from 'class-validator';
-import { Schema as MongooseSchema, Types } from 'mongoose';
 
 // ----------- CREATE DTO -----------
 export class CreateTaskChecklistDto {
@@ -25,18 +24,17 @@ export class CreateTaskChecklistDto {
   task: string;
 
   @IsOptional()
-    @Transform(({ value }) => (value ? new Types.ObjectId(value) : undefined))
   @IsMongoId()
-  
-  created_by: MongooseSchema.Types.ObjectId;
-  
+  @Transform(({ value }) => (value === '' ? undefined : value?.toString()))
+  created_by: string;
+
   @IsOptional()
   @IsMongoId({ message: 'Completed by must be a valid Mongo ID' })
   completed_by: string;
 
   @IsBoolean({ message: 'Visibility must be a boolean value' })
   visibility: boolean;
-  
+
   @IsOptional()
   @IsNumber({}, { message: 'Estimate time must be a number' })
   estimate_time: number;
