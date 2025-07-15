@@ -22,14 +22,18 @@ interface DetailsProps {
     attachments?: string[];
     // Add more fields as needed
   };
-   taskId: string; 
+  taskId: string;
   onTaskUpdate: () => void;
 }
 
 interface SubTasksProps {
   tasks: ITask[];
 }
-export default function Details({ project, taskId, onTaskUpdate }: DetailsProps) {
+export default function Details({
+  project,
+  taskId,
+  onTaskUpdate,
+}: DetailsProps) {
   const [email, setEmail] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const {
@@ -39,7 +43,7 @@ export default function Details({ project, taskId, onTaskUpdate }: DetailsProps)
     dueDate,
     attachments = [],
   } = project || [];
-
+  console.log(team, "teamteam");
   const handleOpenModal = () => {
     setIsModalOpen(true);
   };
@@ -50,10 +54,10 @@ export default function Details({ project, taskId, onTaskUpdate }: DetailsProps)
 
   const handleAssignUser = async (userId: string) => {
     try {
-        await TaskService.updateTask(taskId, { assigned_to: userId });
-        Swal.fire("Assigned!", "The task has been assigned.", "success");
-        if (onTaskUpdate) onTaskUpdate();
-        handleCloseModal();
+      await TaskService.updateTask(taskId, { assigned_to: userId });
+      Swal.fire("Assigned!", "The task has been assigned.", "success");
+      if (onTaskUpdate) onTaskUpdate();
+      handleCloseModal();
       // }
     } catch (error) {
       console.error("Failed to assign task:", error);
@@ -88,13 +92,13 @@ export default function Details({ project, taskId, onTaskUpdate }: DetailsProps)
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <AvatarList users={team} onClick={handleOpenModal} />
+              {/* <AvatarList users={team} onClick={handleOpenModal} /> */}
               <MentionUserListModal
                 taskId={taskId}
                 isOpen={isModalOpen}
                 onClose={handleCloseModal}
                 onAssigned={handleAssignUser}
-                   />
+              />
               <div className="add-member" onClick={handleOpenModal}>
                 <a
                   href="#"
@@ -243,4 +247,3 @@ export default function Details({ project, taskId, onTaskUpdate }: DetailsProps)
     </div>
   );
 }
-          

@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@heroui/button";
 import { H5 } from "../Heading/H5";
 import leftarrow from "@/assets/images/back.png";
@@ -10,16 +12,15 @@ import { RootState } from "@/store/store";
 import { Avatar } from "@heroui/react";
 import userAvtar from "@/assets/images/avt1.jpg";
 import { useRouter } from "next/navigation";
-import Pagination from "../Pagination/pagination";
+import ShowMoreLess from "../common/ShowMoreLess/ShowMoreLess";
 
 export const Notification = () => {
   const dispatch = useDispatch();
   const [notification, setNotification] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 7;
+  const [visibleCount, setVisibleCount] = useState(7);
+  const step = 7;
+
   const user: any | null = useSelector((state: RootState) => state.auth.user);
-  console.log("twwwwwwwwwwwwwwww",user)
-  const router = useRouter();
 
   const fetchNotification = async () => {
     try {
@@ -58,9 +59,7 @@ export const Notification = () => {
     }
   };
 
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = notification.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = notification.slice(0, visibleCount);
 
   return (
     <div className="flex justify-between items-center">
@@ -76,6 +75,7 @@ export const Notification = () => {
           </div>
           <H5 className="w-[98%] text-center">Notification</H5>
         </div>
+
         {currentItems.length > 0 ? (
           currentItems.map((item: any, index) => {
             const bgColor = item.is_read ? "bg-white" : "bg-gray-200";
@@ -89,13 +89,9 @@ export const Notification = () => {
                   src={userAvtar?.src}
                   alt="User Avatar"
                   className="w-10 h-10 rounded-full"
-                  // onClick={() => router.push(item?.redirect_url)}
                 />
 
-                <div
-                  className="flex-1 text-sm text-gray-700"
-                  // onClick={() => router.push(item?.redirect_url)}
-                >
+                <div className="flex-1 text-sm text-gray-700">
                   <p className="mb-1">
                     <span className="font-medium text-indigo-600 cursor-pointer">
                       {item?.content}
@@ -124,13 +120,14 @@ export const Notification = () => {
             No notifications found.
           </div>
         )}
-        {notification.length > itemsPerPage && (
+
+        {notification.length > step && (
           <div className="flex justify-center mt-6">
-            <Pagination
-              itemsPerPage={itemsPerPage}
-              currentPage={currentPage}
+            <ShowMoreLess
               totalItems={notification.length}
-              onPageChange={(page: number) => setCurrentPage(page)}
+              visibleCount={visibleCount}
+              step={step}
+              onChange={setVisibleCount}
             />
           </div>
         )}

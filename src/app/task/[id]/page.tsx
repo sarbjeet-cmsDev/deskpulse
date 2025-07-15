@@ -17,7 +17,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { IComment } from "@/types/comment.interface";
 import CommentService from "@/service/comment.service";
-import CommentList from "@/components/Comment/CommnetList";
+import CommentList from "@/components/Comment/CommentList";
 import Pagination from "@/components/Pagination/pagination";
 import CommentInputSection from "@/components/Comment/commentSection";
 import TaskChecklistService from "@/service/taskChecklist.service";
@@ -105,7 +105,7 @@ export default function TaskDetails() {
         commentPage,
         commentLimit
       );
-      console.log(res?.data,"kjshkjfhksjhfkjdkshf")
+      console.log(res?.data, "kjshkjfhksjhfkjdkshf");
       setComments(res.data);
       setCommentTotal(res.total);
       setCommentPage(res.page);
@@ -135,9 +135,9 @@ export default function TaskDetails() {
     fetchComments();
   }, [taskId, commentPage, commentLimit]);
 
-  const handleActivityLog = ()=>{
-        router.push(`/task-activitylog/${taskId}`);
-  }
+  const handleActivityLog = () => {
+    router.push(`/task-activitylog/${taskId}`);
+  };
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -153,16 +153,16 @@ export default function TaskDetails() {
               <H5 className="w-[98%] text-center">{task?.title}</H5>
             </div>
             <div className="">
-               <DropdownOptions
-                              options={[
-                                {
-                                  key: "View Activity Log",
-                                  label: "View Activity Log",
-                                  color: "primary",
-                                  onClick: handleActivityLog,
-                                },
-                              ]}
-                            />
+              <DropdownOptions
+                options={[
+                  {
+                    key: "View Activity Log",
+                    label: "View Activity Log",
+                    color: "primary",
+                    onClick: handleActivityLog,
+                  },
+                ]}
+              />
             </div>
           </div>
 
@@ -175,10 +175,10 @@ export default function TaskDetails() {
               </a> */}
             </P>
 
-            <Details 
-            project={project} 
-            taskId={taskId}
-            onTaskUpdate={() => fetchProject(project?._id)}
+            <Details
+              project={project}
+              taskId={taskId}
+              onTaskUpdate={() => fetchProject(project?._id)}
             />
 
             <div className="mt-[28px]">
@@ -201,11 +201,13 @@ export default function TaskDetails() {
 
               <div className="mt-[34px] border-t pt-8">
                 <div className="flex justify-between items-center mb-4">
-                <H5>Task Checklist</H5>
-                <CreateChecklistModal onCreate={handleCreateTaskChecklist} />
-
+                  <H5>Task Checklist</H5>
+                  <CreateChecklistModal onCreate={handleCreateTaskChecklist} />
                 </div>
-                <TaskChecklist taskchecklist={taskChecklist} refreshList={() => fetchTaskchecklist(taskId)} />
+                <TaskChecklist
+                  taskchecklist={taskChecklist}
+                  refreshList={() => fetchTaskchecklist(taskId)}
+                />
               </div>
 
               <CommentInputSection
@@ -218,7 +220,7 @@ export default function TaskDetails() {
               <CommentList
                 comments={comments}
                 refreshComments={() => fetchComments()}
-                fetchComments={()=>fetchComments()}
+                fetchComments={() => fetchComments()}
               />
 
               <Pagination

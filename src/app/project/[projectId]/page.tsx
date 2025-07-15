@@ -18,6 +18,10 @@ import { IUserRedux } from "@/types/user.interface";
 import Link from "next/link";
 import Pagination from "@/components/Pagination/pagination";
 import { Button } from "@heroui/button";
+import AvatarList from "@/components/IndexPage/avatarlist";
+import AdminUserService from "@/service/adminUser.service";
+import { ProjectKanbon } from "@/service/projectKanbon.service";
+import { KanbanColumn } from "@/types/projectKanbon.interface";
 
 export default function MyProjectDetails() {
   const params = useParams();
@@ -29,16 +33,45 @@ export default function MyProjectDetails() {
   const [taskTotal, setTaskTotal] = useState<number>(0);
   const [taskPage, setTaskPage] = useState<number>(1);
   const [taskLimit, setTaskLimit] = useState<number>(5);
-  const user: IUserRedux | null = useSelector((state: RootState) => state.auth.user);
-
-  const fetchTasks = async (projectId: string, page = 1, limit = 5) => {
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+  const [users, setUsers] = useState([]);
+  const [kanbanList, setKanbanList] = useState<KanbanColumn[]>([]);
+  const user: any = useSelector((state: RootState) => state.auth.user);
+  const fetchKanbonList = async (userIds: string[]) => {
+    try {
+      const res = await ProjectKanbon.getProjectKanbonList(projectId);
+      const taskRes = await TaskService.getTasksByUserIds(
+        projectId,
+        userIds.join(",")
+      );
+      if (res?.data) setKanbanList(res.data);
+      if (taskRes?.tasks) setTasks(taskRes.tasks);
+    } catch (error) {
+      console.error("Failed to load tasks:", error);
+    }
+  };
+  const fetchUsers = async () => {
+    try {
+      const data: any = await AdminUserService.searchUsers();
+      setUsers(data || []);
+    } catch (err) {
+      console.error("Failed to fetch users", err);
+    }
+  };
+  useEffect(() => {
+    if (user?.id) {
+      setSelectedUserIds([user.id]);
+      fetchKanbonList([user.id]);
+    }
+    fetchUsers();
+  }, [user?.id]);
+  const fetchTasks = async (projectId: string, page = 1, limit = 50) => {
     try {
       const res = await TaskService.getTasksByProject(projectId, page, limit);
-      setTasks(res.data);
+
       setTaskTotal(res.total);
       setTaskPage(res.page);
-      setTaskLimit(res.limit)
-
+      setTaskLimit(res.limit);
     } catch (error) {
       console.error("Failed to fetch tasks:", error);
     }
@@ -65,11 +98,11 @@ export default function MyProjectDetails() {
       await TaskService.createTask({
         title,
         project: project._id,
-        report_to: user?.id || '',
-        assigned_to:user?.id || '',
-      
+        report_to: user?.id || "",
+        assigned_to: user?.id || "",
       });
       refreshTasks();
+      fetchKanbonList([user.id]);
     } catch (error) {
       console.error(error);
     }
@@ -77,7 +110,7 @@ export default function MyProjectDetails() {
 
   if (loading) return <div className="p-6 text-center">Loading project...</div>;
   if (!project) return <div className="p-6 text-center">Project not found</div>;
-
+  console.log(tasks, "tasks");
   return (
     <div className="max-w-6xl mx-auto">
       <div className="main-content">
@@ -92,9 +125,13 @@ export default function MyProjectDetails() {
               <H5 className="w-[98%] text-center">{project.code}</H5>
             </div>
             <div className="">
-              <Button onPress={
-                ()=>router.push(`/project/projectDetail/${projectId}`)
-              }>View Kanban</Button>
+              <Button
+                onPress={() =>
+                  router.push(`/project/projectDetail/${projectId}`)
+                }
+              >
+                View Kanban
+              </Button>
               {/* <DropDownOptions /> */}
             </div>
           </div>
@@ -114,9 +151,11 @@ export default function MyProjectDetails() {
                   See Details
                 </a> */}
               </P>
-              <Details project={project} taskId={''}
-            onTaskUpdate={() => fetchTasks(project?._id)} 
-            />
+              <Details
+                project={project}
+                taskId={""}
+                onTaskUpdate={() => fetchTasks(project?._id)}
+              />
               {/* <div className="mt-[20px]">
                 <a
                   href="#"
@@ -126,14 +165,16 @@ export default function MyProjectDetails() {
                 </a>
               </div> */}
               <div className="mt-[28px]">
-                <H5>Tasks</H5>
-                <SubTasks tasks={tasks} />
-                <Pagination
-                        currentPage={taskPage}
-                        totalItems={taskTotal}
-                        itemsPerPage={taskLimit}
-                        onPageChange={(page) => fetchTasks(projectId, page, taskLimit)}
-                      />
+                <div className="flex justify-between">
+                  <H5>Tasks</H5>
+                  <AvatarList
+                    users={users}
+                    selectedUserIds={selectedUserIds}
+                    setSelectedUserIds={setSelectedUserIds}
+                    fetchKanbonList={fetchKanbonList}
+                  />
+                </div>
+                <SubTasks tasks={tasks} kanbanList={kanbanList} />
               </div>
               <div className="mt-[5px]">
                 <CreateTaskModal onCreate={handleCreateTask} />

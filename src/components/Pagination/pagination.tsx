@@ -16,7 +16,7 @@ export default function Pagination({
 }: PaginationProps) {
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-  if (totalPages <= 1) return null; 
+  if (totalPages <= 1) return null;
 
   const handlePrev = () => {
     if (currentPage > 1) onPageChange(currentPage - 1);
@@ -29,9 +29,9 @@ export default function Pagination({
   return (
     <div className="flex justify-between items-center mt-4 border-t pt-4">
       <Button
-        onClick={handlePrev}
+        onPress={handlePrev}
         disabled={currentPage === 1}
-        className="px-3 py-1 text-sm bg-[#f0f0f0] rounded cursor"
+        className={`px-3 py-1 text-sm bg-[#f0f0f0] rounded cursor ${currentPage === 1 ? "cursor-not-allowed" : ""}`}
       >
         Previous
       </Button>
@@ -41,9 +41,9 @@ export default function Pagination({
       </span>
 
       <Button
-        onClick={handleNext}
+        onPress={handleNext}
         disabled={currentPage === totalPages}
-        className="px-3 py-1 text-sm bg-[#f0f0f0] rounded cursor"
+        className={`px-3 py-1 text-sm bg-[#f0f0f0] rounded cursor ${currentPage === totalPages ? "cursor-not-allowed" : ""}`}
       >
         Next
       </Button>

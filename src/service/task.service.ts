@@ -12,7 +12,7 @@ export interface ITask {
   project: string;
   report_to: string;
   assigned_to: string;
-
+  KanbanColumn?: any;
   // Add more fields as needed
 }
 
@@ -28,12 +28,13 @@ export interface ITaskResponse {
   total: number;
   page: number;
   limit: number;
+  tasks?: any;
 }
 
 export interface UpdateTaskDto {
   title?: string;
   status?: string;
-  assigned_to?: string; 
+  assigned_to?: string;
 }
 
 const TaskService = {
@@ -64,20 +65,26 @@ const TaskService = {
     sortField: string = "createdAt",
     sortOrder: "asc" | "desc" = "desc"
   ): Promise<ITaskResponse> {
-    const res = await axiosClient.get(
-      `${API_URL}/tasks/project/${projectId}`,
-      {
-        params: {
-          page,
-          limit,
-          sortField,
-          sortOrder,
-        },
-      }
-    );
+    const res = await axiosClient.get(`${API_URL}/tasks/project/${projectId}`, {
+      params: {
+        page,
+        limit,
+        sortField,
+        sortOrder,
+      },
+    });
     return res.data;
   },
 
+  async getTasksByUserIds(projectId: string, ids: any): Promise<ITaskResponse> {
+    const res = await axiosClient.get(`${API_URL}/tasks/get-tasks`, {
+      params: {
+        projectid: projectId,
+        userIds: ids,
+      },
+    });
+    return res.data;
+  },
   // Get tasks assigned to a user
   async getTasksByAssignedUser(userId: string): Promise<ITask[]> {
     const res = await axiosClient.get(`${API_URL}/tasks/assigned/${userId}`);
@@ -107,7 +114,7 @@ const TaskService = {
   },
 
   // Get logged-in user's tasks (JWT protected)
-  async getMyTasks(page = 1, limit = 5): Promise<ITaskResponse> {
+  async getMyTasks(page = 1, limit = 150): Promise<ITaskResponse> {
     const res = await axiosClient.get(
       `${API_URL}/tasks/me?page=${page}&limit=${limit}`
     );

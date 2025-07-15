@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
 import Image from "next/image";
 import leftarrow from "@/assets/images/back.png";
 import { H3 } from "@/components/Heading/H3";
-import Pagination from "@/components/Pagination/pagination"; 
+import Pagination from "@/components/Pagination/pagination";
 import { useEffect, useState } from "react";
 import TaskService, { ITask } from "@/service/task.service";
 import SubTasks from "@/components/ProjectDetails/SubTaskList";
@@ -14,15 +14,15 @@ export default function MyTask() {
   const [loading, setLoading] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalItems, setTotalItems] = useState<number>(0);
-  const itemsPerPage = 5; 
+  const itemsPerPage = 9;
   const fetchTasks = async (page: number) => {
     setLoading(true);
     try {
-      const res = await TaskService.getMyTasks(page, itemsPerPage);
+      const res = await TaskService.getMyTasks();
       setTasks(res?.data || []);
-      setTotalItems(res?.total || 0);  
+      setTotalItems(res?.total || 0);
     } catch (error) {
-      console.error('Failed to load tasks:', error);
+      console.error("Failed to load tasks:", error);
       setTasks([]);
     } finally {
       setLoading(false);
@@ -56,13 +56,6 @@ export default function MyTask() {
         ) : (
           <>
             <SubTasks tasks={tasks} />
-
-            <Pagination
-              currentPage={currentPage}
-              totalItems={totalItems}
-              itemsPerPage={itemsPerPage}
-              onPageChange={handlePageChange}
-            />
           </>
         )}
       </div>

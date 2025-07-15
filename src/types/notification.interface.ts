@@ -18,4 +18,3 @@ export interface INotificationItem {
   createdAt: Date;
   updatedAt: Date;
 }
-

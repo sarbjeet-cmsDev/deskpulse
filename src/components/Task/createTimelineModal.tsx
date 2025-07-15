@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  Modal,
-  ModalContent,
-  ModalBody,
-  useDisclosure,
-} from "@heroui/react";
+import { Modal, ModalContent, ModalBody, useDisclosure } from "@heroui/react";
 import { Button } from "@/components/Form/Button";
 import { Input } from "@/components/Form/Input";
 import { H5 } from "@/components/Heading/H5";
@@ -23,10 +18,18 @@ interface CreateTimelineModalProps {
   }) => Promise<void>;
 }
 
-export default function CreateTimelineModal({ onCreate }: CreateTimelineModalProps) {
+export default function CreateTimelineModal({
+  onCreate,
+}: CreateTimelineModalProps) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [loading, setLoading] = useState(false);
+  const [selectedDate, setSelectedDate] = useState("");
 
+  const today = new Date().toISOString().split("T")[0];
+
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedDate(e.target.value);
+  };
   const {
     register,
     handleSubmit,
@@ -43,7 +46,11 @@ export default function CreateTimelineModal({ onCreate }: CreateTimelineModalPro
     },
   });
 
-  const handleCreate = async (values: { date: string; time_spent: string; comment: string }) => {
+  const handleCreate = async (values: {
+    date: string;
+    time_spent: string;
+    comment: string;
+  }) => {
     setLoading(true);
     try {
       await onCreate(values);
@@ -84,10 +91,15 @@ export default function CreateTimelineModal({ onCreate }: CreateTimelineModalPro
                       type="date"
                       label="Date"
                       {...register("date")}
-                      required={false} 
+                      required={false}
+                      onChange={handleDateChange}
+                      max={today}
+                      // className="w-64"
                     />
                     {errors.date && (
-                      <p className="text-red-500 text-xs mt-1">{errors.date.message as string}</p>
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.date.message as string}
+                      </p>
                     )}
                   </div>
 
@@ -98,7 +110,9 @@ export default function CreateTimelineModal({ onCreate }: CreateTimelineModalPro
                       {...register("time_spent")}
                     />
                     {errors.time_spent && (
-                      <p className="text-red-500 text-xs mt-1">{errors.time_spent.message as string}</p>
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.time_spent.message as string}
+                      </p>
                     )}
                   </div>
 
@@ -109,7 +123,9 @@ export default function CreateTimelineModal({ onCreate }: CreateTimelineModalPro
                       {...register("comment")}
                     />
                     {errors.comment && (
-                      <p className="text-red-500 text-xs mt-1">{errors.comment.message as string}</p>
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.comment.message as string}
+                      </p>
                     )}
                   </div>
 

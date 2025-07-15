@@ -94,7 +94,7 @@ const UpdateUserProfile = () => {
   if (initialLoading) return <div className="p-6">Loading user...</div>;
 
   return (
-    <div className="min-h-screen flex-col justify-center items-start pt-10">
+    <div className="min-h-screen mx-auto container max-w-3xl flex-col justify-center items-start pt-10">
       <div className="flex justify-center items-center p-[24px] border-b border-[#31394f14]">
         <div className="w-[2%]">
           <Link href="/auth/profile">
@@ -211,8 +211,6 @@ const UpdateUserProfile = () => {
           {errors.zipCode && (
             <p className="text-sm text-red-500">{errors.zipCode.message}</p>
           )}
-
-         
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">

@@ -6,8 +6,16 @@ import { ProjectKanbon } from "@/service/projectKanbon.service";
 import TaskService from "@/service/task.service";
 import { KanbanColumn } from "@/types/projectKanbon.interface";
 import { Task } from "@/types/task.interface";
+import { Button } from "@heroui/button";
+import SubTasks from "../ProjectDetails/SubTaskList";
+import AdminUserService from "@/service/adminUser.service";
+import { RootState } from "@/store/store";
+import { useSelector } from "react-redux";
+import Image from "next/image";
+import AvatarList from "../IndexPage/avatarlist";
 
 export const GetKanbonList = () => {
+  const user: any = useSelector((state: RootState) => state.auth.user);
   const params = useParams();
   const router = useRouter();
   const projectId = params?.id as string;
@@ -15,54 +23,70 @@ export const GetKanbonList = () => {
   const [kanbanList, setKanbanList] = useState<KanbanColumn[]>([]);
   const [taskList, setTaskList] = useState<Task[]>([]);
   const [draggedTask, setDraggedTask] = useState<Task | null>(null);
+  const [taskView, setTaskView] = useState<"kanban" | "list">("kanban");
+  const [users, setUsers] = useState([]);
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
 
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const scrollRef = useRef<number | null>(null);
   const [scrollDirection, setScrollDirection] = useState<
     "left" | "right" | null
   >(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const fetchKanbonList = async () => {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<number | null>(null);
+
+  const fetchKanbonList = async (userIds: string[]) => {
     try {
       const res = await ProjectKanbon.getProjectKanbonList(projectId);
-      const taskRes = await TaskService.getTasksByProject(projectId);
-      setKanbanList(res?.data || []);
-      setTaskList(taskRes?.data || []);
+      const taskRes = await TaskService.getTasksByUserIds(
+        projectId,
+        userIds.join(",")
+      );
+      if (res?.data) setKanbanList(res.data);
+      if (taskRes?.tasks) setTaskList(taskRes.tasks);
+      setError(null);
     } catch (error) {
       console.error("Failed to load tasks:", error);
-      setKanbanList([]);
-      setTaskList([]);
+      setError("Failed to load tasks. Showing last known data.");
+    }
+  };
+
+  const fetchUsers = async () => {
+    try {
+      const data: any = await AdminUserService.searchUsers();
+      setUsers(data || []);
+    } catch (err) {
+      console.error("Failed to fetch users", err);
     }
   };
 
   useEffect(() => {
-    fetchKanbonList();
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = "auto";
-    };
-  }, []);
+    if (user?.id) {
+      setSelectedUserIds([user.id]);
+      fetchKanbonList([user.id]);
+    }
+    fetchUsers();
+
+    const savedView = localStorage.getItem("taskView");
+    if (savedView === "list" || savedView === "kanban") {
+      setTaskView(savedView);
+    }
+  }, [user?.id]);
 
   useEffect(() => {
     const container = scrollContainerRef.current;
     if (!container || !scrollDirection) return;
 
     const speed = 10;
-
     const smoothScroll = () => {
       if (!container) return;
-
-      if (scrollDirection === "left") {
-        container.scrollLeft -= speed;
-      } else if (scrollDirection === "right") {
-        container.scrollLeft += speed;
-      }
+      if (scrollDirection === "left") container.scrollLeft -= speed;
+      else if (scrollDirection === "right") container.scrollLeft += speed;
 
       scrollRef.current = requestAnimationFrame(smoothScroll);
     };
 
     scrollRef.current = requestAnimationFrame(smoothScroll);
-
     return () => {
       if (scrollRef.current) {
         cancelAnimationFrame(scrollRef.current);
@@ -80,13 +104,9 @@ export const GetKanbonList = () => {
     const mouseX = e.clientX;
     const edgeThreshold = 80;
 
-    if (mouseX - left < edgeThreshold) {
-      setScrollDirection("left");
-    } else if (right - mouseX < edgeThreshold) {
-      setScrollDirection("right");
-    } else {
-      setScrollDirection(null);
-    }
+    if (mouseX - left < edgeThreshold) setScrollDirection("left");
+    else if (right - mouseX < edgeThreshold) setScrollDirection("right");
+    else setScrollDirection(null);
   };
 
   const handleDragStart = (task: Task) => {
@@ -95,7 +115,7 @@ export const GetKanbonList = () => {
 
   const handleDrop = async (columnTitle: string) => {
     setScrollDirection(null);
-    if (!draggedTask || draggedTask?.status === columnTitle) return;
+    if (!draggedTask || draggedTask.status === columnTitle) return;
 
     try {
       await TaskService.updateTaskStatus(draggedTask._id, {
@@ -113,45 +133,90 @@ export const GetKanbonList = () => {
     }
   };
 
+  const handleTaskView = (view: "kanban" | "list") => {
+    setTaskView(view);
+    localStorage.setItem("taskView", view);
+  };
+
   return (
-    <div
-      ref={scrollContainerRef}
-      onDragOver={handleDragOver}
-      className="flex w-full gap-4 overflow-x-auto p-2 h-[calc(100vh-190px)] bg-gray-100"
-    >
-      {kanbanList.map((column) => {
-        const matchingCards = taskList.filter(
-          (card) => card.status === column.title
-        );
+    <div className="mt-[-60px]">
+      {error && (
+        <div className="bg-red-100 text-red-700 p-2 rounded mb-4 mx-4">
+          {error}
+        </div>
+      )}
 
-        return (
-          <div
-            key={column._id}
-            className="flex flex-col bg-white shadow-md rounded-lg w-80 min-w-[20rem] p-4 !h-[calc(100vh-225px)] overflow-y-auto"
-            onDrop={() => handleDrop(column.title)}
+      <div className="flex items-center justify-between">
+        <div className="flex flex-start gap-5 p-5">
+          <Button
+            variant="bordered"
+            className={`border-none ${taskView === "list" ? "bg-blue-500 text-white" : ""}`}
+            onPress={() => handleTaskView("list")}
           >
-            <h3 className="text-lg font-semibold mb-4 text-gray-800">
-              {column.title}
-            </h3>
+            List
+          </Button>
+          <Button
+            variant="bordered"
+            className={`border-none ${taskView === "kanban" ? "bg-blue-500 text-white" : ""}`}
+            onPress={() => handleTaskView("kanban")}
+          >
+            Kanban
+          </Button>
+        </div>
 
-            <div className="flex flex-col gap-3">
-              {matchingCards.map((card) => (
-                <div
-                  key={card._id}
-                  className="bg-gray-50 border border-gray-200 rounded-md p-3 shadow-sm hover:bg-gray-100 cursor-pointer transition"
-                  draggable
-                  onClick={() => router.push(`/task/${card._id}`)}
-                  onDragStart={() => handleDragStart(card)}
-                >
-                  <p className="text-sm font-medium text-gray-700">
-                    {card.title}
-                  </p>
+        <AvatarList
+          users={users}
+          selectedUserIds={selectedUserIds}
+          setSelectedUserIds={setSelectedUserIds}
+          fetchKanbonList={fetchKanbonList}
+        />
+      </div>
+
+      {taskView === "kanban" ? (
+        <div
+          ref={scrollContainerRef}
+          onDragOver={handleDragOver}
+          className="flex w-full gap-4 overflow-x-auto p-2 h-[calc(100vh-190px)] bg-gray-100"
+        >
+          {kanbanList.map((column) => {
+            const matchingCards = taskList.filter(
+              (card) => card.status === column.title
+            );
+
+            return (
+              <div
+                key={column._id}
+                className="flex flex-col bg-white shadow-md rounded-lg w-80 min-w-[20rem] p-4 !h-[calc(100vh-225px)] overflow-y-auto"
+                onDrop={() => handleDrop(column.title)}
+              >
+                <h3 className="text-lg font-semibold mb-4 text-gray-800">
+                  {column.title}
+                </h3>
+
+                <div className="flex flex-col gap-3">
+                  {matchingCards.map((card) => (
+                    <div
+                      key={card._id}
+                      className="bg-gray-50 border border-gray-200 rounded-md p-3 shadow-sm hover:bg-gray-100 cursor-pointer transition"
+                      draggable
+                      onClick={() => router.push(`/task/${card._id}`)}
+                      onDragStart={() => handleDragStart(card)}
+                    >
+                      <p className="text-sm font-medium text-gray-700">
+                        {card.title}
+                      </p>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </div>
-        );
-      })}
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="container mx-auto max-w-3xl">
+          <SubTasks tasks={taskList} kanbanList={kanbanList} />
+        </div>
+      )}
     </div>
   );
 };

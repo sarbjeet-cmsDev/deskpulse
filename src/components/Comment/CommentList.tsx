@@ -58,15 +58,16 @@ export default function CommentList({
     return (
       <div
         key={comment._id}
-        className={`bg-white border border-gray-100 rounded p-4 shadow-sm hover:shadow-md comment-section ${
-          isChild ? "ml-10 mt-2" : "mt-4"
-        }`}
+        className={`rounded-xl border p-4 transition-shadow duration-200 ${
+          isChild ? "ml-10 mt-3" : "mt-5"
+        } bg-gray-50 border-gray-200 hover:shadow-md`}
       >
         <div className="flex gap-4">
           <div className="flex-1">
-            <div className="flex justify-between items-center">
+            {/* Header */}
+            <div className="flex items-start justify-between">
               <div>
-                <p className="font-semibold text-gray-800">
+                <p className="text-sm font-semibold text-gray-900">
                   {comment.created_by || "User"}
                 </p>
                 <p className="text-xs text-gray-500">
@@ -75,8 +76,9 @@ export default function CommentList({
               </div>
             </div>
 
+            {/* Content or Editor */}
             {isEditing ? (
-              <div className="mt-2">
+              <div className="mt-3">
                 <CommentInputSection
                   taskId={comment.task}
                   createdBy={comment.created_by || ""}
@@ -94,55 +96,45 @@ export default function CommentList({
                 />
               </div>
             ) : (
-              <p className="mt-2 text-gray-800">{renderMentions(comment)}</p>
+              <p className="mt-3 text-gray-800 leading-relaxed break-words whitespace-pre-line">
+                {renderMentions(comment)}
+              </p>
             )}
 
-            <div className="flex gap-4 mt-3 text-sm text-gray-500">
-              <Button
-                onPress={() =>
+            {/* Actions */}
+            <div className="flex gap-3 mt-4 text-sm text-gray-500">
+              <button
+                onClick={() =>
                   setActiveReplyId((prev) =>
                     prev === comment._id ? null : comment._id
                   )
                 }
-                className="hover:text-indigo-600 border-none"
-                variant="bordered"
+                className="hover:text-indigo-600 focus:outline-none"
               >
                 {isReplying ? "Cancel" : "Reply"}
-              </Button>
+              </button>
 
               {!hasChildren && (
                 <>
-                  <Button
-                    onPress={() => {
-                      setActiveEditId(comment._id);
-                    }}
-                    className="hover:text-indigo-600 border-none"
-                    variant="bordered"
+                  <button
+                    onClick={() => setActiveEditId(comment._id)}
+                    className="hover:text-indigo-600 focus:outline-none"
                   >
                     Edit
-                  </Button>
-                  <Button
-                    onPress={() => {
-                      deleteComment(comment._id, fetchComments);
-                    }}
-                    className="hover:text-red-600 text-red-500 border-none"
-                    variant="bordered"
+                  </button>
+                  <button
+                    onClick={() => deleteComment(comment._id, fetchComments)}
+                    className="hover:text-red-600 text-red-500 focus:outline-none"
                   >
                     Delete
-                  </Button>
+                  </button>
                 </>
               )}
-
-              {/* <Link
-                href={`/task/${comment.task}`}
-                className="hover:text-indigo-600 flex items-center gap-1 ml-auto"
-              >
-                <Image src={info} alt="Details" width={16} height={16} />
-              </Link> */}
             </div>
 
+            {/* Reply Input */}
             {isReplying && (
-              <div className="mt-3">
+              <div className="mt-4">
                 <CommentInputSection
                   defaultValue=""
                   taskId={comment.task}
@@ -159,14 +151,16 @@ export default function CommentList({
               </div>
             )}
 
-            {/* Render nested replies */}
-            {comments
-              .filter((child) =>
-                Array.isArray(child.parent_comment)
-                  ? child.parent_comment.includes(comment._id)
-                  : child.parent_comment === comment._id
-              )
-              .map((child) => renderComment(child, true))}
+            {/* Nested Replies */}
+            <div className="mt-4">
+              {comments
+                .filter((child) =>
+                  Array.isArray(child.parent_comment)
+                    ? child.parent_comment.includes(comment._id)
+                    : child.parent_comment === comment._id
+                )
+                .map((child) => renderComment(child, true))}
+            </div>
           </div>
         </div>
       </div>

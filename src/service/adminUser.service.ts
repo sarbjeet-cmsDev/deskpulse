@@ -51,7 +51,7 @@ const AdminUserService = {
     const res = await axiosClient.get(`${API_URL}/admin/user/view/${id}`);
     return res.data.data;
   },
-  async searchUsers(keyword: string): Promise<IUser[]> {
+  async searchUsers(keyword?: string): Promise<IUser[]> {
     const res = await axiosClient.get(`${API_URL}/admin/user/search`, {
       params: { keyword },
     });
