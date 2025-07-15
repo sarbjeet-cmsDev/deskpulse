@@ -57,19 +57,20 @@ export class TaskController {
     return this.taskService.findByProject(projectId, pageNumber, limitNumber);
   }
 
-  @Get('get-tasks-userids/:userIds')
-  async FetchMultipleUsers(
-    @Param('userIds') userIds: string
+  @Get('get-tasks')
+  async fetchTasksByUsersAndProject(
+    @Query('userIds') userIds: string,
+    @Query('projectid') projectId: string
   ): Promise<{ message: string; tasks: Task[] }> {
     const userIdArray = userIds.split(',');
-    const tasks = await this.taskService.FetchTaskByUsersIds(userIdArray);
+    const tasks = await this.taskService.fetchTasksByUserAndProjectIds(userIdArray, projectId);
     return { message: 'Task status fetched successfully', tasks };
   }
 
-   @Get('code/:code')
-    async findByCode(@Param('code') code: string): Promise<Task> {
-      return this.taskService.findByCode(code);
-    }
+  @Get('code/:code')
+  async findByCode(@Param('code') code: string): Promise<Task> {
+    return this.taskService.findByCode(code);
+  }
 
 
 

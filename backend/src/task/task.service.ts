@@ -50,19 +50,12 @@ export class TaskService {
       .exec();
   }
 
-  async FetchTaskByUsersIds(userIdArray: any): Promise<Task[]> {
-    const objectIds = userIdArray.map(id => new Types.ObjectId(id));
-
-    const tasks = await this.taskModel.find({
-      assigned_to: { $in: objectIds }  // Use objectIds here
-    }).exec();
-
-    if (!tasks || tasks.length === 0) {
-      throw new NotFoundException(`Tasks for user IDs [${userIdArray.join(', ')}] not found.`);
-    }
-    return tasks;
-  }
-
+async fetchTasksByUserAndProjectIds(userIds: string[], projectId: string): Promise<Task[]> {
+  return this.taskModel.find({
+    assigned_to: { $in: userIds },
+    project: projectId
+  });
+}
 
   async findOne(id: string): Promise<Task> {
     const task = await this.taskModel.findById(id).exec();
