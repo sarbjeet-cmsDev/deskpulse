@@ -119,7 +119,6 @@ export class TaskActivityLogListener {
   }
 
 
-
   @OnEvent('comments.mention', { async: true })
   async handleCommentsMentionEvent(payload: { CommentObj: any; }) {
     const CommentObj = payload.CommentObj;
@@ -147,7 +146,27 @@ export class TaskActivityLogListener {
     } catch (error) {
       this.logger.error('Failed to create project assign log', error.stack);
     }
+  }
 
+
+
+  @OnEvent('taskchecklist.created', { async: true })
+  async handleTaskCheckListCreatedEvent(payload: { taskChecklistObj: any }) {
+    const taskChecklistObj = payload.taskChecklistObj;
+
+    const timeLineCreatedBy = await this.userservices.findOne(taskChecklistObj.created_by.toString());
+    const TaskObj = await this.taskServices.findOne(taskChecklistObj.task.toString());
+    const updateTaskActivityLogDto: CreateTaskActivityLogDto = {
+      task: taskChecklistObj.task.toString(),
+      project: TaskObj.project.toString(),
+      description: `Checklist item "${taskChecklistObj.title}" was created for task "${TaskObj.title}" with status "${taskChecklistObj.status}". Created by "${timeLineCreatedBy.username}".`,
+    };
+    try {
+      await this.taskactivitylogService.create(updateTaskActivityLogDto);
+      this.logger.log(`taskchecklist.created activity log created.`);
+    } catch (error) {
+      this.logger.error('Failed to create taskchecklist.created log', error.stack);
+    }
   }
 
 }

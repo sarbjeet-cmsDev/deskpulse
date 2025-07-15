@@ -188,6 +188,47 @@ export class EmailListener {
       this.logger.error('Error handling comment mention event:', error);
     }
   }
+
+
+  @OnEvent('taskchecklist.created', { async: true })
+  async handleTaskCheckListCreatedEvent(payload: { taskChecklistObj: any }) {
+    const taskChecklistObj = payload.taskChecklistObj;
+    const timeLineCreatedBy = await this.userservices.findOne(taskChecklistObj.created_by.toString());
+    const TaskObj = await this.taskServices.findOne(taskChecklistObj.task.toString())
+    const ProjectObj = await this.projectService.findOne(TaskObj.project.toString())
+    const content = `Checklist item "${taskChecklistObj.title}" was created for task "${TaskObj.title}" with status "${taskChecklistObj.status}". Created by "${timeLineCreatedBy.username}".`
+    const timelineLInk = `${process.env.FRONTEND_URL}/task/${TaskObj._id.toString()}`;
+    const rolesToNotify = ['project_coordinator', 'team_leader', 'project_manager'];
+    const email = [];
+    for (const role of rolesToNotify) {
+      if (ProjectObj[role]) {
+        const userData = await this.userservices.findOne(ProjectObj[role].toString());
+        email.push({
+          to: userData.email,
+          subject: 'Task Checklist Notification',
+          template: 'templates/taskchecklist/taskchecklist.create.email-template.mjml',
+          variables: {
+            User: userData.username,
+            taskchecklist_template: content,
+            timelineLink: timelineLInk,
+          },
+        });
+      }
+    }
+    try {
+      await Promise.all(
+        email.map((email) =>
+          this.emailservice.sendEmail(email),
+        ),
+      );
+      this.logger.log('All notification emails sent for task status update.');
+    } catch (error) {
+      this.logger.error(
+        'Failed to create notifications or send emails',
+        error.stack || error,
+      );
+    }
+  }
 }
 
 

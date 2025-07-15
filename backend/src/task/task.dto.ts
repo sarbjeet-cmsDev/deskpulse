@@ -10,12 +10,19 @@ import {
 } from 'class-validator';
 import { Schema as MongooseSchema, Types } from 'mongoose';
 import { AcceptanceLevelEnum, PriorityEnum, TaskStatusEnum, TaskTypeEnum } from './task.interface';
+import { Prop } from '@nestjs/mongoose';
 
 
 
 // --- DTOs ---
 
 export class CreateTaskDto {
+
+  @IsOptional()
+  @IsString()
+  @Prop({  unique: true })
+  code: string;
+
   @IsString()
   title: string;
 
@@ -41,7 +48,7 @@ export class CreateTaskDto {
 
   @IsOptional()
   @IsMongoId()
-  report_to?:string;
+  report_to?: string;
 
   @IsOptional()
   @IsMongoId()

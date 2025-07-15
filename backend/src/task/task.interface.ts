@@ -40,6 +40,7 @@ export enum TaskStatusEnum {
 
 
 export interface Task extends Document {
+  code: string;
   totaltaskminutes: any;
   title: string;
   description?: string;

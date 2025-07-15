@@ -7,6 +7,8 @@ export type TaskDocument = Task & Document;
 
 @Schema({ timestamps: true })
 export class Task {
+  @Prop({ unique: true, immutable: true })
+  code: string;
   @Prop({ required: true })
   title: string;
 
@@ -29,7 +31,7 @@ export class Task {
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User' })
   assigned_to: MongooseSchema.Types.ObjectId;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User'})
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User' })
   report_to: MongooseSchema.Types.ObjectId;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'ProjectKanban' })

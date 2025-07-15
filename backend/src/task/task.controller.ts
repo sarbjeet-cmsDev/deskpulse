@@ -66,8 +66,11 @@ export class TaskController {
     return { message: 'Task status fetched successfully', tasks };
   }
 
-  //   return this.taskService.findByReportToUser(userId);
-  // }
+   @Get('code/:code')
+    async findByCode(@Param('code') code: string): Promise<Task> {
+      return this.taskService.findByCode(code);
+    }
+
 
 
   @Get('report-to/:userId')

@@ -116,7 +116,7 @@ export class NotificationListener {
 
     const ProjectObj = await this.projectService.findOne(TaskObj.project.toString())
     const content = `Worked ${timeLineObj.time_spent} hour(s) on task "${TaskObj.title}" — general updates and review. Comment: ${timeLineObj.comment}. On ${new Date(timeLineObj.date).toLocaleString()} by "${timeLineCreatedBy.username}"`;
-    const timelineLInk = `${process.env.FRONTEND_URL}/task/${timeLineObj._id.toString()}`;
+    const timelineLInk = `${process.env.FRONTEND_URL}/task/${TaskObj._id.toString()}`;
     const timelineCreatednotifications: CreateNotificationDto[] = [];
     if (ProjectObj.project_coordinator) {
       // PROJECT COORDINATOR
@@ -177,6 +177,50 @@ export class NotificationListener {
     } catch (error) {
       this.logger.error('Failed to create notifications', error.stack);
     }
+  }
+
+  @OnEvent('taskchecklist.created', { async: true })
+  async handleTaskCheckListCreatedEvent(payload: { taskChecklistObj: any }) {
+    const taskChecklistObj = payload.taskChecklistObj;
+    const timeLineCreatedBy = await this.userservices.findOne(taskChecklistObj.created_by.toString());
+    const TaskObj = await this.taskServices.findOne(taskChecklistObj.task.toString())
+    const ProjectObj = await this.projectService.findOne(TaskObj.project.toString())
+    const content = `Checklist item "${taskChecklistObj.title}" was created for task "${TaskObj.title}" with status "${taskChecklistObj.status}". Created by "${timeLineCreatedBy.username}".`
+    const timelineLInk = `${process.env.FRONTEND_URL}/task/${TaskObj._id.toString()}`;
+    const taskchecklistCreatednotifications: CreateNotificationDto[] = [];
+    if (ProjectObj.project_coordinator) {
+      // PROJECT COORDINATOR
+      taskchecklistCreatednotifications.push({
+        user: ProjectObj.project_coordinator,
+        content,
+        redirect_url: timelineLInk,
+      });
+    }
+
+    if (ProjectObj.team_leader) {
+      // PROJECT COORDINATOR
+      taskchecklistCreatednotifications.push({
+        user: ProjectObj.team_leader,
+        content,
+        redirect_url: timelineLInk,
+      });
+    }
+
+    if (ProjectObj.project_manager) {
+      // PROJECT COORDINATOR
+      taskchecklistCreatednotifications.push({
+        user: ProjectObj.project_manager,
+        content,
+        redirect_url: timelineLInk,
+      });
+    }
+    try {
+      await Promise.all(taskchecklistCreatednotifications.map(notification => this.notificationService.create(notification)));
+      this.logger.log(`task.status.updated Notification Trigger.`);
+    } catch (error) {
+      this.logger.error('Failed to create notifications', error.stack);
+    }
+
   }
 
 }

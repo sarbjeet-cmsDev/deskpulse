@@ -9,8 +9,6 @@ import { UserModule } from 'src/user/user.module'; // ✅ Import the module, not
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: TaskChecklist.name, schema: TaskChecklistSchema }]),
-    TaskModule,
-    UserModule, // ✅ Corrected
   ],
   controllers: [TaskChecklistController],
   providers: [TaskChecklistService],

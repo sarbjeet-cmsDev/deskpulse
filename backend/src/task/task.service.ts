@@ -23,19 +23,16 @@ export class TaskService {
   ) { }
 
   async create(createTaskDto: CreateTaskDto): Promise<Task> {
-    await validateProjectId(
-      this.projectService,
-      createTaskDto.project.toString()
-    );
+    const { code: projectCode } = await this.projectService.findOne(createTaskDto.project.toString());
+    const tasks = await this.taskModel.find({ code: new RegExp(`^${projectCode}-\\d{2,}$`) });
+    const max = Math.max(0, ...tasks.map(t => parseInt(t.code.split('-')[1]) || 0));
+    createTaskDto.code = `${projectCode}-${String(max + 1).padStart(2, '0')}`;
     const createdTask = new this.taskModel(createTaskDto);
-     this.eventEmitter.emit("task.created", {
-        taskObj: createdTask,
-      });
+    this.eventEmitter.emit("task.created", { taskObj: createdTask });
     if (createTaskDto.assigned_to) {
-      this.eventEmitter.emit("task.assigned", {
-        taskObj: createdTask,
-      });
+      this.eventEmitter.emit("task.assigned", { taskObj: createdTask });
     }
+
     return createdTask.save();
   }
 
@@ -120,6 +117,14 @@ export class TaskService {
       limit,
       total,
     };
+  }
+
+  async findByCode(code: string): Promise<Task> {
+    const project = await this.taskModel.findOne({ code }).exec();
+    if (!project) {
+      throw new NotFoundException(`Project with code ${code} not found.`);
+    }
+    return project;
   }
 
   async findByReportToUser(userId: string): Promise<Task[]> {

@@ -3,23 +3,25 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateTaskChecklistDto, UpdateTaskChecklistDto } from './taskchecklist.dto';
 import { TaskChecklist, TaskChecklistDocument } from './taskchecklist.schema';
-import { TaskService } from 'src/task/task.service';
-import { UserService } from 'src/user/user.service';
-import { validateFields, validateTaskId, validateUserId } from './taskchecklist.helpers';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class TaskChecklistService {
     constructor(
         @InjectModel(TaskChecklist.name)
         private readonly taskChecklistModel: Model<TaskChecklistDocument>,
-        private readonly taskService: TaskService,
-        private readonly userService: UserService
+        private eventEmitter: EventEmitter2
     ) { }
 
     async create(CreateTaskChecklistDto: CreateTaskChecklistDto): Promise<TaskChecklistDocument> {
-        return this.taskChecklistModel.create(CreateTaskChecklistDto);
+
+        const taskChecklistObj =  await this.taskChecklistModel.create(CreateTaskChecklistDto);
+        this.eventEmitter.emit("taskchecklist.created", {
+            taskChecklistObj: taskChecklistObj,
+        });
+        return taskChecklistObj;
     }
-    async findAll(filter?: Partial<TaskChecklist>): Promise<TaskChecklistDocument[]> {
+    async findAll(): Promise<TaskChecklistDocument[]> {
         return this.taskChecklistModel.find().exec();
     }
 
