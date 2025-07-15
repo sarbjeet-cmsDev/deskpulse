@@ -13,6 +13,8 @@ export interface ITask {
   report_to: string;
   assigned_to: string;
   KanbanColumn?: any;
+  description: string;
+
   // Add more fields as needed
 }
 
