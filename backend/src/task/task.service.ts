@@ -1,6 +1,6 @@
 import { Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
+import { Model, Types } from "mongoose";
 import { Task } from "./task.interface";
 import {
   CreateTaskDto,
@@ -49,6 +49,20 @@ export class TaskService {
       })
       .exec();
   }
+
+  async FetchTaskByUsersIds(userIdArray: any): Promise<Task[]> {
+    const objectIds = userIdArray.map(id => new Types.ObjectId(id));
+
+    const tasks = await this.taskModel.find({
+      assigned_to: { $in: objectIds }  // Use objectIds here
+    }).exec();
+
+    if (!tasks || tasks.length === 0) {
+      throw new NotFoundException(`Tasks for user IDs [${userIdArray.join(', ')}] not found.`);
+    }
+    return tasks;
+  }
+
 
   async findOne(id: string): Promise<Task> {
     const task = await this.taskModel.findById(id).exec();

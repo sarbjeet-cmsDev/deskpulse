@@ -56,6 +56,20 @@ export class TaskController {
     const limitNumber = parseInt(limit, 10);
     return this.taskService.findByProject(projectId, pageNumber, limitNumber);
   }
+
+  @Get('get-tasks-userids/:userIds')
+  async FetchMultipleUsers(
+    @Param('userIds') userIds: string
+  ): Promise<{ message: string; tasks: Task[] }> {
+    const userIdArray = userIds.split(',');
+    const tasks = await this.taskService.FetchTaskByUsersIds(userIdArray);
+    return { message: 'Task status fetched successfully', tasks };
+  }
+
+  //   return this.taskService.findByReportToUser(userId);
+  // }
+
+
   @Get('report-to/:userId')
   async findByReportToUser(@Param('userId') userId: string): Promise<Task[]> {
     return this.taskService.findByReportToUser(userId);
@@ -86,7 +100,7 @@ export class TaskController {
   async remove(@Param('id') id: string): Promise<Task> {
     return this.taskService.remove(id);
   }
-  
+
   @Get('get-due-task')
   async FetchDueTask(@CurrentUser() user: any): Promise<any> {
     const tasks = await this.taskService.FetchDueTask(user.userId);
