@@ -1,9 +1,24 @@
 "use client";
 
 import {DatePicker} from "@heroui/react";
+import type { DateValue } from "@heroui/react";
 
-export default function DatePickerInput() {
+interface DatePickerInputProps {
+  onChange?: (date: Date | null) => void;
+}
+
+
+
+export default function DatePickerInput({ onChange }: DatePickerInputProps) {
   const placements = ["outside-left"];
+
+  const handleChange = (value: DateValue | null) => {
+  if (onChange) {
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const jsDate = value ? value.toDate(timeZone) : null;
+    onChange(jsDate);
+  }
+};
 
   return (
     <div className="flex flex-col gap-4">
@@ -16,6 +31,7 @@ export default function DatePickerInput() {
               classNames={{
                 inputWrapper:"bg-transparent hover:!bg-transparent p-0 shadow-none",
               }}
+              onChange={handleChange}
             />
           ))}
         </div>

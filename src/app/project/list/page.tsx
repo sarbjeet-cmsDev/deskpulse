@@ -13,7 +13,7 @@ export default function MyProjects() {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalItems, setTotalItems] = useState<number>(0);
-  const itemsPerPage = 5;
+  const itemsPerPage = 4;
 
   useEffect(() => {
     const loadProjects = async (page: number) => {

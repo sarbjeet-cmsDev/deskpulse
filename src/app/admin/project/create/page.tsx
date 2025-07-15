@@ -45,6 +45,7 @@ const CreateProjectPage = () => {
       project_manager: "",
       avatar: "",
       notes: "",
+      description:"",
       creds: "",
       additional_information: "",
       url_dev: "",
@@ -72,7 +73,7 @@ const CreateProjectPage = () => {
           return Array.from(existingMap.values());
         });
       } catch (err) {
-        console.error("❌ Error fetching users:", err);
+        console.error("Error fetching users:", err);
         setUserOptions([]);
       }
     }, 300),
@@ -94,7 +95,7 @@ const CreateProjectPage = () => {
         onSubmit={handleSubmit(onSubmit)}
         className="w-full max-w-2xl bg-white p-6 rounded shadow space-y-4"
       >
-        <H1 className="text-2xl font-semibold text-gray-900 mb-4">
+        <H1 className="text-2xl font-semibold text-gray-900 mb-4 text-center">
           Create Project
         </H1>
 
@@ -105,6 +106,10 @@ const CreateProjectPage = () => {
         <Input placeholder="Title" {...register("title")} />
         {errors.title && (
           <p className="text-sm text-red-500">{errors.title.message}</p>
+        )}
+        <Input placeholder="Description" {...register("description")} />
+        {errors.description && (
+          <p className="text-sm text-red-500">{errors.description.message}</p>
         )}
         <Controller
           name="users"

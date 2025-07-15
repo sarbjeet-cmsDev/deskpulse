@@ -173,7 +173,7 @@ export class NotificationListener {
 
     try {
       await Promise.all(notificationDtoForComments.map(notification => this.notificationService.create(notification)));
-      this.logger.log(`timeline.created Notification Trigger.`);
+      this.logger.log(`comments .mentioned  Notification Trigger.`);
     } catch (error) {
       this.logger.error('Failed to create notifications', error.stack);
     }
@@ -198,7 +198,7 @@ export class NotificationListener {
     }
 
     if (ProjectObj.team_leader) {
-      // PROJECT COORDINATOR
+      // PROJECT Team Leader 
       taskchecklistCreatednotifications.push({
         user: ProjectObj.team_leader,
         content,
@@ -207,7 +207,7 @@ export class NotificationListener {
     }
 
     if (ProjectObj.project_manager) {
-      // PROJECT COORDINATOR
+      // PROJECT Manager 
       taskchecklistCreatednotifications.push({
         user: ProjectObj.project_manager,
         content,

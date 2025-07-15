@@ -23,13 +23,19 @@ export const projectCreateSchema = z.object({
   project_manager: z.string().optional(),
   avatar: z.string().optional(),
   notes: z.string().optional(),
+  description: z.string().nonempty("Description is required"),
   creds: z.string().optional(),
   additional_information: z.string().optional(),
   url_dev: z.string().optional(),
   url_live: z.string().optional(),
   url_staging: z.string().optional(),
   url_uat: z.string().optional(),
-  title: z.string().min(1, "Title is required"),
+  title: z.string().nonempty("Title is required"),
 });
 
 export const projectUpdateSchema = projectCreateSchema.partial();
+
+export const projectDescriptionUpdateSchema = z.object({
+     description: z.string().nonempty("Description is required"),
+
+ }) ;
