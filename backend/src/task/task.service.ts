@@ -28,6 +28,9 @@ export class TaskService {
       createTaskDto.project.toString()
     );
     const createdTask = new this.taskModel(createTaskDto);
+     this.eventEmitter.emit("task.created", {
+        taskObj: createdTask,
+      });
     if (createTaskDto.assigned_to) {
       this.eventEmitter.emit("task.assigned", {
         taskObj: createdTask,

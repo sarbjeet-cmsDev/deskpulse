@@ -43,6 +43,24 @@ export class TaskActivityLogListener {
     }
   }
 
+  @OnEvent('task.created', { async: true })
+  async handleTaskCreatedEvent(payload: { taskObj: any; }) {
+    const { taskObj } = payload;
+    const taskUsers = taskObj.assigned_to
+    const UserData = await this.userservices.findOne(taskUsers.toString())
+    const TaskAssignDto: CreateTaskActivityLogDto = {
+      project: taskObj.project._id.toString(),
+      task: taskObj._id.toString(),
+      description: `Task "${taskObj.title}" has been created and assigned to ${UserData.username}. Due: ${taskObj.due_date ? new Date(taskObj.due_date).toLocaleString() : 'No due date'}, Priority: ${taskObj.priority}, Status: ${taskObj.status}.`,
+    }
+    try {
+      await this.taskactivitylogService.create(TaskAssignDto);
+      this.logger.log(`Task  Created logs created.`);
+    } catch (error) {
+      this.logger.error('Failed to create task status update log', error.stack);
+    }
+  }
+
   // On Task Assign 
   @OnEvent('task.assigned', { async: true })
   async handleTaskAsssignEvent(payload: { taskObj: any; }) {
@@ -51,7 +69,7 @@ export class TaskActivityLogListener {
     const UserData = await this.userservices.findOne(taskUsers.toString())
     const TaskAssignDto: CreateTaskActivityLogDto = {
       project: taskObj.project._id.toString(),
-      task: taskObj.project._id.toString(),
+      task: taskObj._id.toString(),
       description: ` Task "${taskObj.title}" was assigned to ${UserData.username} — Due by ${taskObj.due_date ? new Date(taskObj.due_date).toLocaleString() : 'No due date'}, Priority: ${taskObj.priority}, Status: ${taskObj.status}`,
     }
     try {
@@ -60,7 +78,6 @@ export class TaskActivityLogListener {
     } catch (error) {
       this.logger.error('Failed to create task status update log', error.stack);
     }
-
   }
   @OnEvent('task.status.updated', { async: true })
   async handleTaskStatusUpdatedEvent(payload: { taskObj: any; oldTaskStatus: string, updatedBy: any }) {
