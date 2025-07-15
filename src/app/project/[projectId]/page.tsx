@@ -22,6 +22,7 @@ import AvatarList from "@/components/IndexPage/avatarlist";
 import AdminUserService from "@/service/adminUser.service";
 import { ProjectKanbon } from "@/service/projectKanbon.service";
 import { KanbanColumn } from "@/types/projectKanbon.interface";
+import UpdateProjectDescriptionModal from "@/components/ProjectDetails/UpdateProjectDescriptionModal";
 
 export default function MyProjectDetails() {
   const params = useParams();
@@ -77,16 +78,22 @@ export default function MyProjectDetails() {
     }
   };
 
-  useEffect(() => {
-    if (projectId) {
-      ProjectService.getProjectById(projectId as string)
-        .then((data) => {
-          setProject(data);
-          fetchTasks(data._id);
-        })
-        .catch((err) => console.error("Failed to load project", err))
-        .finally(() => setLoading(false));
+  const fetchProject = async () => {
+    try {
+      if (!projectId) return;
+
+      const data = await ProjectService.getProjectById(projectId as string);
+      setProject(data);
+      fetchTasks(data._id);
+    } catch (error) {
+      console.error("Failed to load project", error);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    fetchProject();
   }, [projectId]);
 
   const refreshTasks = () => {
@@ -106,6 +113,20 @@ export default function MyProjectDetails() {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const handleUpdateProjectDescription = (id: string) => {
+    return async (description: string) => {
+      try {
+        await ProjectService.updateProject(id, {
+          description,
+          is_active: true,
+        });
+        fetchProject();
+      } catch (error) {
+        console.error(error);
+      }
+    };
   };
 
   if (loading) return <div className="p-6 text-center">Loading project...</div>;
@@ -132,7 +153,6 @@ export default function MyProjectDetails() {
               >
                 View Kanban
               </Button>
-              {/* <DropDownOptions /> */}
             </div>
           </div>
           <div className="">
@@ -145,11 +165,12 @@ export default function MyProjectDetails() {
                 />
               </div>
               <H5 className="mt-[20px]">Description</H5>
-              <P className="text-start">
-                {project?.notes || "No description provided."}
-                {/* <a href="#" className="text-primary mt-[12px]">
-                  See Details
-                </a> */}
+              <P className="text-start text-gray-700 text-sm">
+                {project?.description || "description."}
+                <UpdateProjectDescriptionModal
+                  onUpdate={handleUpdateProjectDescription(projectId)}
+                  projectId={projectId}
+                />
               </P>
               <Details
                 project={project}

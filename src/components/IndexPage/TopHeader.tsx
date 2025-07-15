@@ -42,7 +42,7 @@ export default function TopHeader() {
     `${user?.firstName ?? ""} ${user?.lastName ?? ""}`.trim() || "User";
 
   return (
-    <div className="bg-[#7980ff] p-4">
+    <div className="bg-theme-primary p-4">
       <div className="flex justify-between items-center">
         <div className="flex justify-center items-center gap-2">
           {/* <div className="relative">

@@ -37,6 +37,7 @@ export interface UpdateTaskDto {
   title?: string;
   status?: string;
   assigned_to?: string;
+  due_date?:string;
 }
 
 const TaskService = {

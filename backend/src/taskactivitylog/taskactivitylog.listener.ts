@@ -105,7 +105,7 @@ export class TaskActivityLogListener {
     const timeLineCreatedBy = await this.userservices.findOne(timeLineObj.created_by.toString());
     const TaskObj = await this.taskServices.findOne(timeLineObj.task.toString())
     const updateTaskActivityLogDto: CreateTaskActivityLogDto = {
-      task: timeLineObj._id.toString(),
+      task: TaskObj._id.toString(),
       project: TaskObj.project.toString(),
       description: `Worked ${timeLineObj.time_spent} hour(s) on task "${TaskObj.title}" — general updates and review. Comment: ${timeLineObj.comment}. On ${new Date(timeLineObj.date).toLocaleString()} by "${timeLineCreatedBy.username}"`,
     };

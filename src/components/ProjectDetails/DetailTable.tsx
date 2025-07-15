@@ -65,6 +65,19 @@ export default function Details({
     }
   };
 
+  const handleTaskDueDate = async (date: Date) => {
+    try {
+      await TaskService.updateTask(taskId, {
+        due_date: date.toISOString(),
+      });
+      Swal.fire( "The task due date has been updated.", "success");
+      if (onTaskUpdate) onTaskUpdate();
+      handleCloseModal();
+    } catch (error) {
+      console.error("Failed to update due date:", error);
+      Swal.fire("Error", "Failed to update due date.", "error");
+    }
+  };
   return (
     <div>
       <ul className="mt-[24px]">
@@ -178,7 +191,7 @@ export default function Details({
             </div>
           </div>
         </li> */}
-        {/* <li className="mt-[10px]">
+        <li className="mt-[10px]">
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-4 w-[35%]">
               <svg
@@ -187,7 +200,7 @@ export default function Details({
                 viewBox="0 0 20 20"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                >
+              >
                 <g opacity="0.9">
                   <path
                     fillRule="evenodd"
@@ -203,10 +216,16 @@ export default function Details({
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <DatePickerInput />
+              <DatePickerInput
+                onChange={(date) => {
+                  if (date) {
+                    handleTaskDueDate(date);
+                  }
+                }}
+              />
             </div>
           </div>
-        </li> */}
+        </li>
         {/* <li className="mt-[10px]">
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-4 w-[35%]">

@@ -29,7 +29,7 @@ export class ProjectController {
   async getMyProjects(
     @CurrentUser() user: any,
      @Query("page") page: string = "1",
-     @Query("limit") limit: string = "5",
+     @Query("limit") limit: string = "4",
   ): Promise<{  data: Project[]; total: number; page: number; limit: number }> {
     const pageNumber = parseInt(page, 10);
     const limitNumber = parseInt(limit, 10);
@@ -82,6 +82,17 @@ export class ProjectController {
     @Param('userId') userId: string,
   ): Promise<Project> {
     return this.projectService.removeUser(id, userId);
+  }
+
+  @Put(':id')
+  async update(
+    @Param('id') id: string,
+    @Body() updateProjectDto: UpdateProjectDto,
+  ): Promise<any> {
+    await this.projectService.update(id, updateProjectDto);
+    return {
+      message: 'Project updated successfully!',
+    };
   }
 
   }

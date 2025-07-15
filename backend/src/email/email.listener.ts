@@ -177,11 +177,13 @@ export class EmailListener {
               commentLink: `${process.env.FRONTEND_URL}comment/${comment._id.toString()}`,
             },
           });
+          
           this.logger.log(`Notification sent to ${mentionedUser.email}`);
         } catch (innerError) {
           this.logger.error(`Failed to notify mentioned user ID ${userId}:`, innerError);
         }
       }
+      
 
       this.logger.log('All notifications for mentioned users have been processed.');
     } catch (error) {
