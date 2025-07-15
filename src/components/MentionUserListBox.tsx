@@ -26,8 +26,6 @@ export default function MentionUserListModal({
   const [selectedUser, setSelectedUser] = useState<IUserOption | null>(null);
   const [userOptions, setUserOptions] = useState<IUserOption[]>([]);
   const [inputValue, setInputValue] = useState("");
-
-  console.log('selectedUser',selectedUser)
   
   const fetchUsers = useCallback(
     debounce(async (input: string) => {

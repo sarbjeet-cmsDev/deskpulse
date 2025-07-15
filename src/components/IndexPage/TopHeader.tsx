@@ -15,6 +15,10 @@ import { useState, useEffect } from "react";
 import LeftMenuDrawer from "../HeaderMenuDrawer/leftmenudrawer";
 import { fetchUserProfile } from "@/store/slices/userSlice";
 import { getGreeting } from "@/utils/greetings";
+import { H1 } from "../Heading/H1";
+import { H2 } from "../Heading/H2";
+import { H3 } from "../Heading/H3";
+import Link from "next/link";
 
 export default function TopHeader() {
   const dispatch = useDispatch<AppDispatch>();
@@ -41,7 +45,7 @@ export default function TopHeader() {
     <div className="bg-[#7980ff] p-4">
       <div className="flex justify-between items-center">
         <div className="flex justify-center items-center gap-2">
-          <div className="relative">
+          {/* <div className="relative">
             <Image
               key={avatarUrl}
               src={avatarUrl}
@@ -59,7 +63,8 @@ export default function TopHeader() {
                 ? `Hi ${user.firstName}, ${getGreeting()}!`
                 : `Welcome!`}
             </P>
-          </div>
+          </div> */}
+          <H3 className="text-2xl"><Link href={'/'}>Deskpulse</Link> </H3>
         </div>
         <div className="flex justify-center items-center gap-2">
           <LeftMenuDrawer />

@@ -22,7 +22,6 @@ const TaskChecklistService = {
 
   async getChecklistByTaskId(taskId: string): Promise<{ message: string; checklists: ITaskChecklist[] }> {
     const res = await axiosClient.get(`${API_URL}/taskchecklist/task/${taskId}`);
-    console.log("res.data in task checklist service ----", res.data)
     return res.data;
   },
 

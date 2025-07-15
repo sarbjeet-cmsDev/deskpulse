@@ -18,6 +18,7 @@ export const Notification = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 7;
   const user: any | null = useSelector((state: RootState) => state.auth.user);
+  console.log("twwwwwwwwwwwwwwww",user)
   const router = useRouter();
 
   const fetchNotification = async () => {

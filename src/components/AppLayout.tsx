@@ -25,11 +25,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <Link
           isExternal
           className="flex items-center gap-1 text-current"
-          href="https://heroui.com?utm_source=next-app-template"
-          title="heroui.com homepage"
+          href="#"
+          title="bronzebyte"
         >
           <span className="text-default-600">Powered by</span>
-          <p className="text-primary">HeroUI</p>
+          <p className="text-primary">BronzeByte</p>
         </Link>
       </footer>
     </ProtectedRoute>

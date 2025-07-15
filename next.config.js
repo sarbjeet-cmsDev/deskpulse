@@ -4,6 +4,7 @@ const allowedDomains = process.env.IMAGE_DOMAINS
   : ['192.168.0.40', 'localhost'];
 
 const nextConfig = {
+  reactStrictMode: false,
   eslint: {
     ignoreDuringBuilds: true,
   },

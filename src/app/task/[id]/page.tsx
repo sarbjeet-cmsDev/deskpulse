@@ -6,7 +6,7 @@ import leftarrow from "@/assets/images/back.png";
 import Details from "@/components/ProjectDetails/DetailTable";
 import DropDownOptions from "@/components/ProjectDetails/DropDown";
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import TaskService, { ITask } from "@/service/task.service";
 import Link from "next/link";
 import TimelineList from "@/components/Task/TimelineList";
@@ -24,10 +24,12 @@ import TaskChecklistService from "@/service/taskChecklist.service";
 import CreateChecklistModal from "@/components/TaskChecklist/createChecklistModal";
 import TaskChecklist from "@/components/TaskChecklist/taskChecklist";
 import { ITaskChecklist } from "@/types/taskchecklist.interface";
+import DropdownOptions from "@/components/DropdownOptions";
 
 export default function TaskDetails() {
   const params = useParams();
   const taskId = params?.id as string;
+  const router = useRouter();
   const [task, setTask] = useState<ITask | null>(null);
   const [taskChecklist, setTaskChecklist] = useState<ITaskChecklist[]>([]);
   const [project, setProject] = useState<any>(null);
@@ -68,7 +70,6 @@ export default function TaskDetails() {
   const fetchTaskchecklist = async (taskId: string) => {
     try {
       const data = await TaskChecklistService.getChecklistByTaskId(taskId);
-      console.log("data in TaskDetails checklist---", data);
       setTaskChecklist(data.checklists);
     } catch (error) {
       console.error("Failed to load task:", error);
@@ -133,7 +134,11 @@ export default function TaskDetails() {
   useEffect(() => {
     fetchComments();
   }, [taskId, commentPage, commentLimit]);
-console.log(comments,"ksdjflkdjslkjflksdklj")
+
+  const handleActivityLog = ()=>{
+        router.push(`/task-activitylog/${taskId}`);
+  }
+
   return (
     <div className="max-w-6xl mx-auto">
       <div className="main-content">
@@ -148,7 +153,16 @@ console.log(comments,"ksdjflkdjslkjflksdklj")
               <H5 className="w-[98%] text-center">{task?.title}</H5>
             </div>
             <div className="">
-              {/* <DropDownOptions /> */}
+               <DropdownOptions
+                              options={[
+                                {
+                                  key: "View Activity Log",
+                                  label: "View Activity Log",
+                                  color: "primary",
+                                  onClick: handleActivityLog,
+                                },
+                              ]}
+                            />
             </div>
           </div>
 

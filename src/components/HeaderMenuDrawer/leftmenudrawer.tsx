@@ -29,12 +29,12 @@ export default function LeftMenuDrawer() {
   const dispatch = useDispatch<AppDispatch>();
   const [placement, setPlacement] = React.useState<
     "left" | "right" | "top" | "bottom"
-  >("left");
+  >("right");
   const user: IUserRedux | null = useSelector(
     (state: RootState) => state.auth.user
   );
   const userProfile = useSelector((state: RootState) => state.user.data);
-  console.log(user, "useruseruser");
+ 
   const [version, setVersion] = useState(Date.now());
   const avatarUrl = userProfile?.profileImage
     ? `${process.env.NEXT_PUBLIC_BACKEND_HOST}${userProfile.profileImage}?v=${version}`
@@ -69,7 +69,7 @@ export default function LeftMenuDrawer() {
   return (
     <>
       <div className="flex flex-wrap gap-3">
-        {["left"].map((placement) => (
+        {["right"].map((placement) => (
           <Button
             key={placement}
             className="capitalize p-0 bg-transparent min-w-fit min-h-fit"

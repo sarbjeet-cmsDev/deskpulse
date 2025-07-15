@@ -51,10 +51,10 @@ export default function CommentInputSection({
   const quillRef = useRef<any>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const user = useSelector((state: RootState) => state.user.data);
-  console.log(user, "useruseruser");
+  
   useEffect(() => {
     if (isEditing && defaultValue) {
-      setContent(defaultValue); // contains HTML with mention spans
+      setContent(defaultValue); 
     }
   }, [defaultValue, isEditing]);
 

@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const projectCreateSchema = z.object({
-  code: z.string().min(1, "Project code is required"),
+  // code: z.string().min(1, "Project code is required"),
   users: z.array(z.string(), {
     required_error: "Users are required",
     invalid_type_error: "Users must be an array of strings",

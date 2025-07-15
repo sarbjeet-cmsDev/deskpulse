@@ -79,7 +79,7 @@ export default function AuthLoginPage() {
       <div className="w-full max-w-md space-y-6">
         <div className="flex justify-center items-center p-[24px] border-b border-[#31394f14]">
         <div className="w-[2%]">
-          <Link href="/auth/profile">
+          <Link href="/auth/login">
             <Image src={leftarrow} alt="Logo" width={16} height={16} />
           </Link>
         </div>

@@ -1,55 +1,78 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Project, ProjectDocument } from './project.schema';
-import { ProjectKanbanService } from '../project-kanban/project_kanban.service';
-import { UserService } from 'src/user/user.service';
-import { EventEmitter2 } from '@nestjs/event-emitter';
-import { CreateProjectDto, UpdateProjectDto } from './project.dto';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model } from "mongoose";
+import { Project, ProjectDocument } from "./project.schema";
+import { ProjectKanbanService } from "../project-kanban/project_kanban.service";
+import { UserService } from "src/user/user.service";
+import { EventEmitter2 } from "@nestjs/event-emitter";
+import { CreateProjectDto, UpdateProjectDto } from "./project.dto";
 
 @Injectable()
-
 export class ProjectService {
   constructor(
     @InjectModel(Project.name) private projectModel: Model<ProjectDocument>,
     private readonly kanbanService: ProjectKanbanService,
     private eventEmitter: EventEmitter2,
-    private readonly userservices: UserService,
-  ) { }
+    private readonly userservices: UserService
+  ) {}
   private sanitizeObjectIds(payload: any) {
     const keysToSanitize = [
-      'team_leader',
-      'project_manager',
-      'project_coordinator',
-      'created_by',
-      'updated_by'
+      "team_leader",
+      "project_manager",
+      "project_coordinator",
+      "created_by",
+      "updated_by",
     ];
-    keysToSanitize.forEach(key => {
-      if (payload[key] === '') {
+    keysToSanitize.forEach((key) => {
+      if (payload[key] === "") {
         payload[key] = undefined;
       }
     });
     return payload;
   }
+
+  private async generateUniqueCode(baseCode: string): Promise<string> {
+    let code = baseCode;
+    let counter = 0;
+
+    while (await this.projectModel.exists({ code })) {
+      counter++;
+      code = `${baseCode}${counter}`;
+    }
+
+    return code;
+  }
+
   async create(createProjectDto: CreateProjectDto): Promise<Project> {
     try {
       const sanitized = this.sanitizeObjectIds(createProjectDto);
+      const projectName = createProjectDto.title || "";
+      const baseCode = projectName
+        .toUpperCase()
+        .replace(/[^A-Z]/g, "")
+        .substring(0, 3);
+
+      const uniqueCode = await this.generateUniqueCode(baseCode);
+      sanitized.code = uniqueCode;
       const createdProject = new this.projectModel(sanitized);
       const savedProject = await createdProject.save();
       // const savedProject = await createdProject.save();
       if (createProjectDto.users && createProjectDto.users.length > 0) {
-        this.eventEmitter.emit('project.assigned', {
+        this.eventEmitter.emit("project.assigned", {
           projectObj: savedProject,
         });
       }
       await this.kanbanService.createDefaults(savedProject._id.toString());
       return savedProject;
-
     } catch (error) {
       if (error.code === 11000 && error.keyPattern?.code) {
-        throw new ConflictException('Project code must be unique.');
+        throw new ConflictException("Project code must be unique.");
       }
-      throw new (error)
+      throw new error();
     }
   }
   async findAll(): Promise<Project[]> {
@@ -72,7 +95,10 @@ export class ProjectService {
     return project;
   }
 
-  async update(id: string, updateProjectDto: UpdateProjectDto): Promise<Project> {
+  async update(
+    id: string,
+    updateProjectDto: UpdateProjectDto
+  ): Promise<Project> {
     const sanitized = this.sanitizeObjectIds(updateProjectDto);
     const updatedProject = await this.projectModel
       .findByIdAndUpdate(id, sanitized, { new: true })
@@ -81,7 +107,7 @@ export class ProjectService {
       throw new NotFoundException(`Project with ID ${id} not found.`);
     }
     if (updateProjectDto.users && updateProjectDto.users.length > 0) {
-      this.eventEmitter.emit('project.assigned', {
+      this.eventEmitter.emit("project.assigned", {
         projectObj: updatedProject,
       });
     }
@@ -117,11 +143,7 @@ export class ProjectService {
 
   async removeUser(projectId: string, userId: string): Promise<Project> {
     const updatedProject = await this.projectModel
-      .findByIdAndUpdate(
-        projectId,
-        { $pull: { users: userId } },
-        { new: true }
-      )
+      .findByIdAndUpdate(projectId, { $pull: { users: userId } }, { new: true })
       .exec();
 
     if (!updatedProject) {
@@ -131,7 +153,6 @@ export class ProjectService {
     return updatedProject;
   }
 
-
   async getAssignedUsers(projectId: string): Promise<Project> {
     const project = await this.projectModel.findById(projectId).exec();
     if (!project) {
@@ -140,10 +161,19 @@ export class ProjectService {
     return project;
   }
 
-  async findProjectsByUserId(userId: string, page: number, limit: number): Promise<{ data: Project[]; total: number; page: number; limit: number }> {
+  async findProjectsByUserId(
+    userId: string,
+    page: number,
+    limit: number
+  ): Promise<{ data: Project[]; total: number; page: number; limit: number }> {
     const skip = (page - 1) * limit;
     const [data, total] = await Promise.all([
-      this.projectModel.find({ users: userId }).skip(skip).limit(limit).sort({ createdAt: -1 }).exec(),
+      this.projectModel
+        .find({ users: userId })
+        .skip(skip)
+        .limit(limit)
+        .sort({ createdAt: -1 })
+        .exec(),
       this.projectModel.countDocuments({ users: userId }),
     ]);
     return {
@@ -158,22 +188,22 @@ export class ProjectService {
     page: number,
     limit: number,
     keyword?: string,
-    sortOrder: 'asc' | 'desc' = 'asc'
+    sortOrder: "asc" | "desc" = "asc"
   ): Promise<{ data: Project[]; total: number }> {
     const skip = (page - 1) * limit;
     const query: any = {};
 
     if (keyword) {
       query.$or = [
-        { name: { $regex: keyword, $options: 'i' } },
-        { code: { $regex: keyword, $options: 'i' } },
+        { name: { $regex: keyword, $options: "i" } },
+        { code: { $regex: keyword, $options: "i" } },
       ];
     }
 
     const [projects, total] = await Promise.all([
       this.projectModel
         .find(query)
-        .sort({ createdAt: sortOrder === 'asc' ? 1 : -1 })
+        .sort({ createdAt: sortOrder === "asc" ? 1 : -1 })
         .skip(skip)
         .limit(limit)
         .exec(),
@@ -185,5 +215,4 @@ export class ProjectService {
       total,
     };
   }
-
 }

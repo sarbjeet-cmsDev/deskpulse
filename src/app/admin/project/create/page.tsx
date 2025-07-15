@@ -36,7 +36,7 @@ const CreateProjectPage = () => {
   } = useForm<CreateProjectInput>({
     resolver: zodResolver(projectCreateSchema),
     defaultValues: {
-      code: "",
+      // code: "",
       users: [],
       is_active: true,
       sort_order: 0,
@@ -98,10 +98,10 @@ const CreateProjectPage = () => {
           Create Project
         </H1>
 
-        <Input placeholder="Project Code" {...register("code")} />
-        {errors.code && (
+        {/* <Input placeholder="Project Code" {...register("code")} /> */}
+        {/* {errors.code && (
           <p className="text-sm text-red-500">{errors.code.message}</p>
-        )}
+        )} */}
         <Input placeholder="Title" {...register("title")} />
         {errors.title && (
           <p className="text-sm text-red-500">{errors.title.message}</p>

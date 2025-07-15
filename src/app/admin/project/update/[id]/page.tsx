@@ -106,8 +106,8 @@ const UpdateProjectPage = () => {
       >
         <H1 className="text-2xl font-semibold text-gray-900 mb-4">Update Project</H1>
 
-        <Input placeholder="Project Code" {...register('code')} />
-        {errors.code && <p className="text-sm text-red-500">{errors.code.message}</p>}
+        {/* <Input placeholder="Project Code" {...register('code')} />
+        {errors.code && <p className="text-sm text-red-500">{errors.code.message}</p>} */}
 <Input placeholder="Title" {...register('title')} />
         {errors.title && <p className="text-sm text-red-500">{errors.title.message}</p>}
         {/* Assign Users */}
