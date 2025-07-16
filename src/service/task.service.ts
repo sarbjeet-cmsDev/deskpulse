@@ -23,6 +23,7 @@ export interface CreateTaskDto {
   project: string;
   report_to: string;
   assigned_to: string;
+  description?: string;
 }
 
 export interface ITaskResponse {
@@ -37,7 +38,8 @@ export interface UpdateTaskDto {
   title?: string;
   status?: string;
   assigned_to?: string;
-  due_date?:string;
+  due_date?: string;
+  description?: string;
 }
 
 const TaskService = {

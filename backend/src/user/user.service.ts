@@ -117,9 +117,7 @@ export class UserService {
   ): Promise<{ data: UserDocument[]; total: number }> {
     const skip = (page - 1) * limit;
 
-    const query: any = {
-      roles: "user",
-    };
+    const query: any = {};
     if (keyword) {
       query.$or = [
         { firstName: { $regex: keyword, $options: "i" } },

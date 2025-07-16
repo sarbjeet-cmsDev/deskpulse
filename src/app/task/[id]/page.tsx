@@ -48,8 +48,7 @@ export default function TaskDetails() {
     (state: RootState) => state.auth.user
   );
 
-
- const fetchTask = async (id: string) => {
+  const fetchTask = async (id: string) => {
     try {
       const data = await TaskService.getTaskById(id);
       setTask(data);
@@ -144,7 +143,17 @@ export default function TaskDetails() {
   const handleActivityLog = () => {
     router.push(`/task-activitylog/${taskId}`);
   };
-
+  const handleUpdateTaskDescription = (id: string) => {
+    return async (description: string) => {
+      try {
+        await TaskService.updateTask(id, {
+          description,
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    };
+  };
   return (
     <div className="max-w-6xl mx-auto">
       <div className="main-content">
@@ -173,13 +182,14 @@ export default function TaskDetails() {
           </div>
 
           <div className="pt-4">
-            <H5 className="mt-[20px]">Description</H5>
-            <P className="text-start">
-              {project?.notes || "No description provided."}
-              <a href="#" className="text-primary mt-[12px]">
-                See Details
-              </a>
-            </P>
+            {task && (
+              <CommentInputSection
+                key={task._id + (task.description || "")} // forces remount when task changes
+                defaultValue={task.description}
+                title="Description"
+                onClick={handleUpdateTaskDescription(task?._id)}
+              />
+            )}
 
             <DetailsTable
               project={project}
@@ -220,6 +230,7 @@ export default function TaskDetails() {
               <CommentInputSection
                 taskId={taskId}
                 createdBy={user?.id || ""}
+                defaultValue=""
                 onCommentCreated={() => fetchComments()}
                 inline={true}
               />

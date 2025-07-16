@@ -31,13 +31,13 @@ export interface IUser {
 
 const AdminUserService = {
   //  Get all users with pagination, search, and sort
-  async getAllUsers(params: {
+  async getAllUsers(params?: {
     page?: number;
     limit?: number;
     keyword?: string;
     sortField?: string;
     sortOrder?: "asc" | "desc";
-  }): Promise<{ data: IUser[]; total: number }> {
+  }): Promise<{ data?: IUser[]; total?: number }> {
     const res = await axiosClient.get(`${API_URL}/admin/user`, { params });
 
     return {

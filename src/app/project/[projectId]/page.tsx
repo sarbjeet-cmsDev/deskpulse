@@ -23,6 +23,7 @@ import AdminUserService from "@/service/adminUser.service";
 import { ProjectKanbon } from "@/service/projectKanbon.service";
 import { KanbanColumn } from "@/types/projectKanbon.interface";
 import UpdateProjectDescriptionModal from "@/components/ProjectDetails/UpdateProjectDescriptionModal";
+import CommentInputSection from "@/components/Comment/commentSection";
 
 export default function MyProjectDetails() {
   const params = useParams();
@@ -41,28 +42,46 @@ export default function MyProjectDetails() {
   const fetchKanbonList = async (userIds: string[]) => {
     try {
       const res = await ProjectKanbon.getProjectKanbonList(projectId);
-      const taskRes = await TaskService.getTasksByUserIds(
-        projectId,
-        userIds.join(",")
-      );
-      if (res?.data) setKanbanList(res.data);
-      if (taskRes?.tasks) setTasks(taskRes.tasks);
+      let taskRes;
+
+      if (userIds.length > 0) {
+        taskRes = await TaskService.getTasksByUserIds(
+          projectId,
+          userIds.join(",")
+        );
+      } else {
+        taskRes = await TaskService.getTasksByProject(projectId);
+      }
+
+      if (res?.data) {
+        setKanbanList(res.data);
+      }
+
+      const tasks = taskRes?.data || taskRes?.tasks;
+      if (tasks) {
+        setTasks(tasks);
+      }
     } catch (error) {
       console.error("Failed to load tasks:", error);
     }
   };
   const fetchUsers = async () => {
     try {
-      const data: any = await AdminUserService.searchUsers();
-      setUsers(data || []);
+      const data: any = await AdminUserService.getAllUsers();
+      const result = await ProjectService.getProjectById(projectId);
+      const userIds = new Set(result?.users || []);
+      const matchingUsers = data.data.filter((user: any) =>
+        userIds.has(user._id)
+      );
+      if (matchingUsers.length > 0) setUsers(matchingUsers);
     } catch (err) {
       console.error("Failed to fetch users", err);
     }
   };
   useEffect(() => {
     if (user?.id) {
-      setSelectedUserIds([user.id]);
-      fetchKanbonList([user.id]);
+      setSelectedUserIds([]);
+      fetchKanbonList([]);
     }
     fetchUsers();
   }, [user?.id]);
@@ -100,10 +119,12 @@ export default function MyProjectDetails() {
     if (project?._id) fetchTasks(project._id);
   };
 
-  const handleCreateTask = async (title: string) => {
+  const handleCreateTask = async (title: string, description: string) => {
+    console.log(description, "89789899889", title);
     try {
       await TaskService.createTask({
         title,
+        description,
         project: project._id,
         report_to: user?.id || "",
         assigned_to: user?.id || "",
@@ -164,29 +185,19 @@ export default function MyProjectDetails() {
                   className="rounded-[8px]"
                 />
               </div>
-              <H5 className="mt-[20px]">Description</H5>
-              <P className="text-start text-gray-700 text-sm">
-                {project?.description || "description."}
-                <UpdateProjectDescriptionModal
-                  key={project?.description}
-                  onUpdate={handleUpdateProjectDescription(projectId)}
-                  projectId={projectId}
-                  description={project?.description}
+              <div className="py-5">
+                <CommentInputSection
+                  defaultValue={project?.description}
+                  title="Description"
+                  onClick={handleUpdateProjectDescription(project?._id)}
                 />
-              </P>
+              </div>
               <Details
                 project={project}
                 taskId={""}
                 onTaskUpdate={() => fetchTasks(project?._id)}
               />
-              {/* <div className="mt-[20px]">
-                <a
-                  href="#"
-                  className="text-[#7980ff] bg-[#7980ff1f] py-[16px] px-[28px] rounded-[12px] w-full text-[14px] leading-[16px] font-bold text-center block"
-                >
-                  Add Custom Section
-                </a>
-              </div> */}
+
               <div className="mt-[28px]">
                 <div className="flex justify-between">
                   <H5>Tasks</H5>

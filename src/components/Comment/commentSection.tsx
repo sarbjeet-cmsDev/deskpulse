@@ -33,6 +33,7 @@ interface CommentInputProps {
   defaultValue?: string;
   parent_comment?: string;
   commentId?: string;
+  title?: any;
 }
 
 export default function CommentInputSection({
@@ -44,17 +45,19 @@ export default function CommentInputSection({
   defaultValue,
   parent_comment,
   commentId,
-}: CommentInputProps) {
+  title,
+  onClick,
+}: any) {
   const [content, setContent] = useState<string | undefined>(defaultValue);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const quillRef = useRef<any>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const user = useSelector((state: RootState) => state.user.data);
-  
+  console.log(defaultValue, "defaultValue");
   useEffect(() => {
     if (isEditing && defaultValue) {
-      setContent(defaultValue); 
+      setContent(defaultValue);
     }
   }, [defaultValue, isEditing]);
 
@@ -204,11 +207,29 @@ export default function CommentInputSection({
       wrapperRef.current?.classList.remove("show-toolbar");
     }
   };
+  const handleExternalSubmit = async () => {
+    const editor = quillRef.current?.getEditor();
+    const html = editor?.root.innerHTML || "";
+
+    if (!html || stripHtml(html) === "") {
+      setError("Description is required");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await onClick(html);
+    } catch (err: any) {
+      console.error("Failed to update description:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className={`p-4 bg-white border rounded ${inline ? "mt-6" : ""}`}>
       <label className="block text-sm font-medium text-gray-700 mb-2">
-        Comment <span className="text-red-500">*</span>
+        {title ? title : "Comment"} <span className="text-red-500">*</span>
       </label>
 
       <div
@@ -225,7 +246,7 @@ export default function CommentInputSection({
             setError(null);
           }}
           theme="snow"
-          placeholder="Write your comment with @mention and image..."
+          placeholder={`Write your ${title}  with @mention and image...`}
           modules={modules}
         />
       </div>
@@ -239,7 +260,28 @@ export default function CommentInputSection({
           </Button>
         )}
         <Button
-          onPress={isEditing ? handleEdit : handleCreate}
+          onPress={() => {
+            if (onClick) {
+              const html = quillRef.current?.getEditor()?.root.innerHTML || "";
+              if (!html || stripHtml(html) === "") {
+                setError(`${title} is required`);
+                return;
+              }
+              setLoading(true);
+              onClick(html)
+                .then(() => {
+                  setLoading(false);
+                })
+                .catch((err: any) => {
+                  console.error("Failed to update description:", err);
+                  setLoading(false);
+                });
+            } else if (isEditing) {
+              handleEdit();
+            } else {
+              handleCreate();
+            }
+          }}
           disabled={loading}
         >
           {isEditing ? "Update" : "Save"}

@@ -46,9 +46,7 @@ export default function AvatarList({
               <div
                 title={usr.username}
                 onClick={() => {
-                  if (usr._id !== user.id) {
-                    toggleUserSelection(usr._id);
-                  }
+                  toggleUserSelection(usr._id);
                 }}
                 className={`flex items-center justify-center w-8 h-8 rounded-full text-white text-sm font-semibold transition 
         ${isActive ? "bg-green-600 scale-110 shadow-md" : "bg-blue-500"}`}

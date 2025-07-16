@@ -20,13 +20,20 @@ export class TaskService {
     private readonly projectService: ProjectService,
     private readonly userservices: UserService,
     private eventEmitter: EventEmitter2
-  ) { }
+  ) {}
 
   async create(createTaskDto: CreateTaskDto): Promise<Task> {
-    const { code: projectCode } = await this.projectService.findOne(createTaskDto.project.toString());
-    const tasks = await this.taskModel.find({ code: new RegExp(`^${projectCode}-\\d{2,}$`) });
-    const max = Math.max(0, ...tasks.map(t => parseInt(t.code.split('-')[1]) || 0));
-    createTaskDto.code = `${projectCode}-${String(max + 1).padStart(2, '0')}`;
+    const { code: projectCode } = await this.projectService.findOne(
+      createTaskDto.project.toString()
+    );
+    const tasks = await this.taskModel.find({
+      code: new RegExp(`^${projectCode}-\\d{2,}$`),
+    });
+    const max = Math.max(
+      0,
+      ...tasks.map((t) => parseInt(t.code.split("-")[1]) || 0)
+    );
+    createTaskDto.code = `${projectCode}-${String(max + 1).padStart(2, "0")}`;
     const createdTask = new this.taskModel(createTaskDto);
     this.eventEmitter.emit("task.created", { taskObj: createdTask });
     if (createTaskDto.assigned_to) {
@@ -50,12 +57,15 @@ export class TaskService {
       .exec();
   }
 
-async fetchTasksByUserAndProjectIds(userIds: string[], projectId: string): Promise<Task[]> {
-  return this.taskModel.find({
-    assigned_to: { $in: userIds },
-    project: projectId
-  });
-}
+  async fetchTasksByUserAndProjectIds(
+    userIds: string[],
+    projectId: string
+  ): Promise<Task[]> {
+    return this.taskModel.find({
+      assigned_to: { $in: userIds },
+      project: projectId,
+    });
+  }
 
   async findOne(id: string): Promise<Task> {
     const task = await this.taskModel.findById(id).exec();
@@ -169,7 +179,7 @@ async fetchTasksByUserAndProjectIds(userIds: string[], projectId: string): Promi
     this.eventEmitter.emit("task.status.updated", {
       taskObj: updatedTask,
       oldTaskStatus: oldTaskStatus,
-      updatedBy: userData.userId
+      updatedBy: userData.userId,
     });
 
     return updatedTask;

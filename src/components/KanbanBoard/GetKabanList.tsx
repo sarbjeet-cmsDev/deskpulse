@@ -13,6 +13,7 @@ import { RootState } from "@/store/store";
 import { useSelector } from "react-redux";
 import Image from "next/image";
 import AvatarList from "../IndexPage/avatarlist";
+import ProjectService from "@/service/project.service";
 
 export const GetKanbonList = () => {
   const user: any = useSelector((state: RootState) => state.auth.user);
@@ -26,7 +27,6 @@ export const GetKanbonList = () => {
   const [taskView, setTaskView] = useState<"kanban" | "list">("kanban");
   const [users, setUsers] = useState([]);
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
-
   const [scrollDirection, setScrollDirection] = useState<
     "left" | "right" | null
   >(null);
@@ -38,12 +38,26 @@ export const GetKanbonList = () => {
   const fetchKanbonList = async (userIds: string[]) => {
     try {
       const res = await ProjectKanbon.getProjectKanbonList(projectId);
-      const taskRes = await TaskService.getTasksByUserIds(
-        projectId,
-        userIds.join(",")
-      );
-      if (res?.data) setKanbanList(res.data);
-      if (taskRes?.tasks) setTaskList(taskRes.tasks);
+      let taskRes;
+
+      if (userIds.length > 0) {
+        taskRes = await TaskService.getTasksByUserIds(
+          projectId,
+          userIds.join(",")
+        );
+      } else {
+        taskRes = await TaskService.getTasksByProject(projectId);
+      }
+
+      if (res?.data) {
+        setKanbanList(res.data);
+      }
+
+      const tasks = taskRes?.data || taskRes?.tasks;
+      if (tasks) {
+        setTaskList(tasks);
+      }
+
       setError(null);
     } catch (error) {
       console.error("Failed to load tasks:", error);
@@ -51,27 +65,34 @@ export const GetKanbonList = () => {
     }
   };
 
+  console.log(taskList, "woiuoiuioueiwor");
   const fetchUsers = async () => {
     try {
-      const data: any = await AdminUserService.searchUsers();
-      setUsers(data || []);
+      const data: any = await AdminUserService.getAllUsers();
+      const result = await ProjectService.getProjectById(projectId);
+      const userIds = new Set(result?.users || []);
+      const matchingUsers = data.data.filter((user: any) =>
+        userIds.has(user._id)
+      );
+      if (matchingUsers.length > 0) setUsers(matchingUsers);
     } catch (err) {
       console.error("Failed to fetch users", err);
     }
   };
 
   useEffect(() => {
-    if (user?.id) {
-      setSelectedUserIds([user.id]);
-      fetchKanbonList([user.id]);
-    }
+    fetchKanbonList([]); // Default: fetch all tasks
     fetchUsers();
 
     const savedView = localStorage.getItem("taskView");
     if (savedView === "list" || savedView === "kanban") {
       setTaskView(savedView);
     }
-  }, [user?.id]);
+  }, []);
+
+  useEffect(() => {
+    fetchKanbonList(selectedUserIds);
+  }, [selectedUserIds]);
 
   useEffect(() => {
     const container = scrollContainerRef.current;
@@ -82,7 +103,6 @@ export const GetKanbonList = () => {
       if (!container) return;
       if (scrollDirection === "left") container.scrollLeft -= speed;
       else if (scrollDirection === "right") container.scrollLeft += speed;
-
       scrollRef.current = requestAnimationFrame(smoothScroll);
     };
 
@@ -121,7 +141,6 @@ export const GetKanbonList = () => {
       await TaskService.updateTaskStatus(draggedTask._id, {
         status: columnTitle,
       });
-
       const updatedTasks = taskList.map((t) =>
         t._id === draggedTask._id ? { ...t, status: columnTitle } : t
       );
@@ -204,6 +223,7 @@ export const GetKanbonList = () => {
                     >
                       <p className="text-sm font-medium text-gray-700">
                         {card.title}
+                        {/* {card.assigned_to} */}
                       </p>
                     </div>
                   ))}
