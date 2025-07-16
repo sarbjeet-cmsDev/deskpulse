@@ -9,7 +9,7 @@ import AuthService from '@/service/auth.service';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const user = useSelector((state: RootState) => state.auth.user);
-  // console.log("user in admin protect route--->",user)
+
   const dispatch = useDispatch();
   const router = useRouter();
   const [checkingToken, setCheckingToken] = useState(true);

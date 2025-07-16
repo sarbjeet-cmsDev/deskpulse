@@ -53,7 +53,7 @@ export default function CreateTaskModal({ onCreate }: CreateTaskModalProps) {
     <>
       <Button
         onPress={onOpen}
-        className="bg-[#7980ff] text-white block w-full flex justify-center items-center gap-2 text-[14px] leading-[16px] font-bold py-[16px] rounded-[12px] mt-[24px] px-[28px]"
+        className="btn-primary text-white block w-full flex justify-center items-center gap-2 text-[14px] leading-[16px] font-bold py-[16px] rounded-[12px] mt-[24px] px-[28px]"
       >
         Create Task
       </Button>
@@ -101,7 +101,7 @@ export default function CreateTaskModal({ onCreate }: CreateTaskModalProps) {
                     <Button
                       type="submit"
                       disabled={loading}
-                      className="p-4 bg-transparent text-blue-600 font-bold"
+                      className="p-4 bg-transparent text-theme-primary font-bold"
                     >
                       {loading ? "Creating..." : "Create"}
                     </Button>

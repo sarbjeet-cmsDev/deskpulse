@@ -53,7 +53,10 @@ export default function CommentInputSection({
   const [error, setError] = useState<string | null>(null);
   const quillRef = useRef<any>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const user = useSelector((state: RootState) => state.user.data);
+  const user:any = useSelector((state: RootState) => state.user.data);
+  // const user = useSelector((state: RootState) => state.user.data);
+
+
   console.log(defaultValue, "defaultValue");
   useEffect(() => {
     if (isEditing && defaultValue) {
@@ -280,6 +283,7 @@ export default function CommentInputSection({
             }
           }}
           disabled={loading}
+          className="btn-primary"
         >
           {isEditing ? "Update" : "Save"}
         </Button>

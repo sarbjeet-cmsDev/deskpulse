@@ -41,9 +41,10 @@ const Users = () => {
         sortField,
         sortOrder,
       });
-      setUsers(data.data);
-      setTotalRecords(data.total);
-      setTotalPages(Math.ceil(data.total / limit));
+      
+      setUsers(data?.data ?? []);
+      setTotalRecords(data?.total ?? 0);
+      setTotalPages(Math.ceil((data?.total ?? 0) / limit));
     } catch (err) {
       console.error('Failed to fetch users', err);
     }

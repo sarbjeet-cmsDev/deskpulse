@@ -1,41 +1,45 @@
+
 "use client";
 
-import {DatePicker} from "@heroui/react";
+import { DatePicker } from "@heroui/react";
 import type { DateValue } from "@heroui/react";
+import { parseAbsolute, today } from "@internationalized/date";
 
 interface DatePickerInputProps {
+  task: { due_date?: string };
   onChange?: (date: Date | null) => void;
 }
 
-
-
-export default function DatePickerInput({ onChange }: DatePickerInputProps) {
-  const placements = ["outside-left"];
-
+export default function DatePickerInput({ task, onChange }: DatePickerInputProps) {
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  
   const handleChange = (value: DateValue | null) => {
-  if (onChange) {
-    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const jsDate = value ? value.toDate(timeZone) : null;
-    onChange(jsDate);
-  }
-};
+    onChange?.(jsDate);
+  };
 
+  let parsedDueDate: DateValue | null = null;
+  
+  try {
+    parsedDueDate = task?.due_date
+    ? (parseAbsolute(task.due_date, timeZone) as unknown as DateValue)
+    : null;
+  } catch (e) {
+    console.error(" Invalid due date format:", task?.due_date);
+  }
+
+  const minSelectableDate = today(timeZone);
+  
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-2">
-        <div className="flex w-full flex-wrap items-end md:flex-nowrap mb-6 md:mb-0 gap-4">
-          {placements.map((placement) => (
-            <DatePicker
-              key={placement}
-              className="max-w-[284px]"
-              classNames={{
-                inputWrapper:"bg-transparent hover:!bg-transparent p-0 shadow-none",
-              }}
-              onChange={handleChange}
-            />
-          ))}
-        </div>
-      </div>
-    </div>
+    <DatePicker
+    className="max-w-[284px]"
+      value={parsedDueDate}
+      onChange={handleChange}
+       granularity="day"
+      //  minValue={minSelectableDate}
+      classNames={{
+        inputWrapper: "bg-transparent hover:!bg-transparent p-0 shadow-none",
+      }}
+    />
   );
 }

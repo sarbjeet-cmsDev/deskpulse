@@ -104,6 +104,7 @@ export default function MyProjectDetails() {
       const data = await ProjectService.getProjectById(projectId as string);
       setProject(data);
       fetchTasks(data._id);
+      fetchUsers();
     } catch (error) {
       console.error("Failed to load project", error);
     } finally {
@@ -171,6 +172,7 @@ export default function MyProjectDetails() {
                 onPress={() =>
                   router.push(`/project/projectDetail/${projectId}`)
                 }
+                className="btn-primary"
               >
                 View Kanban
               </Button>
@@ -194,8 +196,9 @@ export default function MyProjectDetails() {
               </div>
               <Details
                 project={project}
-                taskId={""}
-                onTaskUpdate={() => fetchTasks(project?._id)}
+                user={users}
+                projectId={projectId}
+                onTaskUpdate={() => fetchProject()}
               />
 
               <div className="mt-[28px]">

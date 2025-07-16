@@ -9,6 +9,7 @@ export type UserRole =
   | "client"
   | "employee";
 export interface IUser {
+  id: any;
   _id: string;
   username: string;
   email: string;
@@ -48,8 +49,8 @@ const UserService = {
     return res.data;
   },
 
-   async getAssignedUser(): Promise<IUser> {
-    const res = await axiosClient.get(`${API_URL}/user/me`);
+   async getAssignedUser(id:string): Promise<IUser> {
+    const res = await axiosClient.get(`${API_URL}/user/view/${id}`);
     return res.data;
   },
 

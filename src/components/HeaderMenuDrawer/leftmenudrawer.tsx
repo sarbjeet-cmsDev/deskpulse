@@ -116,7 +116,7 @@ export default function LeftMenuDrawer() {
         <DrawerContent>
           {(onClose) => (
             <>
-              <DrawerHeader className="flex flex-col gap-1 bg-[#7980ff] text-[#fff]">
+              <DrawerHeader className="flex flex-col gap-1 bg-theme-primary text-[#fff]">
                 Deskpulse
               </DrawerHeader>
               <DrawerBody>

@@ -4,11 +4,15 @@ import avatar from "@/assets/images/avt1.jpg";
 import Image from "next/image";
 import DatePickerInput from "@/components/ProjectDetails/Datepicker";
 import { Input } from "../Form/Input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MentionUserListModal from "@/components/MentionUserListBox";
 import TaskService, { ITask } from "@/service/task.service";
 import Swal from "sweetalert2";
 import NotificationService from "@/service/notification.service";
+import UserService from "@/service/user.service";
+import { IUser } from "@/service/user.service";
+import Link from "next/link";
+import TaskStatusUpdateModal from "./TaskStatusUpdateModal";
 
 interface DetailsProps {
   project: {
@@ -23,27 +27,18 @@ interface DetailsProps {
     // Add more fields as needed
   };
   taskId: string;
-  // task:{
-  //   _id?: string;
-  // title?: string;
-  // createdAt?: string;
-  // updatedAt?: string;
-  // project?: string;
-  // report_to?: string;
-  // assigned_to?: string;
-  // KanbanColumn?: any;
-  // description?: string;
+  task: any;
 
-  // }
-
-   task:any;
-  
   onTaskUpdate: () => void;
 }
 
-interface SubTasksProps {
-  tasks: ITask[];
-}
+type User = {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  avatar?: string;
+};
+
 export default function DetailsTable({
   project,
   taskId,
@@ -52,6 +47,7 @@ export default function DetailsTable({
 }: DetailsProps) {
   const [email, setEmail] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
   const {
     team = [],
     leader,
@@ -59,6 +55,10 @@ export default function DetailsTable({
     dueDate,
     attachments = [],
   } = project || [];
+
+  console.log("taskkkkkkkkkk", task);
+  const [assignedUser, setAssignedUser] = useState<IUser[]>([]);
+
   const handleOpenModal = () => {
     setIsModalOpen(true);
   };
@@ -67,16 +67,31 @@ export default function DetailsTable({
     setIsModalOpen(false);
   };
 
+  const fetchAssignedUser = async (id: string) => {
+    try {
+      const user = await UserService.getAssignedUser(id);
+      setAssignedUser([user as IUser]);
+      if (onTaskUpdate) onTaskUpdate();
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      if (task?.assigned_to) {
+        fetchAssignedUser(task.assigned_to);
+      }
+    }, 300);
+    return () => clearTimeout(handler);
+  }, [task?.assigned_to]);
+
   const handleAssignUser = async (userId: string) => {
     try {
       await TaskService.updateTask(taskId, { assigned_to: userId });
-      // Swal.fire("Assigned!", "The task has been assigned.", "success");
+      fetchAssignedUser(userId);
       if (onTaskUpdate) onTaskUpdate();
       handleCloseModal();
-      // }
     } catch (error) {
       console.error("Failed to assign task:", error);
-      // Swal.fire("Error", "Failed to assign task.", "error");
     }
   };
 
@@ -85,16 +100,24 @@ export default function DetailsTable({
       await TaskService.updateTask(taskId, {
         due_date: date.toISOString(),
       });
-      Swal.fire( "The task due date has been updated.", "success");
       if (onTaskUpdate) onTaskUpdate();
       handleCloseModal();
     } catch (error) {
       console.error("Failed to update due date:", error);
-      Swal.fire("Error", "Failed to update due date.", "error");
     }
   };
 
-  console.log(task,'task')
+  const mapIUserToUser = (user: IUser): User => ({
+    _id: user._id,
+    firstName: user.firstName || "",
+    lastName: user.lastName || "",
+    avatar: user.profileImage || "",
+  });
+
+  const safeUsers: User[] = assignedUser
+    .filter((user) => !!user.firstName && !!user.lastName)
+    .map(mapIUserToUser);
+
   return (
     <div>
       <ul className="mt-[24px]">
@@ -122,16 +145,21 @@ export default function DetailsTable({
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <AvatarList users={team} onClick={handleOpenModal} />
+              <AvatarList
+                users={safeUsers}
+                selectedUserIds={[]}
+                onClick={handleOpenModal}
+              />
               <MentionUserListModal
                 taskId={taskId}
+                users={safeUsers}
                 isOpen={isModalOpen}
                 onClose={handleCloseModal}
                 onAssigned={handleAssignUser}
               />
-              <div className="add-member" onClick={handleOpenModal}>
+              {/* <div className="add-member" onClick={handleOpenModal}>
                 <p>{task?.assigned_to}</p>
-              </div>
+              </div> */}
             </div>
           </div>
         </li>
@@ -170,7 +198,7 @@ export default function DetailsTable({
             </div>
           </div>
         </li> */}
-        {/* <li className="mt-[20px]">
+        <li className="mt-[20px]">
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-4 w-[35%]">
               <svg
@@ -194,15 +222,22 @@ export default function DetailsTable({
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <a
-                href="#"
-                className="bg-[#ec4899] text-white text-[12px] leading-[16px] px-[9px] py-[4px] rounded-[8px] font-500"
-                >
-                To Do
-              </a>
+              <button
+                onClick={() => setIsStatusModalOpen(true)}
+                className="bg-theme-primary text-white text-[12px] leading-[16px] px-[9px] py-[4px] rounded-[8px] font-500"
+              >
+                {task?.status}
+              </button>
+              <TaskStatusUpdateModal
+                isOpen={isStatusModalOpen}
+                onClose={() => setIsStatusModalOpen(false)}
+                currentStatus={task?.status}
+                taskId={taskId}
+                onStatusUpdate={onTaskUpdate}
+              />
             </div>
           </div>
-        </li> */}
+        </li>
         <li className="mt-[10px]">
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-4 w-[35%]">
@@ -234,6 +269,7 @@ export default function DetailsTable({
                     handleTaskDueDate(date);
                   }
                 }}
+                task={task}
               />
             </div>
           </div>

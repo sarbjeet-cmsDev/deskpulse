@@ -110,7 +110,7 @@ export default function TaskDetails() {
         commentPage,
         commentLimit
       );
-      console.log(res?.data, "kjshkjfhksjhfkjdkshf");
+    
       setComments(res.data);
       setCommentTotal(res.total);
       setCommentPage(res.page);
@@ -184,7 +184,7 @@ export default function TaskDetails() {
           <div className="pt-4">
             {task && (
               <CommentInputSection
-                key={task._id + (task.description || "")} // forces remount when task changes
+                key={task._id + (task.description || "")} 
                 defaultValue={task.description}
                 title="Description"
                 onClick={handleUpdateTaskDescription(task?._id)}

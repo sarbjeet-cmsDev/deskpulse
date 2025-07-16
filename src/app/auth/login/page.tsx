@@ -83,11 +83,11 @@ export default function AuthLoginPage() {
     <div className="min-h-screen flex items-center justify-center">
       <div className="w-full max-w-md space-y-6">
         <div className="flex justify-center items-center p-[24px] border-b border-[#31394f14]">
-          <div className="w-[2%]">
+          {/* <div className="w-[2%]">
             <Link href="/auth/login">
               <Image src={leftarrow} alt="Logo" width={16} height={16} />
             </Link>
-          </div>
+          </div> */}
           <H3 className="w-[98%] text-center">Sign In</H3>
         </div>
         <p className="text-center text-sm text-gray-500">

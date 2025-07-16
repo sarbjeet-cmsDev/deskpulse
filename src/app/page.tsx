@@ -48,15 +48,19 @@ export default function Dashboard() {
       <div className="main-content">
         <div className="rounded-tl-[24px] rounded-tr-[24px] bg-white">
           <div className="max-w-6xl mx-auto">
-            <H3 className="flex flex-start">Reminders</H3>
-            <ReminderList reminders={reminder} />
-            {reminder?.length > 4 && (
-              <P
-                className="flex flex-start py-3 cursor-pointer"
-                onClick={() => router.push("/reminder")}
-              >
-                See more
-              </P>
+            {reminder?.length>0 && (
+              <>
+              <H3 className="flex flex-start">Reminders</H3>
+              <ReminderList reminders={reminder} />
+              {reminder?.length > 4 && (
+                <P
+                  className="flex flex-start py-3 cursor-pointer"
+                  onClick={() => router.push("/reminder")}
+                >
+                  See more
+                </P>
+              )}
+</>
             )}
             <div className="pt-4 flex justify-between items-center">
               <H3>Recent Projects</H3>

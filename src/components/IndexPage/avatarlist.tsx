@@ -38,16 +38,15 @@ export default function AvatarList({
       <ul className="list-stacked flex items-center">
         {users?.map((usr: any) => {
           const profileImageUrl = `${process.env.NEXT_PUBLIC_BACKEND_HOST}${usr?.profileImage}`;
-          const initials = usr.username?.slice(0, 2).toUpperCase();
-          const isActive = selectedUserIds.includes(usr._id);
+          const initials = usr.username?.slice(0, 2).toUpperCase() || usr.firstName?.slice(0, 2).toUpperCase();
+          const isActive = selectedUserIds?.includes(usr._id);
 
           return (
             <div key={usr._id}>
               <div
-                title={usr.username}
-                onClick={() => {
-                  toggleUserSelection(usr._id);
-                }}
+                title={usr.username ||  usr.firstName}
+                onClick={onClick ? onClick : () => toggleUserSelection(usr._id)}
+
                 className={`flex items-center justify-center w-8 h-8 rounded-full text-white text-sm font-semibold transition 
         ${isActive ? "bg-green-600 scale-110 shadow-md" : "bg-blue-500"}`}
               >

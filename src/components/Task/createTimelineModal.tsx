@@ -67,7 +67,7 @@ export default function CreateTimelineModal({
     <>
       <Button
         onPress={onOpen}
-        className="bg-[#7980ff] text-white px-4 py-2 text-sm font-semibold"
+        className="btn-primary text-white px-4 py-2 text-sm font-semibold"
       >
         + Log Time
       </Button>
@@ -133,7 +133,7 @@ export default function CreateTimelineModal({
                     <Button
                       type="submit"
                       disabled={loading}
-                      className="p-4 bg-transparent text-blue-600 font-bold"
+                      className="p-4 bg-transparent text-theme-primary font-bold"
                     >
                       {loading ? "Logging..." : "Log Time"}
                     </Button>

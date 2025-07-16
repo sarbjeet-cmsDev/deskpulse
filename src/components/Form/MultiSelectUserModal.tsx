@@ -1,6 +1,6 @@
-import { useState, useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Modal, ModalBody, ModalContent } from "@heroui/react";
-import ReactSelect from "react-select";
+import ReactSelect, { MultiValue } from "react-select";
 import { debounce } from "lodash";
 import AdminUserService, { IUser } from "@/service/adminUser.service";
 
@@ -9,26 +9,26 @@ export interface IUserOption {
   value: string;
 }
 
-interface MentionUserListModalProps {
+interface MultiSelectUserModalProps {
   isOpen: boolean;
   onClose: () => void;
-  taskId: string;
-  onAssigned: (userId: string) => void;
-  users:any;
+  selectedUserIds: string[];
+  onConfirm: (userIds: string[]) => void;
+  activeUsers:any;
 }
 
-export default function MentionUserListModal({
+export default function MultiSelectUserModal({
   isOpen,
   onClose,
-  taskId,
-  onAssigned,
-  users
-}: MentionUserListModalProps) {
-  const [selectedUser, setSelectedUser] = useState<IUserOption | null>(null);
+  selectedUserIds,
+  onConfirm,
+  activeUsers,
+}: MultiSelectUserModalProps) {
   const [userOptions, setUserOptions] = useState<IUserOption[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<IUserOption[]>([]);
   const [inputValue, setInputValue] = useState("");
 
-
+  
   const fetchUsers = useCallback(
     debounce(async (input: string) => {
       try {
@@ -38,33 +38,39 @@ export default function MentionUserListModal({
           value: user._id,
         }));
         setUserOptions(options);
+
+       
+        if (input) {
+          const selected = options.filter((opt) =>
+            selectedUserIds.includes(opt.value)
+          );
+          setSelectedUsers(selected);
+        }
       } catch (err) {
         console.error("Error fetching users:", err);
         setUserOptions([]);
       }
     }, 300),
-    []
+    [selectedUserIds]
   );
 
   useEffect(() => {
     if (isOpen) {
       fetchUsers("");
-      const selected = users.map((user: IUser) => ({
-      label: `${user.firstName || user.username} ${user.lastName || ""}`,
+      setInputValue(""); 
+      const selected = activeUsers.map((user: IUser) => ({
+      label: `${user.firstName || user.username} ${user.lastName || ""} (${user.email})`,
       value: user._id,
     }));
-     setSelectedUser(selected);
-    }
-  }, [isOpen,users]);
 
-  const handleConfirmAssign = () => {
-    if (!selectedUser) return;
-    try {
-      onAssigned(selectedUser.value);
-      onClose();
-    } catch (error) {
-      console.log("Failed to assign user", error);
+    setSelectedUsers(selected);
     }
+  }, [isOpen,activeUsers, fetchUsers]);
+
+  const handleConfirm = () => {
+    const ids = selectedUsers.map((u) => u.value);
+    onConfirm(ids);
+    onClose();
   };
 
   return (
@@ -73,18 +79,18 @@ export default function MentionUserListModal({
         <ModalBody className="p-6 space-y-4">
           <div className="mt-3 h-[300px] p-10 overflow-hidden">
             <ReactSelect
-              isMulti={false}
+              isMulti
               options={userOptions}
-              value={selectedUser}
+              value={selectedUsers}
               placeholder="Search users..."
               inputValue={inputValue}
               onInputChange={(value) => {
                 setInputValue(value);
                 fetchUsers(value);
               }}
-              onChange={(selected) => setSelectedUser(selected)}
-              menuPlacement="bottom"
-              menuShouldScrollIntoView={false}
+              onChange={(selected: MultiValue<IUserOption>) => {
+                setSelectedUsers(selected as IUserOption[]);
+              }}
               styles={{
                 control: (base) => ({
                   ...base,
@@ -106,11 +112,11 @@ export default function MentionUserListModal({
             />
 
             <button
-              onClick={handleConfirmAssign}
-              disabled={!selectedUser}
-              className="btn-primary text-white px-4 py-2 rounded mt-20 mx-auto block"
+              onClick={handleConfirm}
+              disabled={selectedUsers.length === 0}
+              className="btn-primary text-white px-4 py-2 rounded mt-5 mx-auto block"
             >
-              Assign Task
+              Assign
             </button>
           </div>
         </ModalBody>

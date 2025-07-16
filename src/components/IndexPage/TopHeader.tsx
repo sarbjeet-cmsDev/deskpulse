@@ -24,11 +24,13 @@ import { Input } from "../Form/Input";
 export default function TopHeader() {
   const dispatch = useDispatch<AppDispatch>();
   const user = useSelector((state: RootState) => state.user.data);
+  
+  const token=localStorage.getItem("token")
   useEffect(() => {
-    if (user) {
+    if (token) {
       dispatch(fetchUserProfile());
     }
-  }, [dispatch]);
+  }, [dispatch,token]);
   const [version, setVersion] = useState(Date.now());
 
   useEffect(() => {
@@ -48,26 +50,8 @@ export default function TopHeader() {
     <div className="bg-theme-primary p-4">
       <div className="flex justify-between items-center">
         <div className="flex justify-center items-center gap-2">
-          {/* <div className="relative">
-            <Image
-              key={avatarUrl}
-              src={avatarUrl}
-              alt="avatar-image"
-              width={100}
-              height={100}
-              className="w-[45px] h-[45px] rounded-full object-cover"
-            />
-            <span className="dot-status w-[12px] h-[12px] border border-[#7980ff] bg-[#48bd69] rounded-[20px] absolute top-0 right-0"></span>
-          </div>
-          <div>
-            <H5 className="text-white">{fullName}</H5>
-            <P className="text-white text-start">
-              {user?.firstName
-                ? `Hi ${user.firstName}, ${getGreeting()}!`
-                : `Welcome!`}
-            </P>
-          </div> */}
-          <H3 className="text-2xl">
+          
+          <H3 className="text-2xl text-white">
             <Link href={"/"}>Deskpulse</Link>{" "}
           </H3>
         </div>

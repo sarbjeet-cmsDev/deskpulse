@@ -22,6 +22,7 @@ export default function AuthProfilePage() {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const user = useSelector((state: RootState) => state.user.data);
+  console.log(user,"jhgjhgjhghghjg")
   const [version, setVersion] = useState<number>(Date.now());
 
   const handleLogout = () => {
@@ -78,7 +79,7 @@ export default function AuthProfilePage() {
           <H5>{user?.username}</H5>
           <P className="mt-[-10px]">{user?.email}</P>
           <Button
-            className="text-white bg-[#7980ff] p-[25px] mt-[10px] text-[14px] leading-[16px] font-bold w-full"
+            className="text-white btn-primary p-[25px] mt-[10px] text-[14px] leading-[16px] font-bold w-full"
             onPress={() => {
               if (user?._id) {
                 router.push(`/auth/profile/update/${user._id}`);

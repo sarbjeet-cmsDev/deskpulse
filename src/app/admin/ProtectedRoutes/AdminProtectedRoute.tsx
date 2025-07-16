@@ -9,7 +9,7 @@ const AdminProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const user = useSelector((state: RootState) => state.auth.user); 
   const router = useRouter();
   const [isHydrated, setIsHydrated] = useState(false);
-  console.log("user in admin protect route--->",user)
+
 
   useEffect(() => {
     setIsHydrated(true);

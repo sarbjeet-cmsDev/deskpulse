@@ -55,7 +55,7 @@ export default function CreateChecklistModal({ onCreate }: CreateTaskChecklistMo
     <>
       <Button
         onPress={onOpen}
-      className="bg-[#7980ff] text-white px-4 py-2 text-sm font-semibold"
+      className="btn-primary text-white px-4 py-2 text-sm font-semibold"
       >
         Create Taskchecklist
       </Button>
@@ -89,7 +89,7 @@ export default function CreateChecklistModal({ onCreate }: CreateTaskChecklistMo
                   <Button
                   type="submit"
                     disabled={loading}
-                    className="p-4 bg-transparent text-blue-600 font-bold"
+                    className="p-4 bg-transparent text-theme-primary font-bold"
                   >
                     {loading ? 'Creating...' : 'Create'}
                   </Button>

@@ -62,13 +62,13 @@ export default function CreateReminder() {
 
           <div>
             <label className="block mb-1">Start Date & Time</label>
-            <input type="datetime-local" {...register("start")} className="border p-2 w-full rounded" />
+            <input type="datetime-local" {...register("start")} className="border p-2 w-full rounded" min={new Date().toISOString().slice(0, 16)}/>
             {errors.start && <p className="text-red-500 text-sm">{errors.start.message}</p>}
           </div>
 
           <div>
             <label className="block mb-1">End Date & Time</label>
-            <input type="datetime-local" {...register("end")} className="border p-2 w-full rounded" />
+            <input type="datetime-local" {...register("end")} className="border p-2 w-full rounded" min={new Date().toISOString().slice(0, 16)}/>
           </div>
 
           {/* <div>
@@ -98,7 +98,7 @@ export default function CreateReminder() {
           <button
             type="submit"
             disabled={loading}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            className="btn-primary text-white px-4 py-2 rounded"
           >
             {loading ? "Saving..." : "Create Reminder"}
           </button>

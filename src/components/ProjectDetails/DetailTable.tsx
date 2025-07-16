@@ -9,6 +9,8 @@ import MentionUserListModal from "@/components/MentionUserListBox";
 import TaskService, { ITask } from "@/service/task.service";
 import Swal from "sweetalert2";
 import NotificationService from "@/service/notification.service";
+import MultiSelectUserModal from "../Form/MultiSelectUserModal";
+import AdminProjectService from "@/service/adminProject.service";
 
 interface DetailsProps {
   project: {
@@ -22,22 +24,23 @@ interface DetailsProps {
     attachments?: string[];
     // Add more fields as needed
   };
-  taskId: string;
-  // task:ITask[];
+  projectId: string;
+  user: any;
   onTaskUpdate: () => void;
 }
 
-interface SubTasksProps {
-  tasks: ITask[];
-}
 export default function Details({
   project,
-  taskId,
-  // task,
+  projectId,
+  user,
   onTaskUpdate,
 }: DetailsProps) {
   const [email, setEmail] = useState("");
+  const [teamUserIds, setTeamUserIds] = useState(
+    project.team?.map((u) => u._id) || []
+  );
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isUserModalOpen, setIsUserModalOpen] = useState(false);
   const {
     team = [],
     leader,
@@ -54,32 +57,21 @@ export default function Details({
     setIsModalOpen(false);
   };
 
-  const handleAssignUser = async (userId: string) => {
+  const handleUserUpdate = async (updatedIds: string[]) => {
     try {
-      await TaskService.updateTask(taskId, { assigned_to: userId });
-      Swal.fire("Assigned!", "The task has been assigned.", "success");
-      if (onTaskUpdate) onTaskUpdate();
-      handleCloseModal();
-      // }
-    } catch (error) {
-      console.error("Failed to assign task:", error);
-      Swal.fire("Error", "Failed to assign task.", "error");
+      await AdminProjectService.updateProject(projectId, {
+        users: updatedIds,
+        is_active:true,
+      });
+      setTeamUserIds(updatedIds);
+      onTaskUpdate?.();
+    } catch (err) {
+      console.error("Failed to update project users", err);
     }
   };
 
-  const handleTaskDueDate = async (date: Date) => {
-    try {
-      await TaskService.updateTask(taskId, {
-        due_date: date.toISOString(),
-      });
-      Swal.fire( "The task due date has been updated.", "success");
-      if (onTaskUpdate) onTaskUpdate();
-      handleCloseModal();
-    } catch (error) {
-      console.error("Failed to update due date:", error);
-      Swal.fire("Error", "Failed to update due date.", "error");
-    }
-  };
+  console.log('ggggggggggggggg',user)
+
   return (
     <div>
       <ul className="mt-[24px]">
@@ -107,22 +99,28 @@ export default function Details({
               </span>
             </div>
             <div className="flex items-center gap-2">
-              {/* <AvatarList users={team} onClick={handleOpenModal} /> */}
-              <MentionUserListModal
-                taskId={taskId}
-                isOpen={isModalOpen}
-                onClose={handleCloseModal}
-                onAssigned={handleAssignUser}
+              {user.length === 0 ? (
+                <div className="add-member" onClick={() => setIsUserModalOpen(true)}>
+                  <a
+                    href="#"
+                    className="text-[#7980ff] border border-[#7980ff] px-[2px] rounded-[2px] text-[10px]"
+                  >
+                    +
+                  </a>
+                </div>
+              ) : (
+                <AvatarList
+                  users={user}
+                  onClick={() => setIsUserModalOpen(true)}
+                />
+              )}
+              <MultiSelectUserModal
+               activeUsers={user}
+                isOpen={isUserModalOpen}
+                onClose={() => setIsUserModalOpen(false)}
+                selectedUserIds={teamUserIds}
+                onConfirm={handleUserUpdate}
               />
-              <div className="add-member" onClick={handleOpenModal}>
-                <a
-                  href="#"
-                  className="text-[#7980ff] border border-[#7980ff] px-[2px] rounded-[2px] text-[10px]"
-                >
-                  +
-                </a>
-                {/* <p>{task.assigned_to}</p> */}
-              </div>
             </div>
           </div>
         </li>
@@ -194,7 +192,7 @@ export default function Details({
             </div>
           </div>
         </li> */}
-        <li className="mt-[10px]">
+        {/* <li className="mt-[10px]">
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-4 w-[35%]">
               <svg
@@ -220,6 +218,7 @@ export default function Details({
             </div>
             <div className="flex items-center gap-2">
               <DatePickerInput
+                task={project}
                 onChange={(date) => {
                   if (date) {
                     handleTaskDueDate(date);
@@ -228,7 +227,7 @@ export default function Details({
               />
             </div>
           </div>
-        </li>
+        </li> */}
         {/* <li className="mt-[10px]">
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-4 w-[35%]">
