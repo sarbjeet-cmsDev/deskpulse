@@ -188,7 +188,7 @@ const CreateProjectPage = () => {
           {...register("project_manager")}
         />
 
-        <Input placeholder="Avatar URL" {...register("avatar")} />
+        <Input placeholder="Avatar" {...register("avatar")} />
 
         <div>
           <label className="flex items-center gap-2">

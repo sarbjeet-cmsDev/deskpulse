@@ -23,17 +23,31 @@ interface DetailsProps {
     // Add more fields as needed
   };
   taskId: string;
-  // task:ITask[];
+  // task:{
+  //   _id?: string;
+  // title?: string;
+  // createdAt?: string;
+  // updatedAt?: string;
+  // project?: string;
+  // report_to?: string;
+  // assigned_to?: string;
+  // KanbanColumn?: any;
+  // description?: string;
+
+  // }
+
+   task:any;
+  
   onTaskUpdate: () => void;
 }
 
 interface SubTasksProps {
   tasks: ITask[];
 }
-export default function Details({
+export default function DetailsTable({
   project,
   taskId,
-  // task,
+  task,
   onTaskUpdate,
 }: DetailsProps) {
   const [email, setEmail] = useState("");
@@ -45,7 +59,6 @@ export default function Details({
     dueDate,
     attachments = [],
   } = project || [];
-  console.log(team, "teamteam");
   const handleOpenModal = () => {
     setIsModalOpen(true);
   };
@@ -57,13 +70,13 @@ export default function Details({
   const handleAssignUser = async (userId: string) => {
     try {
       await TaskService.updateTask(taskId, { assigned_to: userId });
-      Swal.fire("Assigned!", "The task has been assigned.", "success");
+      // Swal.fire("Assigned!", "The task has been assigned.", "success");
       if (onTaskUpdate) onTaskUpdate();
       handleCloseModal();
       // }
     } catch (error) {
       console.error("Failed to assign task:", error);
-      Swal.fire("Error", "Failed to assign task.", "error");
+      // Swal.fire("Error", "Failed to assign task.", "error");
     }
   };
 
@@ -80,6 +93,8 @@ export default function Details({
       Swal.fire("Error", "Failed to update due date.", "error");
     }
   };
+
+  console.log(task,'task')
   return (
     <div>
       <ul className="mt-[24px]">
@@ -107,7 +122,7 @@ export default function Details({
               </span>
             </div>
             <div className="flex items-center gap-2">
-              {/* <AvatarList users={team} onClick={handleOpenModal} /> */}
+              <AvatarList users={team} onClick={handleOpenModal} />
               <MentionUserListModal
                 taskId={taskId}
                 isOpen={isModalOpen}
@@ -115,13 +130,7 @@ export default function Details({
                 onAssigned={handleAssignUser}
               />
               <div className="add-member" onClick={handleOpenModal}>
-                <a
-                  href="#"
-                  className="text-[#7980ff] border border-[#7980ff] px-[2px] rounded-[2px] text-[10px]"
-                >
-                  +
-                </a>
-                {/* <p>{task.assigned_to}</p> */}
+                <p>{task?.assigned_to}</p>
               </div>
             </div>
           </div>

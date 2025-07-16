@@ -3,8 +3,6 @@ import { H5 } from "@/components/Heading/H5";
 import { P } from "@/components/ptag";
 import Image from "next/image";
 import leftarrow from "@/assets/images/back.png";
-import Details from "@/components/ProjectDetails/DetailTable";
-import DropDownOptions from "@/components/ProjectDetails/DropDown";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import TaskService, { ITask } from "@/service/task.service";
@@ -25,12 +23,14 @@ import CreateChecklistModal from "@/components/TaskChecklist/createChecklistModa
 import TaskChecklist from "@/components/TaskChecklist/taskChecklist";
 import { ITaskChecklist } from "@/types/taskchecklist.interface";
 import DropdownOptions from "@/components/DropdownOptions";
+import DetailsTable from "@/components/Task/taskDetailTable";
 
 export default function TaskDetails() {
   const params = useParams();
   const taskId = params?.id as string;
   const router = useRouter();
   const [task, setTask] = useState<ITask | null>(null);
+  // const [task, setTask] = useState<ITask[]>([]);
   const [taskChecklist, setTaskChecklist] = useState<ITaskChecklist[]>([]);
   const [project, setProject] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -48,22 +48,28 @@ export default function TaskDetails() {
     (state: RootState) => state.auth.user
   );
 
-  console.log("checklist", taskChecklist);
+
+ const fetchTask = async (id: string) => {
+    try {
+      const data = await TaskService.getTaskById(id);
+      setTask(data);
+
+      if (data.project) {
+        fetchProject(data.project);
+      }
+
+      fetchTimelines(id);
+      fetchTaskchecklist(id);
+    } catch (error) {
+      console.error("Failed to load task:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (taskId) {
-      TaskService.getTaskById(taskId)
-        .then((data) => {
-          setTask(data);
-          if (data.project) {
-            fetchProject(data.project);
-          }
-        })
-        .catch((err) => console.error("Failed to load task:", err))
-        .finally(() => setLoading(false));
-
-      fetchTimelines(taskId);
-      fetchTaskchecklist(taskId);
+      fetchTask(taskId);
     }
   }, [taskId]);
 
@@ -167,18 +173,19 @@ export default function TaskDetails() {
           </div>
 
           <div className="pt-4">
-            {/* <H5 className="mt-[20px]">Description</H5>
+            <H5 className="mt-[20px]">Description</H5>
             <P className="text-start">
               {project?.notes || "No description provided."}
               <a href="#" className="text-primary mt-[12px]">
                 See Details
               </a>
-            </P> */}
+            </P>
 
-            <Details
+            <DetailsTable
               project={project}
               taskId={taskId}
-              onTaskUpdate={() => fetchProject(project?._id)}
+              task={task}
+              onTaskUpdate={() => fetchTask(taskId)}
             />
 
             <div className="mt-[28px]">

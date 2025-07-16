@@ -12,7 +12,7 @@ const ProjectService = {
       const response = await axiosClient.get(`${API_URL}/projects/me?page=${page}&limit=${limit}` );
       return response.data;
     } catch (error) {
-      throw new Error('Failed to fetch user videos');
+      throw new Error('Failed to fetch user projects');
     }
   },
   async getProjectById(projectId: string) {

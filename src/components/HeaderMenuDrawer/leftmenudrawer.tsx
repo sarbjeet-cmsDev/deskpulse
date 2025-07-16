@@ -22,6 +22,7 @@ import { useDispatch } from "react-redux";
 import { signOut } from "@/store/slices/authSlice";
 import router from "next/router";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 // import Cookies from "js-cookie";
 
 export default function LeftMenuDrawer() {
@@ -53,7 +54,7 @@ export default function LeftMenuDrawer() {
     dispatch(signOut());
     localStorage.removeItem("token");
     localStorage.removeItem("type");
-    // Cookies.remove("token");
+    Cookies.remove("token");
     router.push("/auth/login");
   };
 

@@ -48,6 +48,12 @@ const UserService = {
     return res.data;
   },
 
+   async getAssignedUser(): Promise<IUser> {
+    const res = await axiosClient.get(`${API_URL}/user/me`);
+    return res.data;
+  },
+
+
   async updateUser(data: Partial<IUser>): Promise<IUser> {
     const res = await axiosClient.put(`${API_URL}/user/me`, data);
     return res.data;
