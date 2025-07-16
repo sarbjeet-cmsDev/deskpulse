@@ -68,13 +68,32 @@ export class RemindersController {
 
   @Get(":id")
   async findOne(
-    @Param("id") id: string
-  ): Promise<{ message: string; reminder: Reminder | null }> {
-    const reminder = await this.remindersService.findOne(id);
-    if (!reminder) {
-      return { message: "Reminder not found", reminder: null };
-    }
-    return { message: "Reminder fetched successfully", reminder };
+    @Param("id") id: string,
+    @Query("page") page: string = "1",
+    @Query("limit") limit: string = "5"
+  ): Promise<{
+    message: string;
+    reminders: any;
+    total: number;
+    page: number;
+    limit: number;
+  }> {
+    const pageNumber = parseInt(page, 10);
+    const limitNumber = parseInt(limit, 10);
+
+    const { reminders, total } = await this.remindersService.findOne(
+      id,
+      pageNumber,
+      limitNumber
+    );
+
+    return {
+      message: "Reminders fetched successfully",
+      reminders,
+      total,
+      page: pageNumber,
+      limit: limitNumber,
+    };
   }
 
   @Put(":id")
@@ -96,15 +115,15 @@ export class RemindersController {
     };
   }
 
-    // @Get('me')
-    // async getMyReminders(
-    //   @Req() req: any,
-    //   @Query("page") page: string = "1",
-    //   @Query("limit") limit: string = "5"
-    // )
-    //   : Promise<{ data: Reminder[]; total: number; page: number; limit: number }> {
-    //   const pageNumber = parseInt(page, 10);
-    //   const limitNumber = parseInt(limit, 10);
-    //   return this.remindersService.findByAssignedUser(req.user.userId, pageNumber, limitNumber);
-    // }
+  // @Get('me')
+  // async getMyReminders(
+  //   @Req() req: any,
+  //   @Query("page") page: string = "1",
+  //   @Query("limit") limit: string = "5"
+  // )
+  //   : Promise<{ data: Reminder[]; total: number; page: number; limit: number }> {
+  //   const pageNumber = parseInt(page, 10);
+  //   const limitNumber = parseInt(limit, 10);
+  //   return this.remindersService.findByAssignedUser(req.user.userId, pageNumber, limitNumber);
+  // }
 }

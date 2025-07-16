@@ -10,6 +10,8 @@ import Image from "next/image";
 import leftarrow from "@/assets/images/back.png";
 import Link from "next/link";
 import Pagination from "@/components/Pagination/pagination";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 export default function MyRemindersPage() {
   const [reminders, setReminders] = useState<IReminder[]>([]);
@@ -17,16 +19,20 @@ export default function MyRemindersPage() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalItems, setTotalItems] = useState<number>(0);
   const itemsPerPage = 5;
+  const user: any = useSelector((state: RootState) => state.auth.user);
 
   useEffect(() => {
     const fetchReminders = async () => {
       try {
         setLoading(true);
-        const res = await ReminderService.getAllReminders(
+        const res = await ReminderService.getReminderById(
+          user?.id,
           currentPage,
           itemsPerPage
         );
-        const { reminders, total} = res;
+        console.log(res, "98809890");
+
+        const { reminders, total } = res;
         setReminders(reminders);
         setTotalItems(total);
       } catch (error) {

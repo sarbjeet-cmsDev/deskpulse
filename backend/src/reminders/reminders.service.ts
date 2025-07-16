@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
+import { Model, Types } from "mongoose";
 import { Reminder, ReminderDocument } from "./reminders.schema";
 import { CreateReminderDto, UpdateReminderDto } from "./reminders.dto";
 import { Reminder as ReminderInterface } from "./reminders.interface";
@@ -51,9 +51,32 @@ export class RemindersService {
     };
   }
 
-  async findOne(id: string): Promise<ReminderDocument | null> {
-    return this.reminderModel.findById(id).exec();
+  async findOne(
+    id: string,
+    page = 1,
+    limit = 5
+  ): Promise<{ reminders: Reminder[]; total: number }> {
+    const skip = (page - 1) * limit;
+    const now = new Date();
+
+    const allReminders = await this.reminderModel
+      .find({ user: new Types.ObjectId(id) })
+      .exec();
+
+    const sortedReminders = allReminders.sort((a, b) => {
+      const aDiff = Math.abs(new Date(a.start).getTime() - now.getTime());
+      const bDiff = Math.abs(new Date(b.start).getTime() - now.getTime());
+      return aDiff - bDiff;
+    });
+
+    const paginated = sortedReminders.slice(skip, skip + limit);
+
+    return {
+      reminders: paginated,
+      total: allReminders.length,
+    };
   }
+
   async update(
     id: string,
     updateReminderDto: UpdateReminderDto

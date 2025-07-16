@@ -262,16 +262,13 @@ export default function CommentInputSection({
         <Button
           onPress={() => {
             if (onClick) {
-              const html = quillRef.current?.getEditor()?.root.innerHTML || "";
-              if (!html || stripHtml(html) === "") {
+              if (!content || stripHtml(content) === "") {
                 setError(`${title} is required`);
                 return;
               }
               setLoading(true);
-              onClick(html)
-                .then(() => {
-                  setLoading(false);
-                })
+              onClick(content)
+                .then(() => setLoading(false))
                 .catch((err: any) => {
                   console.error("Failed to update description:", err);
                   setLoading(false);

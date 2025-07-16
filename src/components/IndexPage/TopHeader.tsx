@@ -23,10 +23,12 @@ import { Input } from "../Form/Input";
 
 export default function TopHeader() {
   const dispatch = useDispatch<AppDispatch>();
-  useEffect(() => {
-    dispatch(fetchUserProfile());
-  }, [dispatch]);
   const user = useSelector((state: RootState) => state.user.data);
+  useEffect(() => {
+    if (user) {
+      dispatch(fetchUserProfile());
+    }
+  }, [dispatch]);
   const [version, setVersion] = useState(Date.now());
 
   useEffect(() => {

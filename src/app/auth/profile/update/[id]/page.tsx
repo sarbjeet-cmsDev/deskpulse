@@ -220,6 +220,7 @@ const UpdateUserProfile = () => {
               type="date"
               {...register("dateOfBirth")}
               className="w-full border border-gray-300 rounded px-3 py-2"
+              max={new Date().toISOString().split("T")[0]}
             />
             {errors.dateOfBirth && (
               <p className="text-sm text-red-500">
