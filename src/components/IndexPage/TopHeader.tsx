@@ -19,6 +19,7 @@ import { H1 } from "../Heading/H1";
 import { H2 } from "../Heading/H2";
 import { H3 } from "../Heading/H3";
 import Link from "next/link";
+import { Input } from "../Form/Input";
 
 export default function TopHeader() {
   const dispatch = useDispatch<AppDispatch>();
@@ -64,7 +65,12 @@ export default function TopHeader() {
                 : `Welcome!`}
             </P>
           </div> */}
-          <H3 className="text-2xl"><Link href={'/'}>Deskpulse</Link> </H3>
+          <H3 className="text-2xl">
+            <Link href={"/"}>Deskpulse</Link>{" "}
+          </H3>
+        </div>
+        <div className="w-[500px]">
+          <Input type="search" className="w-full" />
         </div>
         <div className="flex justify-center items-center gap-2">
           <LeftMenuDrawer />

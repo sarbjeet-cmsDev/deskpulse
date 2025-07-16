@@ -16,24 +16,26 @@ import { useEffect, useState } from "react";
 import { RootState, AppDispatch } from "@/store/store";
 import { fetchUserProfile, updateUserAvatar } from "@/store/slices/userSlice";
 import Link from "next/link";
+import Cookies from "js-cookie";
 
 export default function AuthProfilePage() {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const user = useSelector((state: RootState) => state.user.data);
-  const [version, setVersion] = useState<number>(Date.now()); 
+  const [version, setVersion] = useState<number>(Date.now());
 
   const handleLogout = () => {
     dispatch(signOut());
     localStorage.removeItem("token");
     localStorage.removeItem("type");
+    Cookies.remove("token");
     router.push("/auth/login");
   };
 
   const handleAvatarChange = async (file: File) => {
     try {
       await dispatch(updateUserAvatar(file)).unwrap();
-      setVersion(Date.now()); 
+      setVersion(Date.now());
     } catch (error) {
       console.error("Image upload failed:", error);
     }
@@ -77,7 +79,7 @@ export default function AuthProfilePage() {
           <P className="mt-[-10px]">{user?.email}</P>
           <Button
             className="text-white bg-[#7980ff] p-[25px] mt-[10px] text-[14px] leading-[16px] font-bold w-full"
-            onClick={() => {
+            onPress={() => {
               if (user?._id) {
                 router.push(`/auth/profile/update/${user._id}`);
               }

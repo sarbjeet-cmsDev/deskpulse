@@ -168,8 +168,10 @@ export default function MyProjectDetails() {
               <P className="text-start text-gray-700 text-sm">
                 {project?.description || "description."}
                 <UpdateProjectDescriptionModal
+                  key={project?.description}
                   onUpdate={handleUpdateProjectDescription(projectId)}
                   projectId={projectId}
+                  description={project?.description}
                 />
               </P>
               <Details
