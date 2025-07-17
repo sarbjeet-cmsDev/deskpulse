@@ -210,8 +210,8 @@ export class UpdateUserDto {
   zipCode?: string;
 
   @IsOptional()
-  @IsDate()
-  @Type(() => Date)
+  // @IsDate()
+  // @Type(() => Date)
   @Prop({ type: Date })
   dateOfBirth?: Date;
 

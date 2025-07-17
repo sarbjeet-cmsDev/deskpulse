@@ -1,5 +1,5 @@
-import { Prop } from '@nestjs/mongoose';
-import { Transform } from 'class-transformer';
+import { Prop } from "@nestjs/mongoose";
+import { Transform, Type } from "class-transformer";
 import {
   IsString,
   IsOptional,
@@ -7,8 +7,8 @@ import {
   IsNumber,
   IsArray,
   IsMongoId,
-} from 'class-validator';
-import { Schema as MongooseSchema, Types } from 'mongoose';
+} from "class-validator";
+import { Schema as MongooseSchema, Types } from "mongoose";
 
 export class CreateProjectDto {
   @IsOptional()
@@ -20,7 +20,6 @@ export class CreateProjectDto {
   @IsString()
   @Prop({ required: false })
   title?: string;
-
 
   @IsOptional()
   @IsString()
@@ -71,8 +70,9 @@ export class CreateProjectDto {
   @IsOptional()
   url_uat?: string;
 
+  @IsOptional()
   @IsBoolean()
-  @Prop({ default: false })
+  @Type(() => Boolean)
   is_active?: boolean;
 
   @IsNumber()
@@ -90,4 +90,4 @@ export class CreateProjectDto {
   updated_by?: MongooseSchema.Types.ObjectId;
 }
 
-export class UpdateProjectDto extends CreateProjectDto { }
+export class UpdateProjectDto extends CreateProjectDto {}

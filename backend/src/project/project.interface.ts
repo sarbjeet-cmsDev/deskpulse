@@ -1,10 +1,10 @@
-import { Document, Schema as MongooseSchema } from 'mongoose';
+import { Document, Schema as MongooseSchema } from "mongoose";
 
 export interface Project {
   code: string;
   title: string;
   description?: string;
-  users?: MongooseSchema.Types.ObjectId[];
+  users: MongooseSchema.Types.ObjectId[];
   project_coordinator?: MongooseSchema.Types.ObjectId;
   team_leader?: MongooseSchema.Types.ObjectId;
   project_manager?: MongooseSchema.Types.ObjectId;
@@ -16,10 +16,10 @@ export interface Project {
   url_staging?: string;
   url_uat?: string;
   is_active: boolean;
-  sort_order: number;
+  sort_order?: number;
   createdAt: Date;
   updatedAt: Date;
-  report_to?: string;  
+  report_to?: string;
   avatar?: string;
   created_by: MongooseSchema.Types.ObjectId;
   updated_by?: MongooseSchema.Types.ObjectId;

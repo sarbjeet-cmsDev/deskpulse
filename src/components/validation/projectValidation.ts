@@ -7,13 +7,6 @@ export const projectCreateSchema = z.object({
     invalid_type_error: "Users must be an array of strings",
   }),
 
-  sort_order: z
-    .union([z.string(), z.number()])
-    .transform((val) => Number(val))
-    .refine((val) => !isNaN(val), {
-      message: "Sort order must be a valid number",
-    }),
-
   is_active: z.literal(true, {
     errorMap: () => ({ message: "Active status is required" }),
   }),
@@ -36,6 +29,5 @@ export const projectCreateSchema = z.object({
 export const projectUpdateSchema = projectCreateSchema.partial();
 
 export const projectDescriptionUpdateSchema = z.object({
-     description: z.string().nonempty("Description is required"),
-
- }) ;
+  description: z.string().nonempty("Description is required"),
+});

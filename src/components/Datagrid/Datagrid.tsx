@@ -1,4 +1,4 @@
-import React, { useState, useEffect, KeyboardEvent } from 'react';
+import React, { useState, useEffect, KeyboardEvent } from "react";
 
 type Header = {
   id: string;
@@ -25,10 +25,9 @@ type DataGridProps = {
   onSearch?: (query: string) => void;
   onPageChange?: (page: number) => void;
   onAction?: (action: string, row: Row) => void;
-  sort?: { field: string; order: 'asc' | 'desc' };
+  sort?: { field: string; order: "asc" | "desc" };
   onSort?: (field: string) => void;
   loading?: boolean;
-
 };
 
 const DataGrid: React.FC<DataGridProps> = ({
@@ -41,24 +40,29 @@ const DataGrid: React.FC<DataGridProps> = ({
   sort,
   onSort,
   loading,
-
 }) => {
-  const [searchInput, setSearchInput] = useState('');
+  const [searchInput, setSearchInput] = useState("");
 
   useEffect(() => {
-    if (searchInput === '') onSearch?.('');
+    if (searchInput === "") onSearch?.("");
   }, [searchInput]);
 
   const handleKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       onSearch?.(searchInput);
     }
   };
 
   const startRecord = (pagination.current_page - 1) * pagination.limit + 1;
-  const endRecord = Math.min(startRecord + pagination.limit - 1, pagination.total_records);
+  const endRecord = Math.min(
+    startRecord + pagination.limit - 1,
+    pagination.total_records
+  );
 
-  const pageNumbers = Array.from({ length: pagination.total_page }, (_, i) => i + 1);
+  const pageNumbers = Array.from(
+    { length: pagination.total_page },
+    (_, i) => i + 1
+  );
 
   return (
     <div className="space-y-4">
@@ -75,8 +79,8 @@ const DataGrid: React.FC<DataGridProps> = ({
           />
           <button
             onClick={() => {
-              setSearchInput('');
-              onSearch?.('');
+              setSearchInput("");
+              onSearch?.("");
             }}
             className="px-3 py-1 border rounded-md text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 h-[42px]"
           >
@@ -108,7 +112,10 @@ const DataGrid: React.FC<DataGridProps> = ({
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={headers.length + 1} className="p-4 text-center text-gray-500">
+                <td
+                  colSpan={headers.length + 1}
+                  className="p-4 text-center text-gray-500"
+                >
                   Loading...
                 </td>
               </tr>
@@ -120,7 +127,7 @@ const DataGrid: React.FC<DataGridProps> = ({
               </tr>
             ) : (
               rows.map((row, idx) => (
-                <tr key={idx} className="border-t hover:bg-gray-50">
+                <tr key={idx} className="border-t hover:bg-gray-50 break-words">
                   {headers.map((header) => (
                     <td key={header.id} className="px-4 py-2">
                       {row[header.id]}
@@ -166,8 +173,11 @@ const DataGrid: React.FC<DataGridProps> = ({
             <button
               key={num}
               onClick={() => onPageChange?.(num)}
-              className={`px-3 py-1 border rounded ${num === pagination.current_page ? 'bg-gray-200 font-semibold' : ''
-                }`}
+              className={`px-3 py-1 border rounded ${
+                num === pagination.current_page
+                  ? "bg-gray-200 font-semibold"
+                  : ""
+              }`}
             >
               {num}
             </button>
@@ -187,4 +197,3 @@ const DataGrid: React.FC<DataGridProps> = ({
 };
 
 export default DataGrid;
-  

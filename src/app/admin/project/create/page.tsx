@@ -27,25 +27,25 @@ const CreateProjectPage = () => {
   const router = useRouter();
   const [userOptions, setUserOptions] = useState<UserOption[]>([]);
   const [inputValue, setInputValue] = useState("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const {
     register,
     handleSubmit,
     control,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<CreateProjectInput>({
     resolver: zodResolver(projectCreateSchema),
     defaultValues: {
-      // code: "",
       users: [],
       is_active: true,
-      sort_order: 0,
       project_coordinator: "",
       team_leader: "",
       project_manager: "",
       avatar: "",
       notes: "",
-      description:"",
+      description: "",
       creds: "",
       additional_information: "",
       url_dev: "",
@@ -69,7 +69,7 @@ const CreateProjectPage = () => {
           const existingMap = new Map(
             prevOptions.map((opt) => [opt.value, opt])
           );
-          newOptions.forEach((opt) => existingMap.set(opt.value, opt)); // overwrite/add
+          newOptions.forEach((opt) => existingMap.set(opt.value, opt));
           return Array.from(existingMap.values());
         });
       } catch (err) {
@@ -82,7 +82,25 @@ const CreateProjectPage = () => {
 
   const onSubmit = async (data: CreateProjectInput) => {
     try {
-      await AdminProjectService.createProject(data);
+      const formData: any = new FormData();
+
+      Object.entries(data).forEach(([key, value]) => {
+        if (value === undefined || value === null) return;
+
+        if (Array.isArray(value)) {
+          value.forEach((v, i) => formData.append(`${key}[${i}]`, v));
+        } else {
+          formData.append(key, value as any);
+        }
+      });
+
+      if (selectedFile) {
+        formData.append("avatar", selectedFile);
+      }
+
+      await AdminProjectService.createProject(formData);
+      reset();
+      setSelectedFile(null);
       router.push("/admin/project");
     } catch (error) {
       console.error(error);
@@ -99,18 +117,16 @@ const CreateProjectPage = () => {
           Create Project
         </H1>
 
-        {/* <Input placeholder="Project Code" {...register("code")} /> */}
-        {/* {errors.code && (
-          <p className="text-sm text-red-500">{errors.code.message}</p>
-        )} */}
         <Input placeholder="Title" {...register("title")} />
         {errors.title && (
           <p className="text-sm text-red-500">{errors.title.message}</p>
         )}
+
         <Input placeholder="Description" {...register("description")} />
         {errors.description && (
           <p className="text-sm text-red-500">{errors.description.message}</p>
         )}
+
         <Controller
           name="users"
           control={control}
@@ -161,6 +177,7 @@ const CreateProjectPage = () => {
         {errors.url_dev && (
           <p className="text-sm text-red-500">{errors.url_dev.message}</p>
         )}
+
         <Input placeholder="Live URL" {...register("url_live")} />
         <Input placeholder="Staging URL" {...register("url_staging")} />
         <Input placeholder="UAT URL" {...register("url_uat")} />
@@ -188,7 +205,11 @@ const CreateProjectPage = () => {
           {...register("project_manager")}
         />
 
-        <Input placeholder="Avatar" {...register("avatar")} />
+        <Input
+          type="file"
+          accept="image/*"
+          onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+        />
 
         <div>
           <label className="flex items-center gap-2">
@@ -199,6 +220,7 @@ const CreateProjectPage = () => {
         {errors.is_active && (
           <p className="text-sm text-red-500">{errors.is_active.message}</p>
         )}
+
         <Button
           type="submit"
           disabled={isSubmitting}
