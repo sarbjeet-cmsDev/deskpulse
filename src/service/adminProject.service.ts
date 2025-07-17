@@ -24,7 +24,7 @@ export interface IProject {
 
 const AdminProjectService = {
   //  Get all projects (paginated, searchable)
-  async getAllProjects(params: {
+  async getAllProjects(params?: {
     page?: number;
     limit?: number;
     keyword?: string;

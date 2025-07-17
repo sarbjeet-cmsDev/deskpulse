@@ -14,11 +14,16 @@ interface KanbanItem {
 interface SubTasksProps {
   tasks: any[];
   kanbanList?: KanbanItem[];
+  isKanban?: any;
 }
 
 const TASKS_PER_PAGE = 5;
 
-export default function SubTasks({ tasks, kanbanList }: SubTasksProps) {
+export default function SubTasks({
+  tasks,
+  kanbanList,
+  isKanban = true,
+}: SubTasksProps) {
   const [visibleCounts, setVisibleCounts] = useState<Record<string, number>>(
     {}
   );
@@ -58,9 +63,11 @@ export default function SubTasks({ tasks, kanbanList }: SubTasksProps) {
 
         return (
           <div key={status}>
-            <div className="text-sm text-gray-500 font-semibold mb-1 capitalize">
-              {status}
-            </div>
+            {isKanban && (
+              <div className="text-sm text-gray-500 font-semibold mb-1 capitalize">
+                {status}
+              </div>
+            )}
 
             <ul>
               {visibleTasks.map((task) => (

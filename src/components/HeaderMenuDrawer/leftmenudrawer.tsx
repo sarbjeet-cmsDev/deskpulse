@@ -35,7 +35,7 @@ export default function LeftMenuDrawer() {
     (state: RootState) => state.auth.user
   );
   const userProfile = useSelector((state: RootState) => state.user.data);
- 
+
   const [version, setVersion] = useState(Date.now());
   const avatarUrl = userProfile?.profileImage
     ? `${process.env.NEXT_PUBLIC_BACKEND_HOST}${userProfile.profileImage}?v=${version}`
@@ -54,7 +54,10 @@ export default function LeftMenuDrawer() {
     dispatch(signOut());
     localStorage.removeItem("token");
     localStorage.removeItem("type");
+    localStorage.removeItem("taskView");
+
     Cookies.remove("token");
+    Cookies.remove("role");
     router.push("/auth/login");
   };
 

@@ -55,6 +55,10 @@ export default function AuthLoginPage() {
         expires: 1,
         path: "/",
       });
+      Cookies.set("role", role, {
+        expires: 1,
+        path: "/",
+      });
       localStorage.setItem("type", role);
 
       dispatch(signIn({ id: user.id, email: user.email, role }));

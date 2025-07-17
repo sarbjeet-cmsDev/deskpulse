@@ -27,17 +27,24 @@ export default function TimelineList({
   onPageChange,
   refreshTimelines,
 }: TimelineListProps) {
+  // Rolling 7-day range (today and 6 days before)
   const today = new Date();
-  const dayOfWeek = today.getDay(); 
-  const diffToMonday = today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+  const initialTo = new Date(today);
+  const initialFrom = new Date(today);
+  initialFrom.setDate(today.getDate() - 6);
 
-  const firstDayOfWeek = new Date(today.setDate(diffToMonday));
-  const lastDayOfWeek = new Date(today.setDate(firstDayOfWeek.getDate() + 6));
+  const [fromDate, setFromDate] = useState<string>(
+    initialFrom.toISOString().substring(0, 10)
+  );
+  const [toDate, setToDate] = useState<string>(
+    initialTo.toISOString().substring(0, 10)
+  );
 
-  const [fromDate, setFromDate] = useState<string>(firstDayOfWeek.toISOString().substring(0, 10));
-  const [toDate, setToDate] = useState<string>(lastDayOfWeek.toISOString().substring(0, 10));
-
-  const handleCreateTimeline = async (data: { date: string; time_spent: string; comment?: string }) => {
+  const handleCreateTimeline = async (data: {
+    date: string;
+    time_spent: string;
+    comment?: string;
+  }) => {
     try {
       await TimelineService.createTimeline({
         ...data,
@@ -50,6 +57,7 @@ export default function TimelineList({
     }
   };
 
+  // Shift the 7-day window
   const shiftDateRange = (direction: number) => {
     const from = new Date(fromDate);
     const to = new Date(toDate);
@@ -62,28 +70,61 @@ export default function TimelineList({
     onPageChange(1);
   };
 
-  const filteredTimelines = timelines.filter(tl => {
+  const filteredTimelines = timelines.filter((tl) => {
     const timelineDate = new Date(tl.date);
     const from = new Date(fromDate);
     const to = new Date(toDate);
     return timelineDate >= from && timelineDate <= to;
   });
-  
+
   const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const isToday = (date: Date) => {
+    const today = new Date();
+    return (
+      date.getFullYear() === today.getFullYear() &&
+      date.getMonth() === today.getMonth() &&
+      date.getDate() === today.getDate()
+    );
+  };
+
+  const isNextDisabled = isToday(new Date(toDate));
 
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2 text-sm text-gray-600">
-            <span>{new Date(fromDate).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}</span>
+            <span>
+              {new Date(fromDate).toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "short",
+              })}
+            </span>
             <span>-</span>
-            <span>{new Date(toDate).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}</span>
+            <span>
+              {new Date(toDate).toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "short",
+              })}
+            </span>
           </div>
 
           <div className="flex items-center gap-2">
-            <button aria-label="Previous week" onClick={() => shiftDateRange(-1)} className="px-1 py-1 border text-gray-600 rounded">◀</button>
-            <button aria-label="Previous week" onClick={() => shiftDateRange(1)} className="px-1 py-1 border text-gray-600 rounded">▶</button>
+            <button
+              aria-label="Previous 7 days"
+              onClick={() => shiftDateRange(-1)}
+              className="px-1 py-1 border text-gray-600 rounded"
+            >
+              ◀
+            </button>
+            <button
+              aria-label="Next 7 days"
+              onClick={() => shiftDateRange(1)}
+              className="px-1 py-1 border text-gray-600 rounded disabled:cursor-not-allowed"
+              disabled={isNextDisabled}
+            >
+              ▶
+            </button>
           </div>
         </div>
 
@@ -91,17 +132,32 @@ export default function TimelineList({
       </div>
 
       <ul>
-        {filteredTimelines.map(timeline => (
-          <li key={timeline._id} className="inactive flex justify-between items-center bg-[#f8fafc] w-full py-[15px] px-[20px] rounded-[8px] border-l-[8px] border-l-[#5fd788] mt-[16px]">
+        {filteredTimelines.map((timeline) => (
+          <li
+            key={timeline._id}
+            className="inactive flex justify-between items-center bg-[#f8fafc] w-full py-[15px] px-[20px] rounded-[8px] border-l-[8px] border-l-[#5fd788] mt-[16px]"
+          >
             <div className="flex items-center gap-2">
-              <input type="checkbox" defaultChecked className="accent-green-500" />
-              <span className="font-medium text-gray-800">{timeline.comment || "Meeting"}</span>
+              <input
+                type="checkbox"
+                defaultChecked
+                className="accent-green-500"
+              />
+              <span className="font-medium text-gray-800">
+                {timeline.comment || "Meeting"}
+              </span>
             </div>
 
             <div className="flex items-center gap-6">
               <div className="text-right text-sm text-gray-600">
                 <div className="font-semibold">{timeline.time_spent}h</div>
-                <div>{new Date(timeline.date).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}</div>
+                <div>
+                  {new Date(timeline.date).toLocaleDateString("en-GB", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                  })}
+                </div>
               </div>
             </div>
           </li>

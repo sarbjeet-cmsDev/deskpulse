@@ -22,14 +22,17 @@ export default function AuthProfilePage() {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const user = useSelector((state: RootState) => state.user.data);
-  console.log(user,"jhgjhgjhghghjg")
   const [version, setVersion] = useState<number>(Date.now());
 
   const handleLogout = () => {
     dispatch(signOut());
     localStorage.removeItem("token");
     localStorage.removeItem("type");
+    localStorage.removeItem("taskView");
+
     Cookies.remove("token");
+    Cookies.remove("role");
+
     router.push("/auth/login");
   };
 
