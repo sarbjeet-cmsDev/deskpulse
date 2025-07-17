@@ -184,4 +184,11 @@ export class TaskService {
 
     return updatedTask;
   }
+
+  async incrementTimeSpent(taskId: string, timeSpent: number): Promise<void> {
+  await this.taskModel.findByIdAndUpdate(taskId, {
+    $inc: { total_timespent: timeSpent },
+  });
+}
+
 }

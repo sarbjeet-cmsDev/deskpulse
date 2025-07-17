@@ -15,11 +15,14 @@ export default function MyProjects() {
   const [totalItems, setTotalItems] = useState<number>(0);
   const itemsPerPage = 4;
 
+  console.log("totalItems",totalItems)
+
   useEffect(() => {
     const loadProjects = async (page: number) => {
       setLoading(true);
       try {
-        const res = await ProjectService.getProjectByUserId();
+        const res = await ProjectService.getProjectByUserId(currentPage);
+        console.log("rssssssssssaaaaaa",res.total)
         setProjects(res?.data || []);
         setTotalItems(res?.total || 0);
       } catch (error) {

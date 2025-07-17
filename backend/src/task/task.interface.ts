@@ -57,6 +57,7 @@ export interface Task extends Document {
   createdAt: Date;
   rivision: number;
   updatedAt: Date;
+  total_timespent:any;
 }
 
 interface TaskDetails {

@@ -84,6 +84,10 @@ export class CreateTaskDto {
   @IsNumber()
   totaltaskminuts?: number;
 
+  @IsOptional()
+  @IsNumber()
+  total_timespent?: number;
+
 
 }
 
@@ -152,6 +156,13 @@ export class UpdateTaskDto {
   @IsNumber()
   totaltaskminutes?: number;
 
+  @IsOptional()
+  @IsNumber()
+  total_timespent?: number;
+
+
+
+
 }
 
 export class UpdateTaskStatusUpdateDto {
@@ -169,4 +180,9 @@ export class UpdateTaskStatusUpdateDto {
   @IsOptional()
   @IsNumber()
   totaltaskminutes?: number;
+
+  @IsOptional()
+  @IsNumber()
+  total_timespent?: number;
+
 }

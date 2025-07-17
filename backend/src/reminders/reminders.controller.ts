@@ -70,7 +70,8 @@ export class RemindersController {
   async findOne(
     @Param("id") id: string,
     @Query("page") page: string = "1",
-    @Query("limit") limit: string = "5"
+    @Query("limit") limit: string = "5",
+    @Query("sort") sort: string = "createdAt:desc" // default sorting
   ): Promise<{
     message: string;
     reminders: any;
@@ -81,10 +82,15 @@ export class RemindersController {
     const pageNumber = parseInt(page, 10);
     const limitNumber = parseInt(limit, 10);
 
+    const [sortField, sortOrder] = sort.split(":");
+
     const { reminders, total } = await this.remindersService.findOne(
       id,
       pageNumber,
-      limitNumber
+      limitNumber,
+      {
+        sort: { [sortField]: sortOrder === "desc" ? -1 : 1 },
+      }
     );
 
     return {
@@ -114,16 +120,4 @@ export class RemindersController {
       reminder: updatedReminder,
     };
   }
-
-  // @Get('me')
-  // async getMyReminders(
-  //   @Req() req: any,
-  //   @Query("page") page: string = "1",
-  //   @Query("limit") limit: string = "5"
-  // )
-  //   : Promise<{ data: Reminder[]; total: number; page: number; limit: number }> {
-  //   const pageNumber = parseInt(page, 10);
-  //   const limitNumber = parseInt(limit, 10);
-  //   return this.remindersService.findByAssignedUser(req.user.userId, pageNumber, limitNumber);
-  // }
 }

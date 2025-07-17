@@ -10,23 +10,37 @@ import { ProjectService } from "src/project/project.service";
 import { log } from "console";
 import { UserService } from "src/user/user.service";
 
-
 @Injectable()
 export class TimelineService {
   constructor(
     @InjectModel("Timeline") private readonly timelineModel: Model<Timeline>,
     private readonly taskService: TaskService,
     private readonly projectService: ProjectService,
-     private readonly userService: UserService,
-    private eventEmitter: EventEmitter2,
-  ) { }
+    private readonly userService: UserService,
+    private eventEmitter: EventEmitter2
+  ) {}
+
   async create(createTimelineDto: CreateTimelineDto): Promise<Timeline> {
+    if (createTimelineDto.time_spent) {
+    createTimelineDto.time_spent = Number(createTimelineDto.time_spent) * 60; 
+  }
+
     const createdTimeline = new this.timelineModel(createTimelineDto);
-    this.eventEmitter.emit('timeline.created', {
+    const savedTimeline = await createdTimeline.save();
+
+    if (createTimelineDto.task && createTimelineDto.time_spent) {
+      await this.taskService.incrementTimeSpent(
+        createTimelineDto.task.toString(),
+        Number(createTimelineDto.time_spent)
+      );
+    }
+
+    this.eventEmitter.emit("timeline.created", {
       timeLineObj: createdTimeline,
     });
-    return createdTimeline.save();
+    return savedTimeline;
   }
+
   async findAll(): Promise<Timeline[]> {
     return this.timelineModel.find().exec();
   }
@@ -51,11 +65,22 @@ export class TimelineService {
       .exec();
   }
 
-  async remove(id: string): Promise<Timeline> {
-    const timeline = await this.timelineModel.findByIdAndDelete(id).exec();
+  async remove(timelineId: string): Promise<Timeline> {
+    const timeline = await this.timelineModel.findById(timelineId).exec();
+
     if (!timeline) {
-      throw new NotFoundException(`Timeline with ID ${id} not found.`);
+      throw new NotFoundException(`Timeline with ID ${timelineId} not found.`);
     }
+
+    await this.timelineModel.findByIdAndDelete(timelineId);
+
+    if (timeline.task && timeline.time_spent) {
+      await this.taskService.incrementTimeSpent(
+        timeline.task.toString(),
+        -timeline.time_spent
+      );
+    }
+
     return timeline;
   }
 
@@ -100,14 +125,19 @@ export class TimelineService {
       limit: number;
     }
   ): Promise<{ data: Timeline[]; total: number; page: number; limit: number }> {
-
     const { from, to, page, limit } = options;
 
-    const tasksResult = await this.taskService.findByProject(projectId, page, limit);
+    const tasksResult = await this.taskService.findByProject(
+      projectId,
+      page,
+      limit
+    );
     const tasks = tasksResult.data;
 
     if (!tasks?.length) {
-      throw new NotFoundException(`No tasks found for project ID ${projectId}.`);
+      throw new NotFoundException(
+        `No tasks found for project ID ${projectId}.`
+      );
     }
 
     const filterDate: any = {
@@ -134,6 +164,4 @@ export class TimelineService {
       limit,
     };
   }
-
-
 }

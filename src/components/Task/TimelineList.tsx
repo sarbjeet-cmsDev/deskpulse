@@ -17,6 +17,13 @@ interface TimelineListProps {
   refreshTimelines: () => void;
 }
 
+function formatMinutes(min: string | number): string {
+  const totalMinutes = Number(min);
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  return `${hours}h${minutes > 0 ? ` ${minutes}m` : ""}`;
+}
+
 export default function TimelineList({
   timelines,
   task,
@@ -133,6 +140,7 @@ export default function TimelineList({
 
       <ul>
         {filteredTimelines.map((timeline) => (
+          
           <li
             key={timeline._id}
             className="inactive flex justify-between items-center bg-[#f8fafc] w-full py-[15px] px-[20px] rounded-[8px] border-l-[8px] border-l-[#5fd788] mt-[16px]"
@@ -150,7 +158,7 @@ export default function TimelineList({
 
             <div className="flex items-center gap-6">
               <div className="text-right text-sm text-gray-600">
-                <div className="font-semibold">{timeline.time_spent}h</div>
+                <div className="font-semibold">{formatMinutes(timeline.time_spent)}</div>
                 <div>
                   {new Date(timeline.date).toLocaleDateString("en-GB", {
                     day: "2-digit",

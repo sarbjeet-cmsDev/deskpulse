@@ -19,7 +19,7 @@ export class CreateTimelineDto {
     user?: string;
 
     @IsNotEmpty({ message: 'Time spent is required.' })
-    time_spent?: string;
+    time_spent?: number;
 
     @IsOptional()
     @IsString({ each: false })

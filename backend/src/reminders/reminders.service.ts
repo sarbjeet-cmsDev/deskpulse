@@ -51,29 +51,32 @@ export class RemindersService {
     };
   }
 
+
   async findOne(
     id: string,
     page = 1,
-    limit = 5
+    limit = 5,
+    options?: { sort?: Record<string, 1 | -1> }
   ): Promise<{ reminders: Reminder[]; total: number }> {
     const skip = (page - 1) * limit;
-    const now = new Date();
 
-    const allReminders = await this.reminderModel
-      .find({ user: new Types.ObjectId(id) })
-      .exec();
-
-    const sortedReminders = allReminders.sort((a, b) => {
-      const aDiff = Math.abs(new Date(a.start).getTime() - now.getTime());
-      const bDiff = Math.abs(new Date(b.start).getTime() - now.getTime());
-      return aDiff - bDiff;
+    const remindersQuery = this.reminderModel.find({
+      user: new Types.ObjectId(id),
     });
 
-    const paginated = sortedReminders.slice(skip, skip + limit);
+    // ✅ Apply sort if provided
+    if (options?.sort) {
+      remindersQuery.sort(options.sort);
+    }
+
+    const [reminders, total] = await Promise.all([
+      remindersQuery.skip(skip).limit(limit).exec(),
+      this.reminderModel.countDocuments({ user: new Types.ObjectId(id) }),
+    ]);
 
     return {
-      reminders: paginated,
-      total: allReminders.length,
+      reminders,
+      total,
     };
   }
 
@@ -86,38 +89,4 @@ export class RemindersService {
       .exec();
     return updatedReminder;
   }
-
-  // // other service methods...
-
-  // async findByUser(
-  //   userId: string,
-  //   page: number,
-  //   limit: number
-  // ): Promise<{
-  //   data: ReminderInterface[];
-  //   total: number;
-  //   page: number;
-  //   limit: number;
-  // }> {
-  //   const skip = (page - 1) * limit;
-
-  //   const [data, total] = await Promise.all([
-  //     this.reminderModel
-  //       .find({ user: userId })
-  //       .skip(skip)
-  //       .limit(limit)
-  //       .sort({ createdAt: -1 })
-  //       .lean() // returns plain JS objects
-  //       .exec()
-  //       .then((res) => res as ReminderInterface[]), // Cast here to match the interface
-  //     this.reminderModel.countDocuments({ user: userId }),
-  //   ]);
-
-  //   return {
-  //     data,
-  //     total,
-  //     page,
-  //     limit,
-  //   };
-  // }
 }

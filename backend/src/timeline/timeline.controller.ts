@@ -13,7 +13,7 @@ import { CreateTimelineDto, UpdateTimelineDto } from "./timeline.dto";
 import { Timeline } from "./timeline.interface";
 import { TimelineService } from "./timeline.service";
 import { CurrentUser } from "src/shared/current-user.decorator";
-import { JwtAuthGuard } from 'src/guard/jwt-auth.guard';
+import { JwtAuthGuard } from "src/guard/jwt-auth.guard";
 import { log } from "console";
 
 @Controller("api/timelines")
@@ -22,12 +22,14 @@ export class TimelineController {
   constructor(private readonly timelineService: TimelineService) {}
   @Post()
   async create(
-    @Body() createTimelineDto: CreateTimelineDto,@CurrentUser() user: any
-  ): Promise<{ message: string; data: Timeline}> {
-    createTimelineDto.created_by = user.userId;  // Safe, server-side only
-    const createdTimeline = await this.timelineService.create(createTimelineDto);
+    @Body() createTimelineDto: CreateTimelineDto,
+    @CurrentUser() user: any
+  ): Promise<{ message: string; data: Timeline }> {
+    createTimelineDto.created_by = user.userId; // Safe, server-side only
+    const createdTimeline =
+      await this.timelineService.create(createTimelineDto);
     return {
-      message: 'Timeline created successfully!',
+      message: "Timeline created successfully!",
       data: createdTimeline,
     };
   }
@@ -39,7 +41,6 @@ export class TimelineController {
   ): Promise<Timeline[]> {
     return this.timelineService.findAll();
   }
-
 
   @Get(":id")
   async findOne(@Param("id") id: string): Promise<Timeline> {
@@ -55,8 +56,11 @@ export class TimelineController {
   }
 
   @Delete(":id")
-  async remove(@Param("id") id: string): Promise<Timeline> {
-    return this.timelineService.remove(id);
+  async remove(@Param("id") id: string): Promise<{ message: string }> {
+    await this.timelineService.remove(id);
+    return {
+      message: "Timeline deleted and task's time updated.",
+    };
   }
 
   @Get("task/:taskId")
@@ -76,22 +80,21 @@ export class TimelineController {
   }
 
   @Get("project/:projectId")
-async getByProject(
-  @Param("projectId") projectId: string,
-  @Query("from") from?: string,
-  @Query("to") to?: string,
-  @Query("page") page: string = "1",
-  @Query("limit") limit: string = "5"
-): Promise<{ data: Timeline[]; total: number; page: number; limit: number }> {
+  async getByProject(
+    @Param("projectId") projectId: string,
+    @Query("from") from?: string,
+    @Query("to") to?: string,
+    @Query("page") page: string = "1",
+    @Query("limit") limit: string = "5"
+  ): Promise<{ data: Timeline[]; total: number; page: number; limit: number }> {
+    const pageNumber = parseInt(page, 10);
+    const limitNumber = parseInt(limit, 10);
 
-  const pageNumber = parseInt(page, 10);
-  const limitNumber = parseInt(limit, 10);
-
-  return this.timelineService.findByProjectId(projectId, {
-    from,
-    to,
-    page: pageNumber,
-    limit: limitNumber,
-  });
-}
+    return this.timelineService.findByProjectId(projectId, {
+      from,
+      to,
+      page: pageNumber,
+      limit: limitNumber,
+    });
+  }
 }
