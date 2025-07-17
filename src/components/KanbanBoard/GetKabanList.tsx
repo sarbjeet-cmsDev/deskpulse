@@ -65,7 +65,6 @@ export const GetKanbonList = () => {
     }
   };
 
-  console.log(taskList, "woiuoiuioueiwor");
   const fetchUsers = async () => {
     try {
       const data: any = await AdminUserService.getAllUsers();

@@ -1,21 +1,17 @@
 "use client";
 import AvatarList from "@/components/IndexPage/avatarlist";
-import avatar from "@/assets/images/avt1.jpg";
-import Image from "next/image";
 import DatePickerInput from "@/components/ProjectDetails/Datepicker";
-import { Input } from "../Form/Input";
 import { useEffect, useState } from "react";
 import MentionUserListModal from "@/components/MentionUserListBox";
 import TaskService, { ITask } from "@/service/task.service";
-import Swal from "sweetalert2";
-import NotificationService from "@/service/notification.service";
 import UserService from "@/service/user.service";
 import { IUser } from "@/service/user.service";
-import Link from "next/link";
 import TaskStatusUpdateModal from "./TaskStatusUpdateModal";
+import { ProjectKanbon } from "@/service/projectKanbon.service";
 
 interface DetailsProps {
   project: {
+    _id: string;
     team?: any[];
     leader?: {
       name: string;
@@ -48,15 +44,15 @@ export default function DetailsTable({
   const [email, setEmail] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
-  const {
-    team = [],
-    leader,
-    status = "To Do",
-    dueDate,
-    attachments = [],
-  } = project || [];
+  const [kanbanList, setKanbanList] = useState([]);
+  // const {
+  //   team = [],
+  //   leader,
+  //   status = "To Do",
+  //   dueDate,
+  //   attachments = [],
+  // } = project || [];
 
-  console.log("taskkkkkkkkkk", task);
   const [assignedUser, setAssignedUser] = useState<IUser[]>([]);
 
   const handleOpenModal = () => {
@@ -71,6 +67,7 @@ export default function DetailsTable({
     try {
       const user = await UserService.getAssignedUser(id);
       setAssignedUser([user as IUser]);
+      fetchKanbanList(task?.project);
       if (onTaskUpdate) onTaskUpdate();
     } catch (error) {}
   };
@@ -104,6 +101,16 @@ export default function DetailsTable({
       handleCloseModal();
     } catch (error) {
       console.error("Failed to update due date:", error);
+    }
+  };
+
+  const fetchKanbanList = async (projectId: string) => {
+    try {
+      const res = await ProjectKanbon.getProjectKanbonList(projectId);
+      const titles = res?.data?.map((item: any) => item.title);
+      setKanbanList(titles);
+    } catch (error) {
+      console.log("failed to fetch kanban list", error);
     }
   };
 
@@ -234,6 +241,7 @@ export default function DetailsTable({
                 currentStatus={task?.status}
                 taskId={taskId}
                 onStatusUpdate={onTaskUpdate}
+                kanbanList={kanbanList}
               />
             </div>
           </div>

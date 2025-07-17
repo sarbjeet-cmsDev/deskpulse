@@ -51,6 +51,7 @@ export default function TaskDetails() {
   const fetchTask = async (id: string) => {
     try {
       const data = await TaskService.getTaskById(id);
+      console.log("projectidddddd",data.project)
       setTask(data);
 
       if (data.project) {

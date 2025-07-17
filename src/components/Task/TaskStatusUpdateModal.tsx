@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { Modal, ModalBody, ModalContent } from "@heroui/react";
-import { TaskStatusEnum } from "@/types/task.interface"; 
 import TaskService from "@/service/task.service";
 
 interface TaskStatusUpdateModalProps {
+  kanbanList: string[];
   isOpen: boolean;
   onClose: () => void;
-  currentStatus: TaskStatusEnum;
+  currentStatus: string;
   taskId: string;
   onStatusUpdate: () => void;
 }
@@ -17,8 +17,9 @@ export default function TaskStatusUpdateModal({
   currentStatus,
   taskId,
   onStatusUpdate,
+  kanbanList,
 }: TaskStatusUpdateModalProps) {
-  const [selectedStatus, setSelectedStatus] = useState<TaskStatusEnum>(currentStatus);
+  const [selectedStatus, setSelectedStatus] = useState<string>(currentStatus);
 
   useEffect(() => {
     if (isOpen) {
@@ -36,19 +37,23 @@ export default function TaskStatusUpdateModal({
     }
   };
 
-  const statusOptions = Object.values(TaskStatusEnum);
+  const statusOptions = Object.values(kanbanList);
 
   return (
     <Modal isOpen={isOpen} onOpenChange={onClose}>
       <ModalContent>
         <ModalBody className="p-6">
           <h2 className="text-lg font-semibold mb-4">Update Task Status</h2>
-          <div className="grid grid-cols-2 gap-3">
+
+          <div
+            className="flex flex-col gap-2 overflow-y-auto"
+            style={{ maxHeight: "200px" }}
+          >
             {statusOptions.map((status) => (
               <button
                 key={status}
                 onClick={() => setSelectedStatus(status)}
-                className={`px-3 py-2 rounded text-sm border ${
+                className={`px-3 py-2 rounded text-sm border text-left ${
                   selectedStatus === status
                     ? "bg-theme-primary text-white border-bg-theme-primary"
                     : "bg-white text-gray-800 border-gray-300 hover:border-gray-400"
@@ -58,6 +63,7 @@ export default function TaskStatusUpdateModal({
               </button>
             ))}
           </div>
+
           <button
             onClick={handleConfirm}
             disabled={selectedStatus === currentStatus}
