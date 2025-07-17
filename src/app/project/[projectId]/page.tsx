@@ -3,11 +3,11 @@ import { H5 } from "@/components/Heading/H5";
 import { P } from "@/components/ptag";
 import Image from "next/image";
 import leftarrow from "@/assets/images/back.png";
-import ProjectImage from "@/assets/images/projectimage.png";
+import ProjectAvtar from "@/assets/images/projectimage.png";
 import Details from "@/components/ProjectDetails/DetailTable";
 import SubTasks from "@/components/ProjectDetails/SubTaskList";
 import DropDownOptions from "@/components/ProjectDetails/DropDown";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import ProjectService from "@/service/project.service";
 import TaskService, { ITask } from "@/service/task.service";
@@ -24,6 +24,7 @@ import { ProjectKanbon } from "@/service/projectKanbon.service";
 import { KanbanColumn } from "@/types/projectKanbon.interface";
 import UpdateProjectDescriptionModal from "@/components/ProjectDetails/UpdateProjectDescriptionModal";
 import CommentInputSection from "@/components/Comment/commentSection";
+import DropdownOptions from "@/components/DropdownOptions";
 
 export default function MyProjectDetails() {
   const params = useParams();
@@ -39,6 +40,21 @@ export default function MyProjectDetails() {
   const [users, setUsers] = useState([]);
   const [kanbanList, setKanbanList] = useState<KanbanColumn[]>([]);
   const user: any = useSelector((state: RootState) => state.auth.user);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [version, setVersion] = useState<number>(Date.now());
+
+  const [projectImage, setProjectImage] = useState<string>(ProjectAvtar.src)
+
+  useEffect(() => {
+    if (project?.avatar) {
+      setProjectImage(
+        `${process.env.NEXT_PUBLIC_BACKEND_HOST}${project.avatar}?v=${version}`
+      );
+    }
+  }, [project, version]);
+
+  console.log("projectImage", projectImage);
+
   const fetchKanbonList = async (userIds: string[]) => {
     try {
       const res = await ProjectKanbon.getProjectKanbonList(projectId);
@@ -151,6 +167,34 @@ export default function MyProjectDetails() {
     };
   };
 
+  const handleProjectAvatar = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const res = await ProjectService.uploadProjectAvatar(
+        projectId as string,
+        file
+      );
+
+      if (res) {
+        const avatarUrl = res?.avatar
+          ? `${process.env.NEXT_PUBLIC_BACKEND_HOST}${res?.avatar}?v=${version}`
+          : ProjectAvtar.src;
+        setProjectImage(avatarUrl);
+        setVersion(Date.now());
+        fetchProject();
+      } else {
+        console.error("Upload failed");
+      }
+    } catch (error) {
+      console.error("Upload error:", error);
+    }
+  };
+
   if (loading) return <div className="p-6 text-center">Loading project...</div>;
   if (!project) return <div className="p-6 text-center">Project not found</div>;
   console.log(tasks, "tasks");
@@ -158,7 +202,7 @@ export default function MyProjectDetails() {
     <div className="max-w-6xl mx-auto">
       <div className="main-content">
         <div>
-          <div className="flex justify-between items-center p-[24px] border-b border-[#31394f14]">
+          <div className="flex justify-between items-center p-[15px] border-b border-[#31394f14]">
             <div className="flex items-center gap-4">
               <div className="">
                 <Link href="/project/list">
@@ -167,7 +211,7 @@ export default function MyProjectDetails() {
               </div>
               <H5 className="w-[98%] text-center">{project.code}</H5>
             </div>
-            <div className="">
+            <div className="flex items-center gap-1">
               <Button
                 onPress={() =>
                   router.push(`/project/projectDetail/${projectId}`)
@@ -176,16 +220,47 @@ export default function MyProjectDetails() {
               >
                 View Kanban
               </Button>
+              <div className="">
+                <input
+                  type="file"
+                  accept="image/*"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
+                <DropdownOptions
+                  options={[
+                    {
+                      key: "Update Project Avatar",
+                      label: "Update Project Avatar",
+                      color: "primary",
+                      onClick: handleProjectAvatar,
+                    },
+                  ]}
+                />
+              </div>
             </div>
           </div>
           <div className="">
             <div className="pt-4 ">
-              <div className="mt-[14px]  h-[175px] overflow-hidden border border-[#e3e3e35c] rounded-[8px]">
-                <Image
-                  src={ProjectImage}
-                  alt="project-image"
-                  className="rounded-[8px]"
-                />
+              <div className="mt-[14px] h-[175px] overflow-hidden border border-[#e3e3e35c] rounded-[8px]" >
+                {projectImage ? (
+                  <Image
+                    src={projectImage}
+                    alt="project-avatar"
+                    className="rounded-[8px] object-cover w-full h-full"
+                    width={1200}
+                    height={50}
+                  />
+                ) : (
+                  <Image
+                    src={ProjectAvtar} 
+                    alt="project-avatar-placeholder"
+                    className="rounded-[8px] object-cover w-full h-full"
+                    width={1200}
+                    height={50}
+                  />
+                )}
               </div>
               <div className="py-5">
                 <CommentInputSection

@@ -16,7 +16,9 @@ import { CreateProjectDto, UpdateProjectDto } from './project.dto';
 import { Project } from './project.interface';
 import { JwtAuthGuard } from 'src/guard/jwt-auth.guard';
 import { CurrentUser } from 'src/shared/current-user.decorator';
-import { log } from 'console';
+import { UseInterceptors, UploadedFile } from "@nestjs/common";
+import { FileInterceptor } from "@nestjs/platform-express";
+import { multerOptions } from "../shared/multer.config";
 
 @Controller('api/projects')
 @UseGuards(JwtAuthGuard)
@@ -93,6 +95,16 @@ export class ProjectController {
     return {
       message: 'Project updated successfully!',
     };
+  }
+
+  @Post('upload-avatar/:projectId')
+  @UseInterceptors(FileInterceptor('file', multerOptions))
+  async uploadProjectAvatar(  
+    @UploadedFile() file: Express.Multer.File,
+    @Param('projectId') projectId: string
+  ) {
+    const fileUrl = `/uploads/${file.filename}`;
+    return this.projectService.updateProjectAvatar(projectId, fileUrl);
   }
 
   }

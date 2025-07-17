@@ -215,4 +215,13 @@ export class ProjectService {
       total,
     };
   }
+
+  async updateProjectAvatar(projectId: string, imageUrl: string): Promise<ProjectDocument | null> {
+    const updated = await this.projectModel.findByIdAndUpdate(
+      projectId,
+      { avatar: imageUrl },
+      { new: true }
+    );
+    return updated;
+  }
 }

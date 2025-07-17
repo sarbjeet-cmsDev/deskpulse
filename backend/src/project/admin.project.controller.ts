@@ -11,6 +11,9 @@ import {
 import { ProjectService } from './project.service';
 import { CreateProjectDto, UpdateProjectDto } from './project.dto';
 import { Project } from './project.interface';
+import { UseInterceptors, UploadedFile } from "@nestjs/common";
+import { FileInterceptor } from "@nestjs/platform-express";
+import { multerOptions } from "../shared/multer.config";
 
 @Controller('api/admin/project')
 export class AdminProjectController {
@@ -18,7 +21,12 @@ export class AdminProjectController {
 
   // ✅ Create Project
   @Post()
-  async create(@Body() createProjectDto: CreateProjectDto): Promise<{ message: string}> {
+  @UseInterceptors(FileInterceptor('avatar', multerOptions))
+  async create(@Body() createProjectDto: CreateProjectDto, @UploadedFile() file: Express.Multer.File,): Promise<{ message: string}> {
+    if (file) {
+      const fileUrl = `/uploads/${file.filename}`;
+      createProjectDto.avatar = fileUrl;  
+    }
     await this.projectService.create(createProjectDto);
     return {
       message: 'Project created successfully!',

@@ -36,7 +36,7 @@ export default function MyProjects() {
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
-
+ 
   return (
     <div className="max-w-6xl mx-auto">
       <div className="main-content">

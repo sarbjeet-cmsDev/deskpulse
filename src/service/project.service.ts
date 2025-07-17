@@ -24,6 +24,22 @@ const ProjectService = {
       const res = await axiosClient.put(`${API_URL}/projects/${id}`, data);
       return res.data;
     },
+
+  async uploadProjectAvatar( projectId:string, file: File): Promise<IProject> {
+      const formData = new FormData();
+      formData.append("file", file);
+  
+      const res = await axiosClient.post(`${API_URL}/projects/upload-avatar/${projectId}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      return res.data;
+    },
+
 };
 
 export default ProjectService;

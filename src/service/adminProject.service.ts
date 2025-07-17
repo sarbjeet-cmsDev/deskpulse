@@ -51,6 +51,14 @@ const AdminProjectService = {
     return res.data;
   },
 
+//   async createProject(formData: FormData): Promise<IProject> {
+//   const res = await axiosClient.post(`${API_URL}/admin/project`, formData, {
+//     headers: {
+//       "Content-Type": "multipart/form-data",
+//     },
+//   });
+//   return res.data;
+// },
   //  Update project by ID
   async updateProject(id: string, data: Partial<IProject>): Promise<IProject> {
     const res = await axiosClient.put(`${API_URL}/admin/project/${id}`, data);
