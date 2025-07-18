@@ -9,7 +9,7 @@ import {
   IsEnum,
 } from 'class-validator';
 import { Schema as MongooseSchema, Types } from 'mongoose';
-import { AcceptanceLevelEnum, PriorityEnum, TaskStatusEnum, TaskTypeEnum } from './task.interface';
+import { AcceptanceLevelEnum, PriorityEnum, TaskTypeEnum } from './task.interface';
 import { Prop } from '@nestjs/mongoose';
 
 
@@ -68,8 +68,7 @@ export class CreateTaskDto {
   priority?: PriorityEnum;
 
   @IsOptional()
-  @IsEnum(TaskStatusEnum)
-  status?: TaskStatusEnum;
+  status?: any;
 
   @IsOptional()
   @IsEnum(AcceptanceLevelEnum)
@@ -140,8 +139,7 @@ export class UpdateTaskDto {
   priority?: PriorityEnum;
 
   @IsOptional()
-  @IsEnum(TaskStatusEnum)
-  status?: TaskStatusEnum;
+  status?: any;
 
   @IsOptional()
   @IsEnum(AcceptanceLevelEnum)
@@ -156,18 +154,12 @@ export class UpdateTaskDto {
   @IsNumber()
   totaltaskminutes?: number;
 
-  @IsOptional()
-  @IsNumber()
-  total_timespent?: number;
-
-
-
-
 }
 
 export class UpdateTaskStatusUpdateDto {
-  @IsEnum(TaskStatusEnum)
-  status: TaskStatusEnum;
+  // @IsEnum(TaskStatusEnum)
+  @IsOptional()
+  status: any;
 
   @IsOptional()
   @IsEnum(AcceptanceLevelEnum)
@@ -180,9 +172,4 @@ export class UpdateTaskStatusUpdateDto {
   @IsOptional()
   @IsNumber()
   totaltaskminutes?: number;
-
-  @IsOptional()
-  @IsNumber()
-  total_timespent?: number;
-
 }

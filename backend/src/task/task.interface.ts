@@ -52,7 +52,7 @@ export interface Task extends Document {
   due_date?: Date;
   is_active: boolean;
   priority: PriorityEnum;
-  status: TaskStatusEnum;
+  status: any;
   acceptance?: AcceptanceLevelEnum;
   createdAt: Date;
   rivision: number;

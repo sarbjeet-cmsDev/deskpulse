@@ -15,6 +15,8 @@ export class UserSeeder implements Seeder {
         {
             username: "admin",
             email: "admin@gmail.com",
+            firstName:"admin",
+            lastName:'Last name',
             password: await hashPassword("admin"),
             isActive: true,
             roles: ["admin"],
@@ -23,6 +25,8 @@ export class UserSeeder implements Seeder {
         },
         {
           username: "user",
+          firstName:"User",
+          lastName:'Last name',
           email: "user@gmail.com",
           password: await hashPassword("admin"),
           isActive: true,

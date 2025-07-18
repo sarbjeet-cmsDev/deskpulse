@@ -5,7 +5,7 @@ import { log } from 'console';
 import { UserService } from 'src/user/user.service';
 import { ProjectService } from 'src/project/project.service';
 import { TaskService } from 'src/task/task.service';
-import { extractTextFromHtml } from 'src/shared/commonhelper';
+import { extractTextFromHtml, formatMinutes } from 'src/shared/commonhelper';
 
 @Injectable()
 export class EmailListener {
@@ -109,7 +109,6 @@ export class EmailListener {
         error.stack || error,
       );
     }
-
   }
 
   @OnEvent('timeline.created', { async: true })
@@ -120,7 +119,7 @@ export class EmailListener {
     const TaskObj = await this.taskServices.findOne(timeLineObj.task.toString())
     const ProjectObj = await this.projectService.findOne(TaskObj.project.toString())
     const rolesToNotify = ['project_coordinator', 'team_leader', 'project_manager'];
-    const content = `Worked ${timeLineObj.time_spent} hour(s) on task "${TaskObj.title}" — general updates and review. Comment: ${timeLineObj.comment}. On ${new Date(timeLineObj.date).toLocaleString()} by "${timeLineCreatedBy.username}"`;
+    const content = `Worked ${formatMinutes(timeLineObj.time_spent) } on task "${TaskObj.title}" — general updates and review. Comment: ${timeLineObj.comment}. On ${new Date(timeLineObj.date).toLocaleString()} by "${timeLineCreatedBy.username}"`;
     const timelineLInk = `${process.env.FRONTEND_URL}/task/${timeLineObj._id.toString()}`;
     const email = [];
     for (const role of rolesToNotify) {

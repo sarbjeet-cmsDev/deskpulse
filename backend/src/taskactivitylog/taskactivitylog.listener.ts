@@ -5,7 +5,7 @@ import { CreateTaskActivityLogDto } from './taskactivitylog.dto';
 import { log } from 'console';
 import { UserService } from 'src/user/user.service';
 import { TaskService } from 'src/task/task.service';
-import { extractTextFromHtml } from 'src/shared/commonhelper';
+import { extractTextFromHtml, formatMinutes } from 'src/shared/commonhelper';
 
 @Injectable()
 export class TaskActivityLogListener {
@@ -104,10 +104,11 @@ export class TaskActivityLogListener {
     const timeLineObj = payload.timeLineObj;
     const timeLineCreatedBy = await this.userservices.findOne(timeLineObj.created_by.toString());
     const TaskObj = await this.taskServices.findOne(timeLineObj.task.toString())
+    
     const updateTaskActivityLogDto: CreateTaskActivityLogDto = {
       task: TaskObj._id.toString(),
       project: TaskObj.project.toString(),
-      description: `Worked ${timeLineObj.time_spent} hour(s) on task "${TaskObj.title}" — general updates and review. Comment: ${timeLineObj.comment}. On ${new Date(timeLineObj.date).toLocaleString()} by "${timeLineCreatedBy.username}"`,
+      description: `Worked ${formatMinutes(timeLineObj.time_spent)}  on task "${TaskObj.title}" — general updates and review. Comment: ${timeLineObj.comment}. On ${new Date(timeLineObj.date).toLocaleString()} by "${timeLineCreatedBy.username}"`,
     };
     try {
       await this.taskactivitylogService.create(updateTaskActivityLogDto);
@@ -170,4 +171,6 @@ export class TaskActivityLogListener {
   }
 
 }
+
+
 

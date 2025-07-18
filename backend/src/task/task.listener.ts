@@ -14,11 +14,9 @@ export class TaskListener {
 
     @OnEvent('timeline.created', { async: true })
     async handleTimelineCreatedEvent(payload: { timeLineObj: any }) {
-
         const timeLineObj = payload.timeLineObj;
         const TaskObj = await this.taskService.findOne(timeLineObj.task.toString())
-        const oldestimated_time = TaskObj.totaltaskminutes; // ✅ correct property name
-        console.log('oldestimated_time Task Object:', oldestimated_time);
+        const oldestimated_time = TaskObj.totaltaskminutes;
         const totaltaskminutes = TaskObj?.totaltaskminutes;
         if (totaltaskminutes === undefined || totaltaskminutes === null) {
             throw new Error('Task object is missing `totaltaskminutes`');
