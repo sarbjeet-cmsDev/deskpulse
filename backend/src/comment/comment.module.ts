@@ -11,9 +11,10 @@ import { UserModule } from 'src/user/user.module'; // ✅ import the module
   imports: [
     MongooseModule.forFeature([{ name: 'Comment', schema: CommentSchema }]),
     TaskModule,
-    UserModule, // ✅ correct module import
+    UserModule,
   ],
   controllers: [CommentController],
   providers: [CommentService],
+   exports: [CommentService],  // ← Needed so other modules (like SearchModule) can use it
 })
 export class CommentModule {}

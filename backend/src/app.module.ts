@@ -17,6 +17,7 @@ import { BullModule } from '@nestjs/bull';
 import { EmailModule } from './email/email.module';
 import { PerformanceModule } from './performance/performance.module';
 import { FaqModule } from './faq/faq.module';
+import { SearchModule } from './search/search.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -57,6 +58,7 @@ import { FaqModule } from './faq/faq.module';
     TaskactivitylogModule,
     EmailModule,
     PerformanceModule,
+    SearchModule
   ],
   controllers: [],
   providers: [],

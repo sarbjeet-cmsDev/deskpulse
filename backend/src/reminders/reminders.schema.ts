@@ -3,6 +3,7 @@ import { Document, Schema as MongooseSchema } from 'mongoose';
 
 export type ReminderDocument = Reminder & Document;
 
+
 @Schema({ timestamps: true })
 export class Reminder {
   @Prop({ required: true })

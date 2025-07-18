@@ -106,4 +106,15 @@ export class CommentService {
   async findByUser(userId: string): Promise<Comment[]> {
     return this.commentModel.find({ created_by: userId }).exec();
   }
+  async search(keyword: string) {
+  const regex = new RegExp(keyword, "i");
+   const filters: any = {
+      $or: [
+         { content: { $regex: regex } }, 
+      ],
+    };
+  return this.commentModel.find(filters).exec();
+
+}
+
 }

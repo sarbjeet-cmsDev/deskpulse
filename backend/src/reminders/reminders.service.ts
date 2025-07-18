@@ -81,12 +81,8 @@ export class RemindersService {
   }
 
   async findOne(id: string): Promise<Reminder> {
-      const Reminder = await this.reminderModel.findById(id)
-      if (!Reminder) {
-        throw new NotFoundException(`Reminder with ID ${id} not found.`);
-      }
-      return Reminder;
-    }
+     return await this.reminderModel.findById(id).lean<Reminder>().exec();
+  }
 
   async findActiveReminder(
     id: string,

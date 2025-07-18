@@ -191,4 +191,17 @@ export class TaskService {
   });
 }
 
+async search(keyword: string) {
+  const regex = new RegExp(keyword, "i");
+   const filters: any = {
+      $or: [
+         { code: { $regex: regex } }, 
+        { title: { $regex: regex } }, 
+        { description: { $regex: regex } },
+      ],
+    };
+  return this.taskModel.find(filters).exec();
+
+}
+
 }

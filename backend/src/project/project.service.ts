@@ -224,4 +224,16 @@ export class ProjectService {
     );
     return updated;
   }
+async search(keyword: string) {
+  const regex = new RegExp(keyword, "i");
+   const filters: any = {
+      $or: [
+        { code: { $regex: regex } },
+        { title: { $regex: regex } }, 
+        { description: { $regex: regex } },
+      ],
+    };
+  return this.projectModel.find(filters).exec();
+
+}
 }

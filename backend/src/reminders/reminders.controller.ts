@@ -14,6 +14,7 @@ import { Reminder } from "./reminders.interface";
 import { CreateReminderDto, UpdateReminderDto } from "./reminders.dto";
 import { RemindersService } from "./reminders.service";
 import { log } from "node:console";
+import { ReminderDocument } from "./reminders.schema";
 
 @Controller("api/reminders")
 @UseGuards(JwtAuthGuard)
@@ -66,12 +67,11 @@ export class RemindersController {
     };
   }
 
-//  @Get(':id')
-// // async findOne(@Param('id') id: string): Promise<Reminder > {
-//   async findOne(@Param('id') id: string): Promise<Reminder> {
-//  return await this.remindersService.findOne(id);
- 
-// }
+    @Get(':id')
+    async findOne(@Param("id") id: string): Promise<any> {
+    return await this.remindersService.findOne(id);
+    
+    }
 
   @Get("user/:id")
   async findReminderByUserId(
