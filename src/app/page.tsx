@@ -25,7 +25,6 @@ export default function Dashboard() {
     const loadProjects = async () => {
       try {
         const res = await ProjectService.getProjectByUserId();
-        // const reminderResult = await ReminderService.getReminderById(user?.id);
         const reminderResult = await ReminderService.getActiveReminderById(user?.id);
         const getTask = await TaskService.getMyTasks();
         setTask(getTask?.data?.slice(0, 5));

@@ -25,12 +25,11 @@ export default function MyRemindersPage() {
     const fetchReminders = async () => {
       try {
         setLoading(true);
-        const res = await ReminderService.getReminderById(
+        const res = await ReminderService.getReminderByUserId(
           user?.id,
           currentPage,
           itemsPerPage
         );
-        console.log(res, "98809890");
 
         const { reminders, total } = res;
         setReminders(reminders);

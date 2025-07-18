@@ -31,11 +31,15 @@ const ReminderService = {
         sortOrder,
       },
     });
-    console.log("res.data 22222---", res.data);
     return res.data;
   },
 
-  async getReminderById(
+  async getReminderById(id: string): Promise<IReminder> {
+    const res = await axiosClient.get(`${API_URL}/${id}`);
+    return res.data;
+  },
+
+  async getReminderByUserId(
     id: string,
     page = 1,
     limit = 5,
@@ -80,7 +84,6 @@ const ReminderService = {
     });
     return res.data;
   },
-
 
   async updateReminder(
     id: string,

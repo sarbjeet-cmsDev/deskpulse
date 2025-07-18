@@ -35,6 +35,13 @@ type User = {
   avatar?: string;
 };
 
+function formatMinutes(min: string | number): string {
+  const totalMinutes = Number(min);
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  return `${hours}h${minutes > 0 ? ` ${minutes}m` : ""}`;
+}
+
 export default function DetailsTable({
   project,
   taskId,
@@ -45,13 +52,7 @@ export default function DetailsTable({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
   const [kanbanList, setKanbanList] = useState([]);
-  // const {
-  //   team = [],
-  //   leader,
-  //   status = "To Do",
-  //   dueDate,
-  //   attachments = [],
-  // } = project || [];
+
 
   const [assignedUser, setAssignedUser] = useState<IUser[]>([]);
 
@@ -164,9 +165,6 @@ export default function DetailsTable({
                 onClose={handleCloseModal}
                 onAssigned={handleAssignUser}
               />
-              {/* <div className="add-member" onClick={handleOpenModal}>
-                <p>{task?.assigned_to}</p>
-              </div> */}
             </div>
           </div>
         </li>
@@ -282,7 +280,7 @@ export default function DetailsTable({
             </div>
           </div>
         </li>
-        {/* <li className="mt-[10px]">
+        <li className="mt-[10px]">
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-4 w-[35%]">
               <svg
@@ -302,22 +300,16 @@ export default function DetailsTable({
                 </g>
               </svg>
               <span className="text-[#31394f] text-[14px] leading-[16px]">
-                Attachment
+                Total Time Spent
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="text-[#7980ff] border border-[#7980ff] py-[2px] px-[8px] rounded-[8px] text-[10px] leading-[16px]">
-                Refereences.pdf
+              <div className="py-[2px] px-[8px] rounded-[8px] text-[15px] leading-[16px]">
+               {formatMinutes(task?.totaltaskminutes)}
               </div>
-              <Input
-                    type="file"
-                    classNames={{
-                        inputWrapper: "p-7 bg-[#7980ff] data-[hover=true]:bg-[#7980ff]",
-                      }}
-                    />
             </div>
           </div>
-        </li> */}
+        </li>
       </ul>
     </div>
   );

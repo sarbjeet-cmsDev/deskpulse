@@ -15,6 +15,7 @@ interface TimelineListProps {
   itemsPerPage: number;
   onPageChange: (page: number) => void;
   refreshTimelines: () => void;
+  refreshTask:() => void;
 }
 
 function formatMinutes(min: string | number): string {
@@ -33,6 +34,7 @@ export default function TimelineList({
   itemsPerPage,
   onPageChange,
   refreshTimelines,
+  refreshTask,
 }: TimelineListProps) {
   // Rolling 7-day range (today and 6 days before)
   const today = new Date();
@@ -59,6 +61,7 @@ export default function TimelineList({
         user: task?.report_to || "",
       });
       refreshTimelines();
+      refreshTask();
     } catch (error) {
       console.error("Failed to create timeline:", error);
     }

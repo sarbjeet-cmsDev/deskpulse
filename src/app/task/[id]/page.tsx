@@ -215,6 +215,7 @@ export default function TaskDetails() {
                 refreshTimelines={() =>
                   fetchTimelines(taskId, timelinePage, timelineLimit)
                 }
+                refreshTask={()=>fetchTask(taskId)}
               />
 
               <div className="mt-[34px] border-t pt-8">

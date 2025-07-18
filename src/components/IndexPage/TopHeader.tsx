@@ -14,12 +14,11 @@ import { AppDispatch, RootState } from "@/store/store";
 import { useState, useEffect } from "react";
 import LeftMenuDrawer from "../HeaderMenuDrawer/leftmenudrawer";
 import { fetchUserProfile } from "@/store/slices/userSlice";
-import { getGreeting } from "@/utils/greetings";
-import { H1 } from "../Heading/H1";
-import { H2 } from "../Heading/H2";
 import { H3 } from "../Heading/H3";
 import Link from "next/link";
 import { Input } from "../Form/Input";
+import { GlobalSearch } from "../global-search/GlobalSearch";
+import  {searchAll}  from "@/service/searchService";
 
 export default function TopHeader() {
   const dispatch = useDispatch<AppDispatch>();
@@ -39,12 +38,13 @@ export default function TopHeader() {
     }
   }, [user?.profileImage]);
 
-  const avatarUrl = user?.profileImage
-    ? `${process.env.NEXT_PUBLIC_BACKEND_HOST}${user.profileImage}?v=${version}`
-    : avatarFallback.src;
+  // const fetchSearchResults = async (query: string) => {
+  //   const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`, {
+  //     credentials: "include",
+  //   });
+  //   return res.json();
+  // };
 
-  const fullName =
-    `${user?.firstName ?? ""} ${user?.lastName ?? ""}`.trim() || "User";
 
   return (
     <div className="bg-theme-primary p-4">
@@ -55,8 +55,14 @@ export default function TopHeader() {
             <Link href={"/"}>Deskpulse</Link>{" "}
           </H3>
         </div>
-        <div className="w-[500px]">
+        {/* <div className="w-[500px]">
           <Input type="search" className="w-full" />
+        </div> */}
+        <div className="w-[500px]">
+          <GlobalSearch
+            placeholder="Search tasks, projects, comments..."
+            fetcher={searchAll}
+          />
         </div>
         <div className="flex justify-center items-center gap-2">
           <LeftMenuDrawer />

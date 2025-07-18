@@ -137,7 +137,6 @@ export default function MyProjectDetails() {
   };
 
   const handleCreateTask = async (title: string, description: string) => {
-    console.log(description, "89789899889", title);
     try {
       await TaskService.createTask({
         title,
@@ -148,6 +147,7 @@ export default function MyProjectDetails() {
       });
       refreshTasks();
       fetchKanbonList([user.id]);
+      fetchTasks(project._id);
     } catch (error) {
       console.error(error);
     }
@@ -202,7 +202,7 @@ export default function MyProjectDetails() {
     <div className="max-w-6xl mx-auto">
       <div className="main-content">
         <div>
-          <div className="flex justify-between items-center p-[15px] border-b border-[#31394f14]">
+          <div className="flex justify-between items-center py-5 border-b border-[#31394f14]">
             <div className="flex items-center gap-4">
               <div className="">
                 <Link href="/project/list">
@@ -211,7 +211,7 @@ export default function MyProjectDetails() {
               </div>
               <H5 className="w-[98%] text-center">{project.title}</H5>
             </div>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center">
               <Button
                 onPress={() =>
                   router.push(`/project/projectDetail/${projectId}`)

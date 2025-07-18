@@ -3,7 +3,9 @@ import { ReactNode } from "react";
 export interface IReminder {
   alert_before: ReactNode;
   alert: any;
-  start: string | number | Date;
+  // start: string | number | Date;
+  start: string ;
+  end?: string;
   _id: string;
   title: string;
   description?: string;
