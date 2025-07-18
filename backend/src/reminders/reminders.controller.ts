@@ -25,7 +25,7 @@ export class RemindersController {
     @Body() createReminderDto: CreateReminderDto,
     @Req() req: Request
   ): Promise<{ message: string; reminder: Reminder }> {
-    // Here you can access the user from the request object if needed
+
     const userId = (req as any).user.userId;
     if (!userId) {
       return { message: "User not authenticated", reminder: null };
@@ -66,8 +66,15 @@ export class RemindersController {
     };
   }
 
-  @Get(":id")
-  async findOne(
+//  @Get(':id')
+// // async findOne(@Param('id') id: string): Promise<Reminder > {
+//   async findOne(@Param('id') id: string): Promise<Reminder> {
+//  return await this.remindersService.findOne(id);
+ 
+// }
+
+  @Get("user/:id")
+  async findReminderByUserId(
     @Param("id") id: string,
     @Query("page") page: string = "1",
     @Query("limit") limit: string = "5",
@@ -84,7 +91,7 @@ export class RemindersController {
 
     const [sortField, sortOrder] = sort.split(":");
 
-    const { reminders, total } = await this.remindersService.findOne(
+    const { reminders, total } = await this.remindersService.findReminderByUser(
       id,
       pageNumber,
       limitNumber,
@@ -101,6 +108,43 @@ export class RemindersController {
       limit: limitNumber,
     };
   }
+
+  @Get("active/:id")
+  async findActiveReminder(
+    @Param("id") id: string,
+    @Query("page") page: string = "1",
+    @Query("limit") limit: string = "5",
+    @Query("sort") sort: string = "createdAt:desc" 
+  ): Promise<{
+    message: string;
+    reminders: any;
+    total: number;
+    page: number;
+    limit: number;
+  }> {
+    const pageNumber = parseInt(page, 10);
+    const limitNumber = parseInt(limit, 10);
+
+    const [sortField, sortOrder] = sort.split(":");
+
+    const { reminders, total } = await this.remindersService.findActiveReminder(
+      id,
+      pageNumber,
+      limitNumber,
+      {
+        sort: { [sortField]: sortOrder === "desc" ? -1 : 1 },
+      }
+    );
+
+    return {
+      message: "Reminders fetched successfully",
+      reminders,
+      total,
+      page: pageNumber,
+      limit: limitNumber,
+    };
+  }
+
 
   @Put(":id")
   async update(

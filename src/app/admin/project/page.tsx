@@ -56,7 +56,7 @@ const ProjectListPage = () => {
   const headers = [
     { id: "code", title: "Code", is_sortable: true },
     { id: "title", title: "Title" },
-    { id: "avatar", title: "Avatar" },
+    { id: "description", title: "Description" },
   ];
 
   const rows = (projects ?? []).map((project) => ({
@@ -71,7 +71,7 @@ const ProjectListPage = () => {
           <h1 className="text-2xl font-semibold">Project List</h1>
           <button
             onClick={() => router.push("/admin/project/create")}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
+            className="btn-primary text-white font-semibold py-2 px-4 rounded"
           >
             + Create Project
           </button>

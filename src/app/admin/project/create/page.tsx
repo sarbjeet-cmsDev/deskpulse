@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { debounce } from "lodash";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -80,6 +80,28 @@ const CreateProjectPage = () => {
     []
   );
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // const project = await AdminProjectService.getProjectById(id);
+        // setProject(project);
+        const users = await AdminUserService.searchUsers("");
+        const options = users.map((user: IUser) => ({
+          label: `${user.firstName || ""} ${user.lastName || ""} (${user.email})`,
+          value: user._id,
+        }));
+        setUserOptions(options);
+      } catch (error) {
+        console.error("Failed to fetch project", error);
+        router.push("/admin/project");
+      } finally {
+        // setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [reset, router]);
+
   const onSubmit = async (data: CreateProjectInput) => {
     try {
       const formData: any = new FormData();
@@ -122,7 +144,12 @@ const CreateProjectPage = () => {
           <p className="text-sm text-red-500">{errors.title.message}</p>
         )}
 
-        <Input placeholder="Description" {...register("description")} />
+        {/* <Input placeholder="Description" {...register("description")} /> */}
+        <textarea
+          placeholder="Description"
+          {...register("description")}
+          className="w-full p-2 border border-gray-300 rounded outline-none"
+        />
         {errors.description && (
           <p className="text-sm text-red-500">{errors.description.message}</p>
         )}
@@ -224,7 +251,7 @@ const CreateProjectPage = () => {
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded"
+          className="w-full btn-primary text-white py-2 px-4 rounded"
         >
           {isSubmitting ? "Creating..." : "Create Project"}
         </Button>

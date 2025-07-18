@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import { debounce } from "lodash";
 import { useForm, Controller } from "react-hook-form";
@@ -8,7 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams, useRouter } from "next/navigation";
 import { z } from "zod";
 import { MultiValue, Props as SelectProps } from "react-select";
-
+import ProjectAvtar from "@/assets/images/projectimage.png";
 import { Input } from "@/components/Form/Input";
 import { Button } from "@/components/Form/Button";
 import { H1 } from "@/components/Heading/H1";
@@ -31,6 +32,8 @@ const UpdateProjectPage = () => {
   const [userOptions, setUserOptions] = useState<UserOption[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [project, setProject] = useState<any>({});
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [version, setVersion] = useState<number>(Date.now());
   const {
     register,
     handleSubmit,
@@ -84,7 +87,22 @@ const UpdateProjectPage = () => {
 
   const onSubmit = async (data: UpdateProjectInput) => {
     try {
-      await AdminProjectService.updateProject(id, data);
+      const formData: any = new FormData();
+
+      Object.entries(data).forEach(([key, value]) => {
+        if (value === undefined || value === null) return;
+
+        if (Array.isArray(value)) {
+          value.forEach((v, i) => formData.append(`${key}[${i}]`, v));
+        } else {
+          formData.append(key, value as any);
+        }
+      });
+
+      if (selectedFile) {
+        formData.append("avatar", selectedFile);
+      }
+      await AdminProjectService.updateProject(id, formData);
       router.push("/admin/project");
     } catch (error) {
       console.error(error);
@@ -94,6 +112,12 @@ const UpdateProjectPage = () => {
   if (loading) {
     return <div className="text-center py-10">Loading project...</div>;
   }
+
+   const avatarUrl = project?.avatar
+          ? `${process.env.NEXT_PUBLIC_BACKEND_HOST}${project?.avatar}?v=${version}`
+          : ProjectAvtar.src;
+
+
   return (
     <div className="min-h-screen flex justify-center pt-10">
       <form
@@ -109,6 +133,15 @@ const UpdateProjectPage = () => {
         <Input placeholder="Title" {...register("title")} />
         {errors.title && (
           <p className="text-sm text-red-500">{errors.title.message}</p>
+        )}
+
+         <textarea
+          placeholder="Description"
+          {...register("description")}
+          className="w-full p-2 border border-gray-300 rounded outline-none"
+        />
+        {errors.description && (
+          <p className="text-sm text-red-500">{errors.description.message}</p>
         )}
         {/* Assign Users */}
         <Controller
@@ -175,7 +208,23 @@ const UpdateProjectPage = () => {
           {...register("project_manager")}
         />
 
-        <Input placeholder="Avatar URL" {...register("avatar")} />
+        <div className="flex flex-col items-left gap-5">
+          <label>Select Avatar</label>
+        <Input
+          type="file"
+          accept="image/*"
+          placeholder="choose Avatar"
+          onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+        />
+         <label>Avatar</label>
+          <Image
+            src={avatarUrl}
+            alt="project-avatar"
+            className="rounded-[8px] object-contain w-[150px] h-[100px]"
+            width={1200}
+            height={50}
+          />
+        </div>
         {/* 
         <Input type="number" placeholder="Sort Order" {...register('sort_order')} />
         {errors.sort_order && (
@@ -192,7 +241,7 @@ const UpdateProjectPage = () => {
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded"
+          className="w-full btn-primary text-white py-2 px-4 rounded"
         >
           {isSubmitting ? "Updating..." : "Update Project"}
         </Button>

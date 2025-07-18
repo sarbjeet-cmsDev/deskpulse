@@ -78,7 +78,7 @@ const Users = () => {
           <h1 className="text-2xl font-semibold">Users List</h1>
           <button
             onClick={() => router.push('/admin/user/create')}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
+            className="btn-primary text-white font-semibold py-2 px-4 rounded"
           >
             + Create User
           </button>

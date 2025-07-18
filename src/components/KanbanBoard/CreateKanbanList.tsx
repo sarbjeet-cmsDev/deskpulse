@@ -97,7 +97,7 @@ export const CreateKanbanList = () => {
         <div className="flex justify-center">
           <Button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
+            className="w-full btn-primary text-white font-semibold py-2 px-4 rounded"
           >
             Submit
           </Button>

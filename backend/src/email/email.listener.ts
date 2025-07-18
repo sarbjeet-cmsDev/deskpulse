@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { EmailService } from './email.service';
 import { OnEvent } from '@nestjs/event-emitter';
-import { log } from 'console';
 import { UserService } from 'src/user/user.service';
 import { ProjectService } from 'src/project/project.service';
 import { TaskService } from 'src/task/task.service';

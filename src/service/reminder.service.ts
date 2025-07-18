@@ -47,7 +47,7 @@ const ReminderService = {
     reminders?: any;
     total: any;
   }> {
-    const res = await axiosClient.get(`${API_URL}/${id}`, {
+    const res = await axiosClient.get(`${API_URL}/user/${id}`, {
       params: {
         page,
         limit,
@@ -57,6 +57,30 @@ const ReminderService = {
     });
     return res.data;
   },
+
+  async getActiveReminderById(
+    id: string,
+    page = 1,
+    limit = 5,
+    sortField: string = "createdAt",
+    sortOrder: "asc" | "desc" = "desc"
+  ): Promise<{
+    message: string;
+    reminder: IReminder | null;
+    reminders?: any;
+    total: any;
+  }> {
+    const res = await axiosClient.get(`${API_URL}/active/${id}`, {
+      params: {
+        page,
+        limit,
+        sortField,
+        sortOrder,
+      },
+    });
+    return res.data;
+  },
+
 
   async updateReminder(
     id: string,

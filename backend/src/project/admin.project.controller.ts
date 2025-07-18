@@ -64,13 +64,22 @@ export class AdminProjectController {
 
   // ✅ Update Project by ID
   @Put(":id")
+  @UseInterceptors(FileInterceptor("avatar", multerOptions)) 
   async update(
     @Param("id") id: string,
-    @Body() updateProjectDto: UpdateProjectDto
+    @Body() updateProjectDto: UpdateProjectDto,
+    @UploadedFile() file: Express.Multer.File 
   ): Promise<any> {
-    await this.projectService.update(id, updateProjectDto);
+
+    if (file) {
+    const fileUrl = `/uploads/${file.filename}`;
+    updateProjectDto.avatar = fileUrl;
+  }
+
+    const updatedProject = await this.projectService.update(id, updateProjectDto);
     return {
       message: "Project updated successfully!",
+       project: updatedProject
     };
   }
 

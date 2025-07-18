@@ -41,6 +41,7 @@ const DataGrid: React.FC<DataGridProps> = ({
   onSort,
   loading,
 }) => {
+  console.log(rows,"rowsrowsrowsrowsrowsrowsrowsrowsrowsrowsrowsrowsrows")
   const [searchInput, setSearchInput] = useState("");
 
   useEffect(() => {

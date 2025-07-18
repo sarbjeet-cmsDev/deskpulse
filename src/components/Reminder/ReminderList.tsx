@@ -30,19 +30,28 @@ export default function ReminderList({ reminders }: ReminderListProps) {
             className="bg-[#f8fafc] w-full py-[15px] px-[20px] rounded-[8px] border-l-[8px] border-l-[#5fd788] mt-[16px]"
           >
             <Link
-              href={`#`}
+              href={`/reminder/detail/${reminder._id}`}
               className="flex justify-between items-center gap-2"
             >
               <span className="text-[#333] font-medium truncate">
                 {reminder.title || "Untitled Reminder"}
               </span>
-
+             <div className="flex items-center gap-2">
               {formattedStart && (
                 <div className="flex items-center text-sm text-gray-500 gap-1 whitespace-nowrap">
                   <span>🕒</span>
                   <span>{formattedStart}</span>
                 </div>
               )}
+
+              <Image
+                      src={info}
+                      alt="Details"
+                      width={20}
+                      height={20}
+                      className="cursor-pointer opacity-70 hover:opacity-100"
+                    />
+                    </div>
             </Link>
           </li>
         );

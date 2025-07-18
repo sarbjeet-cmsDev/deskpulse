@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 import { Reminder, ReminderDocument } from "./reminders.schema";
@@ -52,7 +52,7 @@ export class RemindersService {
   }
 
 
-  async findOne(
+  async findReminderByUser(
     id: string,
     page = 1,
     limit = 5,
@@ -76,6 +76,49 @@ export class RemindersService {
 
     return {
       reminders,
+      total,
+    };
+  }
+
+  async findOne(id: string): Promise<Reminder> {
+      const Reminder = await this.reminderModel.findById(id)
+      if (!Reminder) {
+        throw new NotFoundException(`Reminder with ID ${id} not found.`);
+      }
+      return Reminder;
+    }
+
+  async findActiveReminder(
+    id: string,
+    page = 1,
+    limit = 5,
+    options?: { sort?: Record<string, 1 | -1> }
+  ): Promise<{ reminders: Reminder[]; total: number }> {
+    const skip = (page - 1) * limit;
+
+    const remindersQuery = this.reminderModel.find({
+      user: new Types.ObjectId(id),
+    });
+
+  
+    if (options?.sort) {
+      remindersQuery.sort(options.sort);
+    }
+
+    const [reminders, total] = await Promise.all([
+      remindersQuery.skip(skip).limit(limit).exec(),
+      this.reminderModel.countDocuments({ user: new Types.ObjectId(id) }),
+    ]);
+
+    const filteredReminders = reminders.filter((reminder) => {
+      const currentTime = new Date();
+      const startTime = new Date(reminder.start);
+      const alertBeforeTime = new Date(startTime.getTime() - reminder.alert_before * 60000); 
+      return currentTime >= alertBeforeTime && currentTime <= startTime;
+    });
+
+    return {
+      reminders: filteredReminders,
       total,
     };
   }
