@@ -11,6 +11,7 @@ import { useState } from "react";
 
 interface ProjectCardProps {
   project: {
+    title:string;
     code: string;
     avatar?: string;
     notes?: string;
@@ -28,7 +29,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
   return (
     <Card className=" !shadow-[0px_2px_36px_rgba(16,21,35,0.07)] py-[16px] px-[10px] rounded-[12px]">
       <CardBody className="p-0">
-        <CardHead title={project.code} />
+        <CardHead title={project.title} />
         <div className="mt-[14px]">
           <div className="flex items-center gap-2">
             <CardMetaTag date={project.createdAt} />

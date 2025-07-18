@@ -209,7 +209,7 @@ export default function MyProjectDetails() {
                   <Image src={leftarrow} alt="Logo" width={16} height={16} />
                 </Link>
               </div>
-              <H5 className="w-[98%] text-center">{project.code}</H5>
+              <H5 className="w-[98%] text-center">{project.title}</H5>
             </div>
             <div className="flex items-center gap-1">
               <Button
