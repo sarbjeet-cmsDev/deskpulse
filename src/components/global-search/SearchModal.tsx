@@ -18,7 +18,7 @@ export function SearchModal({
   onClose,
   fetcher,
   placeholder = "Search tasks, projects, comments...",
-  minChars = 2,
+  minChars = 1,
 }: SearchModalProps) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResponse | null>(null);

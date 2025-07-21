@@ -12,7 +12,7 @@ export interface GlobalSearchProps {
 export function GlobalSearch({
   fetcher,
   placeholder = "Search...",
-  minChars = 2,
+  minChars = 1,
 }: GlobalSearchProps) {
   const [open, setOpen] = useState(false);
 

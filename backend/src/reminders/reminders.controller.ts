@@ -116,7 +116,7 @@ export class RemindersController {
     @Query("limit") limit: string = "5",
     @Query("sort") sort: string = "createdAt:desc" 
   ): Promise<{
-    message: string;
+    // message: string;
     reminders: any;
     total: number;
     page: number;
@@ -137,7 +137,7 @@ export class RemindersController {
     );
 
     return {
-      message: "Reminders fetched successfully",
+      // message: "Reminders fetched successfully",
       reminders,
       total,
       page: pageNumber,

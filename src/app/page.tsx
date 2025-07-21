@@ -38,8 +38,13 @@ export default function Dashboard() {
     };
     if (user) {
       loadProjects();
+      const interval = setInterval(() => {
+      loadProjects();
+    }, 60_000);
+    return () => clearInterval(interval);
     }
-  }, []);
+  }, [user]);
+  
   const router = useRouter();
   return (
     <div>

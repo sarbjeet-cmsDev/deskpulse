@@ -1,10 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import avatarFallback from "@/assets/images/avt1.jpg";
 import bell from "@/assets/images/bell.png";
-import { H5 } from "@/components/Heading/H5";
-import { P } from "@/components/ptag";
 import { Button } from "@heroui/button";
 import { openDrawer } from "@/store/slices/drawerSlice";
 import { useDispatch, useSelector } from "react-redux";
@@ -38,13 +35,6 @@ export default function TopHeader() {
     }
   }, [user?.profileImage]);
 
-  // const fetchSearchResults = async (query: string) => {
-  //   const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`, {
-  //     credentials: "include",
-  //   });
-  //   return res.json();
-  // };
-
 
   return (
     <div className="bg-theme-primary p-4">
@@ -55,9 +45,6 @@ export default function TopHeader() {
             <Link href={"/"}>Deskpulse</Link>{" "}
           </H3>
         </div>
-        {/* <div className="w-[500px]">
-          <Input type="search" className="w-full" />
-        </div> */}
         <div className="w-[500px]">
           <GlobalSearch
             placeholder="Search tasks, projects, comments..."
