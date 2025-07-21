@@ -20,7 +20,7 @@ export class TaskService {
     private readonly projectService: ProjectService,
     private readonly userservices: UserService,
     private eventEmitter: EventEmitter2
-  ) {}
+  ) { }
 
   async create(createTaskDto: CreateTaskDto): Promise<Task> {
     const { code: projectCode } = await this.projectService.findOne(
@@ -166,7 +166,6 @@ export class TaskService {
   async updateTaskStatus(
     id: string,
     updateTaskDto: UpdateTaskStatusUpdateDto,
-    userData
   ): Promise<Task> {
     const task = await this.taskModel.findById(id).exec();
     if (!task) {
@@ -179,29 +178,36 @@ export class TaskService {
     this.eventEmitter.emit("task.status.updated", {
       taskObj: updatedTask,
       oldTaskStatus: oldTaskStatus,
-      updatedBy: userData.userId,
+      updatedBy: updateTaskDto.updated_by,
     });
 
     return updatedTask;
   }
 
   async incrementTimeSpent(taskId: string, timeSpent: number): Promise<void> {
-  await this.taskModel.findByIdAndUpdate(taskId, {
-    $inc: { total_timespent: timeSpent },
-  });
-}
+    await this.taskModel.findByIdAndUpdate(taskId, {
+      $inc: { total_timespent: timeSpent },
+    });
+  }
 
-async search(keyword: string) {
-  const regex = new RegExp(keyword, "i");
-   const filters: any = {
-      $or: [
-         { code: { $regex: regex } }, 
-        { title: { $regex: regex } }, 
-        { description: { $regex: regex } },
+  async search(keyword: string, userId: string) {
+    const regex = new RegExp(keyword, "i");
+    const filters: any = {
+      $and: [
+        { assigned_to: userId }, // Filter tasks assigned to the user
+        {
+          $or: [
+            { code: { $regex: regex } },
+            { title: { $regex: regex } },
+            { description: { $regex: regex } },
+          ],
+        },
       ],
     };
-  return this.taskModel.find(filters).exec();
-
-}
+    return this.taskModel
+      .find(filters)
+      .sort({ updatedAt: -1, createdAt: -1 }) // Sort by most recent
+      .exec();
+  }
 
 }

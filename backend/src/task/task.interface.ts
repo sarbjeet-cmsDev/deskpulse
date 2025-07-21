@@ -57,7 +57,9 @@ export interface Task extends Document {
   createdAt: Date;
   rivision: number;
   updatedAt: Date;
-  total_timespent:any;
+  total_timespent: any;
+  created_by: MongooseSchema.Types.ObjectId;
+  updated_by?: MongooseSchema.Types.ObjectId;
 }
 
 interface TaskDetails {

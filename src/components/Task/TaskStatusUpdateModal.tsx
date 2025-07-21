@@ -29,7 +29,7 @@ export default function TaskStatusUpdateModal({
 
   const handleConfirm = async () => {
     try {
-      await TaskService.updateTask(taskId, { status: selectedStatus });
+      await TaskService.updateTaskStatus(taskId, { status: selectedStatus });
       onStatusUpdate?.();
       onClose();
     } catch (error) {
@@ -53,11 +53,10 @@ export default function TaskStatusUpdateModal({
               <button
                 key={status}
                 onClick={() => setSelectedStatus(status)}
-                className={`px-3 py-2 rounded text-sm border text-left ${
-                  selectedStatus === status
+                className={`px-3 py-2 rounded text-sm border text-left ${selectedStatus === status
                     ? "bg-theme-primary text-white border-bg-theme-primary"
                     : "bg-white text-gray-800 border-gray-300 hover:border-gray-400"
-                }`}
+                  }`}
               >
                 {status.replace(/_/g, " ").toUpperCase()}
               </button>

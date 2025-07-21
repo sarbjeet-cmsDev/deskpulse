@@ -32,8 +32,10 @@ export class TaskController {
 
   @Post()
   async create(
-    @Body() createTaskDto: CreateTaskDto
+    @Body() createTaskDto: CreateTaskDto,
+    @CurrentUser() user: any
   ): Promise<{ message: string; data: Task }> {
+    createTaskDto.created_by = user.userId.toString()
     const task = await this.taskService.create(createTaskDto);
     return {
       message: "Task created successfully",
@@ -88,8 +90,10 @@ export class TaskController {
   @Patch(":id")
   async update(
     @Param("id") id: string,
-    @Body() updateTaskDto: UpdateTaskDto
+    @Body() updateTaskDto: UpdateTaskDto,
+    @CurrentUser() user: any
   ): Promise<{ message: string; task: Task }> {
+    updateTaskDto.updated_by = user.userId.toString()
     const updatedTask = await this.taskService.update(id, updateTaskDto);
     return {
       message: "Task updated successfully",
@@ -100,14 +104,14 @@ export class TaskController {
   @Patch("status/:id")
   async updateTaskStatus(
     @Param("id") id: string,
-    @Req() req: any,
-    @Body() updateTaskStatusUpdateDto: UpdateTaskStatusUpdateDto
+    @Body() updateTaskStatusUpdateDto: UpdateTaskStatusUpdateDto,
+    @CurrentUser() user: any
   ): Promise<{ message: string; task: Task }> {
-    const userData = req.user; // <--- declared user_id properly
+    
+    updateTaskStatusUpdateDto.updated_by = user.userId.toString()
     const task = await this.taskService.updateTaskStatus(
       id,
       updateTaskStatusUpdateDto,
-      userData
     );
     return { message: "Task Status  updated successfully", task };
   }

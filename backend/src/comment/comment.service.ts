@@ -24,7 +24,7 @@ export class CommentService {
       this.eventEmitter.emit('comments.mention', {
         CommentObj: createdComment,
       });
-  
+
     }
     return createdComment.save();
   }
@@ -56,35 +56,35 @@ export class CommentService {
     return this.commentModel.findById(id).exec();
   }
 
- async findByTask(
-  taskId: string,
-  page: number,
-  limit: number
-): Promise<{ data: any[]; total: number; page: number; limit: number }> {
-  const skip = (page - 1) * limit;
+  async findByTask(
+    taskId: string,
+    page: number,
+    limit: number
+  ): Promise<{ data: any[]; total: number; page: number; limit: number }> {
+    const skip = (page - 1) * limit;
 
-  const [comments, total] = await Promise.all([
-    this.commentModel
-      .find({ task: new Types.ObjectId(taskId) })
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
-      .lean()
-      .exec(),
-    this.commentModel.countDocuments({ task: new Types.ObjectId(taskId) }),
-  ]);
+    const [comments, total] = await Promise.all([
+      this.commentModel
+        .find({ task: new Types.ObjectId(taskId) })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean()
+        .exec(),
+      this.commentModel.countDocuments({ task: new Types.ObjectId(taskId) }),
+    ]);
 
-  const data = await Promise.all(
-    comments.map(async (comment) => {
-      const userDetails = await this.userservices.findOne(comment.created_by.toString());
-      return {
-        ...comment,
-        created_by: userDetails?.username, // Replace ID with full user details
-      };
-    })
-  );
-  return { data, total, page, limit };
-}
+    const data = await Promise.all(
+      comments.map(async (comment) => {
+        const userDetails = await this.userservices.findOne(comment.created_by.toString());
+        return {
+          ...comment,
+          created_by: userDetails?.username, // Replace ID with full user details
+        };
+      })
+    );
+    return { data, total, page, limit };
+  }
 
   async findByParentComment(parentId: string): Promise<Comment[]> {
     return this.commentModel.find({ parent_comment: parentId }).exec();
@@ -106,15 +106,22 @@ export class CommentService {
   async findByUser(userId: string): Promise<Comment[]> {
     return this.commentModel.find({ created_by: userId }).exec();
   }
-  async search(keyword: string) {
-  const regex = new RegExp(keyword, "i");
-   const filters: any = {
-      $or: [
-         { content: { $regex: regex } }, 
+
+  async search(keyword: string, userId: string) {
+    const regex = new RegExp(keyword, "i");
+    const filters: any = {
+      $and: [
+        { mentioned: userId },
+        {
+          $or: [
+            { content: { $regex: regex } },
+          ],
+        },
       ],
     };
-  return this.commentModel.find(filters).exec();
-
-}
-
+    return this.commentModel
+      .find(filters)
+      .sort({ createdAt: -1, updatedAt: -1 }) // Most recent first
+      .exec();
+  }
 }

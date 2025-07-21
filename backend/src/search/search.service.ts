@@ -11,10 +11,10 @@ export class SearchService {
         private readonly taskService: TaskService,
         private readonly commentService: CommentService
     ) { }
-    async searchAll(query: string) {
-        const projects = await this.projectService.search(query);
-        const tasks = await this.taskService.search(query);
-        const comments = await this.commentService.search(query);
+    async searchAll(query: string, userId:string) {
+        const projects = await this.projectService.search(query,userId);
+        const tasks = await this.taskService.search(query,userId);
+        const comments = await this.commentService.search(query,userId);
         return {
             projects,
             tasks,

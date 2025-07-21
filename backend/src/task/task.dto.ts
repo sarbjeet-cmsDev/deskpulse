@@ -20,7 +20,7 @@ export class CreateTaskDto {
 
   @IsOptional()
   @IsString()
-  @Prop({  unique: true })
+  @Prop({ unique: true })
   code: string;
 
   @IsString()
@@ -87,7 +87,11 @@ export class CreateTaskDto {
   @IsNumber()
   total_timespent?: number;
 
+  @IsOptional()
+  created_by?: MongooseSchema.Types.ObjectId;
 
+  @IsOptional()
+  updated_by?: MongooseSchema.Types.ObjectId;
 }
 
 export class UpdateTaskDto {
@@ -154,6 +158,10 @@ export class UpdateTaskDto {
   @IsNumber()
   totaltaskminutes?: number;
 
+  @IsOptional()
+  created_by?: MongooseSchema.Types.ObjectId;
+  @IsOptional()
+  updated_by?: MongooseSchema.Types.ObjectId;
 }
 
 export class UpdateTaskStatusUpdateDto {
@@ -172,4 +180,6 @@ export class UpdateTaskStatusUpdateDto {
   @IsOptional()
   @IsNumber()
   totaltaskminutes?: number;
+  @IsOptional()
+  updated_by?: MongooseSchema.Types.ObjectId;
 }

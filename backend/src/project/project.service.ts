@@ -10,6 +10,7 @@ import { ProjectKanbanService } from "../project-kanban/project_kanban.service";
 import { UserService } from "src/user/user.service";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { CreateProjectDto, UpdateProjectDto } from "./project.dto";
+import { log } from "console";
 
 @Injectable()
 export class ProjectService {
@@ -18,7 +19,7 @@ export class ProjectService {
     private readonly kanbanService: ProjectKanbanService,
     private eventEmitter: EventEmitter2,
     private readonly userservices: UserService
-  ) {}
+  ) { }
   private sanitizeObjectIds(payload: any) {
     const keysToSanitize = [
       "team_leader",
@@ -224,16 +225,23 @@ export class ProjectService {
     );
     return updated;
   }
-async search(keyword: string) {
-  const regex = new RegExp(keyword, "i");
-   const filters: any = {
-      $or: [
-        { code: { $regex: regex } },
-        { title: { $regex: regex } }, 
-        { description: { $regex: regex } },
+  async search(keyword: string, userId: string) {
+    const regex = new RegExp(keyword, "i");
+    const filters: any = {
+      $and: [
+        { users: userId }, // Filter by user's projects
+        {
+          $or: [
+            { code: { $regex: regex } },
+            { title: { $regex: regex } },
+            { description: { $regex: regex } },
+          ],
+        },
       ],
     };
-  return this.projectModel.find(filters).exec();
-
-}
+    return this.projectModel
+      .find(filters)
+      .sort({ createdAt: -1, updatedAt: -1 }) // Most recent first
+      .exec();
+  }
 }

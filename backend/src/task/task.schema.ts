@@ -73,8 +73,11 @@ export class Task {
   @Prop({ type: Number, default: 0 })
   totaltaskminutes: { type: Number, default: 0 }
 
-  // @Prop({ type: Number, default: 0 })
-  // total_timespent: { type: Number, default: 0 }
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: false })
+  created_by: MongooseSchema.Types.ObjectId;
+
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: false })
+  updated_by: MongooseSchema.Types.ObjectId;
 }
 
 export const TaskSchema = SchemaFactory.createForClass(Task);
