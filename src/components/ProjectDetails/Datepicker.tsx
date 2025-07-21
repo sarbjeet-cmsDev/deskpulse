@@ -3,7 +3,7 @@
 
 import { DatePicker } from "@heroui/react";
 import type { DateValue } from "@heroui/react";
-import { parseAbsolute, today } from "@internationalized/date";
+import {getLocalTimeZone, today, parseAbsolute} from "@internationalized/date";
 
 interface DatePickerInputProps {
   task: { due_date?: string };
@@ -27,8 +27,6 @@ export default function DatePickerInput({ task, onChange }: DatePickerInputProps
   } catch (e) {
     console.error(" Invalid due date format:", task?.due_date);
   }
-
-  const minSelectableDate = today(timeZone);
   
   return (
     <DatePicker
@@ -36,7 +34,7 @@ export default function DatePickerInput({ task, onChange }: DatePickerInputProps
       value={parsedDueDate}
       onChange={handleChange}
        granularity="day"
-      //  minValue={minSelectableDate}
+      //  minValue={today(getLocalTimeZone())}
       classNames={{
         inputWrapper: "bg-transparent hover:!bg-transparent p-0 shadow-none",
       }}

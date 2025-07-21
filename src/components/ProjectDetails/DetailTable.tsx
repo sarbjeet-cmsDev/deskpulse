@@ -48,7 +48,7 @@ export default function Details({
     dueDate,
     attachments = [],
   } = project || [];
-  console.log(team, "teamteam");
+ 
   const handleOpenModal = () => {
     setIsModalOpen(true);
   };
@@ -70,7 +70,7 @@ export default function Details({
     }
   };
 
-  console.log('ggggggggggggggg',user)
+
 
   return (
     <div>

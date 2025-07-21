@@ -34,13 +34,13 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           <div className="flex items-center gap-2">
             <CardMetaTag date={project.createdAt} />
           </div>
-          <div className="mt-[14px]  h-[135px] overflow-hidden border border-[#e3e3e35c] rounded-[8px]">
+          <div className="mt-[14px]  h-[200px] overflow-hidden border border-[#e3e3e35c] rounded-[8px]">
             <Image
               src={avatarUrl}
               alt="project-image"
               className="rounded-[8px]"
               width={1200}
-              height={50}
+              height={100}
             />
           </div>
         </div>

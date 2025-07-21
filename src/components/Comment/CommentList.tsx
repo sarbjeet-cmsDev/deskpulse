@@ -9,6 +9,7 @@ import { formatDistanceToNow } from "date-fns";
 import { Button } from "@/components/Form/Button";
 import CommentInputSection from "@/components/Comment/commentSection";
 import { deleteComment } from "@/utils/deleteComment";
+import ShowMoreLess from "../common/ShowMoreLess/ShowMoreLess";
 
 interface CommentProps {
   comments: IComment[];
@@ -21,8 +22,10 @@ export default function CommentList({
   refreshComments,
   fetchComments,
 }: CommentProps) {
+  const step = 5; 
   const [activeReplyId, setActiveReplyId] = useState<string | null>(null);
   const [activeEditId, setActiveEditId] = useState<string | null>(null);
+  const [visibleCount, setVisibleCount] = useState(step);
 
   const renderMentions = (comment: IComment) => {
     let content = comment.content;
@@ -175,11 +178,21 @@ export default function CommentList({
         comment.parent_comment.length === 0)
   );
 
+  const visibleTopComments = topLevelComments.slice(0, visibleCount);
+
+
   return (
     <div className="mt-6">
       <ul className="space-y-2">
-        {topLevelComments.map((comment) => renderComment(comment))}
+        {visibleTopComments.map((comment) => renderComment(comment))}
       </ul>
+
+      <ShowMoreLess
+        totalItems={topLevelComments.length}
+        visibleCount={visibleCount}
+        step={step}
+        onChange={setVisibleCount}
+      />
     </div>
   );
 }

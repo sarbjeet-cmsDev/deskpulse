@@ -51,7 +51,7 @@ export default function TaskDetails() {
   const fetchTask = async (id: string) => {
     try {
       const data = await TaskService.getTaskById(id);
-      console.log("projectidddddd",data.project)
+      console.log("projectidddddd", data.project);
       setTask(data);
 
       if (data.project) {
@@ -106,19 +106,14 @@ export default function TaskDetails() {
   const fetchComments = async () => {
     if (!taskId) return;
     try {
-      const res = await CommentService.getCommentsByTask(
-        taskId,
-        commentPage,
-        commentLimit
-      );
-    
+      const BIG_LIMIT = 1000;
+      const res = await CommentService.getCommentsByTask(taskId, 1, BIG_LIMIT);
       setComments(res.data);
       setCommentTotal(res.total);
-      setCommentPage(res.page);
-      setCommentLimit(res.limit);
     } catch (error) {
       console.error("Failed to load comments:", error);
       setComments([]);
+      setCommentTotal(0);
     }
   };
 
@@ -137,9 +132,10 @@ export default function TaskDetails() {
     }
   };
 
-  useEffect(() => {
+   useEffect(() => {
     fetchComments();
-  }, [taskId, commentPage, commentLimit]);
+  }, [taskId]);
+
 
   const handleActivityLog = () => {
     router.push(`/task-activitylog/${taskId}`);
@@ -159,7 +155,7 @@ export default function TaskDetails() {
     <div className="max-w-6xl mx-auto">
       <div className="main-content">
         <div>
-          <div className="flex justify-between items-center p-[24px] border-b border-[#31394f14]">
+          <div className="flex justify-between items-center py-5 border-b border-[#31394f14]">
             <div className="flex items-center gap-4">
               <div className="">
                 <Link href={`/project/${task?.project}`}>
@@ -185,7 +181,7 @@ export default function TaskDetails() {
           <div className="pt-4">
             {task && (
               <CommentInputSection
-                key={task._id + (task.description || "")} 
+                key={task._id + (task.description || "")}
                 defaultValue={task.description}
                 title="Description"
                 onClick={handleUpdateTaskDescription(task?._id)}
@@ -215,7 +211,7 @@ export default function TaskDetails() {
                 refreshTimelines={() =>
                   fetchTimelines(taskId, timelinePage, timelineLimit)
                 }
-                refreshTask={()=>fetchTask(taskId)}
+                refreshTask={() => fetchTask(taskId)}
               />
 
               <div className="mt-[34px] border-t pt-8">
@@ -239,16 +235,11 @@ export default function TaskDetails() {
 
               <CommentList
                 comments={comments}
-                refreshComments={() => fetchComments()}
+                // refreshComments={() => fetchComments()}
+                refreshComments={fetchComments}
                 fetchComments={() => fetchComments()}
               />
-
-              <Pagination
-                currentPage={commentPage}
-                totalItems={commentTotal}
-                itemsPerPage={commentLimit}
-                onPageChange={(page) => setCommentPage(page)}
-              />
+              
             </div>
           </div>
         </div>

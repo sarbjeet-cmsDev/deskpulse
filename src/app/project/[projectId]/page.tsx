@@ -53,7 +53,7 @@ export default function MyProjectDetails() {
     }
   }, [project, version]);
 
-  console.log("projectImage", projectImage);
+
 
   const fetchKanbonList = async (userIds: string[]) => {
     try {
@@ -197,7 +197,7 @@ export default function MyProjectDetails() {
 
   if (loading) return <div className="p-6 text-center">Loading project...</div>;
   if (!project) return <div className="p-6 text-center">Project not found</div>;
-  console.log(tasks, "tasks");
+ 
   return (
     <div className="max-w-6xl mx-auto">
       <div className="main-content">

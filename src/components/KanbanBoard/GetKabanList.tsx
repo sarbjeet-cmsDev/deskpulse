@@ -157,7 +157,7 @@ export const GetKanbonList = () => {
   };
 
   return (
-    <div className="mt-[-60px]">
+    <div className="mt-[-40px]">
       {error && (
         <div className="bg-red-100 text-red-700 p-2 rounded mb-4 mx-4">
           {error}

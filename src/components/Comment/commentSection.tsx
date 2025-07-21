@@ -13,6 +13,7 @@ import { Button } from "@/components/Form/Button";
 import QuillEditorWrapper from "./QuillEditorWrapper";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import UploadService from "@/service/upload.service";
 
 if (
   typeof window !== "undefined" &&
@@ -54,10 +55,9 @@ export default function CommentInputSection({
   const quillRef = useRef<any>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const user:any = useSelector((state: RootState) => state.user.data);
-  // const user = useSelector((state: RootState) => state.user.data);
 
 
-  console.log(defaultValue, "defaultValue");
+ 
   useEffect(() => {
     if (isEditing && defaultValue) {
       setContent(defaultValue);
@@ -74,15 +74,28 @@ export default function CommentInputSection({
       const file = input.files?.[0];
       if (!file) return;
 
-      const reader = new FileReader();
-      reader.onload = () => {
-        const base64 = reader.result;
-        const editor = quillRef.current?.getEditor();
-        const range = editor?.getSelection(true);
-        editor?.insertEmbed(range.index, "image", base64);
-        editor?.setSelection(range.index + 1);
-      };
-      reader.readAsDataURL(file);
+      try {
+   
+      setLoading(true);
+      const imageUrl = await UploadService.uploadImageForQuill(file);
+
+      const editor = quillRef.current?.getEditor();
+      const range = editor?.getSelection(true);
+      editor?.insertEmbed(range.index, "image", imageUrl);
+      setTimeout(() => {
+        const img = editor?.root.querySelector(`img[src="${imageUrl}"]`) as HTMLImageElement;
+        if (img) {
+          img.style.width = "200px"; 
+          img.style.maxWidth = "50%"; 
+        }
+      }, 0);
+      editor?.setSelection(range.index + 1);
+    } catch (error) {
+      console.error("Image upload failed:", error);
+      setError("Failed to upload image");
+    } finally {
+      setLoading(false);
+    }
     };
   };
 

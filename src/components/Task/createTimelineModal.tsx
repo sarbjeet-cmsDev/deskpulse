@@ -4,7 +4,7 @@ import { Modal, ModalContent, ModalBody, useDisclosure } from "@heroui/react";
 import { Button } from "@/components/Form/Button";
 import { Input } from "@/components/Form/Input";
 import { H5 } from "@/components/Heading/H5";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { createTimelineSchema } from "@/components/validation/timelineValidaion";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,8 +24,18 @@ export default function CreateTimelineModal({
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [loading, setLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState("");
+  const [weekStart, setWeekStart] = useState("");
+  const [today, setToday] = useState("");
 
-  const today = new Date().toISOString().split("T")[0];
+  useEffect(() => {
+    const now = new Date();
+    const pastWeek = new Date();
+    pastWeek.setDate(now.getDate() - 6); 
+
+    setToday(now.toISOString().split("T")[0]);
+    setWeekStart(pastWeek.toISOString().split("T")[0]);
+  }, []);
+  // const today = new Date().toISOString().split("T")[0];
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedDate(e.target.value);
@@ -93,6 +103,7 @@ export default function CreateTimelineModal({
                       {...register("date")}
                       required={false}
                       onChange={handleDateChange}
+                      min={weekStart}
                       max={today}
                       // className="w-64"
                     />

@@ -18,6 +18,7 @@ import { EmailModule } from './email/email.module';
 import { PerformanceModule } from './performance/performance.module';
 import { FaqModule } from './faq/faq.module';
 import { SearchModule } from './search/search.module';
+import { UploadModule } from './upload/upload.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -58,7 +59,8 @@ import { SearchModule } from './search/search.module';
     TaskactivitylogModule,
     EmailModule,
     PerformanceModule,
-    SearchModule
+    SearchModule,
+    UploadModule
   ],
   controllers: [],
   providers: [],
