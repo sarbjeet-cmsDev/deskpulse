@@ -40,7 +40,7 @@ export const userSchemaBase = z.object({
     .string()
     .nonempty("Phone number is required")
     .regex(numbersOnlyRegex, "Phone number must contain only digits")
-    .min(10, "Phone number must be at least 10 digit"),
+    .length(10, "Phone number must be 10 digits"),
 
   gender: genderEnum.optional(),
 

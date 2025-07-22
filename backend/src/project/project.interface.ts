@@ -4,6 +4,8 @@ export interface Project {
   code: string;
   title: string;
   description?: string;
+  deploy_instruction?: string;
+  critical_notes?: string;
   users: MongooseSchema.Types.ObjectId[];
   project_coordinator?: MongooseSchema.Types.ObjectId;
   team_leader?: MongooseSchema.Types.ObjectId;

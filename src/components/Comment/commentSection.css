@@ -12,3 +12,9 @@
 .comment-section .ql-toolbar:first-of-type:has(+ .ql-toolbar) {
   display: none !important;
 }
+
+.description-content img {
+  width: 200px;
+  max-width: 50%;
+  height: auto;
+}

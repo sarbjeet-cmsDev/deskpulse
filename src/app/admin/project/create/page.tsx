@@ -8,7 +8,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { MultiValue, ActionMeta, Props as SelectProps } from "react-select";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
-
+import Link from "next/link";
+import Image from "next/image";
+import leftarrow from "@/assets/images/back.png";
+import { H3 } from "@/components/Heading/H3";
 import AdminUserService, { IUser } from "@/service/adminUser.service";
 import AdminProjectService from "@/service/adminProject.service";
 import { Input } from "@/components/Form/Input";
@@ -52,6 +55,8 @@ const CreateProjectPage = () => {
       url_live: "",
       url_staging: "",
       url_uat: "",
+      deploy_instruction: "",
+      critical_notes: "",
     },
   });
 
@@ -135,9 +140,14 @@ const CreateProjectPage = () => {
         onSubmit={handleSubmit(onSubmit)}
         className="w-full max-w-2xl bg-white p-6 rounded shadow space-y-4"
       >
-        <H1 className="text-2xl font-semibold text-gray-900 mb-4 text-center">
-          Create Project
-        </H1>
+        <div className="flex justify-center items-center p-[24px] border-b border-[#31394f14]">
+        <div className="w-[5%]">
+          <Link href="/admin/project">
+            <Image src={leftarrow} alt="Back" width={16} height={16} />
+          </Link>
+        </div>
+        <H3 className="w-[95%] text-center">Create Project</H3>
+      </div>
 
         <Input placeholder="Title" {...register("title")} />
         {errors.title && (

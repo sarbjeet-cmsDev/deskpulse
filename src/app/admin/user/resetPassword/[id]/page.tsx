@@ -11,6 +11,10 @@ import { Input } from '@/components/Form/Input';
 import { Button } from '@/components/Form/Button';
 import { H1 } from '@/components/Heading/H1';
 import AdminUserService from '@/service/adminUser.service';
+import Link from "next/link";
+import Image from "next/image";
+import leftarrow from "@/assets/images/back.png";
+import { H3 } from "@/components/Heading/H3";
 
 type ResetPasswordInput = z.infer<typeof userResetPasswordSchema>;
 
@@ -43,7 +47,14 @@ const ResetPasswordPage = () => {
         onSubmit={handleSubmit(onSubmit)}
         className="w-full max-w-md bg-white p-6 rounded shadow space-y-4"
       >
-        <H1 className="text-2xl font-semibold mb-4 text-gray-900">Reset Password</H1>
+       <div className="flex justify-center items-center p-[24px] border-b border-[#31394f14]">
+        <div className="w-[5%]">
+          <Link href="/admin/user">
+            <Image src={leftarrow} alt="Back" width={30} height={30} />
+          </Link>
+        </div>
+        <H3 className="w-[98%] text-center">Reset Password</H3>
+      </div>
 
         <Input
           type="password"

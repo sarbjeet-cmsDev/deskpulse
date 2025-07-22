@@ -19,7 +19,7 @@ export class ProjectService {
     private readonly kanbanService: ProjectKanbanService,
     private eventEmitter: EventEmitter2,
     private readonly userservices: UserService
-  ) { }
+  ) {}
   private sanitizeObjectIds(payload: any) {
     const keysToSanitize = [
       "team_leader",
@@ -190,34 +190,54 @@ export class ProjectService {
     limit: number,
     keyword?: string,
     sortOrder: "asc" | "desc" = "asc"
-  ): Promise<{ data: Project[]; total: number }> {
-    const skip = (page - 1) * limit;
-    const query: any = {};
+  ): Promise<{ data: Project[]; total: number; page: number; limit: number;totalPages: number; }> {
 
-    if (keyword) {
-      query.$or = [
-        { name: { $regex: keyword, $options: "i" } },
-        { code: { $regex: keyword, $options: "i" } },
+    let safePage = Math.max(Number(page) || 1, 1);
+    let safeLimit = Math.max(Number(limit) || 10, 1);
+    const MAX_LIMIT = 200;
+    if (safeLimit > MAX_LIMIT) safeLimit = MAX_LIMIT;
+
+ 
+    const filter: Record<string, any> = {};
+    if (keyword && keyword.trim()) {
+      filter.$or = [
+        { title: { $regex: keyword.trim(), $options: 'i' } },
+        { code: { $regex: keyword.trim(), $options: 'i' } },
       ];
     }
 
-    const [projects, total] = await Promise.all([
-      this.projectModel
-        .find(query)
-        .sort({ createdAt: sortOrder === "asc" ? 1 : -1 })
-        .skip(skip)
-        .limit(limit)
-        .exec(),
-      this.projectModel.countDocuments(query),
-    ]);
+
+    const total = await this.projectModel.countDocuments(filter).exec();
+    const totalPages = total === 0 ? 0 : Math.ceil(total / safeLimit);
+
+
+    if (totalPages > 0 && safePage > totalPages) {
+      safePage = totalPages;
+    }
+
+    const skip = (safePage - 1) * safeLimit;
+
+    const data = await this.projectModel
+      .find(filter)
+      .sort({ createdAt: sortOrder === 'desc' ? 1 : -1 })
+      .skip(skip)
+      .limit(safeLimit)
+      .exec();
 
     return {
-      data: projects,
+      data,
       total,
+      page: safePage,
+      limit: safeLimit,
+      totalPages,
     };
+  
   }
 
-  async updateProjectAvatar(projectId: string, imageUrl: string): Promise<ProjectDocument | null> {
+  async updateProjectAvatar(
+    projectId: string,
+    imageUrl: string
+  ): Promise<ProjectDocument | null> {
     const updated = await this.projectModel.findByIdAndUpdate(
       projectId,
       { avatar: imageUrl },
@@ -242,7 +262,6 @@ export class ProjectService {
     return this.projectModel
       .find(filters)
       .sort({ createdAt: -1, updatedAt: -1 }) // Most recent first
-       .limit(10)    
       .exec();
   }
 }

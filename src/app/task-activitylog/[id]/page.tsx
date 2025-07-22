@@ -20,7 +20,7 @@ export default function TaskActivityLogPage() {
   const [totalItems, setTotalItems] = useState<number>(0);
   const itemsPerPage = 5;
 
-  console.log("logs",logs)
+  
 
   useEffect(() => {
     if (!taskId) return;
@@ -33,7 +33,7 @@ export default function TaskActivityLogPage() {
           currentPage,
           itemsPerPage
         );
-        console.log("res111111",res)
+        
         setLogs(res.taskactivitylog);
         setTotalItems(res.total);
       } catch (error) {

@@ -11,6 +11,10 @@ import AdminUserService from "@/service/adminUser.service";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Swal from "sweetalert2";
+import Link from "next/link";
+import Image from "next/image";
+import leftarrow from "@/assets/images/back.png";
+import { H3 } from "@/components/Heading/H3";
 
 type CreateUserInput = z.infer<typeof userCreateSchema>;
 
@@ -59,9 +63,15 @@ const CreateUserPage = () => {
         onSubmit={handleSubmit(onSubmit)}
         className="w-full max-w-xl bg-white p-6 rounded shadow space-y-4"
       >
-        <H1 className="text-2xl font-semibold mb-4 text-gray-900">
-          Create New User
-        </H1>
+  
+        <div className="flex justify-center items-center p-[24px] border-b border-[#31394f14]">
+        <div className="w-[2%]">
+          <Link href="/admin/user">
+            <Image src={leftarrow} alt="Back" width={16} height={16} />
+          </Link>
+        </div>
+        <H3 className="w-[98%] text-center">Create New User</H3>
+      </div>
 
         <Input placeholder="Username" {...register("username")} />
         {errors.username && (

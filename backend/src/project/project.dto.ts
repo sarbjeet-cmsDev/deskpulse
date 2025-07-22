@@ -26,6 +26,14 @@ export class CreateProjectDto {
   description?: string;
 
   @IsOptional()
+  @IsString()
+  deploy_instruction?: string;
+
+  @IsOptional()
+  @IsString()
+  critical_notes?: string;
+
+  @IsOptional()
   @IsArray()
   @IsMongoId({ each: true })
   users?: MongooseSchema.Types.ObjectId[];

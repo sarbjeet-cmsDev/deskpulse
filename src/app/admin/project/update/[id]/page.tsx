@@ -1,7 +1,6 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import { debounce } from "lodash";
 import { useForm, Controller } from "react-hook-form";
@@ -17,6 +16,10 @@ import AdminUserService, { IUser } from "@/service/adminUser.service";
 import AdminProjectService from "@/service/adminProject.service";
 import { projectUpdateSchema } from "@/components/validation/projectValidation";
 import { UpdateKanbanList } from "@/components/KanbanBoard/UpdateKanbanList";
+import Link from "next/link";
+import Image from "next/image";
+import leftarrow from "@/assets/images/back.png";
+import { H3 } from "@/components/Heading/H3";
 
 type UpdateProjectInput = z.infer<typeof projectUpdateSchema>;
 type UserOption = { label: string; value: string };
@@ -24,6 +27,10 @@ type UserOption = { label: string; value: string };
 const ReactSelect = dynamic(() => import("react-select") as any, {
   ssr: false,
 }) as React.ComponentType<SelectProps<UserOption, true>>;
+
+function stripHtml(html: string): string {
+  return html.replace(/<[^>]*>/g, "").trim();
+}
 
 const UpdateProjectPage = () => {
   const router = useRouter();
@@ -65,6 +72,7 @@ const UpdateProjectPage = () => {
     const fetchData = async () => {
       try {
         const project = await AdminProjectService.getProjectById(id);
+        project.description = stripHtml(project.description || "");
         setProject(project);
         const users = await AdminUserService.searchUsers("");
         const options = users.map((user: IUser) => ({
@@ -119,14 +127,21 @@ const UpdateProjectPage = () => {
 
 
   return (
-    <div className="min-h-screen flex justify-center pt-10">
+    <div className="min-h-screen flex justify-center">
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="w-full max-w-2xl bg-white p-6 rounded shadow space-y-4"
       >
-        <H1 className="text-2xl font-semibold text-gray-900 mb-4">
-          Update Project
-        </H1>
+        <div className="flex justify-center items-center p-[24px] border-b border-[#31394f14]">
+        <div className="w-[5%]">
+          <Link href="/admin/project">
+            <Image src={leftarrow} alt="Back" width={16} height={16} />
+          </Link>
+        </div>
+        <H3 className="w-[98%] text-center">Update Project</H3>
+      </div>
+       
+
 
         {/* <Input placeholder="Project Code" {...register('code')} />
         {errors.code && <p className="text-sm text-red-500">{errors.code.message}</p>} */}

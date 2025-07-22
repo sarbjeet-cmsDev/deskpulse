@@ -49,22 +49,19 @@ export default function ReminderDetailPage() {
 
   return (
     <div className="max-w-3xl mx-auto p-6">
-      <div className="flex items-center gap-4 border-b pb-4 mb-6">
+      <div className="flex justify-center items-center gap-4 border-b pb-4 mb-6">
+        <div className="w-[2%]">
         <Link href="/">
           <Image src={leftarrow} alt="Back" width={24} height={24} />
         </Link>
-        <H3 className="text-xl font-semibold">Reminder Details</H3>
+        </div>
+        <H3 className="w-[98%] text-xl text-center font-semibold">Reminder Details</H3>
       </div>
 
       <div className="bg-white shadow rounded p-6 space-y-3 border border-gray-200">
         <DetailItem label="Title" value={reminder.title} />
         <DetailItem label="Start Time" value={formatDate(reminder.start)} />
         <DetailItem label="End Time" value={formatDate(reminder.end)} />
-        {/* <DetailItem
-          label="Status"
-          value={reminder.status}
-          valueClass={reminder.status === "completed" ? "text-green-600" : "text-yellow-600"}
-        /> */}
         <DetailItem label="Alert Enabled" value={reminder.alert ? "Yes" : "No"} />
         <DetailItem label="Alert Before" value={`${reminder.alert_before} minute(s)`} />
         <DetailItem label="Created At" value={formatDate(reminder.createdAt)} />
@@ -73,7 +70,7 @@ export default function ReminderDetailPage() {
   );
 }
 
-// A reusable line item component
+
 function DetailItem({
   label,
   value,

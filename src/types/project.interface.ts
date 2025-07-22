@@ -3,6 +3,8 @@ export interface IProject {
   code: string;
   title: string;
   description?: string;
+  deploy_instruction?: string;
+  critical_notes?: string;
   users?: string[];  
 
   project_coordinator?: string;  

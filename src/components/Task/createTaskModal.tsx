@@ -36,7 +36,7 @@ export default function CreateTaskModal({ onCreate }: CreateTaskModalProps) {
     title: string;
     description: string;
   }) => {
-    console.log(values, "kjjkknb");
+  
     setLoading(true);
     try {
       await onCreate(values.title, values.description);

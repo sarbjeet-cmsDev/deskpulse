@@ -41,11 +41,13 @@ const DataGrid: React.FC<DataGridProps> = ({
   onSort,
   loading,
 }) => {
-  console.log(rows,"rowsrowsrowsrowsrowsrowsrowsrowsrowsrowsrowsrowsrows")
   const [searchInput, setSearchInput] = useState("");
 
   useEffect(() => {
-    if (searchInput === "") onSearch?.("");
+    if (onSearch) {
+    const delay = setTimeout(() => onSearch(searchInput), 300);
+    return () => clearTimeout(delay);
+  }
   }, [searchInput]);
 
   const handleKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -67,7 +69,7 @@ const DataGrid: React.FC<DataGridProps> = ({
 
   return (
     <div className="space-y-4">
-      {/* Search Bar */}
+ 
       {onSearch && (
         <div className="flex items-center gap-2">
           <input
@@ -75,7 +77,7 @@ const DataGrid: React.FC<DataGridProps> = ({
             placeholder="Search..."
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            onKeyUp={handleKeyUp}
+            
             className="p-2 border rounded-md w-full max-w-md"
           />
           <button

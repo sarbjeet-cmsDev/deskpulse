@@ -34,13 +34,17 @@ export default function LeftMenuDrawer() {
   const user: IUserRedux | null = useSelector(
     (state: RootState) => state.auth.user
   );
+
+
   const userProfile = useSelector((state: RootState) => state.user.data);
+  
 
   const [version, setVersion] = useState(Date.now());
   const avatarUrl = userProfile?.profileImage
     ? `${process.env.NEXT_PUBLIC_BACKEND_HOST}${userProfile.profileImage}?v=${version}`
     : avatar.src;
-  const menuItems = [
+
+  const userMenuItems = [
     { label: "Home", href: "/" },
     { label: "Profile", href: "/auth/profile" },
     { label: "My Projects", href: "/project/list" },
@@ -49,6 +53,17 @@ export default function LeftMenuDrawer() {
     { label: "Create Reminder", href: "/reminder/create" },
     { label: "Logout", href: "#" },
   ];
+
+  const adminMenuItems = [
+  { label: "Home", href: "/admin" },
+  { label: "Profile", href: "/auth/profile" },
+  { label: "Projects", href: "/admin/project" },
+  { label: "Users", href: "/admin/user" },
+  { label: "Logout", href: "#" },
+];
+
+const menuItems = user?.role === "admin" ? adminMenuItems : userMenuItems;
+
   const router = useRouter();
   const handleLogout = () => {
     dispatch(signOut());

@@ -29,6 +29,7 @@ const ProjectListPage = () => {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [limit, setLimit] = useState(10);
   const [totalRecords, setTotalRecords] = useState(0);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [sortField, setSortField] = useState("code");
@@ -38,12 +39,14 @@ const ProjectListPage = () => {
     try {
       const res = await AdminProjectService.getAllProjects({
         page,
+        limit,
         keyword: debouncedSearch,
         sortOrder,
       });
       setProjects(res.data as Project[]);
       setTotalRecords(res.total);
-      setTotalPages(Math.ceil(res.total / 10));
+      setTotalPages(res.totalPages);
+      setLimit(res.limit)
     } catch (err) {
       console.error("Failed to fetch projects", err);
     }
@@ -56,7 +59,7 @@ const ProjectListPage = () => {
   const headers = [
     { id: "code", title: "Code", is_sortable: true },
     { id: "title", title: "Title" },
-    { id: "description", title: "Description" },
+    // { id: "description", title: "Description" },
   ];
 
   const rows = (projects ?? []).map((project) => ({
@@ -84,7 +87,7 @@ const ProjectListPage = () => {
             total_records: totalRecords,
             total_page: totalPages,
             current_page: page,
-            limit: 10,
+            limit: limit,
           }}
           onSearch={(query) => {
             setSearch(query);

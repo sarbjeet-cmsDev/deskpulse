@@ -108,6 +108,7 @@ export class UserService {
       .findByIdAndUpdate(id, { password: hashedPassword }, { new: true })
       .exec();
   }
+
   async findAllPaginated(
     page: number = 1,
     limit: number = 10,
@@ -129,7 +130,7 @@ export class UserService {
     const [users, total] = await Promise.all([
       this.userModel
         .find(query)
-        .sort({ [sortField]: sortOrder === "asc" ? 1 : -1 })
+        .sort({ createdAt: sortOrder === "desc" ? 1 : -1 })
         .skip(skip)
         .limit(limit)
         .exec(),

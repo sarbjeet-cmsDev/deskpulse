@@ -14,6 +14,12 @@ export class Project {
   @Prop({ required: false })
   description: string;
 
+  @Prop({ required: false })
+  deploy_instruction: string;
+
+  @Prop({ required: false })
+  critical_notes: string;
+
 
   @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'User', required: false }] })
   users: MongooseSchema.Types.ObjectId[];

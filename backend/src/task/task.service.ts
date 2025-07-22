@@ -64,7 +64,8 @@ export class TaskService {
     return this.taskModel.find({
       assigned_to: { $in: userIds },
       project: projectId,
-    });
+    })
+    .sort({ createdAt: -1 });
   }
 
   async findOne(id: string): Promise<Task> {

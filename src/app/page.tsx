@@ -78,7 +78,8 @@ export default function Dashboard() {
               {loading ? (
                 <p>Loading projects...</p>
               ) : projects.length === 0 ? (
-                <p>No projects found.</p>
+                <div className="w-full"><p className="text-gray-500 text-left flex items-left justify-left">No projects available.</p></div>
+                
               ) : (
                 projects.map((project) => (
                   <Link

@@ -10,6 +10,10 @@ import { Button } from "@/components/Form/Button";
 import { H1 } from "@/components/Heading/H1";
 import { useParams, useRouter } from "next/navigation";
 import AdminUserService, { IUser } from "@/service/adminUser.service";
+import Link from "next/link";
+import Image from "next/image";
+import leftarrow from "@/assets/images/back.png";
+import { H3 } from "@/components/Heading/H3";
 
 type UpdateUserInput = z.infer<typeof userUpdateSchema>;
 
@@ -72,14 +76,19 @@ const UpdateUserPage = () => {
   if (initialLoading) return <div className="p-6">Loading user...</div>;
 
   return (
-    <div className="min-h-screen flex justify-center items-start pt-10">
+    <div className="min-h-screen flex justify-center items-start pt-5">
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="w-full max-w-xl bg-white p-6 rounded shadow space-y-4"
       >
-        <H1 className="text-2xl font-semibold mb-4 text-gray-900">
-          Update User
-        </H1>
+        <div className="flex justify-center items-center p-[24px] border-b border-[#31394f14]">
+        <div className="w-[5%]">
+          <Link href="/admin/user">
+            <Image src={leftarrow} alt="Back" width={16} height={16} />
+          </Link>
+        </div>
+        <H3 className="w-[98%] text-center">Update User</H3>
+      </div>
 
         <Input placeholder="Username" {...register("username")} />
         {errors.username && (

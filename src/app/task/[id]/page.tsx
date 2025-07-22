@@ -48,10 +48,12 @@ export default function TaskDetails() {
     (state: RootState) => state.auth.user
   );
 
+  console.log('task project id',task)
+
   const fetchTask = async (id: string) => {
     try {
       const data = await TaskService.getTaskById(id);
-      console.log("projectidddddd", data.project);
+
       setTask(data);
 
       if (data.project) {
@@ -140,6 +142,11 @@ export default function TaskDetails() {
   const handleActivityLog = () => {
     router.push(`/task-activitylog/${taskId}`);
   };
+
+  const handleViewKanban = () => {
+    router.push(`/project/projectDetail/${task?.project}`);
+  };
+
   const handleUpdateTaskDescription = (id: string) => {
     return async (description: string) => {
       try {
@@ -155,7 +162,7 @@ export default function TaskDetails() {
     <div className="max-w-6xl mx-auto">
       <div className="main-content">
         <div>
-          <div className="flex justify-between items-center py-5 border-b border-[#31394f14]">
+          <div className="flex justify-between items-center border-b border-[#31394f14]">
             <div className="flex items-center gap-4">
               <div className="">
                 <Link href={`/project/${task?.project}`}>
@@ -172,6 +179,12 @@ export default function TaskDetails() {
                     label: "View Activity Log",
                     color: "primary",
                     onClick: handleActivityLog,
+                  },
+                  {
+                    key: "View Kanban",
+                    label: "View Kanban",
+                    color: "primary",
+                    onClick: handleViewKanban,
                   },
                 ]}
               />

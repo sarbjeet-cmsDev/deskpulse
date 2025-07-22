@@ -74,7 +74,7 @@ export class TaskController {
       userIdArray,
       projectId
     );
-    return { message: "Task status fetched successfully", tasks };
+    return { message: "Task fetched successfully", tasks };
   }
 
   @Get("code/:code")

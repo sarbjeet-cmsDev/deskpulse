@@ -4,6 +4,9 @@ const axiosClient = createAxiosClient({ withCreds: false });
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export interface IProject {
+  description: string;
+  deploy_instruction?: string;
+  critical_notes?: string;
   _id?: string;
   code?: string;
   users: string[];
@@ -30,11 +33,13 @@ const AdminProjectService = {
     limit?: number;
     keyword?: string;
     sortOrder?: "asc" | "desc";
-  }): Promise<{ data: IProject[]; total: number }> {
+  }): Promise<{ data: IProject[]; total: number; limit:number; totalPages:number }> {
     const res = await axiosClient.get(`${API_URL}/admin/project`, { params });
     return {
       data: res.data.data,
       total: res.data.total,
+      limit: res.data.limit,
+      totalPages: res.data.totalPages,
     };
   },
 

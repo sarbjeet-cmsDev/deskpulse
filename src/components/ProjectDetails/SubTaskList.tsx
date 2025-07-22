@@ -28,6 +28,8 @@ export default function SubTasks({
     {}
   );
 
+  
+
   if (!tasks?.length) {
     return <div className="text-gray-500">No tasks available.</div>;
   }
@@ -60,6 +62,8 @@ export default function SubTasks({
         const totalItems = filteredTasks.length;
         const visibleCount = getVisibleCount(status);
         const visibleTasks = filteredTasks.slice(0, visibleCount);
+
+        
 
         return (
           <div key={status}>

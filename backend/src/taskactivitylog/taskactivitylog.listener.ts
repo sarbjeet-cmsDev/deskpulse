@@ -108,7 +108,7 @@ export class TaskActivityLogListener {
     const updateTaskActivityLogDto: CreateTaskActivityLogDto = {
       task: TaskObj._id.toString(),
       project: TaskObj.project.toString(),
-      description: `Worked ${formatMinutes(timeLineObj.time_spent)}  on task "${TaskObj.title}" — general updates and review. Comment: ${timeLineObj.comment}. On ${new Date(timeLineObj.date).toLocaleString()} by "${timeLineCreatedBy.username}"`,
+      description: `Worked ${formatMinutes(timeLineObj.time_spent)}  on task "${TaskObj.title}" — general updates and review. Comment: ${timeLineObj.comment}. On ${new Date(timeLineObj.date).toLocaleDateString()} by "${timeLineCreatedBy.username}"`,
     };
     try {
       await this.taskactivitylogService.create(updateTaskActivityLogDto);

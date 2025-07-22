@@ -16,13 +16,11 @@ import { RootState } from "@/store/store";
 import { useSelector } from "react-redux";
 import { IUserRedux } from "@/types/user.interface";
 import Link from "next/link";
-import Pagination from "@/components/Pagination/pagination";
 import { Button } from "@heroui/button";
 import AvatarList from "@/components/IndexPage/avatarlist";
 import AdminUserService from "@/service/adminUser.service";
 import { ProjectKanbon } from "@/service/projectKanbon.service";
 import { KanbanColumn } from "@/types/projectKanbon.interface";
-import UpdateProjectDescriptionModal from "@/components/ProjectDetails/UpdateProjectDescriptionModal";
 import CommentInputSection from "@/components/Comment/commentSection";
 import DropdownOptions from "@/components/DropdownOptions";
 
@@ -65,8 +63,10 @@ export default function MyProjectDetails() {
           projectId,
           userIds.join(",")
         );
+        
       } else {
         taskRes = await TaskService.getTasksByProject(projectId);
+          
       }
 
       if (res?.data) {
@@ -202,7 +202,7 @@ export default function MyProjectDetails() {
     <div className="max-w-6xl mx-auto">
       <div className="main-content">
         <div>
-          <div className="flex justify-between items-center py-5 border-b border-[#31394f14]">
+          <div className="flex justify-between items-center border-b border-[#31394f14] pb-4">
             <div className="flex items-center gap-4">
               <div className="">
                 <Link href="/project/list">

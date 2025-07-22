@@ -17,6 +17,8 @@ export const projectCreateSchema = z.object({
   avatar: z.string().optional(),
   notes: z.string().optional(),
   description: z.string().nonempty("Description is required"),
+  deploy_instruction: z.string().optional(),
+  critical_notes: z.string().optional(),
   creds: z.string().optional(),
   additional_information: z.string().optional(),
   url_dev: z.string().optional(),
