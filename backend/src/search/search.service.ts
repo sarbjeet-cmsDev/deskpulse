@@ -14,8 +14,8 @@ export class SearchService {
     ) { }
     async searchAll(query: string, userId:string) {
         const projects = await this.projectService.search(query,userId);
-        // log(projects)
-        const tasks = await this.taskService.search(query,projects);
+        const projectList = await this.projectService.findProjectsByUserId(userId, 1, 10000)
+        const tasks = await this.taskService.search(query,projectList.data);
         const comments = await this.commentService.search(query,userId);
         return {
             projects,

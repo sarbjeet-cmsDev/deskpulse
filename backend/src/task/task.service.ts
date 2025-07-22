@@ -190,7 +190,7 @@ export class TaskService {
     });
   }
 
-  async search(keyword: string, projectsList: any[]) {
+  async search(keyword: string, projectsList: any) {
   const regex = new RegExp(keyword, "i");
   const projectIds = projectsList.map(project => project._id);
 
