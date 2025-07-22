@@ -242,6 +242,7 @@ export class ProjectService {
     return this.projectModel
       .find(filters)
       .sort({ createdAt: -1, updatedAt: -1 }) // Most recent first
+       .limit(10)    
       .exec();
   }
 }

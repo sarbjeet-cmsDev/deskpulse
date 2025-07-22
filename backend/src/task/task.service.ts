@@ -190,24 +190,28 @@ export class TaskService {
     });
   }
 
-  async search(keyword: string, userId: string) {
-    const regex = new RegExp(keyword, "i");
-    const filters: any = {
-      $and: [
-        { assigned_to: userId }, // Filter tasks assigned to the user
-        {
-          $or: [
-            { code: { $regex: regex } },
-            { title: { $regex: regex } },
-            { description: { $regex: regex } },
-          ],
-        },
-      ],
-    };
-    return this.taskModel
-      .find(filters)
-      .sort({ updatedAt: -1, createdAt: -1 }) // Sort by most recent
-      .exec();
-  }
+  async search(keyword: string, projectsList: any[]) {
+  const regex = new RegExp(keyword, "i");
+  const projectIds = projectsList.map(project => project._id);
+
+  const filters: any = {
+    $and: [
+      { project: { $in: projectIds } }, // Match only tasks from these projects
+      {
+        $or: [
+          { code: { $regex: regex } },
+          { title: { $regex: regex } },
+          { description: { $regex: regex } },
+        ],
+      },
+    ],
+  };
+
+  return this.taskModel
+    .find(filters)
+    .sort({ updatedAt: -1, createdAt: -1 }) // Sort by most recent
+     .limit(10)    
+    .exec();
+}
 
 }
