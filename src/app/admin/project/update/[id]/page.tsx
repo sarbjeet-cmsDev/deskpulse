@@ -20,6 +20,7 @@ import Link from "next/link";
 import Image from "next/image";
 import leftarrow from "@/assets/images/back.png";
 import { H3 } from "@/components/Heading/H3";
+import DescriptionInputToolbar from "@/components/common/Description/descriptionToolbar";
 
 type UpdateProjectInput = z.infer<typeof projectUpdateSchema>;
 type UserOption = { label: string; value: string };
@@ -28,9 +29,9 @@ const ReactSelect = dynamic(() => import("react-select") as any, {
   ssr: false,
 }) as React.ComponentType<SelectProps<UserOption, true>>;
 
-function stripHtml(html: string): string {
-  return html.replace(/<[^>]*>/g, "").trim();
-}
+// function stripHtml(html: string): string {
+//   return html.replace(/<[^>]*>/g, "").trim();
+// }
 
 const UpdateProjectPage = () => {
   const router = useRouter();
@@ -72,7 +73,7 @@ const UpdateProjectPage = () => {
     const fetchData = async () => {
       try {
         const project = await AdminProjectService.getProjectById(id);
-        project.description = stripHtml(project.description || "");
+        // project.description = stripHtml(project.description || "");
         setProject(project);
         const users = await AdminUserService.searchUsers("");
         const options = users.map((user: IUser) => ({
@@ -150,14 +151,55 @@ const UpdateProjectPage = () => {
           <p className="text-sm text-red-500">{errors.title.message}</p>
         )}
 
-         <textarea
+        <Controller
+          name="description"
+          control={control}
+          render={({ field }) => (
+            <DescriptionInputToolbar
+              title="Description"
+              isButton={false}
+              value={field.value}
+              onChange={field.onChange}
+            />
+          )}
+        />
+        {errors.description && (
+          <p className="text-sm text-red-500">{errors.description.message}</p>
+        )}
+        
+        <Controller
+          name="deploy_instruction"
+          control={control}
+          render={({ field }) => (
+            <DescriptionInputToolbar
+              title="Deploy Instruction"
+              isButton={false}
+              value={field.value}
+              onChange={field.onChange}
+            />
+          )}
+        />
+
+        <Controller
+          name="critical_notes"
+          control={control}
+          render={({ field }) => (
+            <DescriptionInputToolbar
+              title="Critical Notes"
+              isButton={false}
+              value={field.value}
+              onChange={field.onChange}
+            />
+          )}
+        />
+         {/* <textarea
           placeholder="Description"
           {...register("description")}
           className="w-full p-2 border border-gray-300 rounded outline-none"
         />
         {errors.description && (
           <p className="text-sm text-red-500">{errors.description.message}</p>
-        )}
+        )} */}
         {/* Assign Users */}
         <Controller
           name="users"

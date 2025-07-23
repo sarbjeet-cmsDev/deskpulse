@@ -1,0 +1,20 @@
+.quill-wrapper .ql-toolbar {
+  display: none;
+}
+
+.quill-wrapper.show-toolbar .ql-toolbar {
+  display: block !important;
+}
+.ql-toolbar.ql-snow + .ql-container.ql-snow {
+  border-top: 1px solid #e5e7eb !important ;
+}
+
+.comment-section .ql-toolbar:first-of-type:has(+ .ql-toolbar) {
+  display: none !important;
+}
+
+.description-content img {
+  width: 200px;
+  max-width: 50%;
+  height: auto;
+}

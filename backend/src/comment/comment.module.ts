@@ -5,7 +5,8 @@ import { CommentController } from './comment.controller';
 import { CommentService } from './comment.service';
 import { CommentSchema } from './comment.schema';
 import { TaskModule } from 'src/task/task.module';
-import { UserModule } from 'src/user/user.module'; // ✅ import the module
+import { UserModule } from 'src/user/user.module'; 
+import { AdminCommentController } from './admin.comment.controller';
 
 @Module({
   imports: [
@@ -13,8 +14,8 @@ import { UserModule } from 'src/user/user.module'; // ✅ import the module
     TaskModule,
     UserModule,
   ],
-  controllers: [CommentController],
+  controllers: [CommentController, AdminCommentController],
   providers: [CommentService],
-   exports: [CommentService],  // ← Needed so other modules (like SearchModule) can use it
+   exports: [CommentService],  
 })
 export class CommentModule {}

@@ -7,6 +7,7 @@ import { NotificationListener } from './notification.listener';
 import { UserModule } from 'src/user/user.module';
 import { ProjectModule } from 'src/project/project.module';
 import { TaskModule } from 'src/task/task.module';
+import { AdminNotificationController } from './admin.notification.controller';
 
 @Module({
   imports: [
@@ -16,8 +17,8 @@ import { TaskModule } from 'src/task/task.module';
     UserModule, ProjectModule ,TaskModule
 
   ],
-  controllers: [NotificationController],
-  providers: [NotificationService, NotificationListener],  // <== Add listener here
+  controllers: [NotificationController, AdminNotificationController],
+  providers: [NotificationService, NotificationListener],  
   exports: [NotificationService],
 })
 export class NotificationModule { }

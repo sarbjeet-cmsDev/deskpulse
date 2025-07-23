@@ -59,6 +59,9 @@ export default function LeftMenuDrawer() {
   { label: "Profile", href: "/auth/profile" },
   { label: "Projects", href: "/admin/project" },
   { label: "Users", href: "/admin/user" },
+  { label: "Tasks", href: "/admin/task" },
+  { label: "Notifications", href: "/admin/notification" },
+  { label: "Comments", href: "/admin/comment" },
   { label: "Logout", href: "#" },
 ];
 

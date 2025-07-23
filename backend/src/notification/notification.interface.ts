@@ -1,6 +1,6 @@
 import { Document, Types } from 'mongoose';
 
-export interface Notification {
+export interface INotification {
   content: string;
   user: Types.ObjectId;          // Correct way to type ObjectId
   is_read: boolean;

@@ -1,7 +1,6 @@
 import { createAxiosClient } from "@/utils/createAxiosClient";
 
 const axiosClient = createAxiosClient({ withCreds: true });
-const axiosPrivateClient = createAxiosClient({ withCreds: true });
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export interface ITask {
@@ -14,6 +13,7 @@ export interface ITask {
   assigned_to: string;
   KanbanColumn?: any;
   description: string;
+  priority: string;
 
   // Add more fields as needed
 }

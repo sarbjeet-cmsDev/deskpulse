@@ -2,76 +2,80 @@ import { useState, useEffect } from "react";
 import { Modal, ModalBody, ModalContent } from "@heroui/react";
 import TaskService from "@/service/task.service";
 
-interface TaskStatusUpdateModalProps {
-  kanbanList: string[];
+interface TaskPropertyUpdateModalProps {
+  title: string; 
+  options: string[]; 
+  currentValue: string; 
   isOpen: boolean;
   onClose: () => void;
-  currentStatus: string;
   taskId: string;
-  onStatusUpdate: () => void;
+  fieldName: "status" | "priority"; 
+  onUpdate: () => void;
 }
 
-export default function TaskStatusUpdateModal({
+export default function TaskPropertyUpdateModal({
+  title,
+  options,
+  currentValue,
   isOpen,
   onClose,
-  currentStatus,
   taskId,
-  onStatusUpdate,
-  kanbanList,
-}: TaskStatusUpdateModalProps) {
-  const [selectedStatus, setSelectedStatus] = useState<string>(currentStatus);
+  fieldName,
+  onUpdate,
+}: TaskPropertyUpdateModalProps) {
+  const [selectedValue, setSelectedValue] = useState<string>(currentValue);
 
   useEffect(() => {
     if (isOpen) {
-      setSelectedStatus(currentStatus);
+      setSelectedValue(currentValue);
     }
-  }, [isOpen, currentStatus]);
+  }, [isOpen, currentValue]);
 
   const handleConfirm = async () => {
     try {
-      await TaskService.updateTaskStatus(taskId, { status: selectedStatus });
-      onStatusUpdate?.();
+      await TaskService.updateTaskStatus(taskId, { [fieldName]: selectedValue });
+      onUpdate?.();
       onClose();
     } catch (error) {
-      console.error("Failed to update task status:", error);
+      console.error(`Failed to update task ${fieldName}:`, error);
     }
   };
-
-  const statusOptions = Object.values(kanbanList);
 
   return (
     <Modal isOpen={isOpen} onOpenChange={onClose}>
       <ModalContent>
         <ModalBody className="p-6">
-          <h2 className="text-lg font-semibold mb-4">Update Task Status</h2>
+          <h2 className="text-lg font-semibold mb-4">{title}</h2>
 
           <div
             className="flex flex-col gap-2 overflow-y-auto"
             style={{ maxHeight: "200px" }}
           >
-            {statusOptions.map((status) => (
+            {options.map((option) => (
               <button
-                key={status}
-                onClick={() => setSelectedStatus(status)}
-                className={`px-3 py-2 rounded text-sm border text-left ${selectedStatus === status
+                key={option}
+                onClick={() => setSelectedValue(option)}
+                className={`px-3 py-2 rounded text-sm border text-left ${
+                  selectedValue === option
                     ? "bg-theme-primary text-white border-bg-theme-primary"
                     : "bg-white text-gray-800 border-gray-300 hover:border-gray-400"
-                  }`}
+                }`}
               >
-                {status.replace(/_/g, " ").toUpperCase()}
+                {option.replace(/_/g, " ").toUpperCase()}
               </button>
             ))}
           </div>
 
           <button
             onClick={handleConfirm}
-            disabled={selectedStatus === currentStatus}
+            disabled={selectedValue === currentValue}
             className="mt-5 btn-primary px-4 py-2 rounded disabled:opacity-50"
           >
-            Confirm Status Update
+            Confirm Update
           </button>
         </ModalBody>
       </ModalContent>
     </Modal>
   );
 }
+

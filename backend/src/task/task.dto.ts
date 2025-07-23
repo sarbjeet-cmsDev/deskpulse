@@ -182,4 +182,8 @@ export class UpdateTaskStatusUpdateDto {
   totaltaskminutes?: number;
   @IsOptional()
   updated_by?: MongooseSchema.Types.ObjectId;
+
+   @IsOptional()
+  @IsEnum(PriorityEnum)
+  priority?: PriorityEnum;
 }

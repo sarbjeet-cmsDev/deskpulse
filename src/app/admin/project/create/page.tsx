@@ -18,6 +18,8 @@ import { Input } from "@/components/Form/Input";
 import { Button } from "@/components/Form/Button";
 import { H1 } from "@/components/Heading/H1";
 import { projectCreateSchema } from "@/components/validation/projectValidation";
+import CommentInputSection from "@/components/Comment/commentSection";
+import DescriptionInputToolbar from "@/components/common/Description/descriptionToolbar";
 
 type CreateProjectInput = z.infer<typeof projectCreateSchema>;
 type UserOption = { label: string; value: string };
@@ -88,8 +90,6 @@ const CreateProjectPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // const project = await AdminProjectService.getProjectById(id);
-        // setProject(project);
         const users = await AdminUserService.searchUsers("");
         const options = users.map((user: IUser) => ({
           label: `${user.firstName || ""} ${user.lastName || ""} (${user.email})`,
@@ -100,7 +100,6 @@ const CreateProjectPage = () => {
         console.error("Failed to fetch project", error);
         router.push("/admin/project");
       } finally {
-        // setLoading(false);
       }
     };
 
@@ -141,28 +140,60 @@ const CreateProjectPage = () => {
         className="w-full max-w-2xl bg-white p-6 rounded border border-gray-300 shadow space-y-4"
       >
         <div className="flex justify-center items-center p-[20px] border-b border-[#31394f14]">
-        <div className="w-[5%]">
-          <Link href="/admin/project">
-            <Image src={leftarrow} alt="Back" width={16} height={16} />
-          </Link>
+          <div className="w-[5%]">
+            <Link href="/admin/project">
+              <Image src={leftarrow} alt="Back" width={16} height={16} />
+            </Link>
+          </div>
+          <H3 className="w-[95%] text-center">Create Project</H3>
         </div>
-        <H3 className="w-[95%] text-center">Create Project</H3>
-      </div>
 
         <Input placeholder="Title" {...register("title")} />
         {errors.title && (
           <p className="text-sm text-red-500">{errors.title.message}</p>
         )}
 
-        {/* <Input placeholder="Description" {...register("description")} /> */}
-        <textarea
-          placeholder="Description"
-          {...register("description")}
-          className="w-full p-2 border border-gray-300 rounded outline-none"
+        <Controller
+          name="description"
+          control={control}
+          render={({ field }) => (
+            <DescriptionInputToolbar
+              title="Description"
+              isButton={false}
+              value={field.value}
+              onChange={field.onChange}
+            />
+          )}
         />
         {errors.description && (
           <p className="text-sm text-red-500">{errors.description.message}</p>
         )}
+
+        <Controller
+          name="deploy_instruction"
+          control={control}
+          render={({ field }) => (
+            <DescriptionInputToolbar
+              title="Deploy Instruction"
+              isButton={false}
+              value={field.value}
+              onChange={field.onChange}
+            />
+          )}
+        />
+
+        <Controller
+          name="critical_notes"
+          control={control}
+          render={({ field }) => (
+            <DescriptionInputToolbar
+              title="Critical Notes"
+              isButton={false}
+              value={field.value}
+              onChange={field.onChange}
+            />
+          )}
+        />
 
         <Controller
           name="users"

@@ -32,6 +32,7 @@ export default function ({
             onCommentCreated={onCommentCreated}
             onCancel={onClose}
             inline={true}
+            isButton={true}
           />
         </ModalBody>
       </ModalContent>

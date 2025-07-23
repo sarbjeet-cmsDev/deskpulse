@@ -45,9 +45,9 @@ const DataGrid: React.FC<DataGridProps> = ({
 
   useEffect(() => {
     if (onSearch) {
-    const delay = setTimeout(() => onSearch(searchInput), 300);
-    return () => clearTimeout(delay);
-  }
+      const delay = setTimeout(() => onSearch(searchInput), 300);
+      return () => clearTimeout(delay);
+    }
   }, [searchInput]);
 
   const handleKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -69,7 +69,6 @@ const DataGrid: React.FC<DataGridProps> = ({
 
   return (
     <div className="space-y-4">
- 
       {onSearch && (
         <div className="flex items-center gap-2">
           <input
@@ -77,7 +76,6 @@ const DataGrid: React.FC<DataGridProps> = ({
             placeholder="Search..."
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            
             className="p-2 border rounded-md w-full max-w-md"
           />
           <button
@@ -93,7 +91,7 @@ const DataGrid: React.FC<DataGridProps> = ({
       )}
 
       {/* Table */}
-      <div className="overflow-x-auto border rounded-md">
+      <div className="overflow-x-auto flex flex-col justify-between items-center border rounded-md">
         <table className="min-w-full text-sm text-left text-gray-700">
           <thead className="bg-gray-100">
             <tr>
@@ -141,7 +139,11 @@ const DataGrid: React.FC<DataGridProps> = ({
                       row.actions.map((action, i) => (
                         <button
                           key={i}
-                          className="text-blue-600 hover:underline"
+                          className={`px-3 py-1 rounded text-white text-sm ${
+                            action.title === "Delete"
+                              ? "bg-red-500 hover:bg-red-600"
+                              : "btn-primary"
+                          }`}
                           onClick={() => onAction?.(action.title, row)}
                         >
                           {action.title}

@@ -66,8 +66,8 @@ const Users = () => {
     lastName: user.lastName ?? '',
     actions: [
       { title: 'Edit' },
-      { title: 'Delete' },
       { title: 'Reset Password' },
+      { title: 'Delete' },
     ],
   }));
 

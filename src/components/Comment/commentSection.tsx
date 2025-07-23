@@ -14,6 +14,7 @@ import QuillEditorWrapper from "./QuillEditorWrapper";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import UploadService from "@/service/upload.service";
+import DescriptionView from "../common/DescriptionView/DescriptionView";
 
 if (
   typeof window !== "undefined" &&
@@ -35,6 +36,7 @@ interface CommentInputProps {
   parent_comment?: string;
   commentId?: string;
   title?: any;
+  isButton?:any;
 }
 
 export default function CommentInputSection({
@@ -48,6 +50,7 @@ export default function CommentInputSection({
   commentId,
   title,
   onClick,
+  isButton,
 }: any) {
   const [content, setContent] = useState<string | undefined>(defaultValue);
   const [loading, setLoading] = useState(false);
@@ -248,6 +251,10 @@ export default function CommentInputSection({
         {title ? title : "Comment"} <span className="text-red-500">*</span>
       </label>
 
+      {/* {defaultValue && !isEditing ? (
+      <DescriptionView html={defaultValue} maxLines={4} />
+    ) : ( */}
+
       <div
         ref={wrapperRef}
         onFocus={handleFocus}
@@ -268,6 +275,8 @@ export default function CommentInputSection({
         />
       </div>
 
+        {/* )} */}
+
       {error && <p className="text-sm text-red-500 mt-1">{error}</p>}
 
       <div className="flex justify-end gap-2 mt-4">
@@ -276,31 +285,37 @@ export default function CommentInputSection({
             Cancel
           </Button>
         )}
+
+        {isButton === true ? 
+        
         <Button
-          onPress={() => {
-            if (onClick) {
-              if (!content || stripHtml(content) === "") {
-                setError(`${title} is required`);
-                return;
-              }
-              setLoading(true);
-              onClick(content)
-                .then(() => setLoading(false))
-                .catch((err: any) => {
-                  console.error("Failed to update description:", err);
-                  setLoading(false);
-                });
-            } else if (isEditing) {
-              handleEdit();
-            } else {
-              handleCreate();
+        onPress={() => {
+          if (onClick) {
+            if (!content || stripHtml(content) === "") {
+              setError(`${title} is required`);
+              return;
             }
-          }}
-          disabled={loading}
-          className="btn-primary"
+            setLoading(true);
+            onClick(content)
+            .then(() => setLoading(false))
+            .catch((err: any) => {
+              console.error("Failed to update description:", err);
+              setLoading(false);
+            });
+          } else if (isEditing) {
+            handleEdit();
+          } else {
+            handleCreate();
+          }
+        }}
+        disabled={loading}
+        className="btn-primary"
         >
           {isEditing ? "Update" : "Save"}
         </Button>
+        :
+        null 
+      }
       </div>
     </div>
   );

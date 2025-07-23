@@ -96,6 +96,7 @@ export default function CommentList({
                   isEditing
                   commentId={comment._id}
                   inline
+                  isButton={true}
                 />
               </div>
             ) : (
@@ -150,6 +151,7 @@ export default function CommentList({
                   }}
                   parent_comment={comment._id}
                   inline
+                  isButton={true}
                 />
               </div>
             )}

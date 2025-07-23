@@ -198,6 +198,7 @@ export default function TaskDetails() {
                 defaultValue={task.description}
                 title="Description"
                 onClick={handleUpdateTaskDescription(task?._id)}
+                isButton={true}
               />
             )}
 
@@ -244,6 +245,7 @@ export default function TaskDetails() {
                 defaultValue=""
                 onCommentCreated={() => fetchComments()}
                 inline={true}
+                isButton={true}
               />
 
               <CommentList

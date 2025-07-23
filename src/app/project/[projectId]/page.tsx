@@ -262,11 +262,25 @@ export default function MyProjectDetails() {
                   />
                 )}
               </div>
-              <div className="py-5">
+              <div className="flex flex-col gap-2 py-5">
                 <CommentInputSection
                   defaultValue={project?.description}
                   title="Description"
                   onClick={handleUpdateProjectDescription(project?._id)}
+                  isButton={true}
+                />
+          
+                 <CommentInputSection
+                  defaultValue={project?.deploy_instruction}
+                  title="Deploy Instruction"
+                  // onClick={handleUpdateProjectDescription(project?._id)}
+                  isButton={false}
+                /> 
+                <CommentInputSection
+                  defaultValue={project?.critical_notes}
+                  title="Critical Notes"
+                  // onClick={handleUpdateProjectDescription(project?._id)}
+                  isButton={false}
                 />
               </div>
               <Details

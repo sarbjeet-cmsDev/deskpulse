@@ -43,10 +43,10 @@ export class TaskController {
     };
   }
 
-  @Get()
-  async findAll(): Promise<Task[]> {
-    return this.taskService.findAll();
-  }
+  // @Get()
+  // async findAll(): Promise<Task[]> {
+  //   return this.taskService.findAll();
+  // }
 
   @Get("fetch/:id")
   async findOne(@Param("id") id: string): Promise<Task> {
@@ -113,7 +113,7 @@ export class TaskController {
       id,
       updateTaskStatusUpdateDto,
     );
-    return { message: "Task Status  updated successfully", task };
+    return { message: "Task updated successfully", task };
   }
 
   @Delete(":id")
