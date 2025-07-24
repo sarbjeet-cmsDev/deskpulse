@@ -165,10 +165,10 @@ const menuItems = user?.role === "admin" ? adminMenuItems : userMenuItems;
                 <Divider />
                 {menuItems.map((item, index) => (
                   <Link href={item.href} key={index}>
-                  <Button
+                  <P
                     key={index}
-                    className="w-full justify-start px-4 py-4 bg-white font-semibold text-black text-[16px] text-left hover:bg-[#7980ff] hover:text-white cursor-pointer transition-colors duration-500"
-                    onPress={() => {
+                    className="text-start px-4 py-2 bg-white font-semibold text-black text-[16px] border border-none rounded-md hover:bg-[#7980ff] hover:text-white cursor-pointer transition-colors duration-500"
+                    onClick={() => {
                       onClose();
                       if (item.label === "Logout") {
                         handleLogout();
@@ -176,7 +176,7 @@ const menuItems = user?.role === "admin" ? adminMenuItems : userMenuItems;
                     }}
                   >
                     {item.label}
-                  </Button>
+                  </P>
                   </Link>
                 ))}
               </DrawerBody>

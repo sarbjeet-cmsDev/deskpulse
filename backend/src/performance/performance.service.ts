@@ -122,15 +122,24 @@ export class PerformanceService {
     return createdNotification.save();
   }
 
-  async getPerformanceByTaskandUserId(userId: string): Promise<any> {
+  async getPerformanceByTaskandUserId(userId: string, start?: string, end?: string): Promise<any> {
     const pageNumber = parseInt('', 10);
     const limitNumber = parseInt('', 10);
   const tasks = await this.taskService.findByAssignedUser(userId,pageNumber,limitNumber);
 
   const taskIds = tasks.data.map((task) => task._id);
 
+  const matchQuery: any = { task: { $in: taskIds } };
+
+  if (start && end) {
+    matchQuery.updatedAt = {
+      $gte: new Date(start),
+      $lte: new Date(end),
+    };
+  }
+
   const performances = await this.performanceModel.aggregate([
-    { $match: { task: { $in: taskIds } } },
+    { $match: matchQuery },
     { $sort: { updatedAt: -1 } },
     {
       $group: {

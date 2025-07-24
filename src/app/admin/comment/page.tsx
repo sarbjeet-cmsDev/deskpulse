@@ -112,7 +112,7 @@ const CommentListPage = () => {
             } else if (action === "Delete") {
               const result = await Swal.fire({
                 title: "Are you sure?",
-                text: `You are about to delete comment: "${row.content}"`,
+                text: `You are about to delete comment`,
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonText: "Yes, delete it!",

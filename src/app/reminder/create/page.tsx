@@ -10,6 +10,7 @@ import ReminderService from "@/service/reminder.service";
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Button } from "@heroui/button";
 
 export default function CreateReminder() {
   const [loading, setLoading] = useState(false);
@@ -41,7 +42,7 @@ export default function CreateReminder() {
 
   return (
     <div className="max-w-6xl mx-auto">
-      {/* Header Section */}
+      
       <div className="flex justify-center items-center p-[24px] border-b border-[#31394f14]">
         <div className="w-[2%]">
           <Link href="/">
@@ -51,9 +52,9 @@ export default function CreateReminder() {
         <H3 className="w-[98%] text-center">Create Reminder</H3>
       </div>
 
-      {/* Form Section */}
+      
       <div className="p-6">
-        <form onSubmit={handleSubmit(onSubmit)} className="max-w-md mx-auto space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-xl mx-auto bg-white p-6 rounded border border-gray-300 shadow space-y-4">
           <div>
             <label className="block mb-1">Title</label>
             <input {...register("title")} className="border p-2 w-full rounded" placeholder="Enter title" />
@@ -71,14 +72,6 @@ export default function CreateReminder() {
             <input type="datetime-local" {...register("end")} className="border p-2 w-full rounded" min={new Date().toISOString().slice(0, 16)}/>
           </div>
 
-          {/* <div>
-            <label className="block mb-1">Status</label>
-            <select {...register("status")} className="border p-2 w-full rounded">
-              <option value="pending">Pending</option>
-              <option value="complete">Complete</option>
-            </select>
-          </div> */}
-
           <div className="flex items-center gap-2">
             <input type="checkbox" {...register("alert")} id="alert" />
             <label htmlFor="alert">Enable Alert</label>
@@ -90,18 +83,13 @@ export default function CreateReminder() {
             {errors.alert_before && <p className="text-red-500 text-sm">{errors.alert_before.message}</p>}
           </div>
 
-          {/* <div>
-            <label className="block mb-1">Sort Order</label>
-            <input type="number" {...register("sort_order", { valueAsNumber: true })} className="border p-2 w-full rounded" />
-          </div> */}
-
-          <button
+          <Button
             type="submit"
             disabled={loading}
-            className="btn-primary text-white px-4 py-2 rounded"
+            className="w-full btn-primary text-white px-4 py-2 rounded"
           >
             {loading ? "Saving..." : "Create Reminder"}
-          </button>
+          </Button>
         </form>
       </div>
     </div>

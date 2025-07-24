@@ -35,6 +35,14 @@ export default function LineChart({ data }: Props) {
       title: { display: true, text: "Performance Report" },
     },
     scales: {
+      x: {
+      ticks: {
+        maxRotation: 45,
+        minRotation: 45,
+        autoSkip: true,
+        maxTicksLimit: 31,
+      },
+    },
       y: {
         min: 0,
         max: 100,

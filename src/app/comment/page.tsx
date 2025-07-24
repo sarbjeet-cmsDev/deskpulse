@@ -6,7 +6,6 @@ import { H3 } from "@/components/Heading/H3";
 import { useEffect, useState } from "react";
 import CommentService from "@/service/comment.service";
 import { IComment } from "@/types/comment.interface";
-// import CommentList from "@/";
 import { IUserRedux } from "@/types/user.interface";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
