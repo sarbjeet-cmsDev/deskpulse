@@ -59,3 +59,15 @@ Licensed under the [MIT license](https://github.com/heroui-inc/next-app-template
 ```bash
 npm i nestjs-seeder
 ```
+
+### Start "nestjs-seeder"
+
+```bash
+npm run seed:refresh
+```
+
+### Install Chartjs
+
+```bash
+npm install chart.js
+```

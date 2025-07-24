@@ -51,6 +51,7 @@ export default function LeftMenuDrawer() {
     { label: "MY Task", href: "/mytask" },
     { label: "Reminder", href: "/reminder" },
     { label: "Create Reminder", href: "/reminder/create" },
+    { label: "My Performance", href: "/performance" },
     { label: "Logout", href: "#" },
   ];
 
@@ -163,18 +164,20 @@ const menuItems = user?.role === "admin" ? adminMenuItems : userMenuItems;
                 </div>
                 <Divider />
                 {menuItems.map((item, index) => (
-                  <P
+                  <Link href={item.href} key={index}>
+                  <Button
                     key={index}
-                    className="text-start font-semibold text-black text-[16px] hover:text-[#7980ff] cursor-pointer transition-colors duration-200"
-                    onClick={() => {
+                    className="w-full justify-start px-4 py-4 bg-white font-semibold text-black text-[16px] text-left hover:bg-[#7980ff] hover:text-white cursor-pointer transition-colors duration-500"
+                    onPress={() => {
                       onClose();
                       if (item.label === "Logout") {
                         handleLogout();
                       }
                     }}
                   >
-                    <Link href={item.href}>{item.label}</Link>
-                  </P>
+                    {item.label}
+                  </Button>
+                  </Link>
                 ))}
               </DrawerBody>
             </>
