@@ -10,7 +10,7 @@ import { Comment } from "./comment.interface";
 
 @Controller("api/admin/comment")
 export class AdminCommentController {
-  constructor(private readonly commentService: CommentService) {}
+  constructor(private readonly commentService: CommentService) { }
 
 
   @Get()
@@ -29,7 +29,7 @@ export class AdminCommentController {
   }
 
 
- 
+
   @Delete(":id")
   async remove(@Param("id") id: string): Promise<any> {
     await this.commentService.remove(id);

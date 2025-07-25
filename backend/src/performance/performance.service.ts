@@ -11,115 +11,126 @@ export class PerformanceService {
   constructor(
     @InjectModel(Performance.name)
     private performanceModel: Model<PerformanceDocument>,
-    private readonly taskService: TaskService
-  ) {}
+    private readonly taskService: TaskService,
+  ) { }
 
-  private readonly TaskTypeWeightage = [
-    { taskType: "ui/ux", weight: 50 },
-    { taskType: "backend", weight: 50 },
-    { taskType: "ui/ux bug", weight: 5 },
-    { taskType: "backend bug", weight: 25 },
-    { taskType: "DevOps", weight: 35 },
-    { taskType: "QA", weight: 5 },
-    { taskType: "R&D", weight: 5 },
-  ];
-
-  private readonly taskStatusTypeWeightage = [
-    { taskStatus: "pending", weight: 5 },
-    { taskStatus: "todo", weight: 5 },
-    { taskStatus: "BACKLOG", weight: 5 },
-    { taskStatus: "inprogress", weight: 25 },
-    { taskStatus: "code_review", weight: 35 },
-    { taskStatus: "qq", weight: 40 },
-    { taskStatus: "todeploy", weight: 45 },
-    { taskStatus: "done", weight: 50 },
-    { taskStatus: "completed", weight: 50 },
-  ];
-
+  // Priority weights
   private readonly PriorityWeightage = [
-    { PriorityType: "low", weight: 5 },
-    { PriorityType: "medium", weight: 12 },
-    { PriorityType: "high", weight: 20 },
+    { PriorityType: 'low', weight: 5 },
+    { PriorityType: 'medium', weight: 12 },
+    { PriorityType: 'high', weight: 20 },
   ];
 
+  // Task type weights
+  private readonly TaskTypeWeightage = [
+    { taskType: 'ui/ux', weight: 50 },
+    { taskType: 'backend', weight: 50 },
+    { taskType: 'ui/ux bug', weight: 5 },
+    { taskType: 'backend bug', weight: 25 },
+    { taskType: 'DevOps', weight: 35 },
+    { taskType: 'QA', weight: 5 },
+    { taskType: 'R&D', weight: 5 },
+  ];
+
+  // Acceptance weights
   private readonly AcceptanceWeightage = [
-    { AcceptanceType: "Average", weight: 5 },
-    { AcceptanceType: "Good", weight: 10 },
-    { AcceptanceType: "Satisfied", weight: 15 },
-    { AcceptanceType: "Very Satisfied", weight: 20 },
-    { AcceptanceType: "Excellent", weight: 30 },
+    { AcceptanceType: 'Average', weight: 5 },
+    { AcceptanceType: 'Good', weight: 10 },
+    { AcceptanceType: 'Satisfied', weight: 15 },
+    { AcceptanceType: 'Very Satisfied', weight: 20 },
+    { AcceptanceType: 'Excellent', weight: 30 },
   ];
 
+  // Revision weights
   private readonly RevisionWeightage = [
     { RevisionType: 1, weight: 10 },
     { RevisionType: 2, weight: 5 },
-    { RevisionType: 3, weight: 0 }, // Represent "3 or more"
+    { RevisionType: 3, weight: 0 }, // 3 or more revisions = 0 score
   ];
 
+  /**
+   * Create a performance record and calculate score
+   */
   async createPerformance(TaskObj: any) {
     const taskType = TaskObj.type;
-    const taskStatus = TaskObj.status;
     const priorityType = TaskObj.priority;
     const acceptanceType = TaskObj.acceptance;
     const revisionType = TaskObj.rivision;
 
     const taskTypeWeight =
       this.TaskTypeWeightage.find((t) => t.taskType === taskType)?.weight || 0;
-    const taskStatusWeight =
-      this.taskStatusTypeWeightage.find((t) => t.taskStatus === taskStatus)
-        ?.weight || 0;
+
     const priorityWeight =
       this.PriorityWeightage.find((t) => t.PriorityType === priorityType)
         ?.weight || 0;
+
     const acceptanceWeight =
       this.AcceptanceWeightage.find((t) => t.AcceptanceType === acceptanceType)
         ?.weight || 0;
+
     const revisionWeight =
       this.RevisionWeightage.find((t) =>
-        revisionType >= 3
-          ? t.RevisionType === 3
-          : t.RevisionType === revisionType
+        revisionType >= 3 ? t.RevisionType === 3 : t.RevisionType === revisionType
       )?.weight || 0;
-    // log(taskTypeWeight,taskStatusWeight,priorityWeight,acceptanceWeight,revisionWeight)
+
+    // Timeliness calculation
+    const TaskDueDate = dayjs(TaskObj.due_date);
+    const completedDate = dayjs(TaskObj.updatedAt);
+    let timelinessWeight = 0;
+    if (completedDate.isBefore(TaskDueDate) || completedDate.isSame(TaskDueDate)) {
+      timelinessWeight = 10;
+    }
+
     // Max possible weights per category
     const taskTypeMax = 50;
-    const taskStatusMax = 50;
     const priorityMax = 20;
     const acceptanceMax = 30;
     const revisionMax = 10;
-    // How much each category counts toward final score
-    const taskTypePercent = 20; // 20% of 100
-    const taskStatusPercent = 30; // 30% of 100
-    const priorityPercent = 20; // 20% of 100
-    const acceptancePercent = 20; // 20% of 100
-    const revisionPercent = 10; // 10% of 100
+    const timelinessMax = 10;
+
+    // Adjusted percentage contributions (total = 100)
+    const taskTypePercent = 35;   // was 20
+    const priorityPercent = 20;   // stays
+    const acceptancePercent = 30; // was 20
+    const revisionPercent = 10;   // stays
+    const timelinessPercent = 5;  // stays
+
     // Normalized scores
     const taskTypeScore = (taskTypeWeight / taskTypeMax) * taskTypePercent;
-    const taskStatusScore =
-      (taskStatusWeight / taskStatusMax) * taskStatusPercent;
     const priorityScore = (priorityWeight / priorityMax) * priorityPercent;
-    const acceptanceScore =
-      (acceptanceWeight / acceptanceMax) * acceptancePercent;
+    const acceptanceScore = (acceptanceWeight / acceptanceMax) * acceptancePercent;
     const revisionScore = (revisionWeight / revisionMax) * revisionPercent;
-    const totalScore = Math.round(
-      taskTypeScore +
-        taskStatusScore +
+    const timelinessScore = (timelinessWeight / timelinessMax) * timelinessPercent;
+
+    const totalScore = Math.min(
+      Math.round(
+        taskTypeScore +
         priorityScore +
         acceptanceScore +
-        revisionScore
+        revisionScore +
+        timelinessScore
+      ),
+      100,
     );
+
     const createPerformanceDto: CreatePerformanceDto = {
       task: TaskObj._id.toString(),
       result: totalScore.toString(),
     };
-    this.create(createPerformanceDto);
+
+    await this.create(createPerformanceDto);
+
     return totalScore;
   }
+
+  /**
+   * Save performance to database
+   */
   async create(
-    createPerformanceDto: CreatePerformanceDto
+    createPerformanceDto: CreatePerformanceDto,
   ): Promise<Performance> {
-    const createdNotification = new this.performanceModel(createPerformanceDto);
-    return createdNotification.save();
+    const createdPerformance = new this.performanceModel(createPerformanceDto);
+    return createdPerformance.save();
   }
 
   async getPerformanceByTaskandUserId(userId: string, start?: string, end?: string): Promise<any> {
