@@ -5,6 +5,9 @@ import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 import { useRouter } from "next/navigation";
 import AdminProjectService from "@/service/adminProject.service";
+import { H1 } from "@/components/Heading/H1";
+import { Button } from "@heroui/button";
+import { H3 } from "@/components/Heading/H3";
 
 function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState(value);
@@ -69,17 +72,17 @@ const ProjectListPage = () => {
 
   return (
     <div className="flex min-h-screen">
-      <main className="flex-1 p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-semibold">Project List</h1>
-          <button
-            onClick={() => router.push("/admin/project/create")}
-            className="btn-primary text-white font-semibold py-2 px-4 rounded"
+      <main className="flex-1 p-4 sm:p-6 md:p-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <H3 className="text-xl sm:text-2xl font-semibold">Project List</H3>
+          <Button
+            onPress={() => router.push("/admin/project/create")}
+            className="btn-primary text-white font-semibold py-2 px-4 rounded "
           >
             + Create Project
-          </button>
+          </Button>
         </div>
-
+       <div className="overflow-x-auto">
         <Datagrid
           headers={headers}
           rows={rows}
@@ -139,6 +142,7 @@ const ProjectListPage = () => {
             setPage(1);
           }}
         />
+        </div>
       </main>
     </div>
   );

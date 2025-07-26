@@ -84,14 +84,9 @@ export default function AuthLoginPage() {
   }, []);
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="w-full max-w-md space-y-6">
-        <div className="flex justify-center items-center p-[24px] border-b border-[#31394f14]">
-          {/* <div className="w-[2%]">
-            <Link href="/auth/login">
-              <Image src={leftarrow} alt="Logo" width={16} height={16} />
-            </Link>
-          </div> */}
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="w-full max-w-md rounded-lg shadow-lg px-4 py-12 space-y-6">
+        <div className="flex justify-center items-center p-5 border-b border-[#31394f1]">
           <H3 className="w-[98%] text-center">Sign In</H3>
         </div>
         <p className="text-center text-sm text-gray-500">

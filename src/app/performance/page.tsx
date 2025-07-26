@@ -70,7 +70,7 @@ export default function MyPerformance() {
               data: datasetData,
               fill: false,
               borderColor: "rgb(75, 192, 192)",
-              tension: 0.3,
+              tension: 0.1,
             },
           ],
         });
@@ -89,17 +89,18 @@ export default function MyPerformance() {
   ).format("DD MMM YY")}`;
 
   return (
-    <div>
-      <div className="flex justify-center items-center pb-[24px] border-b border-[#31394f14]">
-        <div className="w-[2%]">
-          <Link href="/">
-            <Image src={leftarrow} alt="Back" width={16} height={16} />
-          </Link>
-        </div>
-        <H3 className="w-[98%] text-center">My Performance</H3>
+    <div className="px-4 sm:px-6 lg:px-8">
+      <div className="flex justify-center items-center pb-6 border-b border-[#31394f14]">
+        <Link href="/">
+          <Image src={leftarrow} alt="Back" width={16} height={16} />
+        </Link>
+
+        <H3 className=" text-center flex-1 text-base sm:text-lg md:text-xl">
+          My Performance
+        </H3>
       </div>
 
-      <div className="flex justify-between items-start py-5 relative">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-start py-6 gap-6">
         <div className="">
           <Button
             onPress={() => setShowCalendar(!showCalendar)}
@@ -139,7 +140,10 @@ export default function MyPerformance() {
           </div>
         </div>
 
-        <div style={{ width: "75%", margin: "auto" }}>
+        <div
+          className="w-full md:w-2/3 lg:w-3/4"
+          // style={{ width: "75%", margin: "auto" }}
+        >
           <MyChart data={data} />
         </div>
       </div>

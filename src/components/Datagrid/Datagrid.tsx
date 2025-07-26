@@ -98,7 +98,7 @@ const DataGrid: React.FC<DataGridProps> = ({
               {headers.map((header) => (
                 <th
                   key={header.id}
-                  className="px-4 py-2 cursor-pointer"
+                  className="px-4 py-2 cursor-pointer whitespace-nowrap"
                   onClick={() => header.is_sortable && onSort?.(header.id)}
                 >
                   {header.title}
@@ -107,7 +107,7 @@ const DataGrid: React.FC<DataGridProps> = ({
                   )} */}
                 </th>
               ))}
-              <th className="px-4 py-2">Actions</th>
+              <th className="px-4 py-2 whitespace-nowrap">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -134,7 +134,8 @@ const DataGrid: React.FC<DataGridProps> = ({
                       {row[header.id]}
                     </td>
                   ))}
-                  <td className="px-4 py-2 space-x-2">
+                  <td className="px-4 py-2 space-x-2 flex">
+                   
                     {row.actions && row.actions.length > 0 ? (
                       row.actions.map((action, i) => (
                         <button
@@ -152,10 +153,12 @@ const DataGrid: React.FC<DataGridProps> = ({
                     ) : (
                       <span className="text-gray-400 italic">No Actions</span>
                     )}
+                   
                   </td>
                 </tr>
               ))
             )}
+            
           </tbody>
         </table>
       </div>

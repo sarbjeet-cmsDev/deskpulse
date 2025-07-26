@@ -40,7 +40,7 @@ export default function LineChart({ data }: Props) {
         maxRotation: 45,
         minRotation: 45,
         autoSkip: true,
-        maxTicksLimit: 31,
+        maxTicksLimit: 40,
       },
     },
       y: {

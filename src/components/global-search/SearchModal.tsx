@@ -25,34 +25,29 @@ export function SearchModal({
   const [loading, setLoading] = useState(false);
   const debouncedQuery = useDebounce(query, 400);
   const inputRef = useRef<HTMLInputElement>(null);
-  const pathname = usePathname(); // used to auto-close on route change
+  const pathname = usePathname(); 
 
-  // Auto-focus when opened.
+  
   useEffect(() => {
     if (open) {
       setTimeout(() => inputRef.current?.focus(), 0);
     } else {
-      // Reset state when modal fully closes
       setQuery("");
       setResults(null);
       setLoading(false);
     }
   }, [open]);
 
-  // Close modal when route changes (user clicked a result).
   useEffect(() => {
     if (open) {
       onClose();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
-  // Fetch results when debounced query ready
   useEffect(() => {
     const q = debouncedQuery.trim();
     if (!open) return;
     if (q.length < minChars) {
-      // ✅ Clear stale results when query too short/cleared
       setResults(null);
       setLoading(false);
       return;
@@ -73,7 +68,7 @@ export function SearchModal({
     };
   }, [debouncedQuery, open, minChars, fetcher]);
 
-  // Allow Escape to close
+  
   useEffect(() => {
     if (!open) return;
     const handler = (e: KeyboardEvent) => {
@@ -83,12 +78,12 @@ export function SearchModal({
     return () => window.removeEventListener("keydown", handler);
   }, [open, onClose]);
 
-  // Click outside to close
+  
   const overlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) onClose();
   };
 
-  // Pass to ResultSection; closes before routing
+  
   const handleSelect = useCallback(() => {
     onClose();
   }, [onClose]);
@@ -107,7 +102,7 @@ export function SearchModal({
       >
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+          className="absolute top-1 right-2 text-gray-500 hover:text-gray-700"
           aria-label="Close search"
         >
           ✕

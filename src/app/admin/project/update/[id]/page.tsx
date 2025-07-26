@@ -128,24 +128,22 @@ const UpdateProjectPage = () => {
 
 
   return (
-    <div className="min-h-screen flex justify-center">
+    <div className="min-h-screen flex flex-col lg:flex-row justify-center items-start gap-6 p-4">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="w-full max-w-2xl bg-white p-6 rounded shadow border border-gray-300 space-y-4"
+        className="w-full lg:max-w-2xl bg-white p-6 rounded shadow border border-gray-300 space-y-4"
       >
         <div className="flex justify-center items-center pb-5 border-b border-[#31394f14]">
-        <div className="w-[5%]">
+       
           <Link href="/admin/project">
             <Image src={leftarrow} alt="Back" width={16} height={16} />
           </Link>
-        </div>
-        <H3 className="w-[90%] text-center">Update Project</H3>
+       
+        <H3 className="text-center flex-1">Update Project</H3>
       </div>
        
 
 
-        {/* <Input placeholder="Project Code" {...register('code')} />
-        {errors.code && <p className="text-sm text-red-500">{errors.code.message}</p>} */}
         <Input placeholder="Title" {...register("title")} />
         {errors.title && (
           <p className="text-sm text-red-500">{errors.title.message}</p>
@@ -192,15 +190,7 @@ const UpdateProjectPage = () => {
             />
           )}
         />
-         {/* <textarea
-          placeholder="Description"
-          {...register("description")}
-          className="w-full p-2 border border-gray-300 rounded outline-none"
-        />
-        {errors.description && (
-          <p className="text-sm text-red-500">{errors.description.message}</p>
-        )} */}
-        {/* Assign Users */}
+
         <Controller
           name="users"
           control={control}

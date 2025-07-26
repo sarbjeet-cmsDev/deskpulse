@@ -35,9 +35,7 @@ export default function LeftMenuDrawer() {
     (state: RootState) => state.auth.user
   );
 
-
   const userProfile = useSelector((state: RootState) => state.user.data);
-  
 
   const [version, setVersion] = useState(Date.now());
   const avatarUrl = userProfile?.profileImage
@@ -56,18 +54,18 @@ export default function LeftMenuDrawer() {
   ];
 
   const adminMenuItems = [
-  { label: "Home", href: "/admin" },
-  { label: "Profile", href: "/auth/profile" },
-  { label: "Projects", href: "/admin/project" },
-  { label: "Users", href: "/admin/user" },
-  { label: "Tasks", href: "/admin/task" },
-  { label: "Notifications", href: "/admin/notification" },
-  { label: "Comments", href: "/admin/comment" },
-  { label: "Logout", href: "#" },
-];
+    { label: "Home", href: "/admin" },
+    { label: "Profile", href: "/auth/profile" },
+    { label: "Projects", href: "/admin/project" },
+    { label: "Users", href: "/admin/user" },
+    { label: "Tasks", href: "/admin/task" },
+    { label: "Notifications", href: "/admin/notification" },
+    { label: "Comments", href: "/admin/comment" },
+    { label: "Logout", href: "#" },
+  ];
 
-const menuItems = user?.role === "admin" ? adminMenuItems : userMenuItems;
-
+  const menuItems = user?.role === "admin" ? adminMenuItems : userMenuItems;
+  console.log(menuItems, "menuItems");
   const router = useRouter();
   const handleLogout = () => {
     dispatch(signOut());
@@ -163,22 +161,29 @@ const menuItems = user?.role === "admin" ? adminMenuItems : userMenuItems;
                   </div>
                 </div>
                 <Divider />
-                {menuItems.map((item, index) => (
-                  <Link href={item.href} key={index}>
-                  <P
-                    key={index}
-                    className="text-start px-4 py-2 bg-white font-semibold text-black text-[16px] border border-none rounded-md hover:bg-[#7980ff] hover:text-white cursor-pointer transition-colors duration-500"
-                    onClick={() => {
-                      onClose();
-                      if (item.label === "Logout") {
+                {menuItems.map((item, index) =>
+                  item.label === "Logout" ? (
+                    <P
+                      key={index}
+                      className="text-start px-4 py-2 bg-white font-semibold text-red-500 text-[16px] border border-none rounded-md hover:bg-red-500 hover:text-white cursor-pointer transition-colors duration-500"
+                      onClick={() => {
+                        onClose();
                         handleLogout();
-                      }
-                    }}
-                  >
-                    {item.label}
-                  </P>
-                  </Link>
-                ))}
+                      }}
+                    >
+                      {item.label}
+                    </P>
+                  ) : (
+                    <Link href={item.href} key={index} passHref>
+                      <P
+                        className="text-start px-4 py-2 bg-white font-semibold text-black text-[16px] border border-none rounded-md hover:bg-[#7980ff] hover:text-white cursor-pointer transition-colors duration-500"
+                        onClick={onClose}
+                      >
+                        {item.label}
+                      </P>
+                    </Link>
+                  )
+                )}
               </DrawerBody>
             </>
           )}

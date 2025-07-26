@@ -41,7 +41,7 @@
 }
 
 .btn-primary:hover {
-  background-color: var(--color-secondary);
+  background-color: var(--color-primary);
 }
 
 input[type="range"].range-primary {

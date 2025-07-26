@@ -40,7 +40,7 @@ export default function MyTask() {
   return (
     <div className="max-w-6xl mx-auto">
       <div className="flex justify-center items-center p-[24px] border-b border-[#31394f14]">
-        <div className="w-[2%]">
+        <div className="w-10">
           <Link href="/">
             <Image src={leftarrow} alt="Back" width={16} height={16} />
           </Link>

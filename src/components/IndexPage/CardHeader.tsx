@@ -14,7 +14,7 @@ export default function CardHead({ title }: CardHeadProps){
                 <Image src={bellicon} alt="bell-icon" className="w-[18px] h-[18px]"/>
             </div>
             <H6 className="flex-grow">{title}</H6>
-            <span>
+            {/* <span>
             <svg
             width="24"
             height="24"
@@ -31,7 +31,7 @@ export default function CardHead({ title }: CardHeadProps){
             />
             </svg>
                                       
-            </span>
+            </span> */}
         </div>
     );
 }

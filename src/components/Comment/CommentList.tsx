@@ -62,15 +62,15 @@ export default function CommentList({
       <div
         key={comment._id}
         className={`rounded-xl border p-4 transition-shadow duration-200 ${
-          isChild ? "ml-10 mt-3" : "mt-5"
+          isChild ? "ml-4 sm:ml-6 md:ml-10" : "mt-5"
         } bg-gray-50 border-gray-200 hover:shadow-md`}
       >
-        <div className="flex gap-4">
+        <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1">
             {/* Header */}
-            <div className="flex items-start justify-between">
+            <div className="flex items-start justify-between flex-wrap gap-2">
               <div>
-                <p className="text-sm font-semibold text-gray-900">
+                <p className="text-sm font-semibold text-gray-900 break-words">
                   {comment.created_by || "User"}
                 </p>
                 <p className="text-xs text-gray-500">
@@ -97,16 +97,17 @@ export default function CommentList({
                   commentId={comment._id}
                   inline
                   isButton={true}
+                  title="Edit Comment"
                 />
               </div>
             ) : (
-              <p className="mt-3 text-gray-800 leading-relaxed break-words whitespace-pre-line">
+              <p className="mt-3 text-gray-800 leading-relaxed break-words whitespace-pre-line text-sm sm:text-base">
                 {renderMentions(comment)}
               </p>
             )}
 
             {/* Actions */}
-            <div className="flex gap-3 mt-4 text-sm text-gray-500">
+            <div className="flex flex-wrap gap-3 mt-4 text-sm text-gray-500">
               <button
                 onClick={() =>
                   setActiveReplyId((prev) =>
@@ -152,6 +153,7 @@ export default function CommentList({
                   parent_comment={comment._id}
                   inline
                   isButton={true}
+                  title="Comment"
                 />
               </div>
             )}

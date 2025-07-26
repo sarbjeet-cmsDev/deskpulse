@@ -6,6 +6,8 @@ import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 import { useRouter, useSearchParams } from 'next/navigation';
 import AdminUserService, { IUser } from '@/service/adminUser.service';
+import { H3 } from '@/components/Heading/H3';
+import { Button } from '@heroui/button';
 
 function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState(value);
@@ -73,17 +75,17 @@ const Users = () => {
 
   return (
     <div className="flex min-h-screen">
-      <main className="flex-1 p-6">
+      <main className="flex-1 p-4 sm:p-6 md:p-8">
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-semibold">Users List</h1>
-          <button
-            onClick={() => router.push('/admin/user/create')}
+          <H3 className="text-2xl sm:text-2xl font-semibold">Users List</H3>
+          <Button
+            onPress={() => router.push('/admin/user/create')}
             className="btn-primary text-white font-semibold py-2 px-4 rounded"
           >
             + Create User
-          </button>
+          </Button>
         </div>
-
+        <div className="overflow-x-auto">
         <Datagrid
           headers={headers}
           rows={rows}
@@ -149,6 +151,7 @@ const Users = () => {
             setPage(1);
           }}
         />
+        </div>
       </main>
     </div>
   );

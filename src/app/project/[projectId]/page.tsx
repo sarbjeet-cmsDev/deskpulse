@@ -203,8 +203,8 @@ export default function MyProjectDetails() {
       <div className="main-content">
         <div>
           <div className="flex justify-between items-center border-b border-[#31394f14] pb-4">
-            <div className="flex items-center gap-4">
-              <div className="">
+            <div className="flex items-center gap-2">
+              <div className="w-10">
                 <Link href="/project/list">
                   <Image src={leftarrow} alt="Logo" width={16} height={16} />
                 </Link>
@@ -216,7 +216,7 @@ export default function MyProjectDetails() {
                 onPress={() =>
                   router.push(`/project/projectDetail/${projectId}`)
                 }
-                className="btn-primary"
+                className="btn-primary px-4 py-2 text-sm md:text-base w-full md:w-auto"
               >
                 View Kanban
               </Button>

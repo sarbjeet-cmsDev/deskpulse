@@ -16,12 +16,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <ProtectedRoute>
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col min-h-screen text-sm md:text-base">
         <div className="sticky top-0 z-50">
           <TopHeader />
         </div>
-        <main className="pt-8 px-6 flex-grow mb-10">{children}</main>
-        <footer className="w-full flex items-center justify-center py-3 bg-theme-primary text-white">
+        <main className="pt-6 px-4 md:px-8 lg:px-10 flex-grow mb-10">{children}</main>
+        <footer className="w-full flex items-center justify-center py-4 bg-theme-primary text-white text-xs sm:text-sm">
           <Link
             isExternal
             className="flex items-center gap-1 text-current"

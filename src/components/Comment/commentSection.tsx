@@ -269,7 +269,7 @@ export default function CommentInputSection({
             setError(null);
           }}
           theme="snow"
-          placeholder={`Write your ${title}  with @mention and image...`}
+          placeholder={`${title}`}
           modules={modules}
           className="description-content"
         />

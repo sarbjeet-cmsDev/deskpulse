@@ -51,12 +51,10 @@ export default function MyRemindersPage() {
   return (
     <div className="max-w-6xl mx-auto p-6">
       <div className="flex justify-center items-center p-[24px] border-b border-[#31394f14]">
-        <div className="w-[2%]">
           <Link href="/">
             <Image src={leftarrow} alt="Back" width={16} height={16} />
           </Link>
-        </div>
-        <H3 className="w-[98%] text-center">My Reminders</H3>
+        <H3 className="text-center flex-1 text-base sm:text-lg md:text-xl">My Reminders</H3>
       </div>
 
       {loading ? (

@@ -48,14 +48,12 @@ export default function ReminderDetailPage() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex justify-center items-center gap-4 border-b pb-4 mb-6">
-        <div className="w-[2%]">
         <Link href="/">
           <Image src={leftarrow} alt="Back" width={24} height={24} />
         </Link>
-        </div>
-        <H3 className="w-[98%] text-xl text-center font-semibold">Reminder Details</H3>
+        <H3 className="text-center flex-1 text-base sm:text-lg md:text-xl">Reminder Details</H3>
       </div>
 
       <div className="bg-white shadow rounded p-6 space-y-3 border border-gray-200">
