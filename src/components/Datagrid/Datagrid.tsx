@@ -91,14 +91,14 @@ const DataGrid: React.FC<DataGridProps> = ({
       )}
 
       {/* Table */}
-      <div className="overflow-x-auto flex flex-col justify-between items-center border rounded-md">
+      <div className="overflow-x-auto border rounded-md">
         <table className="min-w-full text-sm text-left text-gray-700">
           <thead className="bg-gray-100">
             <tr>
               {headers.map((header) => (
                 <th
                   key={header.id}
-                  className="px-4 py-2 cursor-pointer whitespace-nowrap"
+                  className="px-4 py-2 min-w-[150px]"
                   onClick={() => header.is_sortable && onSort?.(header.id)}
                 >
                   {header.title}
@@ -107,7 +107,7 @@ const DataGrid: React.FC<DataGridProps> = ({
                   )} */}
                 </th>
               ))}
-              <th className="px-4 py-2 whitespace-nowrap">Actions</th>
+              <th className="px-4 py-2">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -128,7 +128,7 @@ const DataGrid: React.FC<DataGridProps> = ({
               </tr>
             ) : (
               rows.map((row, idx) => (
-                <tr key={idx} className="border-t hover:bg-gray-50 break-words">
+                <tr key={idx} className="border-t hover:bg-gray-50">
                   {headers.map((header) => (
                     <td key={header.id} className="px-4 py-2">
                       {row[header.id]}

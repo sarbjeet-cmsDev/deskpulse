@@ -75,7 +75,7 @@ const Users = () => {
 
   return (
     <div className="flex min-h-screen">
-      <main className="flex-1 p-4 sm:p-6 md:p-8">
+      <main className="flex-1 p-4 sm:p-6 md:p-8 w-[100%]">
         <div className="flex justify-between items-center mb-4">
           <H3 className="text-2xl sm:text-2xl font-semibold">Users List</H3>
           <Button
@@ -85,7 +85,7 @@ const Users = () => {
             + Create User
           </Button>
         </div>
-        <div className="overflow-x-auto">
+        <div className="">
         <Datagrid
           headers={headers}
           rows={rows}

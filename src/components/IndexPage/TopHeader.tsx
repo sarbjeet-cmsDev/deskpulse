@@ -44,7 +44,7 @@ export default function TopHeader() {
             <Link href={"/"}>Deskpulse</Link>{" "}
           </H3>
         </div>
-        <div className="w-full md:w-[100px] lg:w-[500px] xl:w-[470px]">
+        <div className="w-full md:w-[350px] lg:w-[500px] xl:w-[470px]">
           <GlobalSearch placeholder="Search" fetcher={searchAll} />
         </div>
         <div className="flex justify-center items-center gap-6 shrink-0">
@@ -55,7 +55,7 @@ export default function TopHeader() {
               dispatch(openDrawer({ size: "md", type: "notification" }))
             }
           >
-            <Image src={bell} alt="notification" className="cursor-pointer" />
+            <Image src={bell} alt="notification" className="cursor-pointer invert" />
           </P>
           <CommonDrawer type="notification">
             <Notification />

@@ -16,7 +16,7 @@ const AdminLayout = ({ children }: Props) => {
    
           <div className="flex">
             {/* <Sidebar /> */}
-            <div className="flex flex-col flex-1">
+            <div className="flex flex-col flex-1 w-[100%]">
               {/* <AdminNavbar /> */}
               <main className="p-4">{children}</main>
             </div>

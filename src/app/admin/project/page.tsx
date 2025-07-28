@@ -72,9 +72,9 @@ const ProjectListPage = () => {
 
   return (
     <div className="flex min-h-screen">
-      <main className="flex-1 p-4 sm:p-6 md:p-8">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-          <H3 className="text-xl sm:text-2xl font-semibold">Project List</H3>
+      <main className="flex-1 p-4 sm:p-6 md:p-8 w-[100%]">
+        <div className="flex flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <H3 className="text-lg sm:text-2xl font-semibold">Project List</H3>
           <Button
             onPress={() => router.push("/admin/project/create")}
             className="btn-primary text-white font-semibold py-2 px-4 rounded "
@@ -82,7 +82,7 @@ const ProjectListPage = () => {
             + Create Project
           </Button>
         </div>
-       <div className="overflow-x-auto">
+       <div className="">
         <Datagrid
           headers={headers}
           rows={rows}
