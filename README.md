@@ -60,13 +60,7 @@ Licensed under the [MIT license](https://github.com/heroui-inc/next-app-template
 npm i nestjs-seeder
 ```
 
-### Create admin and user using "nestjs-seeder"
-
-```bash
-npm run seed
-```
-
-### Start "nestjs-seeder"
+### Start "nestjs-seeder" & Create admin and user
 
 ```bash
 npm run seed:refresh
@@ -76,6 +70,7 @@ npm run seed:refresh
 
 ```bash
 npm install chart.js
+npm install react-chartjs-2
 ```
 
 ### Add hostname in next.config.js

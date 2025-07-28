@@ -1,42 +1,3 @@
-// import MyProjectDetail from '@/components/User/Project/MyProjectDetail';
-// import AdminProjectService from '@/service/adminProject.service';
-
-// interface PageProps {
-//   params: { projectId: string };
-// }
-
-
-// export async function generateMetadata({ params }: PageProps) {
-
-//   // const projectId = params?.projectId;
-//   // if (!projectId) {
-//   //   return {
-//   //     title: 'Project Not Found',
-//   //   };
-//   // }
-
-//   const res = await AdminProjectService.getProjectById(params.projectId);
-
-//   // if (!res?.data) {
-//   //   return {
-//   //     title: 'Project Not Found',
-//   //   };
-//   // }
-
-//   return {
-//     title: {
-//       absolute :`Project | ${res.code}`,
-//     } 
-//   };
-// }
-
-// export default function ProjectDetail({ params }: PageProps) {
-//   return <MyProjectDetail projectId={params.projectId} />;
-// }
-
-
-
-
 "use client";
 import { H5 } from "@/components/Heading/H5";
 import { P } from "@/components/ptag";
@@ -63,9 +24,14 @@ import { KanbanColumn } from "@/types/projectKanbon.interface";
 import CommentInputSection from "@/components/Comment/commentSection";
 import DropdownOptions from "@/components/DropdownOptions";
 
-export default function MyProjectDetails() {
-  const params = useParams();
-  const projectId = params?.projectId as string;
+interface Props {
+  projectId : string;
+}
+
+
+export default function MyProjectDetails({projectId}:Props) {
+//   const params = useParams();
+//   const projectId = params?.projectId as string;
   const router = useRouter();
   const [project, setProject] = useState<any>(null);
   const [loading, setLoading] = useState(true);

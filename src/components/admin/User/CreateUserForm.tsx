@@ -1,96 +1,76 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { userUpdateSchema } from "@/components/validation/userValidation";
+import { userCreateSchema } from "@/components/validation/userValidation";
+import { z } from "zod";
 import { Input } from "@/components/Form/Input";
 import { Button } from "@/components/Form/Button";
-import { useParams, useRouter } from "next/navigation";
-import AdminUserService, { IUser } from "@/service/adminUser.service";
+import { H1 } from "@/components/Heading/H1";
+import AdminUserService from "@/service/adminUser.service";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import Swal from "sweetalert2";
 import Link from "next/link";
 import Image from "next/image";
 import leftarrow from "@/assets/images/back.png";
 import { H3 } from "@/components/Heading/H3";
 
-interface Props {
-  id: string;
-}
+type CreateUserInput = z.infer<typeof userCreateSchema>;
 
-
-type UpdateUserInput = z.infer<typeof userUpdateSchema>;
-
-const UpdateUserPage = () => {
+const CreateUserComponent = () => {
   const router = useRouter();
-  const { id } = useParams<{ id: string }>();
   const [loading, setLoading] = useState(false);
-  const [initialLoading, setInitialLoading] = useState(true);
 
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors },
-  } = useForm<UpdateUserInput>({
-    resolver: zodResolver(userUpdateSchema),
+  } = useForm<CreateUserInput>({
+    resolver: zodResolver(userCreateSchema),
+    defaultValues: {
+      username: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      firstName: "",
+      lastName: "",
+      phone: "",
+      gender: undefined,
+      roles: [],
+      isActive: true,
+    },
   });
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const user = await AdminUserService.getUserById(id);
-        reset({
-          username: user.username ?? "",
-          email: user.email ?? "",
-          firstName: user.firstName ?? "",
-          lastName: user.lastName ?? "",
-          phone: user.phone ?? "",
-          gender: ["male", "female", "other"].includes(user.gender || "")
-            ? (user.gender as "male" | "female" | "other")
-            : undefined,
-          roles: user.roles ?? [],
-          isActive: user.isActive ?? false,
-        });
-      } catch (err) {
-        console.error("Failed to fetch user", err);
-        router.push("/admin/user");
-      } finally {
-        setInitialLoading(false);
-      }
-    };
-
-    if (id) fetchUser();
-  }, [id, reset, router]);
-
-  const onSubmit = async (data: UpdateUserInput) => {
+  const onSubmit = async (data: CreateUserInput) => {
     setLoading(true);
     try {
-      await AdminUserService.updateUser(id, data);
+      const { confirmPassword, ...payload } = data;
+      console.log(payload, "payload");
+      await AdminUserService.createUser(payload);
 
       router.push("/admin/user");
     } catch (error) {
-      console.error("Update failed", error);
+      console.error(error);
     } finally {
       setLoading(false);
     }
   };
 
-  if (initialLoading) return <div className="p-6">Loading user...</div>;
-
   return (
-    <div className="min-h-screen flex justify-center items-start pt-5">
+    <div className="min-h-screen flex justify-center items-start pt-10">
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="w-full max-w-xl bg-white p-6 rounded shadow space-y-4"
       >
+  
         <div className="flex justify-center items-center p-[24px] border-b border-[#31394f14]">
-        <div className="w-[5%]">
+        
           <Link href="/admin/user">
             <Image src={leftarrow} alt="Back" width={16} height={16} />
           </Link>
-        </div>
-        <H3 className="w-[98%] text-center">Update User</H3>
+       
+        <H3 className="text-center flex-1">Create New User</H3>
       </div>
 
         <Input placeholder="Username" {...register("username")} />
@@ -98,9 +78,29 @@ const UpdateUserPage = () => {
           <p className="text-sm text-red-500">{errors.username.message}</p>
         )}
 
-        <Input type="email" placeholder="Email" {...register("email")} readOnly />
+        <Input type="email" placeholder="Email" {...register("email")} />
         {errors.email && (
           <p className="text-sm text-red-500">{errors.email.message}</p>
+        )}
+
+        <Input
+          type="password"
+          placeholder="Password"
+          {...register("password")}
+        />
+        {errors.password && (
+          <p className="text-sm text-red-500">{errors.password.message}</p>
+        )}
+
+        <Input
+          type="password"
+          placeholder="Confirm Password"
+          {...register("confirmPassword")}
+        />
+        {errors.confirmPassword && (
+          <p className="text-sm text-red-500">
+            {errors.confirmPassword.message}
+          </p>
         )}
 
         <Input placeholder="First Name" {...register("firstName")} />
@@ -167,11 +167,11 @@ const UpdateUserPage = () => {
           disabled={loading}
           className="w-full btn-primary text-white font-semibold py-2 px-4 rounded"
         >
-          {loading ? "Updating..." : "Update User"}
+          {loading ? "Creating..." : "Create User"}
         </Button>
       </form>
     </div>
   );
 };
 
-export default UpdateUserPage;
+export default CreateUserComponent;

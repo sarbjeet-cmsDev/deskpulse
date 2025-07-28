@@ -37,9 +37,9 @@ const ReactSelect = dynamic(() => import("react-select") as any, {
 //   return html.replace(/<[^>]*>/g, "").trim();
 // }
 
-const UpdateProjectPage = () => {
+const UpdateProjectPage = ({ id }: Props) => {
   const router = useRouter();
-  const { id } = useParams<{ id: string }>();
+//   const { id } = useParams<{ id: string }>();
   const [loading, setLoading] = useState(true);
   const [userOptions, setUserOptions] = useState<UserOption[]>([]);
   const [inputValue, setInputValue] = useState("");

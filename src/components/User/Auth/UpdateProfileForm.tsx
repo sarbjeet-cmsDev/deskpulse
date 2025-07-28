@@ -1,20 +1,3 @@
-// import UpdateAuthProfileForm from '@/components/User/Auth/UpdateProfileForm';
-
-// export const metadata = {
-//   title: {
-//     absolute:"Profile | Update"
-//   }
-// };
-
-// export default function UpdateAuthProfile({
-//   params,
-// }: {
-//   params: { id: string };
-// }) {
-//   return <UpdateAuthProfileForm id={params.id} />;
-// }
-
-
 "use client";
 import Image from "next/image";
 import leftarrow from "@/assets/images/back.png";
@@ -42,9 +25,9 @@ interface Props {
 
 type UpdateUserInput = z.infer<typeof userSchemaBaseUpdate>;
 
-const UpdateAuthProfileForm = () => {
+const UpdateAuthProfileForm = ({id}: Props) => {
   const router = useRouter();
-  const { id } = useParams<{ id: string }>();
+//   const { id } = useParams<{ id: string }>();
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
 

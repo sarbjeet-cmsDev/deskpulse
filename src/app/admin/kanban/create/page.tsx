@@ -1,6 +1,8 @@
 import { CreateKanbanList } from "@/components/KanbanBoard/CreateKanbanList";
 export const metadata = {
-  title: "Create Kanban",
+  title: {
+    absolute: "Project | Create Kanban",
+  }
 };
 export default function index() {
   return <CreateKanbanList />;

@@ -65,7 +65,7 @@ export default function LeftMenuDrawer() {
   ];
 
   const menuItems = user?.role === "admin" ? adminMenuItems : userMenuItems;
-  console.log(menuItems, "menuItems");
+  
   const router = useRouter();
   const handleLogout = () => {
     dispatch(signOut());

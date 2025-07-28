@@ -21,9 +21,9 @@ interface Props {
 
 type UpdateUserInput = z.infer<typeof userUpdateSchema>;
 
-const UpdateUserPage = () => {
+const UpdateUserPage = ({ id }: Props) => {
   const router = useRouter();
-  const { id } = useParams<{ id: string }>();
+  // const { id } = useParams<{ id: string }>();
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
 
