@@ -60,7 +60,7 @@ const defaultOnSuccess = (response: AxiosResponse) => {
   )
     Swal.fire({
       toast: true,
-      position: "top-end",
+      position: "bottom-end",
       icon: "success",
       title: response.data.message,
       showConfirmButton: false,

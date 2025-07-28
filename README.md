@@ -60,6 +60,12 @@ Licensed under the [MIT license](https://github.com/heroui-inc/next-app-template
 npm i nestjs-seeder
 ```
 
+### Create admin and user using "nestjs-seeder"
+
+```bash
+npm run seed
+```
+
 ### Start "nestjs-seeder"
 
 ```bash
@@ -70,4 +76,10 @@ npm run seed:refresh
 
 ```bash
 npm install chart.js
+```
+
+### Add hostname in next.config.js
+
+```bash
+To display external images correctly in your Next.js project, add the image hostname in the next.config.js file
 ```
