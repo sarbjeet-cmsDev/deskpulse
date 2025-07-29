@@ -68,7 +68,7 @@ export class UserService {
     // });
 
     const filters: any = {
-      roles: "user",
+      // roles: "user",
       $or: [
         { firstName: { $regex: regex } }, // Search by first name
         { lastName: { $regex: regex } }, // Search by last name
