@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Datagrid from "@/components/Datagrid/Datagrid";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import AdminNotificationService from "@/service/adminNotification.service";
 
 function useDebounce<T>(value: T, delay: number): T {
@@ -18,8 +18,7 @@ function useDebounce<T>(value: T, delay: number): T {
 type Notification = {
   _id: string;
   content: string;
-  is_read:boolean;
-
+  is_read: boolean;
 };
 
 function highlightMentions(content: string): string {
@@ -30,6 +29,8 @@ function highlightMentions(content: string): string {
 
 const NotificationListTable = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
 
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [search, setSearch] = useState("");
@@ -52,7 +53,7 @@ const NotificationListTable = () => {
       setNotifications(res.data as unknown as Notification[]);
       setTotalRecords(res.total);
       setTotalPages(res.totalPages);
-      setLimit(res.limit)
+      setLimit(res.limit);
     } catch (err) {
       console.error("Failed to fetch projects", err);
     }
@@ -62,22 +63,24 @@ const NotificationListTable = () => {
     fetchNotifictions();
   }, [debouncedSearch, page, sortOrder, sortField]);
 
-  const headers = [
-    { id: "content", title: "content", is_sortable: true },
-  ];
+  useEffect(() => {
+    const pageFromUrl = parseInt(searchParams.get("page") || "1", 10);
+    if (pageFromUrl !== page) setPage(pageFromUrl);
+  }, [searchParams]);
+
+  const headers = [{ id: "content", title: "content", is_sortable: true }];
 
   const rows = (notifications ?? []).map((notification) => ({
     ...notification,
-    content: <div className="flex items-center gap-2">
-      {/* {!notification.is_read && (
-        <span className="w-2 h-2 bg-red-500 rounded-full inline-block"></span>
-      )} */}
-      <span
-        dangerouslySetInnerHTML={{
-          __html: highlightMentions(notification.content),
-        }}
-      />
-    </div>,
+    content: (
+      <div className="flex items-center gap-2">
+        <span
+          dangerouslySetInnerHTML={{
+            __html: highlightMentions(notification.content),
+          }}
+        />
+      </div>
+    ),
     actions: [{ title: "Delete" }],
   }));
 
@@ -101,11 +104,7 @@ const NotificationListTable = () => {
             setSearch(query);
             setPage(1);
           }}
-          onPageChange={(newPage) => {
-            if (newPage >= 1 && newPage <= totalPages) {
-              setPage(newPage);
-            }
-          }}
+          // onPageChange={handlePageChange}
           onAction={async (action, row) => {
             if (action === "Edit") {
               router.push(`/admin/project/update/${row._id}`);
@@ -122,7 +121,7 @@ const NotificationListTable = () => {
                   confirmButton:
                     "bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 focus:outline-none mr-2",
                   cancelButton:
-                    "bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 focus:outline-none",
+                    "bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 focus:outline-none mr-2",
                 },
                 buttonsStyling: false,
               });
@@ -130,7 +129,9 @@ const NotificationListTable = () => {
               if (result.isConfirmed) {
                 try {
                   await AdminNotificationService.deleteNotification(row._id);
-                  setNotifications((prev) => prev.filter((p) => p._id !== row._id));
+                  setNotifications((prev) =>
+                    prev.filter((p) => p._id !== row._id)
+                  );
                   setTotalRecords((prev) => prev - 1);
                   await fetchNotifictions();
                 } catch (err) {
@@ -146,6 +147,9 @@ const NotificationListTable = () => {
             setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
             setPage(1);
           }}
+          router={router}
+          pathname={pathname}
+          searchParams={searchParams}
         />
       </main>
     </div>

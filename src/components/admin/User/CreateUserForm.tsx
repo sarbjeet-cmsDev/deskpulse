@@ -37,7 +37,7 @@ const CreateUserComponent = () => {
       lastName: "",
       phone: "",
       gender: undefined,
-      roles: [],
+      roles: "",
       isActive: true,
     },
   });
@@ -63,26 +63,31 @@ const CreateUserComponent = () => {
         onSubmit={handleSubmit(onSubmit)}
         className="w-full max-w-xl bg-white p-6 rounded shadow space-y-4"
       >
-  
         <div className="flex justify-center items-center p-[24px] border-b border-[#31394f14]">
-        
           <Link href="/admin/user">
             <Image src={leftarrow} alt="Back" width={16} height={16} />
           </Link>
-       
-        <H3 className="text-center flex-1">Create New User</H3>
-      </div>
 
+          <H3 className="text-center flex-1">Create New User</H3>
+        </div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Username
+        </label>
         <Input placeholder="Username" {...register("username")} />
         {errors.username && (
           <p className="text-sm text-red-500">{errors.username.message}</p>
         )}
 
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Email
+        </label>
         <Input type="email" placeholder="Email" {...register("email")} />
         {errors.email && (
           <p className="text-sm text-red-500">{errors.email.message}</p>
         )}
-
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Password
+        </label>
         <Input
           type="password"
           placeholder="Password"
@@ -91,7 +96,9 @@ const CreateUserComponent = () => {
         {errors.password && (
           <p className="text-sm text-red-500">{errors.password.message}</p>
         )}
-
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Confirm Password
+        </label>
         <Input
           type="password"
           placeholder="Confirm Password"
@@ -102,20 +109,28 @@ const CreateUserComponent = () => {
             {errors.confirmPassword.message}
           </p>
         )}
-
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          First Name
+        </label>
         <Input placeholder="First Name" {...register("firstName")} />
         {errors.firstName && (
           <p className="text-sm text-red-500">{errors.firstName.message}</p>
         )}
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Last Name
+        </label>
         <Input placeholder="Last Name" {...register("lastName")} />
         {errors.lastName && (
           <p className="text-sm text-red-500">{errors.lastName.message}</p>
         )}
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Phone
+        </label>
         <Input placeholder="Phone" {...register("phone")} />
         {errors.phone && (
           <p className="text-sm text-red-500">{errors.phone.message}</p>
         )}
-        {/* Gender Select */}
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Gender
@@ -123,8 +138,11 @@ const CreateUserComponent = () => {
           <select
             {...register("gender")}
             className="w-full border border-gray-300 rounded px-3 py-2"
+            defaultValue=""
           >
-            <option value="">Select gender</option>
+            <option value="" disabled>
+              Select gender
+            </option>
             <option value="male">Male</option>
             <option value="female">Female</option>
             <option value="other">Other</option>
@@ -134,25 +152,27 @@ const CreateUserComponent = () => {
           )}
         </div>
 
-        {/* User Roles Multi-Select */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             User Roles
           </label>
           <select
-            multiple
+            // multiple
             {...register("roles")}
             className="w-full border border-gray-300 rounded px-3 py-2"
+            defaultValue=""
           >
-            <option value="admin">Admin</option>
+            <option value="" disabled>
+              Select role
+            </option>
             <option value="user">User</option>
+            <option value="admin">Admin</option>
           </select>
           {errors.roles && (
             <p className="text-sm text-red-500">{errors.roles.message}</p>
           )}
         </div>
 
-        {/* isActive Checkbox */}
         <div className="flex items-center space-x-2">
           <input
             type="checkbox"

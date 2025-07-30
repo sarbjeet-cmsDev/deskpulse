@@ -58,7 +58,7 @@ const UpdateAuthProfileForm = ({id}: Props) => {
           gender: ["male", "female", "other"].includes(user.gender || "")
             ? (user.gender as "male" | "female" | "other")
             : undefined,
-          roles: user.userRoles ?? [],
+          // roles: user.userRoles ?? [],
           isActive: user.isActive ?? false,
           aboutUs: user.aboutUs ?? "",
           jobTitle: user.jobTitle ?? "",

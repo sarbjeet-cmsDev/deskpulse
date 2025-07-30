@@ -50,8 +50,8 @@ export default function ReminderDetailPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex justify-center items-center gap-4 border-b pb-4 mb-6">
-        <Link href="/">
-          <Image src={leftarrow} alt="Back" width={24} height={24} />
+        <Link href="/reminder">
+          <Image src={leftarrow} alt="Back" width={24} height={24} className="w-5"/>
         </Link>
         <H3 className="text-center flex-1 text-base sm:text-lg md:text-xl">Reminder Details</H3>
       </div>

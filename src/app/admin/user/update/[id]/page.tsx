@@ -49,7 +49,7 @@ const UpdateUserPage = () => {
           gender: ["male", "female", "other"].includes(user.gender || "")
             ? (user.gender as "male" | "female" | "other")
             : undefined,
-          roles: user.roles ?? [],
+          roles: user.roles?.[0] ?? "",
           isActive: user.isActive ?? false,
         });
       } catch (err) {
@@ -66,7 +66,10 @@ const UpdateUserPage = () => {
   const onSubmit = async (data: UpdateUserInput) => {
     setLoading(true);
     try {
-      await AdminUserService.updateUser(id, data);
+      await AdminUserService.updateUser(id, {
+  ...data,
+  roles: [data.roles], 
+});
 
       router.push("/admin/user");
     } catch (error) {
@@ -124,7 +127,7 @@ const UpdateUserPage = () => {
             {...register("gender")}
             className="w-full border border-gray-300 rounded px-3 py-2"
           >
-            <option value="">Select gender</option>
+            <option value="" disabled>Select gender</option>
             <option value="male">Male</option>
             <option value="female">Female</option>
             <option value="other">Other</option>
@@ -134,16 +137,17 @@ const UpdateUserPage = () => {
           )}
         </div>
 
-        {/* User Roles Multi-Select */}
+    
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             User Roles
           </label>
           <select
-            multiple
+    
             {...register("roles")}
             className="w-full border border-gray-300 rounded px-3 py-2"
           >
+            <option value="" disabled>Select role</option>
             <option value="admin">Admin</option>
             <option value="user">User</option>
           </select>

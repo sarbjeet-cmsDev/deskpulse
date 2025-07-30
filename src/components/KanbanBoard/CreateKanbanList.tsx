@@ -70,6 +70,9 @@ export const CreateKanbanList = () => {
       </div>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="py-3">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+          Kanban Title
+        </label>
           <Input
             type="text"
             placeholder="Kanban Title"
@@ -79,6 +82,10 @@ export const CreateKanbanList = () => {
             <p className="text-red-500 text-sm">{errors.title.message}</p>
           )}
         </div>
+
+         <label className="block text-sm font-medium text-gray-700 mb-1 mt-1">
+          Sort Order
+        </label>
         <Input
           type="number"
           placeholder="Sort Order"
@@ -94,9 +101,13 @@ export const CreateKanbanList = () => {
         {errors.sort_order && (
           <p className="text-red-500 text-sm">{errors.sort_order.message}</p>
         )}
+
+         <label className="block text-sm font-medium text-gray-700 mb-1 mt-4">
+          Select project
+        </label>
         <select
           {...register("project")}
-          className="w-full border border-gray-300 rounded px-3 py-2 my-4"
+          className="w-full border border-gray-300 rounded px-3 py-2 "
         >
           <option value="">Select project</option>
           {projects?.map((item: any) => (
@@ -111,7 +122,7 @@ export const CreateKanbanList = () => {
         <div className="flex justify-center">
           <Button
             type="submit"
-            className="w-full btn-primary text-white font-semibold py-2 px-4 rounded"
+            className="w-full btn-primary text-white font-semibold py-2 px-4 my-4 rounded"
           >
             Submit
           </Button>

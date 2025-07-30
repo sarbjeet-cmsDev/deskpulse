@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Datagrid from "@/components/Datagrid/Datagrid";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import AdminProjectService from "@/service/adminProject.service";
 import AdminTaskService from "@/service/adminTask.service";
 
@@ -24,6 +24,8 @@ type Task = {
 
 const TaskListTable = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+     const pathname = usePathname();
 
   const [tasks, setTasks] = useState<Task[]>([]);
   const [search, setSearch] = useState("");
@@ -56,6 +58,11 @@ const TaskListTable = () => {
     fetchTasks();
   }, [debouncedSearch, page, sortOrder, sortField]);
 
+  useEffect(() => {
+    const pageFromUrl = parseInt(searchParams.get("page") || "1", 10);
+    if (pageFromUrl !== page) setPage(pageFromUrl);
+  }, [searchParams]);
+
   const headers = [
     { id: "code", title: "Code", is_sortable: true },
     { id: "title", title: "Title" },
@@ -87,11 +94,7 @@ const TaskListTable = () => {
             setSearch(query);
             setPage(1);
           }}
-          onPageChange={(newPage) => {
-            if (newPage >= 1 && newPage <= totalPages) {
-              setPage(newPage);
-            }
-          }}
+          
           onAction={async (action, row) => {
             if (action === "Edit") {
               router.push(`/admin/project/update/${row._id}`);
@@ -108,7 +111,7 @@ const TaskListTable = () => {
                   confirmButton:
                     "bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 focus:outline-none mr-2",
                   cancelButton:
-                    "bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 focus:outline-none",
+                    "bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 focus:outline-none mr-2",
                 },
                 buttonsStyling: false,
               });
@@ -132,6 +135,9 @@ const TaskListTable = () => {
             setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
             setPage(1);
           }}
+          router={router}
+          pathname={pathname}
+          searchParams={searchParams}
         />
       </main>
     </div>

@@ -1,14 +1,7 @@
 import { z } from "zod";
 
 export const genderEnum = z.enum(["male", "female", "other"]);
-export const userRoleEnum = z.enum([
-  "admin",
-  "project_manager",
-  "team_member",
-  "client",
-  "employee",
-  "user",
-]);
+export const userRoleEnum = z.enum(["admin", "user"]);
 
 // ✅ Regex patterns
 const lettersAndSpacesRegex = /^[A-Za-z\s]+$/;
@@ -42,40 +35,34 @@ export const userSchemaBase = z.object({
     .regex(numbersOnlyRegex, "Phone number must contain only digits")
     .length(10, "Phone number must be 10 digits"),
 
-  gender: genderEnum.optional(),
-
-  roles: z.array(userRoleEnum).nonempty("At least one user role is required"),
-
-  isActive: z.boolean().optional(),
-
-  // address: z.string()
-  //   .nonempty('Address is required')
-  //   .regex(lettersAndSpacesRegex, 'Address must contain only letters and spaces'),
-
-  // city: z.string()
-  //   .nonempty('City is required')
-  //   .regex(lettersAndSpacesRegex, 'City must contain only letters and spaces'),
-
-  // state: z.string()
-  //   .nonempty('State is required')
-  //   .regex(lettersAndSpacesRegex, 'State must contain only letters and spaces'),
-
-  // country: z.string()
-  //   .nonempty('Country is required')
-  //   .regex(lettersAndSpacesRegex, 'Country must contain only letters and spaces'),
-
-  // zipCode: z.string()
-  //   .nonempty('Zip code is required')
-  //   .regex(numbersOnlyRegex, 'Zip code must contain only digits'),
-
-  dateOfBirth: z
+  // gender: genderEnum.optional(),
+  gender: z
+    .string()
+    .nonempty("Please select gender")
+    // .transform((val) => (val === "" ? undefined : val))
+    // .refine(
+    //   (val) => val === undefined || genderEnum.options.includes(val as any),
+    //   {
+    //     message: "Please select gender",
+    //   }
+    // )
+    // .optional()
+    ,
+  
+    roles: z
+    .string().nonempty("Please select role"),
+    
+    isActive: z.boolean().optional(),
+    
+    dateOfBirth: z
     .union([z.string(), z.date()])
     .transform((val) => (typeof val === "string" ? new Date(val) : val))
     .optional(),
-
-  profileImage: z.string().url("Invalid image URL").optional(),
-
-  // roles: z.array(z.string()).optional(),
+    
+    profileImage: z.string().url("Invalid image URL").optional(),
+    
+    // roles: z.array(z.string()).optional(),
+    // roles: z.array(userRoleEnum).nonempty("At least one user role is required"),
 
   hobbies: z.array(z.string()).optional(),
   aboutUs: z.string().optional(),
@@ -127,7 +114,9 @@ export const userSchemaBaseUpdate = z.object({
 
   gender: genderEnum.optional(),
 
-  roles: z.array(userRoleEnum).nonempty("At least one user role is required"),
+  // roles: z.array(userRoleEnum).nonempty("At least one user role is required"),
+  roles: z
+    .string().optional(),
 
   isActive: z.boolean().optional(),
 

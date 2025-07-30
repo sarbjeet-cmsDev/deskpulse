@@ -75,7 +75,7 @@ const UpdateAuthProfileForm = () => {
           gender: ["male", "female", "other"].includes(user.gender || "")
             ? (user.gender as "male" | "female" | "other")
             : undefined,
-          roles: user.userRoles ?? [],
+          // roles: user.userRoles?.[0] ?? "",
           isActive: user.isActive ?? false,
           aboutUs: user.aboutUs ?? "",
           jobTitle: user.jobTitle ?? "",
@@ -183,7 +183,7 @@ const UpdateAuthProfileForm = () => {
               {...register("gender")}
               className="w-full border rounded px-3 py-2"
             >
-              <option value="">Select gender</option>
+              <option value="" disabled>Select gender</option>
               <option value="male">Male</option>
               <option value="female">Female</option>
               <option value="other">Other</option>

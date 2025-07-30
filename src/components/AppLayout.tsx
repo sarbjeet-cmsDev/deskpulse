@@ -23,7 +23,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <main className="pt-6 px-4 md:px-8 lg:px-10 flex-grow mb-10">{children}</main>
         <footer className="w-full flex items-center justify-center py-4 bg-theme-primary text-white text-xs sm:text-sm">
           <Link
-            isExternal
+            // isExternal
             className="flex items-center gap-1 text-current"
             href="#"
             title="bronzebyte"

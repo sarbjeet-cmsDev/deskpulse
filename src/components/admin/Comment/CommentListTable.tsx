@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Datagrid from "@/components/Datagrid/Datagrid";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import AdminTaskService from "@/service/adminTask.service";
 import AdminCommentService from "@/service/adminComment.service";
 
@@ -34,6 +34,8 @@ function stripHtml(html: string): string {
 
 const CommentListTable = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+     const pathname = usePathname();
 
   const [comments, setComments] = useState<Comment[]>([]);
   const [search, setSearch] = useState("");
@@ -71,6 +73,11 @@ const CommentListTable = () => {
     fetchComments();
   }, [debouncedSearch, page, sortOrder, sortField]);
 
+  useEffect(() => {
+    const pageFromUrl = parseInt(searchParams.get("page") || "1", 10);
+    if (pageFromUrl !== page) setPage(pageFromUrl);
+  }, [searchParams]);
+
   const headers = [
     { id: "content", title: "content", is_sortable: true },
   ];
@@ -101,18 +108,15 @@ const CommentListTable = () => {
             setSearch(query);
             setPage(1);
           }}
-          onPageChange={(newPage) => {
-            if (newPage >= 1 && newPage <= totalPages) {
-              setPage(newPage);
-            }
-          }}
+          
           onAction={async (action, row) => {
+           
             if (action === "Edit") {
               router.push(`/admin/project/update/${row._id}`);
             } else if (action === "Delete") {
               const result = await Swal.fire({
                 title: "Are you sure?",
-                text: `You are about to delete comment`,
+                text: `You are about to delete this comment`,
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonText: "Yes, delete it!",
@@ -120,9 +124,9 @@ const CommentListTable = () => {
                 reverseButtons: true,
                 customClass: {
                   confirmButton:
-                    "bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 focus:outline-none mr-2",
+                    "bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 focus:outline-none cursor-pointer mr-2",
                   cancelButton:
-                    "bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 focus:outline-none",
+                    "bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 focus:outline-none cursor-pointer mr-2",
                 },
                 buttonsStyling: false,
               });
@@ -146,6 +150,9 @@ const CommentListTable = () => {
             setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
             setPage(1);
           }}
+          router={router}
+          pathname={pathname}
+          searchParams={searchParams}
         />
       </main>
     </div>
