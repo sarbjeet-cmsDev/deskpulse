@@ -5,7 +5,6 @@
 //   params: { projectId: string };
 // }
 
-
 // export async function generateMetadata({ params }: PageProps) {
 
 //   // const projectId = params?.projectId;
@@ -26,16 +25,13 @@
 //   return {
 //     title: {
 //       absolute :`Project | ${res.code}`,
-//     } 
+//     }
 //   };
 // }
 
 // export default function ProjectDetail({ params }: PageProps) {
 //   return <MyProjectDetail projectId={params.projectId} />;
 // }
-
-
-
 
 "use client";
 import { H5 } from "@/components/Heading/H5";
@@ -80,7 +76,7 @@ export default function MyProjectDetails() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [version, setVersion] = useState<number>(Date.now());
 
-  const [projectImage, setProjectImage] = useState<string>(ProjectAvtar.src)
+  const [projectImage, setProjectImage] = useState<string>(ProjectAvtar.src);
 
   useEffect(() => {
     if (project?.avatar) {
@@ -89,8 +85,6 @@ export default function MyProjectDetails() {
       );
     }
   }, [project, version]);
-
-
 
   const fetchKanbonList = async (userIds: string[]) => {
     try {
@@ -102,10 +96,8 @@ export default function MyProjectDetails() {
           projectId,
           userIds.join(",")
         );
-        
       } else {
         taskRes = await TaskService.getTasksByProject(projectId);
-          
       }
 
       if (res?.data) {
@@ -236,7 +228,7 @@ export default function MyProjectDetails() {
 
   if (loading) return <div className="p-6 text-center">Loading project...</div>;
   if (!project) return <div className="p-6 text-center">Project not found</div>;
- 
+
   return (
     <div className="max-w-6xl mx-auto">
       <div className="main-content">
@@ -282,7 +274,7 @@ export default function MyProjectDetails() {
           </div>
           <div className="">
             <div className="pt-4 ">
-              <div className="mt-[14px] h-[175px] overflow-hidden border border-[#e3e3e35c] rounded-[8px]" >
+              <div className="mt-[14px] h-[175px] overflow-hidden border border-[#e3e3e35c] rounded-[8px]">
                 {projectImage ? (
                   <Image
                     src={projectImage}
@@ -293,7 +285,7 @@ export default function MyProjectDetails() {
                   />
                 ) : (
                   <Image
-                    src={ProjectAvtar} 
+                    src={ProjectAvtar}
                     alt="project-avatar-placeholder"
                     className="rounded-[8px] object-cover w-full h-full"
                     width={1200}
@@ -301,26 +293,65 @@ export default function MyProjectDetails() {
                   />
                 )}
               </div>
+
               <div className="flex flex-col gap-2 py-5">
-                <CommentInputSection
+              <div className="bg-white rounded-2xl shadow-md p-6 border border-gray-200">
+                <h2 className="text-xl font-semibold mb-2">
+                  Project Description
+                </h2>
+                <div
+                  className="prose max-w-none [&_img]:w-28 [&_img]:rounded-xl"
+                  dangerouslySetInnerHTML={{
+                    __html:
+                      project?.description || "<p>No description provided.</p>",
+                  }}
+                />
+              </div>
+
+              <div className="bg-white rounded-2xl shadow-md p-6 border border-gray-200">
+                <h2 className="text-xl font-semibold mb-2">
+                  Deploy Instruction
+                </h2>
+                <div
+                  className="prose max-w-none [&_img]:w-28 [&_img]:rounded-xl"
+                  dangerouslySetInnerHTML={{
+                    __html:
+                      project?.deploy_instruction || "<p>No description provided.</p>",
+                  }}
+                />
+              </div>
+
+              <div className="bg-white rounded-2xl shadow-md p-6 border border-gray-200">
+                <h2 className="text-xl font-semibold mb-2">
+                  Critical Notes
+                </h2>
+                <div
+                  className="prose max-w-none [&_img]:w-28 [&_img]:rounded-xl"
+                  dangerouslySetInnerHTML={{
+                    __html:
+                      project?.critical_notes || "<p>No description provided.</p>",
+                  }}
+                />
+              </div>
+              {/* <CommentInputSection
                   defaultValue={project?.description}
                   title="Description"
                   onClick={handleUpdateProjectDescription(project?._id)}
                   isButton={true}
                 />
-          
-                 <CommentInputSection
+
+                <CommentInputSection
                   defaultValue={project?.deploy_instruction}
                   title="Deploy Instruction"
                   // onClick={handleUpdateProjectDescription(project?._id)}
                   isButton={false}
-                /> 
+                />
                 <CommentInputSection
                   defaultValue={project?.critical_notes}
                   title="Critical Notes"
                   // onClick={handleUpdateProjectDescription(project?._id)}
                   isButton={false}
-                />
+                /> */}
               </div>
               <Details
                 project={project}
