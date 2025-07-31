@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
-const allowedDomains = process.env.IMAGE_DOMAINS
-  ? process.env.IMAGE_DOMAINS.split(',').map(domain => domain.trim())
+const allowedDomains = process.env.DOMAINS
+  ? process.env.DOMAINS.split(',').map(domain => domain.trim())
   : ['192.168.1.26', 'localhost', '145.223.19.178'];
 
 const nextConfig = {
