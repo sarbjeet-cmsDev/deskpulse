@@ -163,4 +163,11 @@ export class UserService {
     );
     return updated;
   }
+
+  async findUsersByRole(role: string): Promise<UserDocument[]> {
+  return this.userModel
+    .find({ roles: role }, { _id: 1, firstName: 1, lastName: 1, email: 1 })
+    .sort({ createdAt: -1 })
+    // .lean();
+}
 }

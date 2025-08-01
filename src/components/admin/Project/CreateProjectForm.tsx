@@ -278,6 +278,9 @@ const CreateProjectForm = () => {
           accept="image/*"
           onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
         />
+       {/* {errors.avatar && (
+          <p className="text-sm text-red-500">{errors.avatar.message}</p>
+        )} */}
 
         <div>
           <label className="flex items-center gap-2">

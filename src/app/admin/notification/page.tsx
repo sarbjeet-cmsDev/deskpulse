@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function NotificationList() {
   return (
-    <Suspense fallback={<div className="p-6">Loading Tasks...</div>}>
+    <Suspense fallback={<div className="p-6">Loading Notifications...</div>}>
       <NotificationListTable />
     </Suspense>
   );

@@ -11,7 +11,9 @@ import { ProjectService } from "../project/project.service";
 import { validateProjectId } from "./task.helpers";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { UserService } from "src/user/user.service";
-import { log } from "console";
+// import { Task } from 'src/task/task.schema';
+// import { Project } from 'src/project/project.schema';
+// import { User } from 'src/user/user.schema';
 
 @Injectable()
 export class TaskService {
@@ -258,5 +260,42 @@ export class TaskService {
      .limit(10)    
     .exec();
 }
+
+// async findTaskTimeSheetbyUser(filter: any, options: { page: number; limit: number; sortOrder: string }) {
+//   const { page = 1, limit = 10, sortOrder = 'desc' } = options;
+
+//   const skip = (page - 1) * limit;
+//   const total = await this.taskModel.countDocuments(filter);
+//   const totalPages = Math.ceil(total / limit);
+
+//   const tasks = await this.taskModel
+//     .find(filter)
+//     .populate({ path: 'project', select: 'title' }) 
+//     .populate({ path: 'assigned_to', select: 'firstName lastName' }) 
+//     .sort({ createdAt: sortOrder === 'desc' ? -1 : 1 })
+//     .skip(skip)
+//     .limit(limit)
+//     .exec();
+
+//   const formattedData = tasks.map((task) => {
+//     const hours = Math.floor(task.totaltaskminutes / 60);
+//     const minutes = task.totaltaskminutes % 60;
+
+//     return {
+//       ...task.toObject(),
+//       projectTitle: task.project?.title || '',
+//       assignedUserName: `${task.assigned_to?.firstName || ''} ${task.assigned_to?.lastName || ''}`,
+//       timeFormatted: `${hours}h ${minutes}m`,
+//     };
+//   });
+
+//   return {
+//     data: formattedData,
+//     total,
+//     page,
+//     limit,
+//     totalPages,
+//   };
+// }
 
 }

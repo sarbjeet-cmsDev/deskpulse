@@ -1,38 +1,3 @@
-// import MyProjectDetail from '@/components/User/Project/MyProjectDetail';
-// import AdminProjectService from '@/service/adminProject.service';
-
-// interface PageProps {
-//   params: { projectId: string };
-// }
-
-// export async function generateMetadata({ params }: PageProps) {
-
-//   // const projectId = params?.projectId;
-//   // if (!projectId) {
-//   //   return {
-//   //     title: 'Project Not Found',
-//   //   };
-//   // }
-
-//   const res = await AdminProjectService.getProjectById(params.projectId);
-
-//   // if (!res?.data) {
-//   //   return {
-//   //     title: 'Project Not Found',
-//   //   };
-//   // }
-
-//   return {
-//     title: {
-//       absolute :`Project | ${res.code}`,
-//     }
-//   };
-// }
-
-// export default function ProjectDetail({ params }: PageProps) {
-//   return <MyProjectDetail projectId={params.projectId} />;
-// }
-
 "use client";
 import { H5 } from "@/components/Heading/H5";
 import { P } from "@/components/ptag";
@@ -58,6 +23,7 @@ import { ProjectKanbon } from "@/service/projectKanbon.service";
 import { KanbanColumn } from "@/types/projectKanbon.interface";
 import CommentInputSection from "@/components/Comment/commentSection";
 import DropdownOptions from "@/components/DropdownOptions";
+import { H3 } from "@/components/Heading/H3";
 
 export default function MyProjectDetails() {
   const params = useParams();
@@ -295,10 +261,10 @@ export default function MyProjectDetails() {
               </div>
 
               <div className="flex flex-col gap-2 py-5">
-              <div className="bg-white rounded-2xl shadow-md p-6 border border-gray-200">
-                <h2 className="text-xl font-semibold mb-2">
+              <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+                <H5 className=" font-semibold mb-2">
                   Project Description
-                </h2>
+                </H5>
                 <div
                   className="prose max-w-none [&_img]:w-28 [&_img]:rounded-xl"
                   dangerouslySetInnerHTML={{
@@ -308,10 +274,10 @@ export default function MyProjectDetails() {
                 />
               </div>
 
-              <div className="bg-white rounded-2xl shadow-md p-6 border border-gray-200">
-                <h2 className="text-xl font-semibold mb-2">
+              <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-200">
+                <H5 className="font-semibold mb-2">
                   Deploy Instruction
-                </h2>
+                </H5>
                 <div
                   className="prose max-w-none [&_img]:w-28 [&_img]:rounded-xl"
                   dangerouslySetInnerHTML={{
@@ -321,10 +287,10 @@ export default function MyProjectDetails() {
                 />
               </div>
 
-              <div className="bg-white rounded-2xl shadow-md p-6 border border-gray-200">
-                <h2 className="text-xl font-semibold mb-2">
+              <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-200">
+                <H5 className="font-semibold mb-2">
                   Critical Notes
-                </h2>
+                </H5>
                 <div
                   className="prose max-w-none [&_img]:w-28 [&_img]:rounded-xl"
                   dangerouslySetInnerHTML={{
@@ -333,25 +299,6 @@ export default function MyProjectDetails() {
                   }}
                 />
               </div>
-              {/* <CommentInputSection
-                  defaultValue={project?.description}
-                  title="Description"
-                  onClick={handleUpdateProjectDescription(project?._id)}
-                  isButton={true}
-                />
-
-                <CommentInputSection
-                  defaultValue={project?.deploy_instruction}
-                  title="Deploy Instruction"
-                  // onClick={handleUpdateProjectDescription(project?._id)}
-                  isButton={false}
-                />
-                <CommentInputSection
-                  defaultValue={project?.critical_notes}
-                  title="Critical Notes"
-                  // onClick={handleUpdateProjectDescription(project?._id)}
-                  isButton={false}
-                /> */}
               </div>
               <Details
                 project={project}

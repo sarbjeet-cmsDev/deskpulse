@@ -156,7 +156,7 @@ export default function DetailsTable({
                 </g>
               </svg>
               <span className="text-[#31394f] text-[14px] leading-[16px]">
-                Team Member
+                Assignee
               </span>
             </div>
             <div className="flex items-center gap-2">

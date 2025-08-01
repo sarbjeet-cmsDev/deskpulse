@@ -85,11 +85,11 @@ console.log(user,"useruser")
                 key={index}
                 className={`flex items-start gap-4 p-4 mt-6 rounded-xl shadow-sm border transition-all ${bgColor}`}
               >
-                <Avatar
+                {/* <Avatar
                   src={userAvtar?.src}
                   alt="User Avatar"
                   className="w-10 h-10 rounded-full"
-                />
+                /> */}
 
                 <div className="flex-1 text-sm text-gray-700">
                   <p className="mb-1">

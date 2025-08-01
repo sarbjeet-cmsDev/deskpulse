@@ -122,4 +122,9 @@ export class AdminUserController {
   async search(@Query("q") query: string, @Query("role") roles?: string) {
     return this.userService.searchUsers(query, roles);
   }
+
+  @Get("only-users")
+  async findOnlyUsers(): Promise<User[]> {
+    return this.userService.findUsersByRole("user");
+  }
 }

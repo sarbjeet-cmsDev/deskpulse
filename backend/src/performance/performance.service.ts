@@ -5,6 +5,8 @@ import { Performance, PerformanceDocument } from "./performance.schema";
 import { CreatePerformanceDto } from "./performance.dto";
 import { TaskService } from "src/task/task.service";
 import * as dayjs from 'dayjs';
+import { UserService } from "src/user/user.service";
+
 
 @Injectable()
 export class PerformanceService {
@@ -12,6 +14,7 @@ export class PerformanceService {
     @InjectModel(Performance.name)
     private performanceModel: Model<PerformanceDocument>,
     private readonly taskService: TaskService,
+    private readonly userService: UserService,
   ) { }
 
   // Priority weights
@@ -187,5 +190,48 @@ export class PerformanceService {
   );
 
   return averagedPerformance; 
+}
+
+async getPerformanceForAdmin(
+  userId?: string,
+  start?: string,
+  end?: string,
+): Promise<any[]> {
+  try {
+    const users = userId
+      ? [await this.userService.findOne(userId)]
+      : await this.userService.findUsersByRole('user');
+
+
+    if (!users || users.length === 0) {
+      return [];
+    }
+  
+    const performancesByUser = await Promise.all(
+      users.map(async (user) => {
+        if (!user._id) {
+          console.warn('Invalid user object:', user);
+          return null;
+        }
+
+        const performance = await this.getPerformanceByTaskandUserId(
+          user._id.toString(),
+          start,
+          end,
+        );
+
+        return {
+          userId: user._id.toString(),
+          name: `${user.firstName} ${user.lastName}`,
+          performance,
+        };
+      }),
+    );
+
+    return performancesByUser.filter(Boolean);
+  } catch (err) {
+    console.error('Error in getPerformanceForUsers:', err);
+    throw err;
+  }
 }
 }

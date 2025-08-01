@@ -5,15 +5,18 @@ import { PerformanceService } from "./performance.service";
 import { PerformanceController } from "./performance.controller";
 import { PerformanceListener } from "./performance.listener";
 import { TaskModule } from "src/task/task.module";
+import { AdminPerformanceController } from "./admin.performance.controller";
+import { UserModule } from "src/user/user.module";
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Performance.name, schema: PerformanceSchema },
     ]),
-    TaskModule
+    TaskModule,
+    UserModule
   ],
-  controllers: [PerformanceController],
+  controllers: [PerformanceController, AdminPerformanceController],
   providers: [PerformanceService, PerformanceListener], // <== Add listener here
   exports: [PerformanceService],
 })

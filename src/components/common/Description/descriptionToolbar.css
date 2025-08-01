@@ -18,3 +18,8 @@
   max-width: 50%;
   height: auto;
 }
+
+.description-content .ql-editor {
+  font-size: 17px; 
+  line-height: 1.2;
+}

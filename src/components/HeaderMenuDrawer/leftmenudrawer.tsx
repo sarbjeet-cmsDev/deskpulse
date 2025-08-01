@@ -61,6 +61,7 @@ export default function LeftMenuDrawer() {
     { label: "Tasks", href: "/admin/task" },
     { label: "Notifications", href: "/admin/notification" },
     { label: "Comments", href: "/admin/comment" },
+    { label: "Performance", href: "/admin/performance" },
     { label: "Logout", href: "#" },
   ];
 

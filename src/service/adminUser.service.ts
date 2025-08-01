@@ -100,6 +100,11 @@ const AdminUserService = {
     const res = await axiosClient.put(`${API_URL}/admin/user/me`, data);
     return res.data;
   },
+
+  async getOnlyUsers(): Promise<IUser[]> {
+    const res = await axiosClient.get(`${API_URL}/admin/user/only-users`);
+    return res.data;
+  },
 };
 
 export default AdminUserService;
