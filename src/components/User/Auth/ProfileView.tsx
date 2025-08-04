@@ -61,6 +61,8 @@ export default function AuthProfileView() {
     ? `${process.env.NEXT_PUBLIC_BACKEND_HOST}${user.profileImage}?v=${version}`
     : defaultAvatar.src;
 
+    console.log("avatarUrl",avatarUrl)
+
   return (
     <div className="max-w-6xl mx-auto">
       <div className="flex justify-center items-center p-[24px] border-b border-[#31394f14]">

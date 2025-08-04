@@ -73,11 +73,17 @@ export class NotificationService {
     return this.notificationModel.findById(id).exec();
   }
 
-  async findByUser(userId: string): Promise<Notification[]> {
-    return this.notificationModel.find({
+  async findByUser(userId: string): Promise<{count: number; notifications:Notification[]}> {
+    const count = await this.notificationModel.countDocuments({user:userId, is_read:false})
+    const notifications = await this.notificationModel.find({
       user: userId,
-      is_read: false, 
+      is_read: false,
     }).sort({ createdAt: -1 }).exec();
+
+    return{
+      count,
+      notifications,
+    }
   }
 
   async update(id: string, updateNotificationDto: UpdateNotificationDto): Promise<Notification> {

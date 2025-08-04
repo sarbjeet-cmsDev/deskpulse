@@ -87,7 +87,9 @@ export default function Dashboard() {
                     key={project._id}
                     href={`/project/${project._id}`}
                   >
-                    <ProjectCard project={project} />
+                    <ProjectCard project={project}  
+                    kanban={ []}
+                     taskCounts={ {}} />
                   </Link>
                 ))
               )}

@@ -60,24 +60,15 @@ export class UserService {
 
   async searchUsers(keyword: string, roles?: string): Promise<UserDocument[]> {
     const regex = new RegExp(keyword, "i");
-    // return this.userModel.find({
-    //     $or: [
-    //         { name: regex },
-    //         { email: regex }
-    //     ]
-    // });
+   
 
     const filters: any = {
-      // roles: "user",
+      
       $or: [
-        { firstName: { $regex: regex } }, // Search by first name
-        { lastName: { $regex: regex } }, // Search by last name
-        { email: { $regex: regex } }, // Search by email
+        { firstName: { $regex: regex } }, 
+        { lastName: { $regex: regex } }, 
+        { email: { $regex: regex } },
       ],
-      // $or: [
-      //   { name: regex },
-      //   { email: regex },
-      // ]
     };
 
     if (roles) {

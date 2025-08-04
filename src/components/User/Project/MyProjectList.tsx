@@ -7,17 +7,20 @@ import ProjectService from "@/service/project.service";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Pagination from "@/components/Pagination/pagination";
-
-
+import { ProjectKanbon } from "@/service/projectKanbon.service";
+import TaskService from "@/service/task.service";
+import { KanbanColumn } from "@/types/projectKanbon.interface";
+import { ITask } from "@/service/task.service";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 export default function MyProjects() {
+  const user: any = useSelector((state: RootState) => state.auth.user);
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalItems, setTotalItems] = useState<number>(0);
   const itemsPerPage = 4;
-
- 
 
   useEffect(() => {
     const loadProjects = async (page: number) => {
@@ -40,7 +43,46 @@ export default function MyProjects() {
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
- 
+
+
+const [projectKanbanMap, setProjectKanbanMap] = useState<Record<string, { kanbans: KanbanColumn[], counts: Record<string, number> }>>({});
+
+const fetchKanbonList = async () => {
+  try {
+    const projectIds: string[] = projects.map((item) => item._id);
+    const resultMap: Record<string, { kanbans: KanbanColumn[], counts: Record<string, number> }> = {};
+
+    for (const projectId of projectIds) {
+      const kanbanRes = await ProjectKanbon.getProjectKanbonList(projectId);
+      const kanbans: KanbanColumn[] = kanbanRes?.data || [];
+
+      const taskRes = await TaskService.getTasksByProject(projectId);
+      const tasks: ITask[] = taskRes?.data || taskRes?.tasks || [];
+
+      const counts: Record<string, number> = {};
+      kanbans.forEach(k => {
+        counts[k.title] = tasks.filter(t => t.status === k.title).length;
+      });
+
+      resultMap[projectId] = {
+        kanbans,
+        counts,
+      };
+    }
+
+    setProjectKanbanMap(resultMap);
+  } catch (error) {
+    console.error("Failed to load kanban data:", error);
+  }
+};
+
+useEffect(() => {
+  if (projects.length > 0) {
+    fetchKanbonList();
+  }
+}, [projects]);
+
+
   return (
     <div className="max-w-6xl mx-auto">
       <div className="main-content">
@@ -62,7 +104,10 @@ export default function MyProjects() {
               ) : (
                 projects.map((project) => (
                   <Link key={project._id} href={`/project/${project._id}`}>
-                    <ProjectCard project={project} />
+                    <ProjectCard project={project} 
+                     kanban={projectKanbanMap[project._id]?.kanbans || []}
+                     taskCounts={projectKanbanMap[project._id]?.counts || {}}
+                    />
                   </Link>
                 ))
               )}

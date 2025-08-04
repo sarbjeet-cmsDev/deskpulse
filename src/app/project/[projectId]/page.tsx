@@ -141,6 +141,7 @@ export default function MyProjectDetails() {
         project: project._id,
         report_to: user?.id || "",
         assigned_to: user?.id || "",
+        due_date: new Date().toISOString().split("T")[0], 
       });
       refreshTasks();
       fetchKanbonList([user.id]);
@@ -209,11 +210,14 @@ export default function MyProjectDetails() {
               <H5 className="w-[98%] text-center">{project.title}</H5>
             </div>
             <div className="flex items-center">
+              <div className="mr-3">
+                <CreateTaskModal onCreate={handleCreateTask} />
+              </div>
               <Button
                 onPress={() =>
                   router.push(`/project/projectDetail/${projectId}`)
                 }
-                className="btn-primary px-4 py-2 text-sm md:text-base w-full md:w-auto"
+                className="btn-primary px-5 py-4 text-sm md:text-base w-full md:w-auto font-bold"
               >
                 View Kanban
               </Button>
@@ -319,7 +323,7 @@ export default function MyProjectDetails() {
                 </div>
                 <SubTasks tasks={tasks} kanbanList={kanbanList} />
               </div>
-              <div className="mt-[5px]">
+              <div className="mt-[20px]">
                 <CreateTaskModal onCreate={handleCreateTask} />
               </div>
             </div>

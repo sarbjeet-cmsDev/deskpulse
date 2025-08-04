@@ -7,10 +7,12 @@ import { JwtAuthGuard } from "src/guard/jwt-auth.guard";
 import { UseInterceptors, UploadedFile } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { multerOptions } from "../shared/multer.config";
+import * as path from "path";
+import * as fs from 'fs';
 
 @Controller("api/user")
 export class UserController {
-  constructor(private readonly userService: UserService) { }
+  constructor(private readonly userService: UserService) {}
   @Post("create")
   async create(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.userService.create(createUserDto);
@@ -54,9 +56,22 @@ export class UserController {
     @UploadedFile() file: Express.Multer.File,
     @Req() req: any
   ) {
-    const userId = req.user.userId;
+    const fileExtension = path.extname(file.filename);
+    console.log("fileExtension", fileExtension);
+    const now = new Date();
+    const year = now.getFullYear().toString();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
 
-    const fileUrl = `/uploads/${file.filename}`;
+    const userId = req.user.userId;
+    const uploadSubDir = path.join('uploads', year, month, day);
+    const targetPath = path.join(uploadSubDir, file.filename);
+    fs.mkdirSync(uploadSubDir, { recursive: true });
+
+    fs.renameSync(file.path, targetPath);
+ 
+    const fileUrl = `/uploads/${year}/${month}/${day}/${file.filename}`.replace(/\\/g, '/');
+    console.log("fileUrl", fileUrl);
 
     return this.userService.updateUserAvatar(userId, fileUrl);
   }

@@ -206,6 +206,7 @@ export default function TaskDetails() {
               project={project}
               taskId={taskId}
               task={task}
+              // projectId={task?.project}
               onTaskUpdate={() => fetchTask(taskId)}
             />
 

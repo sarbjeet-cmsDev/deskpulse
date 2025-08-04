@@ -21,13 +21,13 @@ export const Notification = () => {
   const step = 7;
 
   const user: any = useSelector((state: RootState) => state.auth.user);
-console.log(user,"useruser")
   const fetchNotification = async () => {
     try {
       const res: any = await NotficationService.getNotificationByUserId(
         user?.id || user?._id
       );
-      setNotification(res?.notifications || []);
+      
+      setNotification(res?.notifications?.notifications || []);
     } catch (error) {
       console.error("Failed to fetch notifications", error);
     }

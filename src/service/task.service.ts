@@ -14,6 +14,7 @@ export interface ITask {
   KanbanColumn?: any;
   description: string;
   priority: string;
+  status:string;
 
   // Add more fields as needed
 }
@@ -24,6 +25,7 @@ export interface CreateTaskDto {
   report_to: string;
   assigned_to: string;
   description?: string;
+  due_date?: string;
 }
 
 export interface ITaskResponse {
@@ -52,7 +54,6 @@ const TaskService = {
   // Get all tasks
   async getAllTasks(): Promise<ITask[]> {
     const res = await axiosClient.get(`${API_URL}/tasks`);
-    console.log(res);
     return res.data;
   },
 

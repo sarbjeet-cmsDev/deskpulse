@@ -9,6 +9,10 @@ import { IUser } from "@/service/user.service";
 import TaskStatusUpdateModal from "./TaskStatusUpdateModal";
 import { ProjectKanbon } from "@/service/projectKanbon.service";
 import TaskPropertyUpdateModal from "./TaskStatusUpdateModal";
+import AdminUserService from "@/service/adminUser.service";
+import ProjectService from "@/service/project.service";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 interface DetailsProps {
   project: {
@@ -25,6 +29,7 @@ interface DetailsProps {
   };
   taskId: string;
   task: any;
+  
 
   onTaskUpdate: () => void;
 }
@@ -60,8 +65,14 @@ export default function DetailsTable({
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
   const [isPriorityModalOpen, setIsPriorityModalOpen] = useState(false);
   const [kanbanList, setKanbanList] = useState([]);
+  const [users, setUsers] = useState([]);
+  const user: any = useSelector((state: RootState) => state.auth.user);
+  console.log("usersmmmmm",users)
+  console.log("projectmmmmm",project)
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
 
   const [assignedUser, setAssignedUser] = useState<IUser[]>([]);
+
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -133,6 +144,28 @@ export default function DetailsTable({
     .filter((user) => !!user.firstName && !!user.lastName)
     .map(mapIUserToUser);
 
+
+  //   const fetchUsers = async () => {
+  //   try {
+  //     const data: any = await AdminUserService.getAllUsers();
+  //     const result = await ProjectService.getProjectById(project?._id);
+  //     const userIds = new Set(result?.users || []);
+  //     const matchingUsers = data.data.filter((user: any) =>
+  //       userIds.has(user._id)
+  //     );
+  //     if (matchingUsers.length > 0) setUsers(matchingUsers);
+  //   } catch (err) {
+  //     console.error("Failed to fetch users", err);
+  //   }
+  // };
+  // useEffect(() => {
+  //   if (user?.id) {
+  //     setSelectedUserIds([]);
+  //     // fetchKanbonList([]);
+  //   }
+  //   fetchUsers();
+  // }, [user?.id]);
+
   return (
     <div>
       <ul className="mt-[24px]">
@@ -175,41 +208,6 @@ export default function DetailsTable({
             </div>
           </div>
         </li>
-        {/* <li className="mt-[20px]">
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-4 w-[35%]">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <g opacity="0.9">
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M9.89766 12.0467L9.99692 12.0468L10.2169 12.0474C12.0852 12.0574 16.4618 12.2272 16.4618 15.1142C16.4618 17.791 12.8673 18.1487 10.0713 18.1622L9.57843 18.162C7.71015 18.152 3.3335 17.9822 3.3335 15.0959C3.3335 12.3626 7.07933 12.0467 9.89766 12.0467ZM9.89766 13.2967C6.37183 13.2967 4.5835 13.9026 4.5835 15.0959C4.5835 16.3009 6.37183 16.9126 9.89766 16.9126C13.4235 16.9126 15.2118 16.3067 15.2118 15.1142C15.2118 13.9076 13.4235 13.2967 9.89766 13.2967ZM9.89766 1.66675C12.3418 1.66675 14.3293 3.65508 14.3293 6.09841C14.3293 8.54175 12.3418 10.5301 9.89766 10.5301H9.87183C8.68933 10.5259 7.581 10.0617 6.75016 9.22508C5.9185 8.38758 5.46266 7.27592 5.4668 6.09591C5.4668 3.65508 7.45433 1.66675 9.89766 1.66675ZM9.89766 2.91675C8.14433 2.91675 6.7168 4.34425 6.7168 6.09841C6.7135 6.94758 7.04016 7.74341 7.636 8.34425C8.23266 8.94425 9.02766 9.27675 9.87433 9.28008L9.89766 9.89758V9.28008C11.6518 9.28008 13.0793 7.85258 13.0793 6.09841C13.0793 4.34425 11.6518 2.91675 9.89766 2.91675Z"
-                    fill="#31394F"
-                    />
-                </g>
-              </svg>
-              <span className="text-[#31394f] text-[14px] leading-[16px]">
-                Project Coordinator
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="avatar avt-27 round">
-                <Image
-                  src={avatar}
-                  alt="avatar-image"
-                  className=" w-[25px] h-[25px] rounded-[30px]"
-                  />
-              </div>
-              <span className="text-[#31394f] font-500 text-[12px] leading-[18px]"></span>
-            </div>
-          </div>
-        </li> */}
         <li className="mt-[10px]">
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-4 w-[35%]">

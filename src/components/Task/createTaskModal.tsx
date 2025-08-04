@@ -53,7 +53,7 @@ export default function CreateTaskModal({ onCreate }: CreateTaskModalProps) {
     <>
       <Button
         onPress={onOpen}
-        className="btn-primary text-white block w-full flex justify-center items-center gap-2 text-[14px] leading-[16px] font-bold py-[16px] rounded-[12px] mt-[24px] px-[28px]"
+        className="btn-primary text-white block w-full flex justify-center items-center gap-2 text-[14px] leading-[16px] font-bold py-[16px] rounded-[12px] px-[28px]"
       >
         Create Task
       </Button>

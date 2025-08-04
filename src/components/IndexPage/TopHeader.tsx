@@ -17,10 +17,13 @@ import { Input } from "../Form/Input";
 import { GlobalSearch } from "../global-search/GlobalSearch";
 import { searchAll } from "@/service/searchService";
 import { P } from "../ptag";
+import NotificationService from "@/service/notification.service";
 
 export default function TopHeader() {
+  const [notificationCount, setNotificationCount] = useState<number>(0);
   const dispatch = useDispatch<AppDispatch>();
-  const user = useSelector((state: RootState) => state.user.data);
+  const user: any = useSelector((state: RootState) => state.user.data);
+  const userData: any = useSelector((state: RootState) => state.auth.user);
 
   const token = localStorage.getItem("token");
   useEffect(() => {
@@ -36,6 +39,24 @@ export default function TopHeader() {
     }
   }, [user?.profileImage]);
 
+  const fetchNotification = async () => {
+    try {
+      const res: any = await NotificationService.getNotificationByUserId(
+        userData?.id
+      );
+      setNotificationCount(res?.notifications?.count || 0);
+    } catch (error) {
+      console.error("Failed to fetch notifications", error);
+    }
+  };
+
+  useEffect(() => {
+    const interval = setInterval(()=>{
+      fetchNotification();
+    },500)
+    return ()=>clearInterval(interval);
+  }, [userData?.id]);
+
   return (
     <div className="bg-theme-primary px-4 py-4">
       <div className="flex flex-row md:justify-between md:items-center gap-5">
@@ -49,14 +70,25 @@ export default function TopHeader() {
         </div>
         <div className="flex justify-center items-center gap-6 shrink-0">
           <LeftMenuDrawer />
-          <P
-            // variant="light"
+          <div
+            
             onClick={() =>
               dispatch(openDrawer({ size: "md", type: "notification" }))
             }
           >
-            <Image src={bell} alt="notification" className="cursor-pointer invert" />
-          </P>
+            <div className="relative cursor-pointer">
+              <Image
+                src={bell}
+                alt="notification"
+                className="cursor-pointer invert"
+              />
+              {notificationCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                  {notificationCount > 99 ? "99+" : notificationCount}
+                </span>
+              )}
+            </div>
+          </div>
           <CommonDrawer type="notification">
             <Notification />
           </CommonDrawer>

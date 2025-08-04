@@ -50,6 +50,16 @@ export default function SubTasks({
     }));
   };
 
+  const formatDate = (dateString: string) => {
+    if (!dateString) return "No due date";
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return "Invalid date";
+    return new Intl.DateTimeFormat("en-US", {
+      dateStyle: "medium",
+      // timeStyle: "short",
+    }).format(date);
+  };
+
   return (
     <div className="space-y-8">
       {uniqueStatuses.map((status) => {
@@ -81,10 +91,18 @@ export default function SubTasks({
                 >
                   <Link
                     href={`/task/${task._id}`}
-                    className="flex justify-between items-center"
+                    className="flex justify-between items-center gap-2"
                   >
-                    <span className="text-[#333] font-medium">
+                    <span className="text-[#333] font-medium truncate">
                       {task.title}
+                    </span>
+
+                    <div className="flex items-center gap-4 shrink-0 ">
+                    <span className="text-[#333] font-medium ">
+                      Priority: {task.priority}
+                    </span>
+                    <span className="text-[#333] font-medium">
+                      Due Date: {formatDate(task.due_date)}
                     </span>
                     <Image
                       src={info}
@@ -92,7 +110,8 @@ export default function SubTasks({
                       width={20}
                       height={20}
                       className="cursor-pointer opacity-70 hover:opacity-100"
-                    />
+                      />
+                    </div>
                   </Link>
                 </li>
               ))}

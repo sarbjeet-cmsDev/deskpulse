@@ -71,7 +71,7 @@ const TaskListTable = () => {
 
   const rows = (tasks ?? []).map((task) => ({
     ...task,
-    actions: [{ title: "Delete" }],
+    actions: [{ title: "Delete" }, {title:"View"}],
   }));
 
   return (
@@ -96,8 +96,8 @@ const TaskListTable = () => {
           }}
           
           onAction={async (action, row) => {
-            if (action === "Edit") {
-              router.push(`/admin/project/update/${row._id}`);
+            if (action === "View") {
+              router.push(`/task/${row._id}`);
             } else if (action === "Delete") {
               const result = await Swal.fire({
                 title: "Are you sure?",
