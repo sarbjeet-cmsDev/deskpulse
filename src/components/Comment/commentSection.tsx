@@ -4,6 +4,10 @@ import { useState, useMemo, useRef, useCallback, useEffect } from "react";
 import "react-quill/dist/quill.snow.css";
 import "quill-mention/dist/quill.mention.css";
 import "./commentSection.css";
+import 'highlight.js/styles/atom-one-dark.css';
+
+// import "@/utils/quill-config";
+import hljs from 'highlight.js';
 
 import { Quill } from "react-quill-new";
 import { Mention, MentionBlot } from "quill-mention";
@@ -16,6 +20,8 @@ import { RootState } from "@/store/store";
 import UploadService from "@/service/upload.service";
 import DescriptionView from "../common/DescriptionView/DescriptionView";
 
+
+
 if (
   typeof window !== "undefined" &&
   typeof Quill?.import === "function" &&
@@ -24,6 +30,7 @@ if (
   Quill.register(MentionBlot);
   Quill.register("modules/mention", Mention);
 }
+
 
 interface CommentInputProps {
   taskId: string;
@@ -59,6 +66,8 @@ export default function CommentInputSection({
   const wrapperRef = useRef<HTMLDivElement>(null);
   const user:any = useSelector((state: RootState) => state.user.data);
 
+  
+  
 
  
   useEffect(() => {
@@ -124,11 +133,12 @@ export default function CommentInputSection({
 
   const modules = useMemo(
     () => ({
+      // syntax:true,
       toolbar: {
         container: [
           [{ header: [1, 2, false] }],
           ["bold", "italic", "underline"],
-          ["link", "image"],
+          ["link", "image", "code-block"],
           [{ list: "ordered" }, { list: "bullet" }],
           ["clean"],
         ],
@@ -136,6 +146,9 @@ export default function CommentInputSection({
           image: imageHandler,
         },
       },
+    //   syntax: {
+    //     highlight: (text:string) => hljs.highlightAuto(text).value 
+    // },
       mention: {
         mentionDenotationChars: ["@"],
         source: mentionSource,
@@ -145,6 +158,7 @@ export default function CommentInputSection({
     }),
     []
   );
+
 
   const extractMentionedUserIds = (html: string): string[] => {
     const parser = document.createElement("div");
@@ -230,10 +244,10 @@ export default function CommentInputSection({
     const editor = quillRef.current?.getEditor();
     const html = editor?.root.innerHTML || "";
 
-    if (!html || stripHtml(html) === "") {
-      setError("Description is required");
-      return;
-    }
+    // if (!html || stripHtml(html) === "") {
+    //   setError("Description is required");
+    //   return;
+    // }
 
     try {
       setLoading(true);
@@ -244,6 +258,14 @@ export default function CommentInputSection({
       setLoading(false);
     }
   };
+
+    useEffect(() => {
+  if (content) {
+    setTimeout(() => {
+      hljs.highlightAll();
+    }, 0);
+  }
+}, [content]);
 
   return (
     <div className={`p-4 bg-white border rounded ${inline ? "mt-6" : ""}`}>
@@ -291,8 +313,10 @@ export default function CommentInputSection({
         <Button
         onPress={() => {
           if (onClick) {
+            if(title !== 'Description'){
             if (!content || stripHtml(content) === "") {
-              setError(`${title} is required`);
+                setError(`${title} is required`);
+              }
               return;
             }
             setLoading(true);

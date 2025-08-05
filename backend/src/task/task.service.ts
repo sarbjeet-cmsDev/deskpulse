@@ -28,6 +28,9 @@ export class TaskService {
     const { code: projectCode } = await this.projectService.findOne(
       createTaskDto.project.toString()
     );
+     if (createTaskDto.estimated_time) {
+    createTaskDto.estimated_time = Number(createTaskDto.estimated_time) * 60; 
+  }
     const tasks = await this.taskModel.find({
       code: new RegExp(`^${projectCode}-\\d{2,}$`),
     });

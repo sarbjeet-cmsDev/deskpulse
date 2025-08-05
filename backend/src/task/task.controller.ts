@@ -68,13 +68,13 @@ export class TaskController {
   async fetchTasksByUsersAndProject(
     @Query("userIds") userIds: string,
     @Query("projectid") projectId: string
-  ): Promise<{ message: string; tasks: Task[] }> {
+  ): Promise<{ tasks: Task[] }> {
     const userIdArray = userIds.split(",");
     const tasks = await this.taskService.fetchTasksByUserAndProjectIds(
       userIdArray,
       projectId
     );
-    return { message: "Task fetched successfully", tasks };
+    return { tasks };
   }
 
   @Get("code/:code")

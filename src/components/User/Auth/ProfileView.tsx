@@ -23,6 +23,7 @@ export default function AuthProfileView() {
   const router = useRouter();
   const user = useSelector((state: RootState) => state.user.data);
   const [version, setVersion] = useState<number>(Date.now());
+  const [imageSrc, setImageSrc] = useState<string>(defaultAvatar.src);
 
   const handleLogout = () => {
     dispatch(signOut());
@@ -49,6 +50,16 @@ export default function AuthProfileView() {
     dispatch(fetchUserProfile());
   }, [dispatch]);
 
+  useEffect(() => {
+    if (user?.profileImage) {
+      setImageSrc(
+        `${process.env.NEXT_PUBLIC_BACKEND_HOST}${user.profileImage}?v=${version}`
+      );
+    } else {
+      setImageSrc(defaultAvatar.src);
+    }
+  }, [user, version]);
+
   const role = user?.roles?.[0] ?? "";
   let href = "/";
   if (role === "admin") {
@@ -56,12 +67,6 @@ export default function AuthProfileView() {
   } else {
     href = "/";
   }
-
-  const avatarUrl = user?.profileImage
-    ? `${process.env.NEXT_PUBLIC_BACKEND_HOST}${user.profileImage}?v=${version}`
-    : defaultAvatar.src;
-
-    console.log("avatarUrl",avatarUrl)
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -77,9 +82,10 @@ export default function AuthProfileView() {
         <div className="flex justify-center items-center flex-col gap-2">
           <div className="relative">
             <Image
-              key={avatarUrl}
-              src={avatarUrl}
+              key={imageSrc}
+              src={imageSrc}
               alt="avatar"
+              onError={() => setImageSrc(defaultAvatar.src)}
               width={100}
               height={100}
               className="w-[100px] h-[100px] rounded-full object-cover"

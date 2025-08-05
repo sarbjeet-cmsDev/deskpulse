@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Drawer,
   DrawerContent,
@@ -27,6 +27,7 @@ import Cookies from "js-cookie";
 
 export default function LeftMenuDrawer() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const userData = useSelector((state: RootState) => state.user.data);
   const dispatch = useDispatch<AppDispatch>();
   const [placement, setPlacement] = React.useState<
     "left" | "right" | "top" | "bottom"
@@ -35,12 +36,23 @@ export default function LeftMenuDrawer() {
     (state: RootState) => state.auth.user
   );
 
+  const [imageSrc, setImageSrc] = useState<string>(avatar.src);
+
   const userProfile = useSelector((state: RootState) => state.user.data);
 
   const [version, setVersion] = useState(Date.now());
-  const avatarUrl = userProfile?.profileImage
-    ? `${process.env.NEXT_PUBLIC_BACKEND_HOST}${userProfile.profileImage}?v=${version}`
-    : avatar.src;
+
+
+  useEffect(() => {
+    if (userData?.profileImage) {
+      setImageSrc(
+        `${process.env.NEXT_PUBLIC_BACKEND_HOST}${userData.profileImage}?v=${version}`
+      );
+    } else {
+      setImageSrc(avatar.src);
+    }
+  }, [userData, version]);
+ 
 
   const userMenuItems = [
     { label: "Home", href: "/" },
@@ -62,6 +74,8 @@ export default function LeftMenuDrawer() {
     { label: "Notifications", href: "/admin/notification" },
     { label: "Comments", href: "/admin/comment" },
     { label: "Performance", href: "/admin/performance" },
+    { label: "Create Reminder", href: "/reminder/create" },
+    { label: "My Reminder", href: "/reminder" },
     { label: "Logout", href: "#" },
   ];
 
@@ -144,8 +158,9 @@ export default function LeftMenuDrawer() {
                 <div className="flex justify-start items-center gap-2 my-4">
                   <div className="relative">
                     <Image
-                      src={avatarUrl}
+                      src={imageSrc}
                       alt="avatar-iamge"
+                      onError={() => setImageSrc(avatar.src)}
                       width={100}
                       height={100}
                       className="w-[40px] h-[40px] rounded-full object-cover"

@@ -28,8 +28,6 @@ export default function SubTasks({
     {}
   );
 
-  
-
   if (!tasks?.length) {
     return <div className="text-gray-500">No tasks available.</div>;
   }
@@ -73,8 +71,6 @@ export default function SubTasks({
         const visibleCount = getVisibleCount(status);
         const visibleTasks = filteredTasks.slice(0, visibleCount);
 
-        
-
         return (
           <div key={status}>
             {isKanban && (
@@ -98,18 +94,21 @@ export default function SubTasks({
                     </span>
 
                     <div className="flex items-center gap-4 shrink-0 ">
-                    <span className="text-[#333] font-medium ">
-                      Priority: {task.priority}
-                    </span>
-                    <span className="text-[#333] font-medium">
-                      Due Date: {formatDate(task.due_date)}
-                    </span>
-                    <Image
-                      src={info}
-                      alt="Details"
-                      width={20}
-                      height={20}
-                      className="cursor-pointer opacity-70 hover:opacity-100"
+                      <div className="flex item-center gap-2">
+                        <span className="text-[#333] font-bold">Priority:</span>
+                        <span>{task.priority}</span>
+                      </div>
+
+                      <div className="flex item-center gap-2">
+                        <span className="text-[#333] font-bold">Due Date:</span>
+                        <span>{formatDate(task.due_date)}</span>
+                      </div>
+                      <Image
+                        src={info}
+                        alt="Details"
+                        width={20}
+                        height={20}
+                        className="cursor-pointer opacity-70 hover:opacity-100"
                       />
                     </div>
                   </Link>

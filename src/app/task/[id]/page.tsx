@@ -48,7 +48,6 @@ export default function TaskDetails() {
     (state: RootState) => state.auth.user
   );
 
-  console.log('task project id',task)
 
   const fetchTask = async (id: string) => {
     try {

@@ -28,10 +28,12 @@ export default function DatePickerInput({ task, onChange }: DatePickerInputProps
     console.error(" Invalid due date format:", task?.due_date);
   }
   
+  const defaultValue: DateValue | null = parsedDueDate || (today(getLocalTimeZone()) as unknown as DateValue); 
+
   return (
     <DatePicker
     className="max-w-[284px]"
-      value={parsedDueDate}
+      value={defaultValue}
       onChange={handleChange}
        granularity="day"
       //  minValue={today(getLocalTimeZone())}

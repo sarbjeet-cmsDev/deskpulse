@@ -78,3 +78,9 @@ npm install react-chartjs-2
 ```bash
 To display external images correctly in your Next.js project, add the image hostname in the next.config.js file
 ```
+
+### Install highlight.js.
+
+```bash
+npm install highlight.js
+```

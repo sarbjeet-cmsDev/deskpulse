@@ -15,6 +15,7 @@ export interface ITask {
   description: string;
   priority: string;
   status:string;
+  estimated_time?:number
 
   // Add more fields as needed
 }
@@ -26,6 +27,7 @@ export interface CreateTaskDto {
   assigned_to: string;
   description?: string;
   due_date?: string;
+  estimated_time?:number;
 }
 
 export interface ITaskResponse {

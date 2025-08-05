@@ -78,6 +78,26 @@ export default function MyProjectDetails() {
       console.error("Failed to load tasks:", error);
     }
   };
+
+  const fetchTaskByKanbonList = async (userIds: string[]) => {
+    try {
+      const res = await ProjectKanbon.getProjectKanbonList(projectId);
+    
+      const taskRes = await TaskService.getTasksByProject(projectId);
+     
+
+      if (res?.data) {
+        setKanbanList(res.data);
+      }
+
+      const tasks = taskRes?.data || taskRes?.tasks;
+      if (tasks) {
+        setTasks(tasks);
+      }
+    } catch (error) {
+      console.error("Failed to load tasks:", error);
+    }
+  };
   const fetchUsers = async () => {
     try {
       const data: any = await AdminUserService.getAllUsers();
@@ -98,7 +118,7 @@ export default function MyProjectDetails() {
     }
     fetchUsers();
   }, [user?.id]);
-  const fetchTasks = async (projectId: string, page = 1, limit = 50) => {
+  const fetchTasks = async (projectId: string, page = 1, limit = 100) => {
     try {
       const res = await TaskService.getTasksByProject(projectId, page, limit);
 
@@ -133,7 +153,7 @@ export default function MyProjectDetails() {
     if (project?._id) fetchTasks(project._id);
   };
 
-  const handleCreateTask = async (title: string, description: string) => {
+  const handleCreateTask = async (title: string, description: string, due_date:string, estimated_time:number) => {
     try {
       await TaskService.createTask({
         title,
@@ -141,10 +161,11 @@ export default function MyProjectDetails() {
         project: project._id,
         report_to: user?.id || "",
         assigned_to: user?.id || "",
-        due_date: new Date().toISOString().split("T")[0], 
+        due_date, 
+        estimated_time,
       });
       refreshTasks();
-      fetchKanbonList([user.id]);
+      fetchTaskByKanbonList([]);
       fetchTasks(project._id);
     } catch (error) {
       console.error(error);
@@ -217,7 +238,7 @@ export default function MyProjectDetails() {
                 onPress={() =>
                   router.push(`/project/projectDetail/${projectId}`)
                 }
-                className="btn-primary px-5 py-4 text-sm md:text-base w-full md:w-auto font-bold"
+                className="btn-primary text-white block w-full flex justify-center items-center gap-2 text-[14px] leading-[16px] font-bold py-[16px] rounded-[12px] px-[28px]"
               >
                 View Kanban
               </Button>

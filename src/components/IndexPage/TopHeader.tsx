@@ -83,7 +83,7 @@ export default function TopHeader() {
                 className="cursor-pointer invert"
               />
               {notificationCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                <span className="absolute -top-3 -right-2 bg-red-600 text-white text-xs rounded-full px-1.5 h-5 min-w-[1.25rem] flex items-center justify-center">
                   {notificationCount > 99 ? "99+" : notificationCount}
                 </span>
               )}

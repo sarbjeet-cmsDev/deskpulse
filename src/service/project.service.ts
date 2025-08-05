@@ -17,7 +17,6 @@ const ProjectService = {
   },
   async getProjectById(projectId: string) {
     const response = await axiosClient.get(`${API_URL}/projects/fetch/${projectId}`);
-    console.log("response in project",response)
     return response.data;
   },
   
