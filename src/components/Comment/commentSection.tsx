@@ -316,8 +316,8 @@ export default function CommentInputSection({
             if(title !== 'Description'){
             if (!content || stripHtml(content) === "") {
                 setError(`${title} is required`);
+                return;
               }
-              return;
             }
             setLoading(true);
             onClick(content)

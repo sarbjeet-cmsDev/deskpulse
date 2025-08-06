@@ -198,6 +198,8 @@ export default function TaskDetails() {
                 title="Description"
                 onClick={handleUpdateTaskDescription(task?._id)}
                 isButton={true}
+                inline={true}
+                isEditing
               />
             )}
 
