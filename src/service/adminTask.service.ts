@@ -22,6 +22,21 @@ const AdminTaskService = {
     };
   },
 
+  async getAllTasksDetails(params?: {
+    page?: number;
+    limit?: number;
+    keyword?: string;
+    sortOrder?: "asc" | "desc";
+  }): Promise<{ data: ITask[]; total: number; limit:number; totalPages:number }> {
+    const res = await axiosClient.get(`${API_URL}/admin/task/timesheet`, { params });
+    return {
+      data: res.data.data,
+      total: res.data.total,
+      limit: res.data.limit,
+      totalPages: res.data.totalPages,
+    };
+  },
+
   
   async deleteTask(id: string): Promise<void> {
     await axiosClient.delete(`${API_URL}/admin/task/${id}`);

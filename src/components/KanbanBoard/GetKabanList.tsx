@@ -31,6 +31,7 @@ export const GetKanbonList = () => {
     "left" | "right" | null
   >(null);
   const [error, setError] = useState<string | null>(null);
+  const [dragOverTaskId, setDragOverTaskId] = useState<string | null>(null);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<number | null>(null);
@@ -80,7 +81,7 @@ export const GetKanbonList = () => {
   };
 
   useEffect(() => {
-    fetchKanbonList([]); // Default: fetch all tasks
+    fetchKanbonList([]); 
     fetchUsers();
 
     const savedView = localStorage.getItem("taskView");
@@ -213,16 +214,56 @@ export const GetKanbonList = () => {
 
                 <div className="flex flex-col gap-3">
                   {matchingCards.map((card) => (
+                    // <div
+                    //   key={card._id}
+                    //   className="bg-gray-50 border border-gray-200 rounded-md p-3 shadow-sm hover:bg-gray-100 cursor-pointer transition"
+                    //   draggable
+                    //   onClick={() => router.push(`/task/${card._id}`)}
+                    //   onDragStart={() => handleDragStart(card)}
+                    // >
+                    //   <p className="text-sm font-medium text-gray-700">
+                    //     {card.title}
+                    //     {/* {card.assigned_to} */}
+                    //   </p>
+                    // </div>
+
                     <div
                       key={card._id}
-                      className="bg-gray-50 border border-gray-200 rounded-md p-3 shadow-sm hover:bg-gray-100 cursor-pointer transition"
+                      className={`bg-gray-50 border border-gray-200 rounded-md p-3 shadow-sm hover:bg-gray-100 cursor-pointer transition ${
+                        dragOverTaskId === card._id
+                          ? "ring-2 ring-blue-400"
+                          : ""
+                      }`}
                       draggable
                       onClick={() => router.push(`/task/${card._id}`)}
                       onDragStart={() => handleDragStart(card)}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        setDragOverTaskId(card._id);
+                      }}
+                      onDrop={async () => {
+                        if (
+                          draggedTask &&
+                          dragOverTaskId &&
+                          draggedTask._id !== dragOverTaskId &&
+                          draggedTask.status === column.title
+                        ) {
+                          try {
+                            await TaskService.reorderTask(draggedTask._id, {
+                              targetTaskId: dragOverTaskId,
+                              status: column.title,
+                            });
+                            fetchKanbonList(selectedUserIds);
+                          } catch (err) {
+                            console.error("Failed to reorder tasks:", err);
+                          }
+                        }
+                        setDraggedTask(null);
+                        setDragOverTaskId(null);
+                      }}
                     >
                       <p className="text-sm font-medium text-gray-700">
                         {card.title}
-                        {/* {card.assigned_to} */}
                       </p>
                     </div>
                   ))}

@@ -3,6 +3,7 @@ import { Modal, ModalBody, ModalContent } from "@heroui/react";
 import ReactSelect from "react-select";
 import { debounce } from "lodash";
 import AdminUserService, { IUser } from "@/service/adminUser.service";
+import ProjectService from "@/service/project.service";
 
 export interface IUserOption {
   label: string;
@@ -15,6 +16,7 @@ interface MentionUserListModalProps {
   taskId: string;
   onAssigned: (userId: string) => void;
   users:any;
+  task:any;
 }
 
 export default function MentionUserListModal({
@@ -22,17 +24,27 @@ export default function MentionUserListModal({
   onClose,
   taskId,
   onAssigned,
-  users
+  users,
+  task,
 }: MentionUserListModalProps) {
   const [selectedUser, setSelectedUser] = useState<IUserOption | null>(null);
   const [userOptions, setUserOptions] = useState<IUserOption[]>([]);
   const [inputValue, setInputValue] = useState("");
 
 
+useEffect(()=>{
+  task
+},[taskId])
+ 
+
   const fetchUsers = useCallback(
     debounce(async (input: string) => {
+      if (!task?.project) return;
       try {
-        const users = await AdminUserService.searchUsers(input);
+       
+        const usersData = await ProjectService.getProjectUsers(task.project, input);
+        const users = usersData.users || []
+     
         const options = users.map((user: IUser) => ({
           label: `${user.firstName} ${user.lastName} (${user.email})`,
           value: user._id,
@@ -43,11 +55,11 @@ export default function MentionUserListModal({
         setUserOptions([]);
       }
     }, 300),
-    []
+    [task]
   );
 
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && task?.project) {
       fetchUsers("");
       const selected = users.map((user: IUser) => ({
       label: `${user.firstName || user.username} ${user.lastName || ""}`,
@@ -70,8 +82,8 @@ export default function MentionUserListModal({
   return (
     <Modal isOpen={isOpen} onOpenChange={onClose}>
       <ModalContent>
-        <ModalBody className="p-6 space-y-4">
-          <div className="mt-3 h-[300px] p-10 overflow-hidden">
+        <ModalBody className="p-4 space-y-8">
+          <div className="mt-3 h-[300px] p-8 overflow-hidden">
             <ReactSelect
               isMulti={false}
               options={userOptions}

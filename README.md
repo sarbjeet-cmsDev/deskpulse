@@ -84,3 +84,11 @@ To display external images correctly in your Next.js project, add the image host
 ```bash
 npm install highlight.js
 ```
+
+### Install Dnd-kit.
+
+```bash
+npm install @dnd-kit/core @dnd-kit/sortable @dnd-kit/utilities
+```
+
+

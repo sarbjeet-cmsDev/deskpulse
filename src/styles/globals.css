@@ -57,3 +57,9 @@ input[type="range"].range-primary {
 .link-primary:hover {
   text-decoration: underline;
 }
+
+.my-swal-actions {
+  gap: 1rem !important;
+  display: flex !important;
+  justify-content: center;
+}

@@ -1,6 +1,13 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo, useCallback, forwardRef } from "react";
+import {
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+  useCallback,
+  forwardRef,
+} from "react";
 import "react-quill/dist/quill.snow.css";
 import "quill-mention/dist/quill.mention.css";
 import "./descriptionToolbar.css";
@@ -9,6 +16,7 @@ import { Quill } from "react-quill-new";
 import { Mention, MentionBlot } from "quill-mention";
 import QuillEditorWrapper from "@/components/Comment/QuillEditorWrapper";
 import UploadService from "@/service/upload.service";
+import ImageLightbox from "../ImagePopUp/ImageLightbox";
 
 if (
   typeof window !== "undefined" &&
@@ -33,10 +41,12 @@ const DescriptionInputToolbar = ({
   isButton = false,
 }: CommentInputSectionProps) => {
   const [content, setContent] = useState<string>(value || "");
-   const [isFocused, setIsFocused] = useState<boolean>(false);
-   const [loading, setLoading] = useState(false);
-    const quillRef = useRef<any>(null);
-   const wrapperRef = useRef<HTMLDivElement>(null);
+  const [isFocused, setIsFocused] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
+  const quillRef = useRef<any>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
 
   useEffect(() => {
     if (value !== undefined && value !== content) {
@@ -44,29 +54,30 @@ const DescriptionInputToolbar = ({
     }
   }, [value]);
 
-    const imageHandler = () => {
-      const input = document.createElement("input");
-      input.setAttribute("type", "file");
-      input.setAttribute("accept", "image/*");
-      input.click();
-  
-      input.onchange = async () => {
-        const file = input.files?.[0];
-        if (!file) return;
-  
-        try {
-     
+  const imageHandler = () => {
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", "image/*");
+    input.click();
+
+    input.onchange = async () => {
+      const file = input.files?.[0];
+      if (!file) return;
+
+      try {
         setLoading(true);
         const imageUrl = await UploadService.uploadImageForQuill(file);
-  
+
         const editor = quillRef.current?.getEditor();
         const range = editor?.getSelection(true);
         editor?.insertEmbed(range.index, "image", imageUrl);
         setTimeout(() => {
-          const img = editor?.root.querySelector(`img[src="${imageUrl}"]`) as HTMLImageElement;
+          const img = editor?.root.querySelector(
+            `img[src="${imageUrl}"]`
+          ) as HTMLImageElement;
           if (img) {
-            img.style.width = "200px"; 
-            img.style.maxWidth = "50%"; 
+            img.style.width = "200px";
+            img.style.maxWidth = "50%";
           }
         }, 0);
         editor?.setSelection(range.index + 1);
@@ -76,8 +87,8 @@ const DescriptionInputToolbar = ({
       } finally {
         setLoading(false);
       }
-      };
     };
+  };
 
   const stripHtml = (html: string): string => {
     return html.replace(/<[^>]*>/g, "").trim();
@@ -115,28 +126,51 @@ const DescriptionInputToolbar = ({
     []
   );
 
+  useEffect(() => {
+    const wrapper = wrapperRef.current;
+    if (!wrapper) return;
+
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === "IMG") {
+        setLightboxImage(target.getAttribute("src"));
+        setLightboxOpen(true);
+      }
+    };
+
+    wrapper.addEventListener("click", handleClick);
+    return () => wrapper.removeEventListener("click", handleClick);
+  }, []);
+
   return (
     <div className="p-4 bg-white border rounded">
       <label className="block text-sm font-medium text-gray-700 mb-2">
-        {title} 
+        {title}
         {/* <span className="text-red-500">*</span> */}
       </label>
-<div
+      <div
         ref={wrapperRef}
         onFocus={handleFocus}
         onBlur={handleBlur}
         className={`quill-wrapper relative ${isFocused ? "show-toolbar" : ""}`}
       >
-      <QuillEditorWrapper
-        ref={quillRef}
-        value={content}
-        onChange={handleContentChange}
-        placeholder={`Write your ${title} here...`}
-        modules={modules}
-        theme="snow"
-        className="description-content"
-      />
-    </div>
+        <QuillEditorWrapper
+          ref={quillRef}
+          value={content}
+          onChange={handleContentChange}
+          placeholder={`Write your ${title} here...`}
+          modules={modules}
+          theme="snow"
+          className="description-content"
+        />
+      </div>
+       {lightboxOpen && lightboxImage && (
+              <ImageLightbox
+                open={lightboxOpen}
+                imageUrl={lightboxImage}
+                onClose={() => setLightboxOpen(false)}
+              />
+            )}
     </div>
   );
 };

@@ -4,10 +4,10 @@ import { useState, useMemo, useRef, useCallback, useEffect } from "react";
 import "react-quill/dist/quill.snow.css";
 import "quill-mention/dist/quill.mention.css";
 import "./commentSection.css";
-import 'highlight.js/styles/atom-one-dark.css';
+import "highlight.js/styles/atom-one-dark.css";
 
 // import "@/utils/quill-config";
-import hljs from 'highlight.js';
+import hljs from "highlight.js";
 
 import { Quill } from "react-quill-new";
 import { Mention, MentionBlot } from "quill-mention";
@@ -19,8 +19,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import UploadService from "@/service/upload.service";
 import DescriptionView from "../common/DescriptionView/DescriptionView";
-
-
+import ImageLightbox from "../common/ImagePopUp/ImageLightbox";
 
 if (
   typeof window !== "undefined" &&
@@ -30,7 +29,6 @@ if (
   Quill.register(MentionBlot);
   Quill.register("modules/mention", Mention);
 }
-
 
 interface CommentInputProps {
   taskId: string;
@@ -43,7 +41,7 @@ interface CommentInputProps {
   parent_comment?: string;
   commentId?: string;
   title?: any;
-  isButton?:any;
+  isButton?: any;
 }
 
 export default function CommentInputSection({
@@ -64,12 +62,10 @@ export default function CommentInputSection({
   const [error, setError] = useState<string | null>(null);
   const quillRef = useRef<any>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const user:any = useSelector((state: RootState) => state.user.data);
+  const user: any = useSelector((state: RootState) => state.user.data);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
 
-  
-  
-
- 
   useEffect(() => {
     if (isEditing && defaultValue) {
       setContent(defaultValue);
@@ -87,27 +83,28 @@ export default function CommentInputSection({
       if (!file) return;
 
       try {
-   
-      setLoading(true);
-      const imageUrl = await UploadService.uploadImageForQuill(file);
+        setLoading(true);
+        const imageUrl = await UploadService.uploadImageForQuill(file);
 
-      const editor = quillRef.current?.getEditor();
-      const range = editor?.getSelection(true);
-      editor?.insertEmbed(range.index, "image", imageUrl);
-      setTimeout(() => {
-        const img = editor?.root.querySelector(`img[src="${imageUrl}"]`) as HTMLImageElement;
-        if (img) {
-          img.style.width = "200px"; 
-          img.style.maxWidth = "50%"; 
-        }
-      }, 0);
-      editor?.setSelection(range.index + 1);
-    } catch (error) {
-      console.error("Image upload failed:", error);
-      setError("Failed to upload image");
-    } finally {
-      setLoading(false);
-    }
+        const editor = quillRef.current?.getEditor();
+        const range = editor?.getSelection(true);
+        editor?.insertEmbed(range.index, "image", imageUrl);
+        setTimeout(() => {
+          const img = editor?.root.querySelector(
+            `img[src="${imageUrl}"]`
+          ) as HTMLImageElement;
+          if (img) {
+            img.style.width = "200px";
+            img.style.maxWidth = "50%";
+          }
+        }, 0);
+        editor?.setSelection(range.index + 1);
+      } catch (error) {
+        console.error("Image upload failed:", error);
+        setError("Failed to upload image");
+      } finally {
+        setLoading(false);
+      }
     };
   };
 
@@ -146,9 +143,9 @@ export default function CommentInputSection({
           image: imageHandler,
         },
       },
-    //   syntax: {
-    //     highlight: (text:string) => hljs.highlightAuto(text).value 
-    // },
+      //   syntax: {
+      //     highlight: (text:string) => hljs.highlightAuto(text).value
+      // },
       mention: {
         mentionDenotationChars: ["@"],
         source: mentionSource,
@@ -158,7 +155,6 @@ export default function CommentInputSection({
     }),
     []
   );
-
 
   const extractMentionedUserIds = (html: string): string[] => {
     const parser = document.createElement("div");
@@ -259,13 +255,29 @@ export default function CommentInputSection({
     }
   };
 
-    useEffect(() => {
-  if (content) {
-    setTimeout(() => {
-      hljs.highlightAll();
-    }, 0);
-  }
-}, [content]);
+  useEffect(() => {
+    if (content) {
+      setTimeout(() => {
+        hljs.highlightAll();
+      }, 0);
+    }
+  }, [content]);
+
+  useEffect(() => {
+    const wrapper = wrapperRef.current;
+    if (!wrapper) return;
+
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === "IMG") {
+        setLightboxImage(target.getAttribute("src"));
+        setLightboxOpen(true);
+      }
+    };
+
+    wrapper.addEventListener("click", handleClick);
+    return () => wrapper.removeEventListener("click", handleClick);
+  }, []);
 
   return (
     <div className={`p-4 bg-white border rounded ${inline ? "mt-6" : ""}`}>
@@ -297,7 +309,7 @@ export default function CommentInputSection({
         />
       </div>
 
-        {/* )} */}
+      {/* )} */}
 
       {error && <p className="text-sm text-red-500 mt-1">{error}</p>}
 
@@ -308,39 +320,44 @@ export default function CommentInputSection({
           </Button>
         )}
 
-        {isButton === true ? 
-        
-        <Button
-        onPress={() => {
-          if (onClick) {
-            if(title !== 'Description'){
-            if (!content || stripHtml(content) === "") {
-                setError(`${title} is required`);
-                return;
+        {isButton === true ? (
+          <Button
+            onPress={() => {
+              if (onClick) {
+                if (title !== "Description") {
+                  if (!content || stripHtml(content) === "") {
+                    setError(`${title} is required`);
+                    return;
+                  }
+                }
+                setLoading(true);
+                onClick(content)
+                  .then(() => setLoading(false))
+                  .catch((err: any) => {
+                    console.error("Failed to update description:", err);
+                    setLoading(false);
+                  });
+              } else if (isEditing) {
+                handleEdit();
+              } else {
+                handleCreate();
               }
-            }
-            setLoading(true);
-            onClick(content)
-            .then(() => setLoading(false))
-            .catch((err: any) => {
-              console.error("Failed to update description:", err);
-              setLoading(false);
-            });
-          } else if (isEditing) {
-            handleEdit();
-          } else {
-            handleCreate();
-          }
-        }}
-        disabled={loading}
-        className="btn-primary"
-        >
-          {isEditing ? "Update" : "Save"}
-        </Button>
-        :
-        null 
-      }
+            }}
+            disabled={loading}
+            className="btn-primary"
+          >
+            {isEditing ? "Update" : "Save"}
+          </Button>
+        ) : null}
       </div>
+
+      {lightboxOpen && lightboxImage && (
+        <ImageLightbox
+          open={lightboxOpen}
+          imageUrl={lightboxImage}
+          onClose={() => setLightboxOpen(false)}
+        />
+      )}
     </div>
   );
 }

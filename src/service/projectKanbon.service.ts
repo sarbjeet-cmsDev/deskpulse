@@ -55,4 +55,9 @@ export const ProjectKanbon = {
       );
     }
   },
+
+  // async UpdateKanbanList(data: any, id: string) {
+  //   const res = await axiosClient.patch(`/api/project-kanban/${id}`, data);
+  //   return res.data;
+  // },
 };

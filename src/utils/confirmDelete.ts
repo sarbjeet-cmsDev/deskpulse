@@ -10,6 +10,13 @@ export const confirmDelete = async (itemName: string = "item"): Promise<boolean>
     text: `You are about to delete this ${itemName}. This action cannot be undone.`,
     confirmButtonText: "Yes, delete it!",
     cancelButtonText: "No, cancel!",
+   ...({
+     customClass: {
+      confirmButton:"mr-2",
+      cancelButton:"mr-2",
+      //  actions: 'my-swal-actions',
+     },
+   }as any)
   });
 
   return confirmed;

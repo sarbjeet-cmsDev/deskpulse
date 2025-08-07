@@ -16,6 +16,7 @@ export interface ITask {
   priority: string;
   status:string;
   estimated_time?:number
+  totaltaskminutes?:number
 
   // Add more fields as needed
 }
@@ -128,6 +129,11 @@ const TaskService = {
     );
     return res.data;
   },
+
+  async reorderTask(taskId: string, data: { targetTaskId: string; status: string }) {
+    const res = await axiosClient.patch(`${API_URL}/tasks/${taskId}/reorder`, data)
+  return res.data ;
+},
 };
 
 export default TaskService;

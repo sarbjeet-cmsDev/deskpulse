@@ -21,6 +21,7 @@ import Image from "next/image";
 import leftarrow from "@/assets/images/back.png";
 import { H3 } from "@/components/Heading/H3";
 import DescriptionInputToolbar from "@/components/common/Description/descriptionToolbar";
+import ImageLightbox from "@/components/common/ImagePopUp/ImageLightbox";
 
 interface Props {
   id: string;
@@ -46,6 +47,9 @@ const UpdateProjectPage = () => {
   const [project, setProject] = useState<any>({});
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [version, setVersion] = useState<number>(Date.now());
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxImage, setLightboxImage] = useState("");
+
   const {
     register,
     handleSubmit,
@@ -126,10 +130,9 @@ const UpdateProjectPage = () => {
     return <div className="text-center py-10">Loading project...</div>;
   }
 
-   const avatarUrl = project?.avatar
-          ? `${process.env.NEXT_PUBLIC_BACKEND_HOST}${project?.avatar}?v=${version}`
-          : ProjectAvtar.src;
-
+  const avatarUrl = project?.avatar
+    ? `${process.env.NEXT_PUBLIC_BACKEND_HOST}${project?.avatar}?v=${version}`
+    : ProjectAvtar.src;
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row justify-center items-start gap-6 p-4">
@@ -138,15 +141,12 @@ const UpdateProjectPage = () => {
         className="w-full lg:max-w-2xl bg-white p-6 rounded shadow border border-gray-300 space-y-4"
       >
         <div className="flex justify-center items-center pb-5 border-b border-[#31394f14]">
-       
           <Link href="/admin/project">
             <Image src={leftarrow} alt="Back" width={16} height={16} />
           </Link>
-       
-        <H3 className="text-center flex-1">Update Project</H3>
-      </div>
-       
 
+          <H3 className="text-center flex-1">Update Project</H3>
+        </div>
 
         <Input placeholder="Title" {...register("title")} />
         {errors.title && (
@@ -168,7 +168,7 @@ const UpdateProjectPage = () => {
         {errors.description && (
           <p className="text-sm text-red-500">{errors.description.message}</p>
         )}
-        
+
         <Controller
           name="deploy_instruction"
           control={control}
@@ -261,20 +261,32 @@ const UpdateProjectPage = () => {
 
         <div className="flex flex-col items-left gap-5">
           <label>Select Avatar</label>
-        <Input
-          type="file"
-          accept="image/*"
-          placeholder="choose Avatar"
-          onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
-        />
-         <label>Avatar</label>
-          <Image
-            src={avatarUrl}
-            alt="project-avatar"
-            className="rounded-[8px] object-contain w-[150px] h-[100px]"
-            width={1200}
-            height={50}
+          <Input
+            type="file"
+            accept="image/*"
+            placeholder="choose Avatar"
+            onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
           />
+          <div>
+            <label>Avatar</label>
+            <Image
+              src={avatarUrl}
+              alt="project-avatar"
+              className="rounded-[8px] object-contain w-[150px] h-[100px]"
+              width={1200}
+              height={50}
+              onClick={() => {
+                setLightboxImage(avatarUrl);
+                setLightboxOpen(true);
+              }}
+            />
+
+            <ImageLightbox
+              open={lightboxOpen}
+              imageUrl={lightboxImage}
+              onClose={() => setLightboxOpen(false)}
+            />
+          </div>
         </div>
         {/* 
         <Input type="number" placeholder="Sort Order" {...register('sort_order')} />

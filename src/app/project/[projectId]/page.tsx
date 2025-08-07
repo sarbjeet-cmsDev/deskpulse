@@ -24,8 +24,14 @@ import { KanbanColumn } from "@/types/projectKanbon.interface";
 import CommentInputSection from "@/components/Comment/commentSection";
 import DropdownOptions from "@/components/DropdownOptions";
 import { H3 } from "@/components/Heading/H3";
+import ImageLightbox from "@/components/common/ImagePopUp/ImageLightbox";
 
 export default function MyProjectDetails() {
+  const descriptionRef = useRef<HTMLDivElement | null>(null);
+  const deployRef = useRef<HTMLDivElement | null>(null);
+  const notesRef = useRef<HTMLDivElement | null>(null);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [currentImage, setCurrentImage] = useState<string | null>(null);
   const params = useParams();
   const projectId = params?.projectId as string;
   const router = useRouter();
@@ -82,9 +88,8 @@ export default function MyProjectDetails() {
   const fetchTaskByKanbonList = async (userIds: string[]) => {
     try {
       const res = await ProjectKanbon.getProjectKanbonList(projectId);
-    
+
       const taskRes = await TaskService.getTasksByProject(projectId);
-     
 
       if (res?.data) {
         setKanbanList(res.data);
@@ -153,15 +158,21 @@ export default function MyProjectDetails() {
     if (project?._id) fetchTasks(project._id);
   };
 
-  const handleCreateTask = async (title: string, description: string, due_date:string, estimated_time:number) => {
+  const handleCreateTask = async (
+    title: string,
+    description: string,
+    due_date: string,
+    estimated_time: number,
+    assigned_to?: string
+  ) => {
     try {
       await TaskService.createTask({
         title,
         description,
         project: project._id,
         report_to: user?.id || "",
-        assigned_to: user?.id || "",
-        due_date, 
+        assigned_to: assigned_to || user?.id || "",
+        due_date,
         estimated_time,
       });
       refreshTasks();
@@ -214,6 +225,27 @@ export default function MyProjectDetails() {
     }
   };
 
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      const target = e.target as HTMLImageElement;
+      if (target?.tagName === "IMG") {
+        setCurrentImage(target.src);
+        setLightboxOpen(true);
+      }
+    };
+
+    const containers = [
+      descriptionRef.current,
+      deployRef.current,
+      notesRef.current,
+    ];
+    containers.forEach((el) => el?.addEventListener("click", handler));
+
+    return () => {
+      containers.forEach((el) => el?.removeEventListener("click", handler));
+    };
+  }, []);
+
   if (loading) return <div className="p-6 text-center">Loading project...</div>;
   if (!project) return <div className="p-6 text-center">Project not found</div>;
 
@@ -232,7 +264,10 @@ export default function MyProjectDetails() {
             </div>
             <div className="flex items-center">
               <div className="mr-3">
-                <CreateTaskModal onCreate={handleCreateTask} />
+                <CreateTaskModal
+                  onCreate={handleCreateTask}
+                  projectId={projectId}
+                />
               </div>
               <Button
                 onPress={() =>
@@ -286,44 +321,51 @@ export default function MyProjectDetails() {
               </div>
 
               <div className="flex flex-col gap-2 py-5">
-              <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-                <H5 className=" font-semibold mb-2">
-                  Project Description
-                </H5>
-                <div
-                  className="prose max-w-none [&_img]:w-28 [&_img]:rounded-xl"
-                  dangerouslySetInnerHTML={{
-                    __html:
-                      project?.description || "<p>No description provided.</p>",
-                  }}
-                />
-              </div>
+                <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+                  <H5 className=" font-semibold mb-2">Project Description</H5>
+                  <div
+                    ref={descriptionRef}
+                    className="prose max-w-none [&_img]:w-28 [&_img]:rounded-xl"
+                    dangerouslySetInnerHTML={{
+                      __html:
+                        project?.description ||
+                        "<p>No description provided.</p>",
+                    }}
+                  />
+                </div>
 
-              <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-200">
-                <H5 className="font-semibold mb-2">
-                  Deploy Instruction
-                </H5>
-                <div
-                  className="prose max-w-none [&_img]:w-28 [&_img]:rounded-xl"
-                  dangerouslySetInnerHTML={{
-                    __html:
-                      project?.deploy_instruction || "<p>No description provided.</p>",
-                  }}
-                />
-              </div>
+                <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-200">
+                  <H5 className="font-semibold mb-2">Deploy Instruction</H5>
+                  <div
+                    ref={deployRef}
+                    className="prose max-w-none [&_img]:w-28 [&_img]:rounded-xl"
+                    dangerouslySetInnerHTML={{
+                      __html:
+                        project?.deploy_instruction ||
+                        "<p>No description provided.</p>",
+                    }}
+                  />
+                </div>
 
-              <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-200">
-                <H5 className="font-semibold mb-2">
-                  Critical Notes
-                </H5>
-                <div
-                  className="prose max-w-none [&_img]:w-28 [&_img]:rounded-xl"
-                  dangerouslySetInnerHTML={{
-                    __html:
-                      project?.critical_notes || "<p>No description provided.</p>",
-                  }}
+                <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-200">
+                  <H5 className="font-semibold mb-2">Critical Notes</H5>
+                  <div
+                    ref={notesRef}
+                    className="prose max-w-none [&_img]:w-28 [&_img]:rounded-xl"
+                    dangerouslySetInnerHTML={{
+                      __html:
+                        project?.critical_notes ||
+                        "<p>No description provided.</p>",
+                    }}
+                  />
+                </div>
+               {lightboxOpen && (
+                <ImageLightbox
+                  open={lightboxOpen}
+                  imageUrl={currentImage ?? ""}
+                  onClose={() => setLightboxOpen(false)}
                 />
-              </div>
+               )}
               </div>
               <Details
                 project={project}
@@ -345,7 +387,10 @@ export default function MyProjectDetails() {
                 <SubTasks tasks={tasks} kanbanList={kanbanList} />
               </div>
               <div className="mt-[20px]">
-                <CreateTaskModal onCreate={handleCreateTask} />
+                <CreateTaskModal
+                  onCreate={handleCreateTask}
+                  projectId={projectId}
+                />
               </div>
             </div>
           </div>

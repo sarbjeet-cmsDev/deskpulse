@@ -26,6 +26,9 @@
     "@ckeditor/ckeditor5-react": "^10.0.0",
     "@ckeditor/ckeditor5-theme-lark": "^45.2.1",
     "@ckeditor/ckeditor5-upload": "^45.2.1",
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
     "@heroui/button": "2.2.20",
     "@heroui/code": "2.2.15",
     "@heroui/input": "2.4.20",
@@ -95,6 +98,7 @@
     "redux-persist": "^6.0.0",
     "swagger-ui-express": "^5.0.1",
     "sweetalert2": "^11.22.2",
+    "yet-another-react-lightbox": "^3.25.0",
     "zod": "^3.25.67"
   },
   "devDependencies": {

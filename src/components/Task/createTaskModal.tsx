@@ -13,6 +13,7 @@ import { Controller } from "react-hook-form";
 import ReactSelect from "react-select";
 import AdminUserService from "@/service/adminUser.service";
 import { IUser } from "@/service/adminUser.service";
+import ProjectService from "@/service/project.service";
 
 interface UserOption {
   label: string;
@@ -24,15 +25,24 @@ interface CreateTaskModalProps {
     title: string,
     description: string,
     due_date: string,
-    estimated_time: number
+    estimated_time: number,
+    assigned_to?: string
   ) => Promise<void>;
+
+  projectId: string;
+  users?: any[];
 }
 
-export default function CreateTaskModal({ onCreate }: CreateTaskModalProps) {
+export default function CreateTaskModal({
+  onCreate,
+  projectId,
+  users = [],
+}: CreateTaskModalProps) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [loading, setLoading] = useState(false);
   const [userOptions, setUserOptions] = useState<UserOption[]>([]);
   const [inputValue, setInputValue] = useState("");
+  const [selectedUser, setSelectedUser] = useState<any>(null);
 
   const {
     register,
@@ -62,26 +72,24 @@ export default function CreateTaskModal({ onCreate }: CreateTaskModalProps) {
   const fetchUsers = useCallback(
     debounce(async (input: string) => {
       try {
-        const users = await AdminUserService.searchUsers(input || "");
+        const usersData = await ProjectService.getProjectUsers(
+          projectId,
+          input
+        );
+        const users = usersData.users || [];
 
         const newOptions = users.map((user: IUser) => ({
           label: `${user.firstName || ""} ${user.lastName || ""} (${user.email})`,
           value: user._id,
         }));
 
-        setUserOptions((prevOptions) => {
-          const existingMap = new Map(
-            prevOptions.map((opt) => [opt.value, opt])
-          );
-          newOptions.forEach((opt) => existingMap.set(opt.value, opt));
-          return Array.from(existingMap.values());
-        });
+        setUserOptions(newOptions);
       } catch (err) {
         console.error("Error fetching users:", err);
         setUserOptions([]);
       }
     }, 300),
-    []
+    [projectId]
   );
 
   const handleCreate = async (values: {
@@ -99,7 +107,7 @@ export default function CreateTaskModal({ onCreate }: CreateTaskModalProps) {
         values.description,
         values.due_date,
         estimatedTime,
-        // values.assigned_to
+        values.assigned_to || undefined
       );
       reset();
       onOpenChange();
@@ -203,12 +211,29 @@ export default function CreateTaskModal({ onCreate }: CreateTaskModalProps) {
                               setInputValue(value);
                               if (value.length >= 1) fetchUsers(value);
                             }}
+                            onFocus={() => {
+                              if (userOptions.length === 0) {
+                                fetchUsers("");
+                              }
+                              fetchUsers("");
+                            }}
                             onChange={(selected) => {
                               field.onChange(selected?.value || "");
                             }}
                             isClearable
                             classNamePrefix="react-select"
+                            // menuPortalTarget={document.body}
+                            // menuPlacement="auto"
+                            // menuShouldScrollIntoView
                             styles={{
+                              menu: (provided) => ({
+                                ...provided,
+                                maxHeight: 100,
+                                overflowY: "auto",
+                                // zIndex: 9999,
+                                scrollBehavior: "smooth",
+                              }),
+                              menuPortal: (base) => ({ ...base, zIndex: 9999 }),
                               option: (provided) => ({
                                 ...provided,
                                 color: "black",

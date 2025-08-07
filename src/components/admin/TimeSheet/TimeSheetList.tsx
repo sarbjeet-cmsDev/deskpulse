@@ -6,6 +6,10 @@ import "sweetalert2/dist/sweetalert2.min.css";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import AdminProjectService from "@/service/adminProject.service";
 import AdminTaskService from "@/service/adminTask.service";
+import AdminUserService from "@/service/adminUser.service";
+import ProjectService from "@/service/project.service";
+import TaskService from "@/service/task.service";
+import AvatarList from "@/components/IndexPage/avatarlist";
 
 function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState(value);
@@ -17,8 +21,11 @@ function useDebounce<T>(value: T, delay: number): T {
 }
 
 type Task = {
+  project: any;
   _id: string;
   title: string;
+  assigned_to:any;
+  totaltaskminutes:any;
 
 };
 
@@ -35,22 +42,60 @@ const TimeSheetList = () => {
   const [totalRecords, setTotalRecords] = useState(0);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [sortField, setSortField] = useState("code");
+    const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const debouncedSearch = useDebounce(search, 300);
+    const [users, setUsers] = useState([]);
 
   const fetchTasks = async () => {
     try {
-      const res = await AdminTaskService.getAllTasks({
+      const res = await AdminTaskService.getAllTasksDetails({
         page,
         limit,
         keyword: debouncedSearch,
         sortOrder,
       });
+
+      const ress = await TaskService.getMyTasks();
+      console.log("res.data",res.data)
       setTasks(res.data as Task[]);
       setTotalRecords(res.total);
       setTotalPages(res.totalPages);
       setLimit(res.limit)
+      fetchUsers();
+      fetchKanbonList([])
     } catch (err) {
       console.error("Failed to fetch projects", err);
+    }
+  };
+
+   const fetchKanbonList = async (userIds: string[]) => {
+    try {
+      // const res = await ProjectKanbon.getProjectKanbonList(projectId);
+      let taskRes;
+
+      if (userIds.length > 0) {
+        taskRes = await TaskService.getTasksByAssignedUser(userIds.join(","))
+        console.log("taskRes",taskRes)
+      } else {
+        taskRes = await AdminTaskService.getAllTasksDetails({
+        page,
+        limit,
+        keyword: debouncedSearch,
+        sortOrder,
+      });
+      console.log("taskRes22",taskRes.data)
+      }
+
+      // if (res?.data) {
+      //   setKanbanList(res.data);
+      // }
+
+      // const task = taskRes?.data || taskRes?.tasks;
+      // if (task) {
+      //   setTasks(task as Task[]);
+      // }
+    } catch (error) {
+      console.error("Failed to load tasks:", error);
     }
   };
 
@@ -63,26 +108,60 @@ const TimeSheetList = () => {
     if (pageFromUrl !== page) setPage(pageFromUrl);
   }, [searchParams]);
 
-  const headers = [
-    { id: "", title: "TimeSheet", is_sortable: false },
-    { id: "title", title: "Title" },
-    { id: "totaltaskminutes", title: "Time" },
-    { id: "project", title: "Project" },
-    { id: "assigned_to", title: "User" },
+  const fetchUsers = async () => {
+    try {
+      const response: any = await AdminUserService.getAllUsers();
+      setUsers(response.data || []);
+      // const result = await ProjectService.getProjectById(projectId);
+      // const userIds = new Set(result?.users || []);
+      // const matchingUsers = data.data.filter((user: any) =>
+      //   userIds.has(user._id)
+      // );
+      // if (matchingUsers.length > 0) setUsers(matchingUsers);
+    } catch (err) {
+      console.error("Failed to fetch users", err);
+    }
+  };
 
-    // { id: "description", title: "Description" },
+
+  const headers = [
+    { id: "taskNumber", title: "TimeSheet", is_sortable: false },
+    { id: "title", title: "Task Title" },
+    { id: "totaltaskminutes", title: "Spent Time" },
+    { id: "projectTitle", title: "Project" },
+    { id: "assignedUserName", title: "User" },
   ];
 
-  const rows = (tasks ?? []).map((task) => ({
+  const rows = (tasks ?? []).map((task, index) => {
+  const totalMinutes = task.totaltaskminutes || 0;
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  const formattedTime =
+    hours > 0 ? `${hours}h ${minutes}min` : `${minutes}min`;
+
+    const globalIndex = (page - 1) * limit + index + 1;
+
+  return {
     ...task,
+    taskNumber: globalIndex,
+    projectTitle: task.project?.title || "—",
+    assignedUserName: `${task.assigned_to?.firstName || ""} ${task.assigned_to?.lastName || ""}`.trim() || "—",
+    totaltaskminutes: formattedTime,
     actions: [{ title: "Delete" }],
-  }));
+  };
+});
 
   return (
     <div className="flex">
       <main className="flex-1 p-6">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-semibold">Time Sheet</h1>
+           <AvatarList
+                              users={users}
+                              selectedUserIds={selectedUserIds}
+                              setSelectedUserIds={setSelectedUserIds}
+                              fetchKanbonList={fetchKanbonList}
+                            />
         </div>
 
         <Datagrid

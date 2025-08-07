@@ -35,7 +35,7 @@ export class TaskController {
     @Body() createTaskDto: CreateTaskDto,
     @CurrentUser() user: any
   ): Promise<{ message: string; data: Task }> {
-    createTaskDto.created_by = user.userId.toString()
+    createTaskDto.created_by = user.userId.toString();
     const task = await this.taskService.create(createTaskDto);
     return {
       message: "Task created successfully",
@@ -93,7 +93,7 @@ export class TaskController {
     @Body() updateTaskDto: UpdateTaskDto,
     @CurrentUser() user: any
   ): Promise<{ message: string; task: Task }> {
-    updateTaskDto.updated_by = user.userId.toString()
+    updateTaskDto.updated_by = user.userId.toString();
     const updatedTask = await this.taskService.update(id, updateTaskDto);
     return {
       message: "Task updated successfully",
@@ -107,11 +107,10 @@ export class TaskController {
     @Body() updateTaskStatusUpdateDto: UpdateTaskStatusUpdateDto,
     @CurrentUser() user: any
   ): Promise<{ message: string; task: Task }> {
-    
-    updateTaskStatusUpdateDto.updated_by = user.userId.toString()
+    updateTaskStatusUpdateDto.updated_by = user.userId.toString();
     const task = await this.taskService.updateTaskStatus(
       id,
-      updateTaskStatusUpdateDto,
+      updateTaskStatusUpdateDto
     );
     return { message: "Task updated successfully", task };
   }
@@ -145,8 +144,11 @@ export class TaskController {
     );
   }
 
-  //  @Get("search")
-  // async search(@Query("q") query: string, @Query("role") roles?: string) {
-  //   return this.taskService.searchUsers(query, roles);
-  // }
+  @Patch(":id/reorder")
+  async reorderTask(
+    @Param("id") id: string,
+    @Body() body: { targetTaskId: string; status: string }
+  ) {
+    return this.taskService.reorderTask(id, body.targetTaskId, body.status);
+  }
 }

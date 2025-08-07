@@ -74,6 +74,7 @@ export default function LeftMenuDrawer() {
     { label: "Notifications", href: "/admin/notification" },
     { label: "Comments", href: "/admin/comment" },
     { label: "Performance", href: "/admin/performance" },
+    { label: "Time Sheet", href: "/admin/timesheet" },
     { label: "Create Reminder", href: "/reminder/create" },
     { label: "My Reminder", href: "/reminder" },
     { label: "Logout", href: "#" },

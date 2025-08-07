@@ -190,26 +190,28 @@ export class ProjectService {
     limit: number,
     keyword?: string,
     sortOrder: "asc" | "desc" = "asc"
-  ): Promise<{ data: Project[]; total: number; page: number; limit: number;totalPages: number; }> {
-
+  ): Promise<{
+    data: Project[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> {
     let safePage = Math.max(Number(page) || 1, 1);
     let safeLimit = Math.max(Number(limit) || 10, 1);
     const MAX_LIMIT = 200;
     if (safeLimit > MAX_LIMIT) safeLimit = MAX_LIMIT;
 
- 
     const filter: Record<string, any> = {};
     if (keyword && keyword.trim()) {
       filter.$or = [
-        { title: { $regex: keyword.trim(), $options: 'i' } },
-        { code: { $regex: keyword.trim(), $options: 'i' } },
+        { title: { $regex: keyword.trim(), $options: "i" } },
+        { code: { $regex: keyword.trim(), $options: "i" } },
       ];
     }
 
-
     const total = await this.projectModel.countDocuments(filter).exec();
     const totalPages = total === 0 ? 0 : Math.ceil(total / safeLimit);
-
 
     if (totalPages > 0 && safePage > totalPages) {
       safePage = totalPages;
@@ -219,7 +221,7 @@ export class ProjectService {
 
     const data = await this.projectModel
       .find(filter)
-      .sort({ createdAt: sortOrder === 'desc' ? 1 : -1 })
+      .sort({ createdAt: sortOrder === "desc" ? 1 : -1 })
       .skip(skip)
       .limit(safeLimit)
       .exec();
@@ -231,7 +233,6 @@ export class ProjectService {
       limit: safeLimit,
       totalPages,
     };
-  
   }
 
   async updateProjectAvatar(
@@ -249,7 +250,7 @@ export class ProjectService {
     const regex = new RegExp(keyword, "i");
     const filters: any = {
       $and: [
-        { users: userId }, // Filter by user's projects
+        { users: userId }, 
         {
           $or: [
             { code: { $regex: regex } },
@@ -261,7 +262,35 @@ export class ProjectService {
     };
     return this.projectModel
       .find(filters)
-      .sort({ createdAt: -1, updatedAt: -1 }) // Most recent first
+      .sort({ createdAt: -1, updatedAt: -1 }) 
       .exec();
+  }
+
+  async findProjectUsers(projectId: string, keyword?: string): Promise<Project> {
+    const project = await this.projectModel
+      .findById(projectId)
+       .populate({
+      path: "users",
+      select: "firstName lastName email",
+      match: keyword
+        ? {
+            $or: [
+              { firstName: { $regex: keyword, $options: "i" } },
+              { lastName: { $regex: keyword, $options: "i" } },
+              { email: { $regex: keyword, $options: "i" } },
+            ],
+          }
+        : undefined,
+    })
+      .exec();
+
+    if (!project) {
+      throw new NotFoundException(`Project with ID ${projectId} not found`);
+    }
+
+    return {
+      _id: project._id,
+    users: project.users,
+    } as any;
   }
 }

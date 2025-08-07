@@ -40,6 +40,14 @@ const ProjectService = {
       return res.data;
     },
 
+    async getProjectUsers(projectId: string, keyword?: string) {
+    const response = await axiosClient.get(`${API_URL}/projects/users/${projectId}`, {
+      params:{keyword}
+    }
+    );
+    return response.data;
+  }, 
+
 };
 
 export default ProjectService;

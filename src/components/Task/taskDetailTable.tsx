@@ -199,6 +199,7 @@ export default function DetailsTable({
               <MentionUserListModal
                 taskId={taskId}
                 users={safeUsers}
+                task={task}
                 isOpen={isModalOpen}
                 onClose={handleCloseModal}
                 onAssigned={handleAssignUser}

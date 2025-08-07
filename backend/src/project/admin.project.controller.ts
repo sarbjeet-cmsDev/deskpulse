@@ -60,7 +60,7 @@ export class AdminProjectController {
   async findOne(@Param("id") id: string): Promise<any> {
     const project = await this.projectService.findOne(id);
     return {
-      message: "Project fetched successfully!",
+      // message: "Project fetched successfully!",
       data: project,
     };
   }
