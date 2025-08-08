@@ -19,6 +19,7 @@ import { PerformanceModule } from './performance/performance.module';
 import { FaqModule } from './faq/faq.module';
 import { SearchModule } from './search/search.module';
 import { UploadModule } from './upload/upload.module';
+import { ImageModule } from './image/image.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -60,7 +61,8 @@ import { UploadModule } from './upload/upload.module';
     EmailModule,
     PerformanceModule,
     SearchModule,
-    UploadModule
+    UploadModule,
+    ImageModule,
   ],
   controllers: [],
   providers: [],

@@ -11,6 +11,8 @@ import {
 import "react-quill/dist/quill.snow.css";
 import "quill-mention/dist/quill.mention.css";
 import "./descriptionToolbar.css";
+import "highlight.js/styles/atom-one-dark.css";
+import hljs from "highlight.js";
 
 import { Quill } from "react-quill-new";
 import { Mention, MentionBlot } from "quill-mention";
@@ -110,11 +112,12 @@ const DescriptionInputToolbar = ({
 
   const modules = useMemo(
     () => ({
+      syntax:{hljs},
       toolbar: {
         container: [
           [{ header: [1, 2, false] }],
           ["bold", "italic", "underline"],
-          ["link", "image"],
+          ["link", "image", "code-block"],
           [{ list: "ordered" }, { list: "bullet" }],
           ["clean"],
         ],

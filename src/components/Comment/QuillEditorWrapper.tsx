@@ -20,3 +20,4 @@ const QuillEditorWrapper = forwardRef((props: any, ref: any) => {
 QuillEditorWrapper.displayName = "QuillEditorWrapper";
 
 export default QuillEditorWrapper;
+

@@ -25,9 +25,9 @@ interface Props {
 
 type UpdateUserInput = z.infer<typeof userSchemaBaseUpdate>;
 
-const UpdateAuthProfileForm = ({id}: Props) => {
+const UpdateAuthProfileForm = ({id}:Props) => {
   const router = useRouter();
-//   const { id } = useParams<{ id: string }>();
+  // const { id } = useParams<{ id: string }>();
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
 
@@ -58,7 +58,7 @@ const UpdateAuthProfileForm = ({id}: Props) => {
           gender: ["male", "female", "other"].includes(user.gender || "")
             ? (user.gender as "male" | "female" | "other")
             : undefined,
-          // roles: user.userRoles ?? [],
+          // roles: user.userRoles?.[0] ?? "",
           isActive: user.isActive ?? false,
           aboutUs: user.aboutUs ?? "",
           jobTitle: user.jobTitle ?? "",
@@ -166,7 +166,7 @@ const UpdateAuthProfileForm = ({id}: Props) => {
               {...register("gender")}
               className="w-full border rounded px-3 py-2"
             >
-              <option value="">Select gender</option>
+              <option value="" disabled>Select gender</option>
               <option value="male">Male</option>
               <option value="female">Female</option>
               <option value="other">Other</option>

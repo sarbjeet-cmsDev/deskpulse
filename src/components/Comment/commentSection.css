@@ -23,3 +23,9 @@
   font-size: 17px; 
   line-height: 1.4;
 }
+
+.ql-syntax {
+  background-color: #171715;
+  /* color: #f8f8f2;           */
+  /* overflow: visible;         */
+}

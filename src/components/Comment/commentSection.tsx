@@ -20,6 +20,7 @@ import { RootState } from "@/store/store";
 import UploadService from "@/service/upload.service";
 import DescriptionView from "../common/DescriptionView/DescriptionView";
 import ImageLightbox from "../common/ImagePopUp/ImageLightbox";
+import quill from "quill";
 
 if (
   typeof window !== "undefined" &&
@@ -130,7 +131,7 @@ export default function CommentInputSection({
 
   const modules = useMemo(
     () => ({
-      // syntax:true,
+      syntax:{hljs},
       toolbar: {
         container: [
           [{ header: [1, 2, false] }],
@@ -143,9 +144,6 @@ export default function CommentInputSection({
           image: imageHandler,
         },
       },
-      //   syntax: {
-      //     highlight: (text:string) => hljs.highlightAuto(text).value
-      // },
       mention: {
         mentionDenotationChars: ["@"],
         source: mentionSource,

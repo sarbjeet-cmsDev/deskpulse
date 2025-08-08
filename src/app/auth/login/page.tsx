@@ -64,7 +64,7 @@ export default function AuthLoginPage() {
       dispatch(signIn({ id: user.id, email: user.email, role }));
 
       if (role === "admin") {
-        router.push("/admin");
+        router.push("/");
       } else if (redirect) {
         router.push(`/${redirect}`);
       } else {

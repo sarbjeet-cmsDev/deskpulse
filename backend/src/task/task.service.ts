@@ -135,6 +135,48 @@ export class TaskService {
     .sort({ sort_order: -1 });
   }
 
+async findByAssignedToUser(
+  userIds: string[],
+  page: number,
+  limit: number,
+  start?: string,
+  end?: string
+): Promise<{ data: Task[]; total: number; page: number; limit: number }> {
+  const skip = (page - 1) * limit;
+
+  const filter: Record<string, any> = { assigned_to: { $in: userIds } };
+
+  // ✅ Date Range Filter
+  if (start && end) {
+    filter.createdAt = {
+      $gte: new Date(start),
+      $lte: new Date(end),
+    };
+  }
+
+  const [data, total] = await Promise.all([
+    this.taskModel
+      .find(filter)
+      .skip(skip)
+      .limit(limit)
+      .populate('project')
+      .populate('assigned_to')
+      // .sort({ sort_order: -1 })
+    .sort({ createdAt: -1 })
+
+      .exec(),
+    this.taskModel.countDocuments(filter),
+  ]);
+
+  return {
+    data,
+    page,
+    limit,
+    total,
+  };
+}
+
+
   async findOne(id: string): Promise<Task> {
     const task = await this.taskModel.findById(id).exec();
     if (!task) {
@@ -190,6 +232,7 @@ export class TaskService {
     };
   }
 
+
   async findByCode(code: string): Promise<Task> {
     const project = await this.taskModel.findOne({ code }).exec();
     if (!project) {
@@ -201,6 +244,8 @@ export class TaskService {
   async findByReportToUser(userId: string): Promise<Task[]> {
     return this.taskModel.find({ report_to: userId }).exec();
   }
+
+
 
   async update(id: string, updateTaskDto: UpdateTaskDto): Promise<Task> {
     if (updateTaskDto.project) {
@@ -239,7 +284,7 @@ export class TaskService {
     if (!task) {
       throw new NotFoundException(`Task with ID ${id} not found.`);
     }
-    const oldTaskStatus = task.status; // ✅ correct old status
+    const oldTaskStatus = task.status; 
     const updatedTask = await this.taskModel
       .findByIdAndUpdate(id, updateTaskDto, { new: true })
       .exec();
@@ -307,14 +352,16 @@ async reorderTask(taskId: string, targetTaskId: string, status: string) {
     });
   }
 
-  return { message: 'Reordered successfully' };
+  return { message: 'Task Reordered successfully' };
 }
 
 async getTaskDetails(
   page: number,
   limit: number,
   keyword?: string,
-  sortOrder: "asc" | "desc" = "asc"
+  sortOrder: "asc" | "desc" = "asc",
+  start?: string,
+  end?: string
 ): Promise<{
   data: Task[];
   total: number;
@@ -328,6 +375,7 @@ async getTaskDetails(
   if (safeLimit > MAX_LIMIT) safeLimit = MAX_LIMIT;
 
   const filter: Record<string, any> = {};
+
   if (keyword && keyword.trim()) {
     filter.$or = [
       { title: { $regex: keyword.trim(), $options: 'i' } },
@@ -335,25 +383,28 @@ async getTaskDetails(
     ];
   }
 
+  // ✅ Date Range Filter
+  if (start && end) {
+    filter.createdAt = {
+      $gte: new Date(start),
+      $lte: new Date(end),
+    };
+  }
+
   const total = await this.taskModel.countDocuments(filter).exec();
   const totalPages = total === 0 ? 0 : Math.ceil(total / safeLimit);
-
-  if (totalPages > 0 && safePage > totalPages) {
-    safePage = totalPages;
-  }
+  if (totalPages > 0 && safePage > totalPages) safePage = totalPages;
 
   const skip = (safePage - 1) * safeLimit;
 
   const data = await this.taskModel
     .find(filter)
     .sort({ createdAt: sortOrder === 'desc' ? 1 : -1 })
+    // .sort({ sortOrder: -1 })
     .skip(skip)
     .limit(safeLimit)
-    .populate('project')              
-    .populate('assigned_to')         
-    .populate('report_to')          
-    .populate('created_by')         
-    .populate('updated_by')          
+    .populate('project')
+    .populate('assigned_to')
     .exec();
 
   return {
@@ -364,7 +415,5 @@ async getTaskDetails(
     totalPages,
   };
 }
-
-
 
 }

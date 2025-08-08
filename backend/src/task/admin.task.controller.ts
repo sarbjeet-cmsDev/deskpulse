@@ -38,20 +38,24 @@ export class AdminTaskController {
     };
   }
 
+@Get("timesheet")
+async findTaskTimeSheet(
+  @Query("page") page: number = 1,
+  @Query("limit") limit: number = 10,
+  @Query("keyword") keyword?: string,
+  @Query("sortOrder") sortOrder: "asc" | "desc" = "asc",
+  @Query("start") start?: string,
+  @Query("end") end?: string
+): Promise<{ data: Task[]; total: number; page: number; limit: number; totalPages: number }> {
+  return this.taskService.getTaskDetails(
+    page,
+    limit,
+    keyword,
+    sortOrder,
+    start,
+    end
+  );
+}
 
-   @Get("timesheet")
-  async findTaskTimeSheet(
-    @Query("page") page: number = 1,
-    @Query("limit") limit: number = 10,
-    @Query("keyword") keyword?: string,
-    @Query("sortOrder") sortOrder: "asc" | "desc" = "asc"
-  ): Promise<{ data: Task[]; total: number }> {
-    return this.taskService.getTaskDetails(
-      page,
-      limit,
-      keyword,
-      sortOrder
-    );
-  }
 
 }

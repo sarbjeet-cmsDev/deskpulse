@@ -21,7 +21,6 @@ interface Props {
 
 const ResetPasswordForm = ({ id }: Props) => {
   const router = useRouter();
-//   const { id } = useParams<{ id: string }>();
 
   const {
     register,

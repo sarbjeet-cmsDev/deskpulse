@@ -95,10 +95,22 @@ const TaskService = {
     return res.data;
   },
   // Get tasks assigned to a user
-  async getTasksByAssignedUser(userId: string): Promise<ITask[]> {
-    const res = await axiosClient.get(`${API_URL}/tasks/assigned/${userId}`);
-    return res.data;
-  },
+  // async getTasksByAssignedUser(userIds: string): Promise<ITaskResponse> {
+  //   const res = await axiosClient.get(`${API_URL}/tasks/assigned-to`, {
+  //     params: { userIds},
+  //   });
+  //   return res.data;
+  // },
+
+  // task.service.ts (frontend)
+
+async getTasksByAssignedUser(userIds: string, params?: { start?: string; end?: string }): Promise<ITaskResponse> {
+  const res = await axiosClient.get(`${API_URL}/tasks/assigned-to`, {
+    params: { userIds, ...params },
+  });
+  return res.data;
+},
+
 
   // Get tasks where a user is report-to
   async getTasksByReportToUser(userId: string): Promise<ITask[]> {
