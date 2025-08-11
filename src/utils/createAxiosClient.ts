@@ -6,6 +6,9 @@ import axios, {
 } from "axios";
 import Swal from "sweetalert2";
 import { SweetToast } from "@/utils/sweetToast";
+import { signOut } from "@/store/slices/authSlice";
+import { store } from "@/store/store";
+import Cookies from "js-cookie";
 
 /**
  * Custom Exception Classes
@@ -74,22 +77,27 @@ const defaultOnSuccess = (response: AxiosResponse) => {
  */
 export function createAxiosClient(options: AxiosClientOptions = {}) {
   const {
-
     baseURL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3001/api",
-
     withCreds = false,
     getToken,
-    onSuccess = defaultOnSuccess,
   } = options;
 
   const instance = axios.create({ baseURL });
 
-  // Add Authorization header if withCreds is true
+  // Request interceptor
   instance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     if (withCreds) {
-      let token =
+      console.log("interceptor hit");
+      const token =
         (getToken && getToken()) ||
         (typeof window !== "undefined" && localStorage.getItem("token"));
+
+      if (!token && typeof window !== "undefined") {
+        // Redirect if no token
+        window.location.href = "/auth/login";
+        return Promise.reject("No token found. Redirecting to login.");
+      }
+
       if (token) {
         config.headers.set("Authorization", `Bearer ${token}`);
       }
@@ -97,21 +105,31 @@ export function createAxiosClient(options: AxiosClientOptions = {}) {
     return config;
   });
 
-  // Handle success toast
+  // Response interceptor
   instance.interceptors.response.use(
     (response) => {
-      onSuccess && onSuccess(response);
       return response;
     },
     (error: AxiosError) => {
-      // Recognize error and throw custom exceptions
       if (error.response) {
         const { status, data } = error.response;
         const msg =
           typeof data === "object" && data && "message" in data
             ? (data as any).message
             : error.message;
+
+        if (status === 401) {
+          store.dispatch(signOut());
+
+          if (typeof window !== "undefined") {
+            window.location.href = "/auth/login";
+          }
+
+          return Promise.reject(error);
+        }
+
         SweetToast.error(msg);
+
         switch (status) {
           case 400:
             throw new BadRequestException(msg);
@@ -125,6 +143,7 @@ export function createAxiosClient(options: AxiosClientOptions = {}) {
             throw new Error(msg || "An error occurred");
         }
       }
+
       throw error;
     }
   );
