@@ -24,8 +24,17 @@
   line-height: 1.4;
 }
 
-.ql-syntax {
-  background-color: #171715;
-  /* color: #f8f8f2;           */
-  /* overflow: visible;         */
+.ql-code-block-container {
+  background-color: #262624;
+  padding: 15px;
+  border : none;
+  border-radius: 5px;
 }
+
+.ql-code-block{
+  color:white;
+}
+
+/* .ql-ui{
+  text-align:right;
+} */

@@ -154,6 +154,16 @@ export default function CommentInputSection({
     []
   );
 
+  function cleanQuillHtml(html: string) {
+  const temp = document.createElement("div");
+  temp.innerHTML = html;
+
+  temp.querySelectorAll("select.ql-code-block-language").forEach(el => el.remove());
+
+  return temp.innerHTML;
+}
+
+
   const extractMentionedUserIds = (html: string): string[] => {
     const parser = document.createElement("div");
     parser.innerHTML = html;
@@ -166,6 +176,8 @@ export default function CommentInputSection({
   const handleCreate = async () => {
     const editor = quillRef.current?.getEditor();
     const html = editor?.root.innerHTML || "";
+
+    // html = cleanQuillHtml(html);
 
     if (!html || stripHtml(html) === "") {
       setError("Comment is required");
@@ -203,6 +215,8 @@ export default function CommentInputSection({
 
     const editor = quillRef.current?.getEditor();
     const html = editor?.root.innerHTML || "";
+
+    // html = cleanQuillHtml(html);
 
     if (!html || stripHtml(html) === "") {
       setError("Comment is required");

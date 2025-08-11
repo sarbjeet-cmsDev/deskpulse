@@ -17,6 +17,7 @@ export interface ITask {
   status:string;
   estimated_time?:number
   totaltaskminutes?:number
+  code: string;
 
   // Add more fields as needed
 }

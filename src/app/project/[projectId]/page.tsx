@@ -1,7 +1,5 @@
-import UpdateAuthProfileForm from '@/components/User/Auth/UpdateProfileForm'
 import MyProjectDetails from '@/components/User/Project/MyProjectDetail'
 import AdminProjectService from '@/service/adminProject.service'
-import UserService from '@/service/user.service'
 import type { Metadata, ResolvingMetadata } from 'next'
  
 type Props = {
@@ -16,12 +14,11 @@ export async function generateMetadata(
   const { projectId } = await params
  
   
-  const Userdata = await AdminProjectService.getProjectById(projectId);
- 
+  const Projectdata = await AdminProjectService.getProjectById(projectId);
  
   return {
     title: {
-      absolute:`Project | ${Userdata?.code}`
+      absolute:`Project | ${Projectdata?.code}`
       
     },
   }

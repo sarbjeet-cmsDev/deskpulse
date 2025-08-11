@@ -275,6 +275,7 @@ const CreateProjectForm = () => {
 
         <Input
           type="file"
+          required
           accept="image/*"
           onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
         />

@@ -57,5 +57,10 @@ async findTaskTimeSheet(
   );
 }
 
+ @Get("fetch/:id")
+  async findOne(@Param("id") id: string): Promise<Task> {
+    return this.taskService.findOne(id);
+  }
+
 
 }

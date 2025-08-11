@@ -15,16 +15,16 @@ export class ImageService {
     }
   }
 
-  private getCacheFilename(relativePath: string, width: number, height: number): string {
+  private getCacheFilename(relativePath: string, width: number, height: number, aspect:boolean): string {
     const hash = crypto
       .createHash('md5')
-      .update(`${relativePath}-${width}-${height}`)
+      .update(`${relativePath}-${width}-${height}-${aspect}`)
       .digest('hex');
     return `${hash}.webp`;
   }
 
-  async getOrCreateResizedImage(relativePath: string, width: number, height: number): Promise<string> {
-    const cacheFile = path.join(this.cacheDir, this.getCacheFilename(relativePath, width, height));
+  async getOrCreateResizedImage(relativePath: string, width: number, height: number, aspect: boolean): Promise<string> {
+    const cacheFile = path.join(this.cacheDir, this.getCacheFilename(relativePath, width, height,aspect));
 
     if (fs.existsSync(cacheFile)) {
       return cacheFile; 
@@ -37,7 +37,7 @@ export class ImageService {
     }
 
     await sharp(originalFile)
-      .resize(width, height, { fit: 'cover' })
+      .resize(width, height, { fit: 'inside' })
       .webp({ quality: 100 })
       .toFile(cacheFile);
 

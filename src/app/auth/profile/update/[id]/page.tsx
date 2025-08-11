@@ -1,5 +1,5 @@
 import UpdateAuthProfileForm from '@/components/User/Auth/UpdateProfileForm'
-import UserService from '@/service/user.service'
+import AdminUserService from '@/service/adminUser.service'
 import type { Metadata, ResolvingMetadata } from 'next'
  
 type Props = {
@@ -11,16 +11,13 @@ export async function generateMetadata(
   parent: ResolvingMetadata
 ): Promise<Metadata> {
 
-  // const { id } = await params
- 
+  const { id } = await params
   
-  // const Userdata = await UserService.getUserById();
- 
+  const Userdata = await AdminUserService.getUserById(id);
  
   return {
     title: {
-      // absolute:`User | ${Userdata?.firstName}`
-      absolute:`Profile | Update`
+      absolute:`Profile | ${Userdata?.firstName}`
     },
   }
 }

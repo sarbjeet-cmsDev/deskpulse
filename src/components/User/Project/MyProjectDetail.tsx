@@ -144,6 +144,7 @@ export default function MyProjectDetails({projectId}: Props) {
       if (!projectId) return;
 
       const data = await ProjectService.getProjectById(projectId as string);
+      // const data = await ProjectService.getProjectByCode(projectId as string);
       setProject(data);
       fetchTasks(data._id);
       fetchUsers();

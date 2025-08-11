@@ -18,6 +18,7 @@ import { GlobalSearch } from "../global-search/GlobalSearch";
 import { searchAll } from "@/service/searchService";
 import { P } from "../ptag";
 import NotificationService from "@/service/notification.service";
+import { NotifyNotifications } from "../Notification/NotifyNotification";
 
 export default function TopHeader() {
   const [notificationCount, setNotificationCount] = useState<number>(0);
@@ -56,6 +57,8 @@ export default function TopHeader() {
     },500)
     return ()=>clearInterval(interval);
   }, [userData?.id]);
+
+  NotifyNotifications(10000)
 
   return (
     <div className="bg-theme-primary px-4 py-4">

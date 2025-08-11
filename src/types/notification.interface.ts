@@ -18,3 +18,9 @@ export interface INotificationItem {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface INotificationResponse {
+  count: number;
+  notifications: INotificationItem[];
+}
+

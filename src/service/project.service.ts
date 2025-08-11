@@ -19,6 +19,11 @@ const ProjectService = {
     const response = await axiosClient.get(`${API_URL}/projects/fetch/${projectId}`);
     return response.data;
   },
+
+   async getProjectByCode(code: string) {
+    const response = await axiosClient.get(`${API_URL}/projects/code/${code}`);
+    return response.data;
+  },
   
   async updateProject(id: string, data: Partial<IProject>): Promise<IProject> {
       const res = await axiosClient.put(`${API_URL}/projects/${id}`, data);

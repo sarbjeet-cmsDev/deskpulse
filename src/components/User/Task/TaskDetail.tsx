@@ -48,6 +48,7 @@ export default function TaskDetails({id}:Props) {
   const [commentTotal, setCommentTotal] = useState<number>(0);
   const [commentPage, setCommentPage] = useState<number>(1);
   const [commentLimit, setCommentLimit] = useState<number>(5);
+  const [activeEditId, setActiveEditId] = useState<string | null>(null);
 
   const user: IUserRedux | null = useSelector(
     (state: RootState) => state.auth.user
@@ -199,9 +200,13 @@ export default function TaskDetails({id}:Props) {
             {task && (
               <CommentInputSection
                 key={task._id + (task.description || "")}
+                taskId={task._id}
                 defaultValue={task.description}
                 title="Description"
                 onClick={handleUpdateTaskDescription(task?._id)}
+                onCommentCreated={() => {
+                    setActiveEditId(null);
+                  }}
                 isButton={true}
                 inline={true}
                 isEditing

@@ -1,4 +1,5 @@
 import TaskDetails from '@/components/User/Task/TaskDetail'
+import AdminTaskService from '@/service/adminTask.service'
 import TaskService from '@/service/task.service'
 import type { Metadata, ResolvingMetadata } from 'next'
  
@@ -11,17 +12,13 @@ export async function generateMetadata(
   parent: ResolvingMetadata
 ): Promise<Metadata> {
 
-  // const { id } = await params
- 
-  
-  // const TaskData = await TaskService.getTaskById(id);
- 
+  const { id } = await params
+
+  const TaskData = await AdminTaskService.getTask(id);
  
   return {
     title: {
-      // absolute:`Task | ${TaskData?.title}`
-      absolute:`Task`
-      
+      absolute:`Task | ${TaskData?.code}`
     },
   }
 }
