@@ -27,19 +27,20 @@ import { H3 } from "@/components/Heading/H3";
 import ImageLightbox from "@/components/common/ImagePopUp/ImageLightbox";
 
 interface Props {
-  projectId: string;
+  code: string;
 }
 
-export default function MyProjectDetails({projectId}: Props) {
+export default function MyProjectDetails({ code }: Props) {
   const descriptionRef = useRef<HTMLDivElement | null>(null);
   const deployRef = useRef<HTMLDivElement | null>(null);
   const notesRef = useRef<HTMLDivElement | null>(null);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentImage, setCurrentImage] = useState<string | null>(null);
   const params = useParams();
-//   const projectId = params?.projectId as string;
+  const [projectId, setProjectId] = useState<any>(null)
+  //   const projectId = params?.projectId as string;
   const router = useRouter();
-  const [project, setProject] = useState<any>(null);
+  const [project, setProject] = useState<any>();
   const [loading, setLoading] = useState(true);
   const [tasks, setTasks] = useState<ITask[]>([]);
   const [taskTotal, setTaskTotal] = useState<number>(0);
@@ -54,6 +55,15 @@ export default function MyProjectDetails({projectId}: Props) {
 
   const [projectImage, setProjectImage] = useState<string>(ProjectAvtar.src);
 
+
+  const fetchProjectByCode = (async () => {
+    const result = await ProjectService.getProjectByCode(code)
+    setProjectId(result?._id)
+  })
+  useEffect(() => {
+    fetchProjectByCode()
+  }, [code])
+
   useEffect(() => {
     if (project?.avatar) {
       setProjectImage(
@@ -64,6 +74,7 @@ export default function MyProjectDetails({projectId}: Props) {
 
   const fetchKanbonList = async (userIds: string[]) => {
     try {
+
       const res = await ProjectKanbon.getProjectKanbonList(projectId);
       let taskRes;
 
@@ -73,7 +84,10 @@ export default function MyProjectDetails({projectId}: Props) {
           userIds.join(",")
         );
       } else {
-        taskRes = await TaskService.getTasksByProject(projectId);
+        if (projectId) {
+
+          taskRes = await TaskService.getTasksByProject(projectId);
+        }
       }
 
       if (res?.data) {
@@ -121,23 +135,31 @@ export default function MyProjectDetails({projectId}: Props) {
     }
   };
   useEffect(() => {
-    if (user?.id) {
+    if (user?.id && projectId) {
       setSelectedUserIds([]);
       fetchKanbonList([]);
     }
-    fetchUsers();
+    if (projectId) {
+
+      fetchUsers();
+    }
   }, [user?.id]);
   const fetchTasks = async (projectId: string, page = 1, limit = 100) => {
     try {
       const res = await TaskService.getTasksByProject(projectId, page, limit);
 
-      setTaskTotal(res.total);
-      setTaskPage(res.page);
-      setTaskLimit(res.limit);
+      if (res?.tasks || res?.data) {
+        setTasks(res.tasks || res.data); // <-- this ensures tasks are stored
+      }
+
+      setTaskTotal(res.total || 0);
+      setTaskPage(res.page || 1);
+      setTaskLimit(res.limit || limit);
     } catch (error) {
       console.error("Failed to fetch tasks:", error);
     }
   };
+
 
   const fetchProject = async () => {
     try {
@@ -156,8 +178,12 @@ export default function MyProjectDetails({projectId}: Props) {
   };
 
   useEffect(() => {
-    fetchProject();
+    if (projectId !== null && projectId !== undefined) {
+      fetchProject();
+    }
   }, [projectId]);
+
+
 
   const refreshTasks = () => {
     if (project?._id) fetchTasks(project._id);
@@ -249,11 +275,10 @@ export default function MyProjectDetails({projectId}: Props) {
     return () => {
       containers.forEach((el) => el?.removeEventListener("click", handler));
     };
-  }, []);
+  }, [project]);
 
   if (loading) return <div className="p-6 text-center">Loading project...</div>;
   if (!project) return <div className="p-6 text-center">Project not found</div>;
-
   return (
     <div className="max-w-6xl mx-auto">
       <div className="main-content">
@@ -364,13 +389,13 @@ export default function MyProjectDetails({projectId}: Props) {
                     }}
                   />
                 </div>
-               {lightboxOpen && (
-                <ImageLightbox
-                  open={lightboxOpen}
-                  imageUrl={currentImage ?? ""}
-                  onClose={() => setLightboxOpen(false)}
-                />
-               )}
+                {lightboxOpen && (
+                  <ImageLightbox
+                    open={lightboxOpen}
+                    imageUrl={currentImage ?? ""}
+                    onClose={() => setLightboxOpen(false)}
+                  />
+                )}
               </div>
               <Details
                 project={project}

@@ -35,8 +35,8 @@ export default function SubTasks({
   const uniqueStatuses = kanbanList?.length
     ? Array.from(new Set(kanbanList.map((k) => k.title.toLowerCase())))
     : Array.from(
-        new Set(tasks.map((t) => t.status?.toLowerCase()).filter(Boolean))
-      );
+      new Set(tasks.map((t) => t.status?.toLowerCase()).filter(Boolean))
+    );
 
   const getVisibleCount = (status: string) =>
     visibleCounts[status] ?? TASKS_PER_PAGE;
@@ -86,7 +86,7 @@ export default function SubTasks({
                   className="inactive bg-[#f8fafc] w-full py-[15px] px-[20px] rounded-[8px] border-l-[8px] border-l-[#5fd788] mt-[16px]"
                 >
                   <Link
-                    href={`/task/${task._id}`}
+                    href={`/task/${task.code}`}
                     className="flex justify-between items-center gap-2"
                   >
                     <span className="text-[#333] font-medium truncate">

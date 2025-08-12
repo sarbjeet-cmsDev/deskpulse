@@ -49,6 +49,10 @@ async getAllTasksDetails(params?: {
       const res = await axiosClient.get(`${API_URL}/admin/task/fetch/${id}`);
       return res.data;
     },
+    async getTaskByCode(code: string): Promise<ITask> {
+      const res = await axiosClient.get(`${API_URL}/admin/task/fetchByCode/${code}`);
+      return res.data;
+    },
 };
 
 export default AdminTaskService;

@@ -30,12 +30,11 @@ interface Props {
   id: string;
 }
 
-export default function TaskDetails({id}:Props) {
+export default function TaskDetails({ id }: Props) {
   const params = useParams();
-  const taskId = params?.id as string;
+  const taskCode = params?.id as string;
   const router = useRouter();
   const [task, setTask] = useState<ITask | null>(null);
-  // const [task, setTask] = useState<ITask[]>([]);
   const [taskChecklist, setTaskChecklist] = useState<ITaskChecklist[]>([]);
   const [project, setProject] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -43,7 +42,7 @@ export default function TaskDetails({id}:Props) {
   const [timelineTotal, setTimelineTotal] = useState<number>(0);
   const [timelinePage, setTimelinePage] = useState<number>(1);
   const [timelineLimit, setTimelineLimit] = useState<number>(5);
-
+  const [taskId, setTaskId] = useState<any>(null)
   const [comments, setComments] = useState<IComment[]>([]);
   const [commentTotal, setCommentTotal] = useState<number>(0);
   const [commentPage, setCommentPage] = useState<number>(1);
@@ -53,12 +52,19 @@ export default function TaskDetails({id}:Props) {
   const user: IUserRedux | null = useSelector(
     (state: RootState) => state.auth.user
   );
+  useEffect(() => {
+    const getTaskByCode = (async () => {
+      const result = await TaskService.getTaskByCode(taskCode);
+      setTaskId(result?._id)
 
+    })
 
+    getTaskByCode()
+  }, [taskCode])
   const fetchTask = async (id: string) => {
     try {
       const data = await TaskService.getTaskById(id);
-
+      // getTaskByCode
       setTask(data);
 
       if (data.project) {
@@ -73,7 +79,6 @@ export default function TaskDetails({id}:Props) {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     if (taskId) {
       fetchTask(taskId);
@@ -139,7 +144,7 @@ export default function TaskDetails({id}:Props) {
     }
   };
 
-   useEffect(() => {
+  useEffect(() => {
     fetchComments();
   }, [taskId]);
 
@@ -170,7 +175,8 @@ export default function TaskDetails({id}:Props) {
           <div className="flex justify-between items-center border-b border-[#31394f14]">
             <div className="flex items-center gap-2">
               <div className="w-10">
-                <Link href={`/project/${task?.project}`}>
+                <Link href={`/project/${task?.code?.split("-")[0]}`}>
+
                   <Image src={leftarrow} alt="Logo" width={16} height={16} />
                 </Link>
               </div>
@@ -205,8 +211,8 @@ export default function TaskDetails({id}:Props) {
                 title="Description"
                 onClick={handleUpdateTaskDescription(task?._id)}
                 onCommentCreated={() => {
-                    setActiveEditId(null);
-                  }}
+                  setActiveEditId(null);
+                }}
                 isButton={true}
                 inline={true}
                 isEditing
@@ -259,6 +265,7 @@ export default function TaskDetails({id}:Props) {
                 inline={true}
                 isButton={true}
                 title="Comment"
+                code={taskCode}
               />
 
               <CommentList
@@ -267,7 +274,7 @@ export default function TaskDetails({id}:Props) {
                 refreshComments={fetchComments}
                 fetchComments={() => fetchComments()}
               />
-              
+
             </div>
           </div>
         </div>

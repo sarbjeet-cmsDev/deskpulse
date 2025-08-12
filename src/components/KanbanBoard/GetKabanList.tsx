@@ -81,7 +81,7 @@ export const GetKanbonList = () => {
   };
 
   useEffect(() => {
-    fetchKanbonList([]); 
+    fetchKanbonList([]);
     fetchUsers();
 
     const savedView = localStorage.getItem("taskView");
@@ -213,7 +213,7 @@ export const GetKanbonList = () => {
                 </h3>
 
                 <div className="flex flex-col gap-3">
-                  {matchingCards.map((card) => (
+                  {matchingCards.map((card: any) => (
                     // <div
                     //   key={card._id}
                     //   className="bg-gray-50 border border-gray-200 rounded-md p-3 shadow-sm hover:bg-gray-100 cursor-pointer transition"
@@ -229,13 +229,12 @@ export const GetKanbonList = () => {
 
                     <div
                       key={card._id}
-                      className={`bg-gray-50 border border-gray-200 rounded-md p-3 shadow-sm hover:bg-gray-100 cursor-pointer transition ${
-                        dragOverTaskId === card._id
-                          ? "ring-2 ring-blue-400"
-                          : ""
-                      }`}
+                      className={`bg-gray-50 border border-gray-200 rounded-md p-3 shadow-sm hover:bg-gray-100 cursor-pointer transition ${dragOverTaskId === card._id
+                        ? "ring-2 ring-blue-400"
+                        : ""
+                        }`}
                       draggable
-                      onClick={() => router.push(`/task/${card._id}`)}
+                      onClick={() => router.push(`/task/${card.code}`)}
                       onDragStart={() => handleDragStart(card)}
                       onDragOver={(e) => {
                         e.preventDefault();

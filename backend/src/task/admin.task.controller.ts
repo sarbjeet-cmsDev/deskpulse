@@ -62,5 +62,8 @@ async findTaskTimeSheet(
     return this.taskService.findOne(id);
   }
 
-
+ @Get("fetchByCode/:code")
+  async findByCode(@Param("code") code: string): Promise<Task> {
+    return this.taskService.findByCode(code);
+  }
 }

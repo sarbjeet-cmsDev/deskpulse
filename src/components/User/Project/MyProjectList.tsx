@@ -45,42 +45,42 @@ export default function MyProjects() {
   };
 
 
-const [projectKanbanMap, setProjectKanbanMap] = useState<Record<string, { kanbans: KanbanColumn[], counts: Record<string, number> }>>({});
+  const [projectKanbanMap, setProjectKanbanMap] = useState<Record<string, { kanbans: KanbanColumn[], counts: Record<string, number> }>>({});
 
-const fetchKanbonList = async () => {
-  try {
-    const projectIds: string[] = projects.map((item) => item._id);
-    const resultMap: Record<string, { kanbans: KanbanColumn[], counts: Record<string, number> }> = {};
+  const fetchKanbonList = async () => {
+    try {
+      const projectIds: string[] = projects.map((item) => item._id);
+      const resultMap: Record<string, { kanbans: KanbanColumn[], counts: Record<string, number> }> = {};
 
-    for (const projectId of projectIds) {
-      const kanbanRes = await ProjectKanbon.getProjectKanbonList(projectId);
-      const kanbans: KanbanColumn[] = kanbanRes?.data || [];
+      for (const projectId of projectIds) {
+        const kanbanRes = await ProjectKanbon.getProjectKanbonList(projectId);
+        const kanbans: KanbanColumn[] = kanbanRes?.data || [];
 
-      const taskRes = await TaskService.getTasksByProject(projectId);
-      const tasks: ITask[] = taskRes?.data || taskRes?.tasks || [];
+        const taskRes = await TaskService.getTasksByProject(projectId);
+        const tasks: ITask[] = taskRes?.data || taskRes?.tasks || [];
 
-      const counts: Record<string, number> = {};
-      kanbans.forEach(k => {
-        counts[k.title] = tasks.filter(t => t.status === k.title).length;
-      });
+        const counts: Record<string, number> = {};
+        kanbans.forEach(k => {
+          counts[k.title] = tasks.filter(t => t.status === k.title).length;
+        });
 
-      resultMap[projectId] = {
-        kanbans,
-        counts,
-      };
+        resultMap[projectId] = {
+          kanbans,
+          counts,
+        };
+      }
+
+      setProjectKanbanMap(resultMap);
+    } catch (error) {
+      console.error("Failed to load kanban data:", error);
     }
+  };
 
-    setProjectKanbanMap(resultMap);
-  } catch (error) {
-    console.error("Failed to load kanban data:", error);
-  }
-};
-
-useEffect(() => {
-  if (projects.length > 0) {
-    fetchKanbonList();
-  }
-}, [projects]);
+  useEffect(() => {
+    if (projects.length > 0) {
+      fetchKanbonList();
+    }
+  }, [projects]);
 
 
   return (
@@ -103,10 +103,10 @@ useEffect(() => {
                 <p>No projects found.</p>
               ) : (
                 projects.map((project) => (
-                  <Link key={project._id} href={`/project/${project._id}`}>
-                    <ProjectCard project={project} 
-                     kanban={projectKanbanMap[project._id]?.kanbans || []}
-                     taskCounts={projectKanbanMap[project._id]?.counts || {}}
+                  <Link key={project._id} href={`/project/${project.code}`}>
+                    <ProjectCard project={project}
+                      kanban={projectKanbanMap[project._id]?.kanbans || []}
+                      taskCounts={projectKanbanMap[project._id]?.counts || {}}
                     />
                   </Link>
                 ))

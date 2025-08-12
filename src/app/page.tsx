@@ -39,12 +39,12 @@ export default function Dashboard() {
     if (user) {
       loadProjects();
       const interval = setInterval(() => {
-      loadProjects();
-    }, 60_000);
-    return () => clearInterval(interval);
+        loadProjects();
+      }, 60_000);
+      return () => clearInterval(interval);
     }
   }, [user]);
-  
+
   const router = useRouter();
   return (
     <div>
@@ -79,17 +79,17 @@ export default function Dashboard() {
                 <p>Loading projects...</p>
               ) : projects.length === 0 ? (
                 <div className="w-full"><p className="text-gray-500 text-left flex items-left justify-left">No projects available.</p></div>
-                
+
               ) : (
                 projects.map((project) => (
                   <Link
                     className="max-w-[calc(50%-1em)]"
                     key={project._id}
-                    href={`/project/${project._id}`}
+                    href={`/project/${project.code}`}
                   >
-                    <ProjectCard project={project}  
-                    kanban={ []}
-                     taskCounts={ {}} />
+                    <ProjectCard project={project}
+                      kanban={[]}
+                      taskCounts={{}} />
                   </Link>
                 ))
               )}

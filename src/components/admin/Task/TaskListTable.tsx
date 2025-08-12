@@ -25,7 +25,7 @@ type Task = {
 const TaskListTable = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-     const pathname = usePathname();
+  const pathname = usePathname();
 
   const [tasks, setTasks] = useState<Task[]>([]);
   const [search, setSearch] = useState("");
@@ -71,7 +71,7 @@ const TaskListTable = () => {
 
   const rows = (tasks ?? []).map((task) => ({
     ...task,
-    actions: [{ title: "Delete" }, {title:"View"}],
+    actions: [{ title: "Delete" }, { title: "View" }],
   }));
 
   return (
@@ -94,10 +94,10 @@ const TaskListTable = () => {
             setSearch(query);
             setPage(1);
           }}
-          
+
           onAction={async (action, row) => {
             if (action === "View") {
-              router.push(`/task/${row._id}`);
+              router.push(`/task/${row.code}`);
             } else if (action === "Delete") {
               const result = await Swal.fire({
                 title: "Are you sure?",

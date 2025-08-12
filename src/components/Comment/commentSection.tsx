@@ -18,9 +18,7 @@ import QuillEditorWrapper from "./QuillEditorWrapper";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import UploadService from "@/service/upload.service";
-import DescriptionView from "../common/DescriptionView/DescriptionView";
 import ImageLightbox from "../common/ImagePopUp/ImageLightbox";
-import quill from "quill";
 
 if (
   typeof window !== "undefined" &&
@@ -116,7 +114,10 @@ export default function CommentInputSection({
     ) => {
       try {
         const users: IUser[] = await AdminUserService.searchUsers(searchTerm);
-        const list = users.map((user) => ({
+        const filteredUsers = users.filter(user =>
+          `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        const list = filteredUsers.map((user) => ({
           id: user._id,
           value: `${user.firstName} ${user.lastName}`,
         }));
@@ -131,7 +132,7 @@ export default function CommentInputSection({
 
   const modules = useMemo(
     () => ({
-      syntax:{hljs},
+      syntax: { hljs },
       toolbar: {
         container: [
           [{ header: [1, 2, false] }],
@@ -155,13 +156,13 @@ export default function CommentInputSection({
   );
 
   function cleanQuillHtml(html: string) {
-  const temp = document.createElement("div");
-  temp.innerHTML = html;
+    const temp = document.createElement("div");
+    temp.innerHTML = html;
 
-  temp.querySelectorAll("select.ql-code-block-language").forEach(el => el.remove());
+    temp.querySelectorAll("select.ql-code-block-language").forEach(el => el.remove());
 
-  return temp.innerHTML;
-}
+    return temp.innerHTML;
+  }
 
 
   const extractMentionedUserIds = (html: string): string[] => {

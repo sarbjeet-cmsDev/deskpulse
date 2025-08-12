@@ -66,7 +66,10 @@ const TaskService = {
     const res = await axiosClient.get(`${API_URL}/tasks/fetch/${id}`);
     return res.data;
   },
-
+async getTaskByCode(code: string): Promise<ITask> {
+    const res = await axiosClient.get(`${API_URL}/tasks/code/${code}`);
+    return res.data;
+  },
   // Get tasks by project ID
   async getTasksByProject(
     projectId: string,

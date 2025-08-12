@@ -48,7 +48,10 @@ const AdminProjectService = {
     const res = await axiosClient.get(`${API_URL}/admin/project/${id}`);
     return res.data.data;
   },
-
+ async getProjectByCode(code: string): Promise<IProject> {
+    const res = await axiosClient.get(`${API_URL}/admin/project/code/${code}`);
+    return res.data.data;
+  },
   //  Create new project
   async createProject(
     data: Omit<IProject, "_id" | "createdAt" | "updatedAt">

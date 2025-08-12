@@ -30,7 +30,7 @@ export class EmailListener {
             project_template: `Project "${projectObj.title}" was assigned to ${user.username} on ${new Date(projectObj.updatedAt).toLocaleString()}.`,
             projectName: projectObj.title,
             userName: user.username,
-            projectLink: `${process.env.FRONTEND_URL}project/${projectObj._id}`,
+            projectLink: `${process.env.FRONTEND_URL}project/${projectObj.code}`,
           },
         });
         this.logger.log(`Project assignment Email Notification sent.`);
@@ -59,7 +59,7 @@ export class EmailListener {
           dueDate: taskObj.due_date ? new Date(taskObj.due_date).toLocaleString() : 'No due date',
           priority: taskObj.priority,
           status: taskObj.status,
-          tasklink: `${process.env.FRONTEND_URL}/task/${taskObj._id.toString()}`,
+          tasklink: `${process.env.FRONTEND_URL}/task/${taskObj.code.toString()}`,
         },
       })
       this.logger.log(`Task assignment Email Notification sent.`);
@@ -90,7 +90,7 @@ export class EmailListener {
             oldTaskStatus,
             newTaskStatus: taskObj.status,
             updatedAt: new Date(taskObj.updatedAt).toLocaleString(),
-            tasklink: `${process.env.FRONTEND_URL}/task/${taskObj._id}`,
+            tasklink: `${process.env.FRONTEND_URL}/task/${taskObj.code}`,
           },
         });
       }

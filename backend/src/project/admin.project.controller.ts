@@ -65,6 +65,15 @@ export class AdminProjectController {
     };
   }
 
+  @Get("code/:code")
+  async findByCode(@Param("code") code: string): Promise<any> {
+    const project = await this.projectService.findByCode(code);
+    return {
+      // message: "Project fetched successfully!",
+      data: project,
+    };
+  }
+
   // ✅ Update Project by ID
   @Put(":id")
   @UseInterceptors(FileInterceptor("avatar", multerOptions)) 

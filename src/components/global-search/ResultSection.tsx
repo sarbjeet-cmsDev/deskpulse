@@ -6,7 +6,7 @@ interface ResultSectionProps {
   title: string;
   items: any[];
   type: "project" | "task" | "comment";
-  onSelect?: () => void; 
+  onSelect?: () => void;
 }
 
 const getCommentLink = (comment: any) => {
@@ -31,17 +31,17 @@ export function ResultSection({
         {items.map((item: any) => {
           const href =
             type === "project"
-              ? `/project/${item._id}`
+              ? `/project/${item.code}`
               : type === "task"
-                ? `/task/${item._id}`
+                ? `/task/${item.code}`
                 : getCommentLink(item);
 
-          
+
           return (
             <li key={item._id}>
               <Link
                 href={href}
-               
+
                 onClick={onSelect}
                 className="
                             block w-full rounded px-2 py-1
