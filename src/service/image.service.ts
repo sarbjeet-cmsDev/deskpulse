@@ -6,7 +6,7 @@ const axiosClient = createAxiosClient({ withCreds: false });
 const ImageService = {
   async getResizedImage(path: string, width: number, height?: number, aspect = false): Promise<Blob> {
     try {
-      const url = new URL(`${API_URL}/api/image`);
+      const url = new URL(`${API_URL}/image`);
       url.searchParams.append('path', path);
       url.searchParams.append('width', width.toString());
       if (height) url.searchParams.append('height', height.toString());

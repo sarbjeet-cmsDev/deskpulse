@@ -49,6 +49,8 @@ export default function TaskDetails({ id }: Props) {
   const [commentLimit, setCommentLimit] = useState<number>(5);
   const [activeEditId, setActiveEditId] = useState<string | null>(null);
 
+
+
   const user: IUserRedux | null = useSelector(
     (state: RootState) => state.auth.user
   );
@@ -150,7 +152,7 @@ export default function TaskDetails({ id }: Props) {
 
 
   const handleActivityLog = () => {
-    router.push(`/task-activitylog/${taskId}`);
+    router.push(`/task-activitylog/${task?.code}`);
   };
 
   const handleViewKanban = () => {

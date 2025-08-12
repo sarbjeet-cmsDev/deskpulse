@@ -57,4 +57,33 @@ export class TaskactivitylogController {
       limit: limitNumber,
     };
   }
+
+  @Get("task-activity/code/:code")
+  async findlogByTaskCode(
+    @Param("taskId") taskId: string,
+    @Query("page") page: string = "1",
+    @Query("limit") limit: string = "5"
+  ): Promise<{
+    taskactivitylog: Taskactivitylog[];
+    total: number;
+    page: number;
+    limit: number;
+  }> {
+    const pageNumber = parseInt(page, 10);
+    const limitNumber = parseInt(limit, 10);
+
+    const { taskactivitylog, total } =
+      await this.taskactivitylogservice.findLogactivityByTaskCode(
+        taskId,
+        pageNumber,
+        limitNumber
+      );
+
+    return {
+      taskactivitylog,
+      total,
+      page: pageNumber,
+      limit: limitNumber,
+    };
+  }
 }

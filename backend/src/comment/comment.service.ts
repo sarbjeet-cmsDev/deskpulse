@@ -159,7 +159,6 @@ export class CommentService {
     const regex = new RegExp(keyword, "i");
     const filters: any = {
       $and: [
-        { mentioned: userId },
         {
           $or: [
             { content: { $regex: regex } },

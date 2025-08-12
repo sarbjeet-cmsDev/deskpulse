@@ -20,7 +20,7 @@ export default function DropdownOptions({ options, icon }: DropdownOptionsProps)
   return (
     <Dropdown backdrop="opaque">
       <DropdownTrigger>
-        <Button className="bg-transparent p-0 shadow-none border-none hover:bg-transparent focus:outline-none">
+        <Button className="bg-transparent p-0 shadow-none border-none hover:bg-transparent focus:outline-none max-[768px]:inline-block max-[768px]:ml-2">
           {icon ? icon : (
             <svg
               width="20"

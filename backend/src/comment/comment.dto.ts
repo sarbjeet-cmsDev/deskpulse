@@ -9,6 +9,9 @@ export class CreateCommentDto {
   @IsMongoId()
   task: MongooseSchema.Types.ObjectId;
 
+  @IsString()
+  code: string;
+
   @IsOptional()
   @IsArray()
   @IsMongoId({ each: true })

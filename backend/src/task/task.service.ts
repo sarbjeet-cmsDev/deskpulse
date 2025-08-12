@@ -132,7 +132,8 @@ export class TaskService {
       assigned_to: { $in: userIds },
       project: projectId,
     })
-    .sort({ sort_order: -1 });
+    .populate('assigned_to')
+    .sort({ sort_order: -1 })
   }
 
 async findByAssignedToUser(
@@ -197,6 +198,7 @@ async findByAssignedToUser(
         .find({ project: projectId })
         .sort({ sort_order: -1 })
         .skip(skip)
+        .populate('assigned_to')
         .limit(limit)
         .exec(),
       this.taskModel.countDocuments({ project: projectId }),
@@ -221,6 +223,7 @@ async findByAssignedToUser(
         .skip(skip)
         .limit(limit)
         .sort({ sort_order: -1 })
+        .populate('assigned_to')
         .exec(),
       this.taskModel.countDocuments({ assigned_to: userId }),
     ]);

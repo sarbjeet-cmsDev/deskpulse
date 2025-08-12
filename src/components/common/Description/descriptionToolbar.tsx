@@ -19,6 +19,7 @@ import { Mention, MentionBlot } from "quill-mention";
 import QuillEditorWrapper from "@/components/Comment/QuillEditorWrapper";
 import UploadService from "@/service/upload.service";
 import ImageLightbox from "../ImagePopUp/ImageLightbox";
+import AdminUserService, { IUser } from "@/service/adminUser.service";
 
 if (
   typeof window !== "undefined" &&
@@ -91,6 +92,29 @@ const DescriptionInputToolbar = ({
       }
     };
   };
+
+  const mentionSource = useCallback(
+    async (
+      searchTerm: string,
+      renderList: (items: any[], searchTerm: string) => void
+    ) => {
+      try {
+        const users: IUser[] = await AdminUserService.searchUsers(searchTerm);
+         const filteredUsers = users.filter(user =>
+          `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        const list = filteredUsers.map((user) => ({
+          id: user._id,
+          value: `${user.firstName} ${user.lastName}`,
+        }));
+        renderList(list, searchTerm);
+      } catch (err) {
+        console.error("Mention fetch error:", err);
+        renderList([], searchTerm);
+      }
+    },
+    []
+  );
 
   const stripHtml = (html: string): string => {
     return html.replace(/<[^>]*>/g, "").trim();

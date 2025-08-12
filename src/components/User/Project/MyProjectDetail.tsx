@@ -283,7 +283,7 @@ export default function MyProjectDetails({ code }: Props) {
     <div className="max-w-6xl mx-auto">
       <div className="main-content">
         <div>
-          <div className="flex justify-between items-center border-b border-[#31394f14] pb-4">
+          <div className="flex justify-between items-center border-b border-[#31394f14] pb-4 max-[768px]:flex-wrap max-[768px]:gap-[10px]">
             <div className="flex items-center gap-2">
               <div className="w-10">
                 <Link href="/project/list">

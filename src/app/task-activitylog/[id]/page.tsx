@@ -28,7 +28,13 @@ export default function TaskActivityLogPage() {
     const fetchLogs = async () => {
       try {
         setLoading(true);
-        const res = await TaskActivityLogService.getByTaskId(
+        // const res = await TaskActivityLogService.getByTaskId(
+        //   taskId as string,
+        //   currentPage,
+        //   itemsPerPage
+        // );
+
+        const res = await TaskActivityLogService.getByTaskCode(
           taskId as string,
           currentPage,
           itemsPerPage

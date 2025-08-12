@@ -10,7 +10,7 @@ interface ResultSectionProps {
 }
 
 const getCommentLink = (comment: any) => {
-  if (comment.task) return `/task/${comment.task}?comment=${comment._id}`;
+  if (comment.task) return `/task/${comment.code}?comment=${comment._id}`;
   if (comment.project)
     return `/project/${comment.project}?comment=${comment._id}`;
   return "#";

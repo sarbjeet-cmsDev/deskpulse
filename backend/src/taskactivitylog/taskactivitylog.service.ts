@@ -45,4 +45,24 @@ export class TaskactivitylogService {
 
     return { taskactivitylog, total };
   }
+
+  async findLogactivityByTaskCode(
+    code: string,
+    page: number,
+    limit: number
+  ): Promise<{ taskactivitylog: TaskactivitylogDocument[]; total: number }> {
+    const skip = (page - 1) * limit;
+
+    const [taskactivitylog, total] = await Promise.all([
+      this.taskChecklistModel
+        .find({ task: code })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .exec(),
+      this.taskChecklistModel.countDocuments({ task: code }),
+    ]);
+
+    return { taskactivitylog, total };
+  }
 }

@@ -16,6 +16,7 @@ export interface CreateCommentDto {
   mentioned?: string[];
   parent_comment?: string;
   created_by: string;
+  code:string;
 }
 
 export interface UpdateCommentDto {

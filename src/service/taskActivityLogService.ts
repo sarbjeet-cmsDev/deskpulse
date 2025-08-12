@@ -41,6 +41,25 @@ const TaskActivityLogService = {
     const res = await axiosClient.post(`${API_URL}/taskactivitylog`, data);
     return res.data;
   },
+
+  async getByTaskCode(
+    code: string,
+    page = 1,
+    limit = 5
+  ): Promise<{
+    taskactivitylog: ITaskActivityLog[];
+    total: number;
+    page: number;
+    limit: number;
+  }> {
+    const res = await axiosClient.get(
+      `${API_URL}/taskactivitylog/task-activity/code/${code}`,
+      {
+        params: { page, limit },
+      }
+    );
+    return res.data;
+  },
 };
 
 export default TaskActivityLogService;

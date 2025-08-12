@@ -41,6 +41,7 @@ interface CommentInputProps {
   commentId?: string;
   title?: any;
   isButton?: any;
+  code:string;
 }
 
 export default function CommentInputSection({
@@ -55,6 +56,7 @@ export default function CommentInputSection({
   title,
   onClick,
   isButton,
+  code,
 }: any) {
   const [content, setContent] = useState<string | undefined>(defaultValue);
   const [loading, setLoading] = useState(false);
@@ -64,6 +66,7 @@ export default function CommentInputSection({
   const user: any = useSelector((state: RootState) => state.user.data);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+
 
   useEffect(() => {
     if (isEditing && defaultValue) {
@@ -198,6 +201,7 @@ export default function CommentInputSection({
         created_by: user?._id,
         mentioned: mentionedUserIds,
         parent_comment: parent_comment,
+        code:code,
       };
 
       await CommentService.createComment(payload);

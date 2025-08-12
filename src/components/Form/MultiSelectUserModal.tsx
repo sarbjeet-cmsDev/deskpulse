@@ -14,7 +14,7 @@ interface MultiSelectUserModalProps {
   onClose: () => void;
   selectedUserIds: string[];
   onConfirm: (userIds: string[]) => void;
-  activeUsers:any;
+  activeUsers: any;
 }
 
 export default function MultiSelectUserModal({
@@ -28,7 +28,6 @@ export default function MultiSelectUserModal({
   const [selectedUsers, setSelectedUsers] = useState<IUserOption[]>([]);
   const [inputValue, setInputValue] = useState("");
 
-  
   const fetchUsers = useCallback(
     debounce(async (input: string) => {
       try {
@@ -39,7 +38,6 @@ export default function MultiSelectUserModal({
         }));
         setUserOptions(options);
 
-       
         if (input) {
           const selected = options.filter((opt) =>
             selectedUserIds.includes(opt.value)
@@ -57,15 +55,15 @@ export default function MultiSelectUserModal({
   useEffect(() => {
     if (isOpen) {
       fetchUsers("");
-      setInputValue(""); 
+      setInputValue("");
       const selected = activeUsers.map((user: IUser) => ({
-      label: `${user.firstName || user.username} ${user.lastName || ""} (${user.email})`,
-      value: user._id,
-    }));
+        label: `${user.firstName || user.username} ${user.lastName || ""} (${user.email})`,
+        value: user._id,
+      }));
 
-    setSelectedUsers(selected);
+      setSelectedUsers(selected);
     }
-  }, [isOpen,activeUsers, fetchUsers]);
+  }, [isOpen, activeUsers, fetchUsers]);
 
   const handleConfirm = () => {
     const ids = selectedUsers.map((u) => u.value);
@@ -76,8 +74,8 @@ export default function MultiSelectUserModal({
   return (
     <Modal isOpen={isOpen} onOpenChange={onClose}>
       <ModalContent>
-        <ModalBody className="p-6 space-y-4">
-          <div className="mt-3 h-[300px] p-10 overflow-hidden">
+        <ModalBody className="p-1 space-y-2">
+          <div className="flex flex-col justify-between mt-3 h-[400px] p-10 overflow-hidden">
             <ReactSelect
               isMulti
               options={userOptions}
@@ -86,7 +84,7 @@ export default function MultiSelectUserModal({
               inputValue={inputValue}
               onInputChange={(value) => {
                 setInputValue(value);
-                fetchUsers(value);
+                // fetchUsers(value);
               }}
               onChange={(selected: MultiValue<IUserOption>) => {
                 setSelectedUsers(selected as IUserOption[]);
@@ -96,10 +94,15 @@ export default function MultiSelectUserModal({
                   ...base,
                   minHeight: "40px",
                 }),
+                valueContainer: (base) => ({
+                  ...base,
+                  maxHeight: "200px",
+                  overflowY: "auto",
+                }),
                 menu: (base) => ({
                   ...base,
-                  zIndex: 9999,
-                  maxHeight: 200,
+                  // zIndex: 9999,
+                  maxHeight: "200px",
                   overflowY: "auto",
                   position: "absolute",
                 }),
@@ -107,6 +110,8 @@ export default function MultiSelectUserModal({
                   ...base,
                   paddingTop: 0,
                   paddingBottom: 0,
+                  maxHeight: "200px",
+                  overflowY: "scroll",
                 }),
               }}
             />
@@ -114,7 +119,7 @@ export default function MultiSelectUserModal({
             <button
               onClick={handleConfirm}
               disabled={selectedUsers.length === 0}
-              className="btn-primary text-white px-4 py-2 rounded mt-5 mx-auto block"
+              className="btn-primary text-white px-4 py-2 rounded mt-2 mx-auto block"
             >
               Assign
             </button>

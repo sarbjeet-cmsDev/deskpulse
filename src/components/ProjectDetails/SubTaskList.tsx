@@ -87,19 +87,24 @@ export default function SubTasks({
                 >
                   <Link
                     href={`/task/${task.code}`}
-                    className="flex justify-between items-center gap-2"
+                    className="flex justify-between items-center gap-2 max-[768px]:flex-wrap max-[768px]:justify-start max-[768px]:items-start max-[768px]:relative max-[768px]:gap-4"
                   >
-                    <span className="text-[#333] font-medium truncate">
+                    <span className="text-[#333] font-medium truncate max-[768px]:max-w-[90%]">
                       {task.title}
                     </span>
 
-                    <div className="flex items-center gap-4 shrink-0 ">
-                      <div className="flex item-center gap-2">
+                    <div className="flex items-center gap-4 shrink-0 max-[768px]:flex-column max-[768px]:items-start max-[768px]:flex-wrap max-[768px]:max-w-[100%]">
+                       <div className="flex item-center gap-2 max-[768px]:min-w-[100%] max-[768px]:w-[100%]">
+                        <span className="text-[#333] font-bold">Assign to:</span>
+                        <span>{`${task.assigned_to?.firstName} ${task.assigned_to?.lastName}`}</span>
+                      </div>
+
+                      <div className="flex item-center gap-2 max-[768px]:min-w-[100%] max-[768px]:w-[100%]">
                         <span className="text-[#333] font-bold">Priority:</span>
                         <span>{task.priority}</span>
                       </div>
 
-                      <div className="flex item-center gap-2">
+                      <div className="flex item-center gap-2 max-[768px]:min-w-[100%] max-[768px]:w-[100%]">
                         <span className="text-[#333] font-bold">Due Date:</span>
                         <span>{formatDate(task.due_date)}</span>
                       </div>
@@ -108,7 +113,7 @@ export default function SubTasks({
                         alt="Details"
                         width={20}
                         height={20}
-                        className="cursor-pointer opacity-70 hover:opacity-100"
+                        className="cursor-pointer opacity-70 hover:opacity-100 max-[768px]:absolute max-[768px]:top-0 max-[768px]:right-0"
                       />
                     </div>
                   </Link>
