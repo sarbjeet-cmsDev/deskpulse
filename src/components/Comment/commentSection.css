@@ -38,3 +38,7 @@
 /* .ql-ui{
   text-align:right;
 } */
+
+.commentSection .ql-editor p+p+p{
+  display: none !important;
+}

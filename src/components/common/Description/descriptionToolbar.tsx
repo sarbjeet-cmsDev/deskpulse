@@ -155,7 +155,7 @@ const DescriptionInputToolbar = ({
         ref={wrapperRef}
         onFocus={handleFocus}
         onBlur={handleBlur}
-        className={`quill-wrapper relative ${isFocused ? "show-toolbar" : ""}`}
+        className={`quill-wrapper commentSection relative ${isFocused ? "show-toolbar" : ""}`}
       >
         <QuillEditorWrapper
           ref={quillRef}

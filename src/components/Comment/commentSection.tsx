@@ -305,7 +305,7 @@ export default function CommentInputSection({
         ref={wrapperRef}
         onFocus={handleFocus}
         onBlur={handleBlur}
-        className="quill-wrapper relative"
+        className="quill-wrapper relative commentSection"
       >
         <QuillEditorWrapper
           ref={quillRef}
