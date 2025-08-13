@@ -10,6 +10,18 @@ const nextConfig = {
   },
   images: {
     domains: allowedDomains,
+    remotePatterns: [
+      {
+        protocol: 'http',
+        hostname: 'deskpulse-be.bronzebyte.com',
+        pathname: '/uploads/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'deskpulse-be.bronzebyte.com',
+        pathname: '/uploads/**',
+      }
+    ],
   },
 };
 
