@@ -2,6 +2,7 @@ import { Document, Schema as MongooseSchema } from 'mongoose';
 
 export interface Comment {
   content: string;
+  project: MongooseSchema.Types.ObjectId;
   task: MongooseSchema.Types.ObjectId;
   code:string;
   mentioned?: MongooseSchema.Types.ObjectId[];

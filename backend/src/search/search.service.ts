@@ -12,15 +12,17 @@ export class SearchService {
         private readonly taskService: TaskService,
         private readonly commentService: CommentService
     ) { }
-    async searchAll(query: string, userId:string) {
-        const projects = await this.projectService.search(query,userId);
-        const projectList = await this.projectService.findProjectsByUserId(userId, 1, 10000)
-        const tasks = await this.taskService.search(query,projectList.data);
-        const comments = await this.commentService.search(query,userId);
+    async searchAll(query: string, userId: string) {
+        const [projects, projectList] = await Promise.all([
+            this.projectService.search(query, userId),
+            this.projectService.findProjectsByUserId(userId, 1, 10000),
+        ]);
+
+        const projectIds = projectList.data.map((project: any) => project._id.toString());
         return {
             projects,
-            tasks,
-            comments,
+            tasks: await this.taskService.search(query, projectList.data),
+            comments: await this.commentService.search(query, projectIds),
         };
     }
 

@@ -9,6 +9,9 @@ export class Comment {
   @Prop({ required: true })
   content: string;
 
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Project' })
+  project: MongooseSchema.Types.ObjectId;
+
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Task', required: true })
   task: MongooseSchema.Types.ObjectId;
 

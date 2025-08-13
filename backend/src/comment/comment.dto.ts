@@ -6,6 +6,10 @@ export class CreateCommentDto {
   @IsString()
   content: string;
 
+  @IsOptional()
+  @IsMongoId()
+  project: MongooseSchema.Types.ObjectId;
+
   @IsMongoId()
   task: MongooseSchema.Types.ObjectId;
 

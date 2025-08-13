@@ -14,7 +14,7 @@ export class UserSeeder implements Seeder {
     return this.user.insertMany([
         {
             username: "admin",
-            email: "admin@gmail.com",
+            email: "bb_projectadmin@yopmail.com",
             firstName:"admin",
             lastName:'testing',
             password: await hashPassword("admin"),

@@ -18,13 +18,14 @@ export class CommentService {
   ) { }
 
   async create(createCommentDto: Partial<Comment>): Promise<Comment> {
-    await validateTaskId(this.taskService, createCommentDto.task.toString());
+
+    let TaskData = await validateTaskId(this.taskService, createCommentDto.task.toString());
+    createCommentDto.project = TaskData.project;
     const createdComment = new this.commentModel(createCommentDto);
     if (createCommentDto.mentioned) {
       this.eventEmitter.emit('comments.mention', {
         CommentObj: createdComment,
       });
-
     }
     return createdComment.save();
   }
@@ -53,52 +54,52 @@ export class CommentService {
   }
 
   async findAllComment(
-       page: number,
-      limit: number,
-      keyword?: string,
-      sortOrder: "asc" | "desc" = "asc"
-    ): Promise<{data: Comment[]; total: number; page: number; limit: number;totalPages: number;}> {
-       let safePage = Math.max(Number(page) || 1, 1);
-      let safeLimit = Math.max(Number(limit) || 10, 1);
-      const MAX_LIMIT = 200;
-      if (safeLimit > MAX_LIMIT) safeLimit = MAX_LIMIT;
-  
-   
-      const filter: Record<string, any> = {};
-      if (keyword && keyword.trim()) {
-        filter.$or = [
-          { content: { $regex: keyword.trim(), $options: 'i' } },
-          // { code: { $regex: keyword.trim(), $options: 'i' } },
-        ];
-      }
-  
-  
-      const total = await this.commentModel.countDocuments(filter).exec();
-      const totalPages = total === 0 ? 0 : Math.ceil(total / safeLimit);
-  
-  
-      if (totalPages > 0 && safePage > totalPages) {
-        safePage = totalPages;
-      }
-  
-      const skip = (safePage - 1) * safeLimit;
-  
-       const data = await this.commentModel
-        .find(filter)
-        .sort({ createdAt: sortOrder === 'desc' ? 1 : -1 })
-        .skip(skip)
-        .limit(safeLimit)
-        .exec();
-  
-      
-      return {
-        data,
-        total,
-        page: safePage,
-        limit: safeLimit,
-        totalPages,
-      };
+    page: number,
+    limit: number,
+    keyword?: string,
+    sortOrder: "asc" | "desc" = "asc"
+  ): Promise<{ data: Comment[]; total: number; page: number; limit: number; totalPages: number; }> {
+    let safePage = Math.max(Number(page) || 1, 1);
+    let safeLimit = Math.max(Number(limit) || 10, 1);
+    const MAX_LIMIT = 200;
+    if (safeLimit > MAX_LIMIT) safeLimit = MAX_LIMIT;
+
+
+    const filter: Record<string, any> = {};
+    if (keyword && keyword.trim()) {
+      filter.$or = [
+        { content: { $regex: keyword.trim(), $options: 'i' } },
+        // { code: { $regex: keyword.trim(), $options: 'i' } },
+      ];
     }
+
+
+    const total = await this.commentModel.countDocuments(filter).exec();
+    const totalPages = total === 0 ? 0 : Math.ceil(total / safeLimit);
+
+
+    if (totalPages > 0 && safePage > totalPages) {
+      safePage = totalPages;
+    }
+
+    const skip = (safePage - 1) * safeLimit;
+
+    const data = await this.commentModel
+      .find(filter)
+      .sort({ createdAt: sortOrder === 'desc' ? 1 : -1 })
+      .skip(skip)
+      .limit(safeLimit)
+      .exec();
+
+
+    return {
+      data,
+      total,
+      page: safePage,
+      limit: safeLimit,
+      totalPages,
+    };
+  }
 
   async findOne(id: string): Promise<Comment> {
     return this.commentModel.findById(id).exec();
@@ -140,7 +141,9 @@ export class CommentService {
 
   async update(id: string, updateCommentDto: Partial<Comment>): Promise<Comment> {
     if (updateCommentDto.task) {
-      await validateTaskId(this.taskService, updateCommentDto.task.toString());
+      const TaskData = await validateTaskId(this.taskService, updateCommentDto.task.toString());
+      // Ensure project field is consistent with task's project
+      // updateCommentDto.project = TaskData.project;
     }
     return this.commentModel
       .findByIdAndUpdate(id, updateCommentDto, { new: true })
@@ -155,21 +158,24 @@ export class CommentService {
     return this.commentModel.find({ created_by: userId }).exec();
   }
 
-  async search(keyword: string, userId: string) {
+  async search(keyword: string, projectIds: string[]) { // Ensure projectIds is an array of strings
     const regex = new RegExp(keyword, "i");
     const filters: any = {
       $and: [
         {
+          project: { $in: projectIds.map(id => new Types.ObjectId(id)) }
+        },
+        {
           $or: [
-            { content: { $regex: regex } },
+            { content: { $regex: regex } }, // Use regex for content search
           ],
         },
       ],
     };
     return this.commentModel
       .find(filters)
-      .sort({ createdAt: -1, updatedAt: -1 }) // Most recent first
-      .limit(10)
+      .sort({ createdAt: -1, updatedAt: -1 }) // Sort by createdAt and updatedAt in descending order
+      .limit(10) // Limit results to 10
       .exec();
   }
 }
