@@ -24,9 +24,9 @@
   line-height: 1.2;
 }
 
-.commentSection .ql-editor p{
+/* .commentSection .ql-editor p{
   display: none !important;
-}
+} */
 
 .ql-code-block-container {
   background-color: #262624;
