@@ -33,6 +33,8 @@ export default function ProjectCard({
   const avatarUrl = project?.avatar
     ? `${process.env.NEXT_PUBLIC_BACKEND_HOST}${project?.avatar}?v=${version}`
     : ProjectImage.src;
+
+  console.log(avatarUrl, "avatarUrlavatarUrl")
   return (
     <Card className=" !shadow-[0px_2px_36px_rgba(16,21,35,0.07)] py-[16px] px-[10px] rounded-[12px]">
       <CardBody className="p-0">
