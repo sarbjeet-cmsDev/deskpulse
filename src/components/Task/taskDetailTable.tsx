@@ -143,32 +143,11 @@ export default function DetailsTable({
     .map(mapIUserToUser);
 
 
-  //   const fetchUsers = async () => {
-  //   try {
-  //     const data: any = await AdminUserService.getAllUsers();
-  //     const result = await ProjectService.getProjectById(project?._id);
-  //     const userIds = new Set(result?.users || []);
-  //     const matchingUsers = data.data.filter((user: any) =>
-  //       userIds.has(user._id)
-  //     );
-  //     if (matchingUsers.length > 0) setUsers(matchingUsers);
-  //   } catch (err) {
-  //     console.error("Failed to fetch users", err);
-  //   }
-  // };
-  // useEffect(() => {
-  //   if (user?.id) {
-  //     setSelectedUserIds([]);
-  //     // fetchKanbonList([]);
-  //   }
-  //   fetchUsers();
-  // }, [user?.id]);
-
   return (
     <div>
       <ul className="mt-[24px]">
         <li className="">
-          <div className="flex items-center gap-2 justify-between">
+          <div className="flex items-center gap-2">
             <div className="flex items-center gap-4 w-[35%]">
               <svg
                 width="20"
