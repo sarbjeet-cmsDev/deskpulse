@@ -75,22 +75,17 @@ export class TaskController {
   @Get("assigned-to")
   async findAssignedTasks(
     @Query("userIds") userIds?: string,
-    @Query("page") page: string = "1",
+    @Query("page") page: number = 1,
     @Query("limit") limit: string = "10",
     @Query("start") start?: string,
     @Query("end") end?: string
   ): Promise<{ data: Task[]; total: number; page: number; limit: number }> {
-    const pageNumber = parseInt(page, 10);
     const limitNumber = parseInt(limit, 10);
-
-    // if (!userIds) {
-    //   return this.taskService.findAll(pageNumber, limitNumber, start, end);
-    // }
 
     const userIdArray = userIds.split(",");
     return this.taskService.findByAssignedToUser(
       userIdArray,
-      pageNumber,
+      page,
       limitNumber,
       start,
       end

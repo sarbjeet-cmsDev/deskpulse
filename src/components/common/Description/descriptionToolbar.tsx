@@ -149,6 +149,12 @@ const DescriptionInputToolbar = ({
           image: imageHandler,
         },
       },
+       mention: {
+        mentionDenotationChars: ["@"],
+        source: mentionSource,
+        allowedChars: /^[A-Za-z\s]*$/,
+        showDenotationChar: true,
+      },
     }),
     []
   );

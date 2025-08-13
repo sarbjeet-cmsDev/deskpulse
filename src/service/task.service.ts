@@ -98,17 +98,8 @@ async getTaskByCode(code: string): Promise<ITask> {
     });
     return res.data;
   },
-  // Get tasks assigned to a user
-  // async getTasksByAssignedUser(userIds: string): Promise<ITaskResponse> {
-  //   const res = await axiosClient.get(`${API_URL}/tasks/assigned-to`, {
-  //     params: { userIds},
-  //   });
-  //   return res.data;
-  // },
 
-  // task.service.ts (frontend)
-
-async getTasksByAssignedUser(userIds: string, params?: { start?: string; end?: string }): Promise<ITaskResponse> {
+async getTasksByAssignedUser(userIds: string, params?: { start?: string; end?: string, page?: number; }): Promise<ITaskResponse> {
   const res = await axiosClient.get(`${API_URL}/tasks/assigned-to`, {
     params: { userIds, ...params },
   });

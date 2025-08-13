@@ -60,52 +60,8 @@ const TimeSheetList = () => {
     start: today(getLocalTimeZone()).add({ weeks: -1 }),
     end: today(getLocalTimeZone()).add({ weeks: 1 }),
   });
+  
   const [showCalendar, setShowCalendar] = useState(false);
-
-  // const fetchTasks = async (userIds: string[]) => {
-  //    if (!selectedRange.start || !selectedRange.end) return;
-
-  //         const startDate = dayjs(selectedRange.start.toDate(getLocalTimeZone()));
-  //         const endDate = dayjs(selectedRange.end.toDate(getLocalTimeZone()));
-  //   try {
-  //     let taskRes;
-
-  //     if (userIds.length > 0) {
-  //       taskRes = await TaskService.getTasksByAssignedUser(userIds.join(","), {
-  //       start: startDate.format("YYYY-MM-DD"),
-  //       end: endDate.format("YYYY-MM-DD"),
-  //     });
-  //       setTasks(
-  //         (taskRes.data || []).map((task) => ({
-  //           ...task,
-  //           totaltaskminutes: task.totaltaskminutes ?? 0,
-  //         }))
-  //       );
-  //       setTotalRecords(taskRes.total || 0);
-  //       setTotalPages(Math.ceil((taskRes.total || 0) / limit));
-  //     } else {
-  //       const res = await AdminTaskService.getAllTasksDetails({
-  //          start: startDate.format("YYYY-MM-DD"),
-  //         end: endDate.format("YYYY-MM-DD"),
-  //         page,
-  //         limit,
-  //         keyword: debouncedSearch,
-  //         sortOrder,
-  //       });
-  //       setTasks(
-  //         (res.data || []).map((task) => ({
-  //           ...task,
-  //           totaltaskminutes: task.totaltaskminutes ?? 0,
-  //         }))
-  //       );
-  //       setTotalRecords(res.total || 0);
-  //       setTotalPages(res.totalPages || 1);
-  //       setLimit(res.limit || limit);
-  //     }
-  //   } catch (error) {
-  //     console.error("Failed to load tasks:", error);
-  //   }
-  // };
 
   const fetchTasks = async (userIds: string[]) => {
     if (!selectedRange.start || !selectedRange.end) return;
@@ -114,12 +70,13 @@ const TimeSheetList = () => {
     const endDate = dayjs(selectedRange.end.toDate(getLocalTimeZone()));
 
     try {
-      let taskRes;
+      // let taskRes;
 
       if (userIds.length > 0) {
-        taskRes = await TaskService.getTasksByAssignedUser(userIds.join(","), {
+       const taskRes = await TaskService.getTasksByAssignedUser(userIds.join(","), {
           start: startDate.format("YYYY-MM-DD"),
           end: endDate.format("YYYY-MM-DD"),
+          page,
         });
 
         setTasks(
@@ -129,7 +86,8 @@ const TimeSheetList = () => {
           }))
         );
         setTotalRecords(taskRes.total || 0);
-        setTotalPages(Math.ceil((taskRes.total || 0) / limit));
+        setTotalPages(Math.ceil((taskRes.total || 0) / limit) || 1);
+        setLimit(taskRes.limit || limit);
       } else {
         const res = await AdminTaskService.getAllTasksDetails({
           start: startDate.format("YYYY-MM-DD"),
@@ -139,6 +97,7 @@ const TimeSheetList = () => {
           keyword: debouncedSearch,
           sortOrder,
         });
+      
 
         setTasks(
           (res.data || []).map((task) => ({
@@ -213,6 +172,8 @@ const TimeSheetList = () => {
       actions: [{ title: "Delete" }],
     };
   });
+
+
 
   const formattedRange = `${dayjs(
     selectedRange.start.toDate(getLocalTimeZone())

@@ -30,7 +30,7 @@ export default function PerformancePreview() {
     datasets: [],
   });
 
-  console.log("users in admin", users);
+  
 
   const [selectedRange, setSelectedRange] = useState<{
     start: any;
@@ -45,7 +45,6 @@ export default function PerformancePreview() {
   useEffect(() => {
     async function fetchUsers() {
       const res = await AdminUserService.getOnlyUsers();
-      console.log("res in admin performance", res);
       setUsers(res);
       if (res.length > 0) {
         setSelectedUserIds([res[0]._id]);
@@ -81,8 +80,6 @@ export default function PerformancePreview() {
         start: startDate.format("YYYY-MM-DD"),
         end: endDate.format("YYYY-MM-DD"),
       });
-
-      console.log("resultdddddd", result);
 
       if (
         !Array.isArray(result) ||
