@@ -29,7 +29,7 @@ interface DetailsProps {
   };
   taskId: string;
   task: any;
-  
+
 
   onTaskUpdate: () => void;
 }
@@ -86,7 +86,7 @@ export default function DetailsTable({
       setAssignedUser([user as IUser]);
       fetchKanbanList(task?.project);
       if (onTaskUpdate) onTaskUpdate();
-    } catch (error) {}
+    } catch (error) { }
   };
 
   useEffect(() => {
@@ -168,7 +168,7 @@ export default function DetailsTable({
     <div>
       <ul className="mt-[24px]">
         <li className="">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 justify-between">
             <div className="flex items-center gap-4 w-[35%]">
               <svg
                 width="20"
@@ -340,7 +340,7 @@ export default function DetailsTable({
               </span>
             </div>
             <div className="flex items-center gap-2">
-              
+
               <button
                 onClick={() => setIsPriorityModalOpen(true)}
                 className="bg-theme-primary text-white text-[12px] px-[9px] py-[4px] rounded-[8px] font-500"

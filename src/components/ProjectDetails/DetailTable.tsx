@@ -47,7 +47,7 @@ export default function Details({
     dueDate,
     attachments = [],
   } = project || [];
- 
+
   const handleOpenModal = () => {
     setIsModalOpen(true);
   };
@@ -60,7 +60,7 @@ export default function Details({
     try {
       await AdminProjectService.updateProject(projectId, {
         users: updatedIds,
-        is_active:true,
+        is_active: true,
       });
       setTeamUserIds(updatedIds);
       onTaskUpdate?.();
@@ -75,7 +75,7 @@ export default function Details({
     <div>
       <ul className="mt-[24px]">
         <li className="">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 justify-between">
             <div className="flex items-center gap-4 w-[35%]">
               <svg
                 width="20"
@@ -114,7 +114,7 @@ export default function Details({
                 />
               )}
               <MultiSelectUserModal
-               activeUsers={user}
+                activeUsers={user}
                 isOpen={isUserModalOpen}
                 onClose={() => setIsUserModalOpen(false)}
                 selectedUserIds={teamUserIds}
