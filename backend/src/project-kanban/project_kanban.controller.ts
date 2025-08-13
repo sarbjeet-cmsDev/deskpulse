@@ -2,11 +2,11 @@ import {
   Controller,
   Post,
   Get,
-  Patch,
   Delete,
   Param,
   Body,
   UseGuards,
+  Put,
 } from "@nestjs/common";
 import { ProjectKanbanService } from "./project_kanban.service";
 import { CreateKanbanDto, UpdateKanbanDto } from "./project_kanban.dto";
@@ -40,7 +40,7 @@ export class ProjectKanbanController {
     };
   }
   @UseGuards(JwtAuthGuard)
-  @Patch(":id")
+  @Put(":id")
   async update(
     @Param("id") id: string,
     @Body() dto: UpdateKanbanDto

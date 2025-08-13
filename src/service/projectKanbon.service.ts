@@ -30,7 +30,7 @@ export const ProjectKanbon = {
 
   async updateKanbanList(data: any, id: any) {
     try {
-      const response = await axiosClient.patch(
+      const response = await axiosClient.put(
         `${API_URL}/project-kanban/${id}`,
         data
       );
