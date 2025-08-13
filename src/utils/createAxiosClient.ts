@@ -38,6 +38,9 @@ export class NotFoundException extends Error {
   }
 }
 
+
+
+
 /**
  * Axios Client Options
  */
@@ -48,19 +51,27 @@ interface AxiosClientOptions {
   onSuccess?: (response: AxiosResponse) => void; // Success callback
 }
 
+
+
+/**
+ * Axios Client Factory
+ */
+export function createAxiosClient(options: AxiosClientOptions = {}) {
+
+
+
 /**
  * Default Toast on Success
  */
+
+
 const defaultOnSuccess = (response: AxiosResponse) => {
-  // const msg =
   if (
     typeof response.data === "object" &&
     response.data &&
     "message" in response.data &&
     response.data.message
-    // ? response.data.message
-    // : "Request Successful!";
-  )
+  ) {
     Swal.fire({
       toast: true,
       position: "bottom-end",
@@ -70,15 +81,17 @@ const defaultOnSuccess = (response: AxiosResponse) => {
       timer: 2500,
       timerProgressBar: true,
     });
+  }
 };
 
-/**
- * Axios Client Factory
- */
-export function createAxiosClient(options: AxiosClientOptions = {}) {
-  const {
 
-    baseURL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3001/api",
+
+
+
+
+  const {
+    baseURL = process.env.NEXT_PUBLIC_BACKEND_URL ||
+      "http://localhost:3001/api",
 
     withCreds = false,
     getToken,
@@ -121,6 +134,17 @@ export function createAxiosClient(options: AxiosClientOptions = {}) {
           typeof data === "object" && data && "message" in data
             ? (data as any).message
             : error.message;
+
+        if (status === 401) {
+          store.dispatch(signOut());
+
+          if (typeof window !== "undefined") {
+            window.location.href = "/auth/login";
+          }
+
+          return Promise.reject(error);
+        }
+
         SweetToast.error(msg);
         switch (status) {
           case 400:
