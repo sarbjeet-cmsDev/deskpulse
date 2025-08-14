@@ -16,8 +16,18 @@ export const projectCreateSchema = z.object({
   project_manager: z.string().optional(),
   avatar: z.string().optional(),
   notes: z.string().optional(),
-  description: z.string().nonempty("Description is required"),
-  deploy_instruction: z.string().optional(),
+description: z
+  .string()
+  .refine(
+    (val) => {
+      const hasText = val.replace(/<[^>]*>/g, "").trim() !== "";
+      const hasImage = /<img\s+[^>]*src=["'][^"']+["']/i.test(val);
+      return hasText || hasImage;
+    },
+    { message: "Description is required" }
+  ),
+
+    deploy_instruction: z.string().optional(),
   critical_notes: z.string().optional(),
   creds: z.string().optional(),
   additional_information: z.string().optional(),

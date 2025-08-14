@@ -246,6 +246,7 @@ export default function CommentInputSection({
       setContent("");
       onCommentCreated();
       if (onCancel) onCancel();
+
     } catch (err) {
       console.error("Create comment failed:", err);
     } finally {
@@ -291,6 +292,20 @@ export default function CommentInputSection({
       wrapperRef.current?.classList.remove("show-toolbar");
     }
   };
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+        wrapperRef.current.classList.remove("show-toolbar");
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   const handleExternalSubmit = async () => {
     const editor = quillRef.current?.getEditor();
     const html = editor?.root.innerHTML || "";
@@ -377,7 +392,9 @@ export default function CommentInputSection({
 
         {isButton === true ? (
           <Button
+            onFocus={handleFocus}
             onPress={() => {
+
               if (onClick) {
                 if (title !== "Description") {
                   if (!content || stripHtml(content) === "") {

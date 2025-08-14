@@ -1,18 +1,22 @@
 "use client";
 import AvatarList from "@/components/IndexPage/avatarlist";
 import DatePickerInput from "@/components/ProjectDetails/Datepicker";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import MentionUserListModal from "@/components/MentionUserListBox";
 import TaskService, { ITask } from "@/service/task.service";
 import UserService from "@/service/user.service";
 import { IUser } from "@/service/user.service";
-import TaskStatusUpdateModal from "./TaskStatusUpdateModal";
 import { ProjectKanbon } from "@/service/projectKanbon.service";
 import TaskPropertyUpdateModal from "./TaskStatusUpdateModal";
-import AdminUserService from "@/service/adminUser.service";
-import ProjectService from "@/service/project.service";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import { CiEdit } from "react-icons/ci";
+import { Input } from "../Form/Input";
+import { Button } from "../Form/Button";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { updateEstimateSchema } from "../validation/userValidation";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 interface DetailsProps {
   project: {
@@ -29,7 +33,7 @@ interface DetailsProps {
   };
   taskId: string;
   task: any;
-
+  fetchTask?: any
 
   onTaskUpdate: () => void;
 }
@@ -53,12 +57,14 @@ export enum PriorityEnum {
   MEDIUM = "medium",
   HIGH = "high",
 }
+type EstimateInput = z.infer<typeof updateEstimateSchema>;
 
 export default function DetailsTable({
   project,
   taskId,
   task,
   onTaskUpdate,
+  fetchTask
 }: DetailsProps) {
   const [email, setEmail] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -68,8 +74,9 @@ export default function DetailsTable({
   const [users, setUsers] = useState([]);
   const user: any = useSelector((state: RootState) => state.auth.user);
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
-
+  const [editEstimate, setEditEstimate] = useState(false)
   const [assignedUser, setAssignedUser] = useState<IUser[]>([]);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
 
   const handleOpenModal = () => {
@@ -141,8 +148,40 @@ export default function DetailsTable({
   const safeUsers: User[] = assignedUser
     .filter((user) => !!user.firstName && !!user.lastName)
     .map(mapIUserToUser);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<EstimateInput>({
+    resolver: zodResolver(updateEstimateSchema),
+    defaultValues: {
+      estimated_time: task?.estimated_time
+    }
+  });
 
+  const onSubmit = (async (data: any) => {
+    await TaskService.updateTask(taskId, data);
+    setEditEstimate(false)
+    fetchTask(taskId)
+    console.log(data)
+  })
 
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
+        setEditEstimate(false);
+      }
+    }
+    if (editEstimate) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [editEstimate]);
   return (
     <div>
       <ul className="mt-[24px]">
@@ -321,7 +360,7 @@ export default function DetailsTable({
             <div className="flex items-center gap-2">
 
               <button
-                onClick={() => setIsPriorityModalOpen(true)}
+                onClick={() => user?.role === "admin" && setIsPriorityModalOpen(true)}
                 className="bg-theme-primary text-white text-[12px] px-[9px] py-[4px] rounded-[8px] font-500"
               >
                 {task?.priority?.toUpperCase()}
@@ -364,8 +403,31 @@ export default function DetailsTable({
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="py-[2px] px-[8px] rounded-[8px] text-[15px] leading-[16px]">
-                {formatMinutes(task?.estimated_time)}
+
+              <div className="py-[2px]  rounded-[8px] text-[15px] leading-[16px] flex gap-4" ref={dropdownRef}>
+
+                {editEstimate ? (
+                  <form onSubmit={handleSubmit(onSubmit)}>
+                    <div className="flex gap-2">
+
+                      <Input  {...register("estimated_time")} min={1} className="w-[100px] cursor-pointer" type="number" defaultValue={task?.estimated_time} />
+                      <Button type="submit" className="bg-theme-primary">Update</Button>
+                    </div>
+
+                    {errors.estimated_time && (
+                      <p className="text-xs text-red-500 mt-2 ml-1">{errors.estimated_time.message}</p>
+                    )}
+                  </form>
+                ) : (
+                  <div>
+
+                    {formatMinutes(task?.estimated_time)}
+                  </div>
+                )}
+                {!editEstimate && user?.role === "admin" && (
+
+                  <CiEdit size={20} className="cursor-pointer" onClick={() => setEditEstimate(true)} />
+                )}
               </div>
             </div>
           </div>

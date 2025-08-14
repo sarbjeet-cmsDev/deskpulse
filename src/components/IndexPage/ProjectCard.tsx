@@ -47,7 +47,7 @@ export default function ProjectCard({
             <Image
               src={avatarUrl}
               alt="project-image"
-              className="rounded-[8px]"
+              className="rounded-[8px] min-w-[100%]"
               width={1200}
               height={100}
               // fill

@@ -100,7 +100,7 @@ const DescriptionInputToolbar = ({
     ) => {
       try {
         const users: IUser[] = await AdminUserService.searchUsers(searchTerm);
-         const filteredUsers = users.filter(user =>
+        const filteredUsers = users.filter(user =>
           `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
         );
         const list = filteredUsers.map((user) => ({
@@ -122,9 +122,12 @@ const DescriptionInputToolbar = ({
 
   const handleContentChange = (val: string) => {
     setContent(val);
-    const cleanVal = stripHtml(val) ? val : "";
-    onChange?.(cleanVal);
+    const hasText = stripHtml(val) !== "";
+    const hasImage = /<img\s+[^>]*src=["'][^"']+["']/i.test(val);
+
+    onChange?.(hasText || hasImage ? val : "");
   };
+
 
   const handleFocus = () => setIsFocused(true);
   const handleBlur = (e: React.FocusEvent) => {
@@ -136,7 +139,7 @@ const DescriptionInputToolbar = ({
 
   const modules = useMemo(
     () => ({
-      syntax:{hljs},
+      syntax: { hljs },
       toolbar: {
         container: [
           [{ header: [1, 2, false] }],
@@ -149,7 +152,7 @@ const DescriptionInputToolbar = ({
           image: imageHandler,
         },
       },
-       mention: {
+      mention: {
         mentionDenotationChars: ["@"],
         source: mentionSource,
         allowedChars: /^[A-Za-z\s]*$/,
@@ -197,13 +200,13 @@ const DescriptionInputToolbar = ({
           className="description-content"
         />
       </div>
-       {lightboxOpen && lightboxImage && (
-              <ImageLightbox
-                open={lightboxOpen}
-                imageUrl={lightboxImage}
-                onClose={() => setLightboxOpen(false)}
-              />
-            )}
+      {lightboxOpen && lightboxImage && (
+        <ImageLightbox
+          open={lightboxOpen}
+          imageUrl={lightboxImage}
+          onClose={() => setLightboxOpen(false)}
+        />
+      )}
     </div>
   );
 };

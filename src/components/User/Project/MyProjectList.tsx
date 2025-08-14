@@ -103,7 +103,7 @@ export default function MyProjects() {
                 <p>No projects found.</p>
               ) : (
                 projects.map((project) => (
-                  <Link key={project._id} href={`/project/${project.code}`}>
+                  <Link key={project._id} href={`/project/${project.code}`} className="w-full">
                     <ProjectCard project={project}
                       kanban={projectKanbanMap[project._id]?.kanbans || []}
                       taskCounts={projectKanbanMap[project._id]?.counts || {}}

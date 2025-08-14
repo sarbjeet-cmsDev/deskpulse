@@ -226,3 +226,17 @@ export const userLoginSchema = z.object({
     .nonempty("Password is required"),
   // .min(6, 'Password must be at least 6 characters'),
 });
+
+
+export const updateEstimateSchema=z.object({
+ estimated_time: z.coerce
+  .number({
+    required_error: "EstimateTime is required",
+    invalid_type_error: "EstimateTime must be a number",
+  })
+  .min(1, { message: "EstimateTime must be greater than 0" })
+});
+
+export const updateTaskTitleSchema=z.object({
+ title: z.string().nonempty("Title is required")
+});

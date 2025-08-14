@@ -28,7 +28,7 @@ export const ProjectKanbon = {
     }
   },
 
-  async updateKanbanList(data: any, id: any) {
+  async updateKanbanList(data: any, id?: any) {
     try {
       const response = await axiosClient.put(
         `${API_URL}/project-kanban/${id}`,
@@ -56,6 +56,20 @@ export const ProjectKanbon = {
     }
   },
 
+async updateKanbanSortOrder(data: any, id?: any) {
+    try {
+      const response = await axiosClient.put(
+        `${API_URL}/admin/project/${id}/kanban/order`,
+        data
+      );
+      return response.data;
+    } catch (error: any) {
+      console.error("Error creating Kanban list:", error);
+      throw new Error(
+        error?.response?.data?.message || "Failed to create Kanban list"
+      );
+    }
+  }
   // async UpdateKanbanList(data: any, id: string) {
   //   const res = await axiosClient.patch(`/api/project-kanban/${id}`, data);
   //   return res.data;

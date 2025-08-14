@@ -3,7 +3,7 @@ import { H5 } from "@/components/Heading/H5";
 import { P } from "@/components/ptag";
 import Image from "next/image";
 import leftarrow from "@/assets/images/back.png";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import TaskService, { ITask } from "@/service/task.service";
 import Link from "next/link";
@@ -24,11 +24,19 @@ import TaskChecklist from "@/components/TaskChecklist/taskChecklist";
 import { ITaskChecklist } from "@/types/taskchecklist.interface";
 import DropdownOptions from "@/components/DropdownOptions";
 import DetailsTable from "@/components/Task/taskDetailTable";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { updateTaskTitleSchema } from "@/components/validation/userValidation";
+import { z } from "zod";
+import { Input } from "@/components/Form/Input";
+import { Button } from "@heroui/button";
+import { CiEdit } from "react-icons/ci";
 
 
 interface Props {
   id: string;
 }
+type TaskTitleInput = z.infer<typeof updateTaskTitleSchema>;
 
 export default function TaskDetails({ id }: Props) {
   const params = useParams();
@@ -45,9 +53,9 @@ export default function TaskDetails({ id }: Props) {
   const [taskId, setTaskId] = useState<any>(null);
   const [comments, setComments] = useState<IComment[]>([]);
   const [commentTotal, setCommentTotal] = useState<number>(0);
-  const [commentPage, setCommentPage] = useState<number>(1);
-  const [commentLimit, setCommentLimit] = useState<number>(5);
   const [activeEditId, setActiveEditId] = useState<string | null>(null);
+  const [editTaskTitle, setEditTaskTitle] = useState(false)
+  const editTitleRef = useRef<HTMLDivElement>(null);
 
   const user: IUserRedux | null = useSelector(
     (state: RootState) => state.auth.user
@@ -170,6 +178,41 @@ export default function TaskDetails({ id }: Props) {
       }
     };
   };
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<TaskTitleInput>({
+    resolver: zodResolver(updateTaskTitleSchema),
+    defaultValues: {
+      title: task?.title
+    }
+  });
+
+  const onSubmit = (async (data: any) => {
+    await TaskService.updateTask(taskId, data);
+    setEditTaskTitle(false)
+    fetchTask(taskId)
+    console.log(data)
+  })
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (
+        editTitleRef.current &&
+        !editTitleRef.current.contains(e.target as Node)
+      ) {
+        setEditTaskTitle(false);
+      }
+    }
+    if (editTaskTitle) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [editTaskTitle]);
+  console.log(user, "useruser")
   return (
     <div className="max-w-6xl mx-auto">
       <div className="main-content">
@@ -181,7 +224,35 @@ export default function TaskDetails({ id }: Props) {
                   <Image src={leftarrow} alt="Logo" width={16} height={16} />
                 </Link>
               </div>
-              <H5 className="w-[98%] text-center">{task?.title}</H5>
+              <div ref={editTitleRef} className="flex">
+
+                {editTaskTitle ? (
+
+                  <form onSubmit={handleSubmit(onSubmit)}>
+                    <div className="flex gap-2 my-7 w-[600px]">
+
+                      <Input  {...register("title")} className="w-full cursor-pointer" defaultValue={task?.title} />
+                      <Button type="submit" className="bg-theme-primary">Update</Button>
+                    </div>
+
+                    {errors.title && (
+                      <p className="text-xs text-red-500 mt-2 ml-1">{errors.title.message}</p>
+                    )}
+                  </form>
+                ) : (
+                  <div className="flex items-center gap-2">
+
+                    <H5 className="w-[98%] text-left">{task?.title}</H5>
+
+                    {!editTaskTitle && user?.role === "admin" && (
+
+                      <CiEdit size={20} className="cursor-pointer" onClick={() => setEditTaskTitle(true)} />
+                    )}
+                  </div>
+                )}
+              </div>
+
+
             </div>
             <div className="">
               <DropdownOptions
@@ -225,6 +296,7 @@ export default function TaskDetails({ id }: Props) {
               taskId={taskId}
               task={task}
               // projectId={task?.project}
+              fetchTask={fetchTask}
               onTaskUpdate={() => fetchTask(taskId)}
             />
 

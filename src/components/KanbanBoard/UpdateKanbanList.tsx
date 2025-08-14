@@ -167,11 +167,21 @@ export const UpdateKanbanList = ({
     const reordered = arrayMove(kanbanList, oldIndex, newIndex);
     setKanbanList(reordered);
 
-    
-    for (let i = 0; i < reordered.length; i++) {
-      await ProjectKanbon.updateKanbanList({ sort_order: i }, reordered[i]._id);
+    const payload = {
+      data: reordered.map((item, i) => ({
+        _id: item._id,
+        sort_order: i
+      }))
+    };
+
+    try {
+      await ProjectKanbon.updateKanbanSortOrder(payload, projectId);
+    } catch (error) {
+      console.error(error);
     }
   };
+
+
 
   return (
     <div className="container mx-auto max-w-3xl">
@@ -192,7 +202,7 @@ export const UpdateKanbanList = ({
                 <div className="w-full flex-1">
                   <Input
                     value={editedTitles[item._id] || ""}
-                    onChange={(e) => {handleTitleChange(item._id, e.target.value); setActiveEditId(item._id);}}
+                    onChange={(e) => { handleTitleChange(item._id, e.target.value); setActiveEditId(item._id); }}
                     onFocus={() => setActiveEditId(item._id)}
                     onBlur={() => setActiveEditId(null)}
                     className="w-full"
@@ -207,7 +217,7 @@ export const UpdateKanbanList = ({
                     onPress={() => handleEdit(item._id)}
                     className="btn-primary"
                   >
-                   {activeEditId === item._id ? "Update" : "Edit"}
+                    {activeEditId === item._id ? "Update" : "Edit"}
                   </Button>
                   <Button
                     onPress={() => handleDelete(item._id)}
