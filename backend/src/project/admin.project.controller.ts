@@ -104,8 +104,7 @@ export class AdminProjectController {
     };
   }
 
-  @Put("project/:projectId/kanban/order")
-  @UseGuards(JwtAuthGuard)
+  @Put(":projectId/kanban/order")
   async updateKanbanOrder(
     @Param("projectId") projectId: string,
     @Body() updateProjectKanbanOrderDto: UpdateProjectKanbanOrderDto
