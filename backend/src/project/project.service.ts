@@ -9,7 +9,7 @@ import { Project, ProjectDocument } from "./project.schema";
 import { ProjectKanbanService } from "../project-kanban/project_kanban.service";
 import { UserService } from "src/user/user.service";
 import { EventEmitter2 } from "@nestjs/event-emitter";
-import { CreateProjectDto, UpdateProjectDto } from "./project.dto";
+import { CreateProjectDto, UpdateProjectDto, UpdateProjectKanbanOrderDto } from "./project.dto";
 import { log } from "console";
 
 @Injectable()
@@ -19,7 +19,7 @@ export class ProjectService {
     private readonly kanbanService: ProjectKanbanService,
     private eventEmitter: EventEmitter2,
     private readonly userservices: UserService
-  ) {}
+  ) { }
   private sanitizeObjectIds(payload: any) {
     const keysToSanitize = [
       "team_leader",
@@ -250,7 +250,7 @@ export class ProjectService {
     const regex = new RegExp(keyword, "i");
     const filters: any = {
       $and: [
-        { users: userId }, 
+        { users: userId },
         {
           $or: [
             { code: { $regex: regex } },
@@ -262,26 +262,26 @@ export class ProjectService {
     };
     return this.projectModel
       .find(filters)
-      .sort({ createdAt: -1, updatedAt: -1 }) 
+      .sort({ createdAt: -1, updatedAt: -1 })
       .exec();
   }
 
   async findProjectUsers(projectId: string, keyword?: string): Promise<Project> {
     const project = await this.projectModel
       .findById(projectId)
-       .populate({
-      path: "users",
-      select: "firstName lastName email",
-      match: keyword
-        ? {
+      .populate({
+        path: "users",
+        select: "firstName lastName email",
+        match: keyword
+          ? {
             $or: [
               { firstName: { $regex: keyword, $options: "i" } },
               { lastName: { $regex: keyword, $options: "i" } },
               { email: { $regex: keyword, $options: "i" } },
             ],
           }
-        : undefined,
-    })
+          : undefined,
+      })
       .exec();
 
     if (!project) {
@@ -290,7 +290,34 @@ export class ProjectService {
 
     return {
       _id: project._id,
-    users: project.users,
+      users: project.users,
     } as any;
   }
+
+
+  async updateKanbanOrder(projectId: string, dto: UpdateProjectKanbanOrderDto) {
+    const project = await this.projectModel.findById(projectId);
+    if (!project) {
+      throw new NotFoundException(`Project with ID ${projectId} not found`);
+    }
+
+    for (const item of dto.data) {
+      const kanbanColumn = await this.kanbanService.findById(item._id);
+      if (!kanbanColumn) {
+        throw new NotFoundException(`Kanban column with ID ${item._id} not found`);
+      }
+    }
+
+    const updates = dto.data.map(item =>
+      this.kanbanService.update(item._id, { sort_order: item.sort_order })
+    );
+    await Promise.all(updates);
+
+    return {
+      message: "Project Kanban order updated successfully!",
+    };
+  }
+
+
+
 }

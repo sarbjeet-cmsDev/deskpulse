@@ -38,6 +38,14 @@ export class ProjectKanbanService {
     );
   }
 
+  async findById(id: string) {
+  const column = await this.kanbanModel.findById(id);
+  if (!column) {
+    throw new NotFoundException(`Kanban column with ID ${id} not found`);
+  }
+  return column;
+}
+
   async findByProject(projectId: string): Promise<ProjectKanbanDocument[]> {
     return this.kanbanModel.find({ project: projectId }).sort({ sort_order: 1 });
   }

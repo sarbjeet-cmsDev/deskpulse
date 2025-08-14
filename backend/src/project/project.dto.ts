@@ -7,6 +7,8 @@ import {
   IsNumber,
   IsArray,
   IsMongoId,
+  ValidateNested,
+  Min,
 } from "class-validator";
 import { Schema as MongooseSchema, Types } from "mongoose";
 
@@ -99,3 +101,20 @@ export class CreateProjectDto {
 }
 
 export class UpdateProjectDto extends CreateProjectDto {}
+
+
+class KanbanSortItemDto {
+  @IsString()
+  _id: string;
+
+  @IsNumber()
+  @Min(0)
+  sort_order: number;
+}
+
+export class UpdateProjectKanbanOrderDto {
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => KanbanSortItemDto)
+  data: KanbanSortItemDto[];
+}

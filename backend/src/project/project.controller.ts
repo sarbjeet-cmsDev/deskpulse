@@ -101,6 +101,8 @@ export class ProjectController {
     };
   }
 
+ 
+
   @Post("upload-avatar/:projectId")
   @UseInterceptors(FileInterceptor("file", multerOptions))
   async uploadProjectAvatar(

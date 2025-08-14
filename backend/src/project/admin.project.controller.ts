@@ -10,7 +10,7 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { ProjectService } from "./project.service";
-import { CreateProjectDto, UpdateProjectDto } from "./project.dto";
+import { CreateProjectDto, UpdateProjectDto, UpdateProjectKanbanOrderDto } from "./project.dto";
 import { Project } from "./project.interface";
 import { UseInterceptors, UploadedFile } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
@@ -18,7 +18,7 @@ import { multerOptions } from "../shared/multer.config";
 import { JwtAuthGuard } from "src/guard/jwt-auth.guard";
 
 @Controller("api/admin/project")
-// @UseGuards(JwtAuthGuard)
+
 export class AdminProjectController {
   constructor(private readonly projectService: ProjectService) {}
 
@@ -101,6 +101,18 @@ export class AdminProjectController {
     await this.projectService.remove(id);
     return {
       message: "Project deleted successfully!",
+    };
+  }
+
+  @Put("project/:projectId/kanban/order")
+  @UseGuards(JwtAuthGuard)
+  async updateKanbanOrder(
+    @Param("projectId") projectId: string,
+    @Body() updateProjectKanbanOrderDto: UpdateProjectKanbanOrderDto
+  ): Promise<any> {
+    await this.projectService.updateKanbanOrder(projectId, updateProjectKanbanOrderDto);
+    return {
+      message: "Project status updated successfully!",
     };
   }
 }
