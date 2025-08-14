@@ -129,6 +129,7 @@ export class CommentService {
         return {
           ...comment,
           created_by: userDetails?.username, // Replace ID with full user details
+           UserId: userDetails?._id, // Replace ID with full user details
         };
       })
     );

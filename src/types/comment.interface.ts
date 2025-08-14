@@ -8,6 +8,7 @@ export interface IComment {
   mentioned_users: any;
   createdAt?: string;
   updatedAt?: string;
+  UserId?:any
 }
 
 export interface CreateCommentDto {

@@ -10,6 +10,9 @@ import { Button } from "@/components/Form/Button";
 import CommentInputSection from "@/components/Comment/commentSection";
 import { deleteComment } from "@/utils/deleteComment";
 import ShowMoreLess from "../common/ShowMoreLess/ShowMoreLess";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import { useParams } from "next/navigation";
 
 interface CommentProps {
   comments: IComment[];
@@ -22,7 +25,10 @@ export default function CommentList({
   refreshComments,
   fetchComments,
 }: CommentProps) {
-  const step = 5; 
+  const params = useParams();
+  const taskCode = params?.id as string;
+  const userData = useSelector((state: RootState) => state.user.data);
+  const step = 5;
   const [activeReplyId, setActiveReplyId] = useState<string | null>(null);
   const [activeEditId, setActiveEditId] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(step);
@@ -61,9 +67,8 @@ export default function CommentList({
     return (
       <div
         key={comment._id}
-        className={`rounded-xl border p-4 transition-shadow duration-200 ${
-          isChild ? "ml-4 sm:ml-6 md:ml-10" : "mt-5"
-        } bg-gray-50 border-gray-200 hover:shadow-md`}
+        className={`rounded-xl border p-4 transition-shadow duration-200 ${isChild ? "ml-4 sm:ml-6 md:ml-10" : "mt-5"
+          } bg-gray-50 border-gray-200 hover:shadow-md`}
       >
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1">
@@ -121,18 +126,22 @@ export default function CommentList({
 
               {!hasChildren && (
                 <>
-                  <button
-                    onClick={() => setActiveEditId(comment._id)}
-                    className="hover:text-indigo-600 focus:outline-none"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => deleteComment(comment._id, fetchComments)}
-                    className="hover:text-red-600 text-red-500 focus:outline-none"
-                  >
-                    Delete
-                  </button>
+                  {userData?._id === comment?.UserId && (
+                    <>
+                      <button
+                        onClick={() => setActiveEditId(comment._id)}
+                        className="hover:text-indigo-600 focus:outline-none"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => deleteComment(comment._id, fetchComments)}
+                        className="hover:text-red-600 text-red-500 focus:outline-none"
+                      >
+                        Delete
+                      </button>
+                    </>
+                  )}
                 </>
               )}
             </div>
@@ -154,6 +163,8 @@ export default function CommentList({
                   inline
                   isButton={true}
                   title="Comment"
+                  code={taskCode}
+
                 />
               </div>
             )}

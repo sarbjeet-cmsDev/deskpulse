@@ -20,13 +20,13 @@ export default function MyProjects() {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalItems, setTotalItems] = useState<number>(0);
-  const itemsPerPage = 4;
+  const itemsPerPage = 20;
 
   useEffect(() => {
     const loadProjects = async (page: number) => {
       setLoading(true);
       try {
-        const res = await ProjectService.getProjectByUserId(currentPage);
+        const res = await ProjectService.getProjectByUserId(currentPage, itemsPerPage);
         setProjects(res?.data || []);
         setTotalItems(res?.total || 0);
       } catch (error) {
