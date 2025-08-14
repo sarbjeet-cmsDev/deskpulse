@@ -17,6 +17,7 @@ import { RootState, AppDispatch } from "@/store/store";
 import { fetchUserProfile, updateUserAvatar } from "@/store/slices/userSlice";
 import Link from "next/link";
 import Cookies from "js-cookie";
+import { getSocket } from "@/utils/socket"; 
 
 export default function AuthProfileView() {
   const dispatch = useDispatch<AppDispatch>();
@@ -26,6 +27,8 @@ export default function AuthProfileView() {
   const [imageSrc, setImageSrc] = useState<string>(defaultAvatar.src);
 
   const handleLogout = () => {
+      const socket = getSocket();
+     socket.disconnect();
     dispatch(signOut());
     localStorage.removeItem("token");
     localStorage.removeItem("type");
@@ -33,6 +36,7 @@ export default function AuthProfileView() {
 
     Cookies.remove("token");
     Cookies.remove("role");
+
 
     router.push("/auth/login");
   };

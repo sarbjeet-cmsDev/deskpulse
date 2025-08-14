@@ -42,27 +42,24 @@ export default function TaskDetails({ id }: Props) {
   const [timelineTotal, setTimelineTotal] = useState<number>(0);
   const [timelinePage, setTimelinePage] = useState<number>(1);
   const [timelineLimit, setTimelineLimit] = useState<number>(5);
-  const [taskId, setTaskId] = useState<any>(null)
+  const [taskId, setTaskId] = useState<any>(null);
   const [comments, setComments] = useState<IComment[]>([]);
   const [commentTotal, setCommentTotal] = useState<number>(0);
   const [commentPage, setCommentPage] = useState<number>(1);
   const [commentLimit, setCommentLimit] = useState<number>(5);
   const [activeEditId, setActiveEditId] = useState<string | null>(null);
 
-
-
   const user: IUserRedux | null = useSelector(
     (state: RootState) => state.auth.user
   );
   useEffect(() => {
-    const getTaskByCode = (async () => {
+    const getTaskByCode = async () => {
       const result = await TaskService.getTaskByCode(taskCode);
-      setTaskId(result?._id)
+      setTaskId(result?._id);
+    };
 
-    })
-
-    getTaskByCode()
-  }, [taskCode])
+    getTaskByCode();
+  }, [taskCode]);
   const fetchTask = async (id: string) => {
     try {
       const data = await TaskService.getTaskById(id);
@@ -150,7 +147,6 @@ export default function TaskDetails({ id }: Props) {
     fetchComments();
   }, [taskId]);
 
-
   const handleActivityLog = () => {
     router.push(`/task-activitylog/${task?.code}`);
   };
@@ -158,13 +154,17 @@ export default function TaskDetails({ id }: Props) {
   const handleViewKanban = () => {
     router.push(`/project/projectDetail/${task?.project}`);
   };
+ 
 
   const handleUpdateTaskDescription = (id: string) => {
     return async (description: string) => {
+      console.log("hiitt")
       try {
         await TaskService.updateTask(id, {
           description,
         });
+
+    
       } catch (error) {
         console.error(error);
       }
@@ -178,7 +178,6 @@ export default function TaskDetails({ id }: Props) {
             <div className="flex items-center gap-2">
               <div className="w-10">
                 <Link href={`/project/${task?.code?.split("-")[0]}`}>
-
                   <Image src={leftarrow} alt="Logo" width={16} height={16} />
                 </Link>
               </div>
@@ -276,7 +275,6 @@ export default function TaskDetails({ id }: Props) {
                 refreshComments={fetchComments}
                 fetchComments={() => fetchComments()}
               />
-
             </div>
           </div>
         </div>

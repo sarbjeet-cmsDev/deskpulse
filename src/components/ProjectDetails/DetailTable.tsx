@@ -4,13 +4,16 @@ import avatar from "@/assets/images/avt1.jpg";
 import Image from "next/image";
 import DatePickerInput from "@/components/ProjectDetails/Datepicker";
 import { Input } from "../Form/Input";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import MentionUserListModal from "@/components/MentionUserListBox";
 import TaskService, { ITask } from "@/service/task.service";
 import Swal from "sweetalert2";
 import NotificationService from "@/service/notification.service";
 import MultiSelectUserModal from "../Form/MultiSelectUserModal";
 import AdminProjectService from "@/service/adminProject.service";
+import { getSocket } from "@/utils/socket";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 interface DetailsProps {
   project: {
@@ -40,6 +43,10 @@ export default function Details({
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
+
+  const loginUser: any = useSelector((state: RootState) => state.user.data);
+  console.log(loginUser, "loggedIn user Detail");
+
   const {
     team = [],
     leader,
@@ -56,20 +63,45 @@ export default function Details({
     setIsModalOpen(false);
   };
 
+  const socketRef = useRef(getSocket());
+
   const handleUserUpdate = async (updatedIds: string[]) => {
+    console.log(updatedIds, "ids");
     try {
       await AdminProjectService.updateProject(projectId, {
         users: updatedIds,
         is_active: true,
       });
+
+      //socket
+      if (updatedIds?.length) {
+        console.log("hi while update project in task list");
+        if (!socketRef.current.connected) {
+          socketRef.current.connect();
+        }
+        socketRef.current.on("connect", () => {
+          socketRef.current.emit("register-user", loginUser.id); // Send your user ID immediately
+        });
+
+        updatedIds.forEach((id) => {
+          socketRef.current.emit("task-updated", {
+            taskId: "1111",
+            sender: loginUser.firstName + " " + loginUser.lastName,
+            receiverId: id,
+            description: "Assigned You a Project",
+          });
+        });
+
+        console.log(
+          "✅ socket event 'task-updated' hit while assigned user in task"
+        );
+      }
       setTeamUserIds(updatedIds);
       onTaskUpdate?.();
     } catch (err) {
       console.error("Failed to update project users", err);
     }
   };
-
-
 
   return (
     <div>
@@ -99,7 +131,10 @@ export default function Details({
             </div>
             <div className="flex items-center gap-2">
               {user.length === 0 ? (
-                <div className="add-member" onClick={() => setIsUserModalOpen(true)}>
+                <div
+                  className="add-member"
+                  onClick={() => setIsUserModalOpen(true)}
+                >
                   <a
                     href="#"
                     className="text-[#7980ff] border border-[#7980ff] px-[2px] rounded-[2px] text-[10px]"

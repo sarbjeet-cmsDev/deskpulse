@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import { debounce } from "lodash";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,7 +22,9 @@ import leftarrow from "@/assets/images/back.png";
 import { H3 } from "@/components/Heading/H3";
 import DescriptionInputToolbar from "@/components/common/Description/descriptionToolbar";
 import ImageLightbox from "@/components/common/ImagePopUp/ImageLightbox";
-
+import { getSocket } from "@/utils/socket";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 interface Props {
   id: string;
 }
@@ -38,7 +40,7 @@ const ReactSelect = dynamic(() => import("react-select") as any, {
 //   return html.replace(/<[^>]*>/g, "").trim();
 // }
 
-const UpdateProjectForm = ({id}:Props) => {
+const UpdateProjectForm = ({ id }: Props) => {
   const router = useRouter();
   // const { id } = useParams<{ id: string }>();
   const [loading, setLoading] = useState(true);
@@ -49,6 +51,9 @@ const UpdateProjectForm = ({id}:Props) => {
   const [version, setVersion] = useState<number>(Date.now());
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxImage, setLightboxImage] = useState("");
+
+  const user: any = useSelector((state: RootState) => state.user.data);
+  console.log(user, "loggedIn user Detail");
 
   const {
     register,
@@ -102,6 +107,8 @@ const UpdateProjectForm = ({id}:Props) => {
     if (id) fetchData();
   }, [id, reset, router]);
 
+  const socketRef = useRef(getSocket());
+
   const onSubmit = async (data: UpdateProjectInput) => {
     try {
       const formData: any = new FormData();
@@ -120,6 +127,29 @@ const UpdateProjectForm = ({id}:Props) => {
         formData.append("avatar", selectedFile);
       }
       await AdminProjectService.updateProject(id, formData);
+
+      if (data?.users?.length) {
+        console.log("hi while update project");
+        if (!socketRef.current.connected) {
+          socketRef.current.connect();
+        }
+        socketRef.current.on("connect", () => {
+          socketRef.current.emit("register-user", user.id); // Send your user ID immediately
+        });
+        data.users.forEach((id) => {
+          socketRef.current.emit("task-updated", {
+            taskId: "1111",
+            sender: user.firstName + " " + user.lastName,
+            receiverId: id,
+            description: "Assigned You a Project",
+          });
+        });
+
+        console.log(
+          "✅ socket event 'task-updated' hit while assigned user in task"
+        );
+      }
+
       router.push("/admin/project");
     } catch (error) {
       console.error(error);

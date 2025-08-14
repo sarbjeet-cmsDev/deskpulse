@@ -1,10 +1,12 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect,useRef } from "react";
 import { Modal, ModalBody, ModalContent } from "@heroui/react";
 import ReactSelect from "react-select";
 import { debounce } from "lodash";
 import AdminUserService, { IUser } from "@/service/adminUser.service";
 import ProjectService from "@/service/project.service";
-
+import { getSocket } from "@/utils/socket"; // Adjust path as needed
+import {  useSelector } from "react-redux";
+import {  RootState } from "@/store/store";
 export interface IUserOption {
   label: string;
   value: string;
@@ -30,8 +32,8 @@ export default function MentionUserListModal({
   const [selectedUser, setSelectedUser] = useState<IUserOption | null>(null);
   const [userOptions, setUserOptions] = useState<IUserOption[]>([]);
   const [inputValue, setInputValue] = useState("");
-
-
+    const user: any = useSelector((state: RootState) => state.user.data);
+console.log(user,"loggedIn user Detail")
 useEffect(()=>{
   task
 },[taskId])
@@ -69,7 +71,26 @@ useEffect(()=>{
     }
   }, [isOpen,users]);
 
+  const socketRef = useRef(getSocket());
   const handleConfirmAssign = () => {
+    console.log(selectedUser,"selected user ")
+
+ if (!socketRef.current.connected) {
+        socketRef.current.connect();
+      }
+      socketRef.current.on("connect", () => {
+        socketRef.current.emit("register-user", user.id); // Send your user ID immediately
+      });
+
+      socketRef.current.emit("task-updated", {
+        taskId: taskId, // You need to replace this with the actual task ID
+        sender: user.firstName + " " + user.lastName,
+        receiverId: `${selectedUser?.value}`,
+        description: "Assigned You a Task",
+      });
+
+      console.log("✅ socket event 'task-updated' hit while assigned user in task");
+
     if (!selectedUser) return;
     try {
       onAssigned(selectedUser.value);

@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import { debounce } from "lodash";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,6 +20,9 @@ import { H1 } from "@/components/Heading/H1";
 import { projectCreateSchema } from "@/components/validation/projectValidation";
 import CommentInputSection from "@/components/Comment/commentSection";
 import DescriptionInputToolbar from "@/components/common/Description/descriptionToolbar";
+import { getSocket } from "@/utils/socket";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 type CreateProjectInput = z.infer<typeof projectCreateSchema>;
 type UserOption = { label: string; value: string };
@@ -33,6 +36,8 @@ const CreateProjectForm = () => {
   const [userOptions, setUserOptions] = useState<UserOption[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const user: any = useSelector((state: RootState) => state.user.data);
+  console.log(user, "loggedIn user Detail");
 
   const {
     register,
@@ -106,7 +111,10 @@ const CreateProjectForm = () => {
     fetchData();
   }, [reset, router]);
 
+  const socketRef = useRef(getSocket());
+
   const onSubmit = async (data: CreateProjectInput) => {
+    // console.log(data, "incoming data while createing project");
     try {
       const formData: any = new FormData();
 
@@ -125,6 +133,28 @@ const CreateProjectForm = () => {
       }
 
       await AdminProjectService.createProject(formData);
+      // console.log(project, "after creating project ");
+      if (data?.users?.length) {
+        if (!socketRef.current.connected) {
+          socketRef.current.connect();
+        }
+        socketRef.current.on("connect", () => {
+          socketRef.current.emit("register-user", user.id); // Send your user ID immediately
+        });
+        data.users.forEach((id) => {
+          socketRef.current.emit("task-updated", {
+            taskId: "1111", // You need to replace this with the actual task ID
+            sender: user.firstName + " " + user.lastName,
+            receiverId: id,
+            description: "Assigned You a Project",
+          });
+        });
+
+        console.log(
+          "✅ socket event 'task-updated' hit while assigned user in task"
+        );
+      }
+
       reset();
       setSelectedFile(null);
       router.push("/admin/project");
@@ -279,7 +309,7 @@ const CreateProjectForm = () => {
           accept="image/*"
           onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
         />
-       {errors.avatar && (
+        {errors.avatar && (
           <p className="text-sm text-red-500">{errors.avatar.message}</p>
         )}
 

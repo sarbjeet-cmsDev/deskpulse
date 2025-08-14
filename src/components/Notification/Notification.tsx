@@ -14,7 +14,7 @@ import userAvtar from "@/assets/images/avt1.jpg";
 import { useRouter } from "next/navigation";
 import ShowMoreLess from "../common/ShowMoreLess/ShowMoreLess";
 
-export const Notification = () => {
+export const NotificationDrawer = () => {
   const dispatch = useDispatch();
   const [notification, setNotification] = useState([]);
   const [visibleCount, setVisibleCount] = useState(7);

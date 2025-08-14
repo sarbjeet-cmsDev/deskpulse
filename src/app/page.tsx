@@ -1,8 +1,7 @@
 "use client";
 import { H3 } from "@/components/Heading/H3";
 import ProjectCard from "@/components/IndexPage/ProjectCard";
-
-import { useEffect, useState } from "react";
+import { useEffect,useRef, useState } from "react";
 import ProjectService from "@/service/project.service";
 import Link from "next/link";
 import { P } from "@/components/ptag";
@@ -13,6 +12,9 @@ import { useRouter } from "next/navigation";
 import { RootState } from "@/store/store";
 import { useSelector } from "react-redux";
 import TaskService from "@/service/task.service";
+import { getSocket } from "@/utils/socket";  //socket 
+
+
 
 export default function Dashboard() {
   const [projects, setProjects] = useState<any[]>([]);
@@ -44,6 +46,31 @@ export default function Dashboard() {
       return () => clearInterval(interval);
     }
   }, [user]);
+
+  const socketRef = useRef(getSocket());
+
+useEffect(()=>{
+  console.log("socket is there")
+const socket = socketRef.current;
+
+if(!socket.connected){
+  socket.connect();
+}
+socket.on('connect', () => {
+    socket.emit('register-user', user.id); // Send your user ID immediately
+  });
+
+
+  // return () => {
+  //   socket.off('connect');
+  //   socket.off('receive-message');
+  //   socket.off('connect_error');
+  //   socket.off('disconnect');
+  //   socket.disconnect();
+  // };
+
+},[])
+
 
   const router = useRouter();
   return (

@@ -19,6 +19,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import UploadService from "@/service/upload.service";
 import ImageLightbox from "../common/ImagePopUp/ImageLightbox";
+import { getSocket } from "@/utils/socket"; // Adjust path as needed
 
 if (
   typeof window !== "undefined" &&
@@ -41,7 +42,7 @@ interface CommentInputProps {
   commentId?: string;
   title?: any;
   isButton?: any;
-  code:string;
+  code: string;
 }
 
 export default function CommentInputSection({
@@ -66,8 +67,8 @@ export default function CommentInputSection({
   const user: any = useSelector((state: RootState) => state.user.data);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
-
-
+  console.log(content, "content");
+  console.log(user, "incoming user");
   useEffect(() => {
     if (isEditing && defaultValue) {
       setContent(defaultValue);
@@ -110,6 +111,21 @@ export default function CommentInputSection({
     };
   };
 
+  const socketRef = useRef(getSocket());
+
+  useEffect(() => {
+    const socket = socketRef.current;
+
+    if (!socket.connected) {
+      socket.connect();
+    }
+
+    socket.on("connect", () => {
+      console.log("Socket connected inside comment section:", socket.id);
+    });
+
+  }, []);
+
   const mentionSource = useCallback(
     async (
       searchTerm: string,
@@ -117,8 +133,10 @@ export default function CommentInputSection({
     ) => {
       try {
         const users: IUser[] = await AdminUserService.searchUsers(searchTerm);
-        const filteredUsers = users.filter(user =>
-          `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
+        const filteredUsers = users.filter((user) =>
+          `${user.firstName} ${user.lastName}`
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase())
         );
         const list = filteredUsers.map((user) => ({
           id: user._id,
@@ -162,11 +180,12 @@ export default function CommentInputSection({
     const temp = document.createElement("div");
     temp.innerHTML = html;
 
-    temp.querySelectorAll("select.ql-code-block-language").forEach(el => el.remove());
+    temp
+      .querySelectorAll("select.ql-code-block-language")
+      .forEach((el) => el.remove());
 
     return temp.innerHTML;
   }
-
 
   const extractMentionedUserIds = (html: string): string[] => {
     const parser = document.createElement("div");
@@ -195,16 +214,35 @@ export default function CommentInputSection({
       if (!user?._id) {
         throw new Error("User ID is required to create a comment.");
       }
+
+      console.log(mentionedUserIds, "mention user id");
       const payload = {
         content: html,
         task: taskId,
         created_by: user?._id,
         mentioned: mentionedUserIds,
         parent_comment: parent_comment,
-        code:code,
+        code: code,
       };
 
       await CommentService.createComment(payload);
+
+      if (!socketRef.current.connected) {
+        socketRef.current.connect();
+      }
+      socketRef.current.on("connect", () => {
+        socketRef.current.emit("register-user", user.id); // Send your user ID immediately
+      });
+
+      socketRef.current.emit("task-updated", {
+        taskId: taskId, // You need to replace this with the actual task ID
+        sender: user.firstName + " " + user.lastName,
+        receiverId: `${mentionedUserIds}`,
+        description: "mentioned you in a comment",
+      });
+
+      console.log("✅ socket event 'task-updated' emitted for:");
+
       setContent("");
       onCommentCreated();
       if (onCancel) onCancel();
@@ -354,6 +392,8 @@ export default function CommentInputSection({
                     console.error("Failed to update description:", err);
                     setLoading(false);
                   });
+
+                console.log("hello save hit");
               } else if (isEditing) {
                 handleEdit();
               } else {

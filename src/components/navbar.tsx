@@ -31,7 +31,7 @@ import bellImage from "@/assets/images/bell.png";
 import { openDrawer } from "@/store/slices/drawerSlice";
 import { useDispatch } from "react-redux";
 import { CommonDrawer } from "./common/Drawer/Drawer";
-import { Notification } from "./Notification/Notification";
+import { NotificationDrawer } from "./Notification/Notification";
 export const Navbar = () => {
   const searchInput = (
     <Input
@@ -125,7 +125,7 @@ export const Navbar = () => {
         </Button>
       </NavbarContent>
       <CommonDrawer type="notification">
-        <Notification />
+        <NotificationDrawer />
       </CommonDrawer>
       <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
         <Link isExternal aria-label="Github" href={siteConfig.links.github}>

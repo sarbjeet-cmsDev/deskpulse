@@ -3,10 +3,11 @@
 import Image from "next/image";
 import bell from "@/assets/images/bell.png";
 import { Button } from "@heroui/button";
+import { useRef } from "react";
 import { openDrawer } from "@/store/slices/drawerSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { CommonDrawer } from "../common/Drawer/Drawer";
-import { Notification } from "../Notification/Notification";
+import { NotificationDrawer } from "../Notification/Notification";
 import { AppDispatch, RootState } from "@/store/store";
 import { useState, useEffect } from "react";
 import LeftMenuDrawer from "../HeaderMenuDrawer/leftmenudrawer";
@@ -19,8 +20,10 @@ import { searchAll } from "@/service/searchService";
 import { P } from "../ptag";
 import NotificationService from "@/service/notification.service";
 import { NotifyNotifications } from "../Notification/NotifyNotification";
-
+import { getSocket } from "@/utils/socket"; 
+// import {}"../../../src/assets/images"
 export default function TopHeader() {
+  // console.log(notificationCount,"notificationCountnotificationCount")
   const [notificationCount, setNotificationCount] = useState<number>(0);
   const dispatch = useDispatch<AppDispatch>();
   const user: any = useSelector((state: RootState) => state.user.data);
@@ -40,25 +43,55 @@ export default function TopHeader() {
     }
   }, [user?.profileImage]);
 
+ 
+  const socketRef = useRef(getSocket());
+
+  
+useEffect(() => {
+  if (!userData?.id) return;
+
+  const socket = socketRef.current;
+  if (!socket) return;
+
   const fetchNotification = async () => {
     try {
-      const res: any = await NotificationService.getNotificationByUserId(
-        userData?.id
-      );
+      const res: any = await NotificationService.getNotificationByUserId(userData.id);
       setNotificationCount(res?.notifications?.count || 0);
-    } catch (error) {
-      console.error("Failed to fetch notifications", error);
+    } catch (err) {
+      console.error("Failed to fetch notifications:", err);
     }
   };
 
-  useEffect(() => {
-    const interval = setInterval(()=>{
-      fetchNotification();
-    },500)
-    return ()=>clearInterval(interval);
-  }, [userData?.id]);
+  const handleNotification = ({ message, taskId }: { message: string; taskId: string }) => {
+    if (Notification.permission === "granted") {
+      new Notification("Notification Received", {
+        body: message,
+        icon: "/bell.png",
+      });
+    }
 
-  NotifyNotifications(10000)
+    fetchNotification();
+  };
+
+  socket.on("receive-notification", handleNotification);
+
+  fetchNotification();
+
+  return () => {
+    socket.off("receive-notification", handleNotification);
+  };
+}, [userData?.id]);
+
+useEffect(() => {
+  if (Notification.permission !== "granted" && Notification.permission !== "denied") {
+    Notification.requestPermission();
+  }
+}, []);
+  
+
+
+
+  // NotifyNotifications(10000)
 
   return (
     <div className="bg-theme-primary px-4 py-4">
@@ -93,7 +126,7 @@ export default function TopHeader() {
             </div>
           </div>
           <CommonDrawer type="notification">
-            <Notification />
+            <NotificationDrawer />
           </CommonDrawer>
         </div>
       </div>
