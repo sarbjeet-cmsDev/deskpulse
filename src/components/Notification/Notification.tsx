@@ -8,14 +8,16 @@ import { closeDrawer } from "@/store/slices/drawerSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import NotficationService from "@/service/notification.service";
-import { RootState } from "@/store/store";
+import { AppDispatch, RootState } from "@/store/store";
 import { Avatar } from "@heroui/react";
 import userAvtar from "@/assets/images/avt1.jpg";
 import { useRouter } from "next/navigation";
 import ShowMoreLess from "../common/ShowMoreLess/ShowMoreLess";
+import { fetchUserProfile } from "@/store/slices/userSlice";
+import { fetchNotificationCount } from "@/store/slices/NotificationSlice";
 
 export const NotificationDrawer = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const [notification, setNotification] = useState([]);
   const [visibleCount, setVisibleCount] = useState(7);
   const step = 7;
@@ -26,7 +28,7 @@ export const NotificationDrawer = () => {
       const res: any = await NotficationService.getNotificationByUserId(
         user?.id || user?._id
       );
-      
+
       setNotification(res?.notifications?.notifications || []);
     } catch (error) {
       console.error("Failed to fetch notifications", error);
@@ -54,11 +56,14 @@ export const NotificationDrawer = () => {
         )
       );
       fetchNotification();
+      if (user?._id || user?.id) {
+
+        dispatch(fetchNotificationCount(user?.id || user?._id));
+      }
     } catch (error) {
       console.error("Error updating notification status", error);
     }
   };
-
   const currentItems = notification.slice(0, visibleCount);
 
   return (
