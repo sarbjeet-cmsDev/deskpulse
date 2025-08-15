@@ -30,7 +30,7 @@ export default function PerformancePreview() {
     datasets: [],
   });
 
-  
+
 
   const [selectedRange, setSelectedRange] = useState<{
     start: any;
@@ -135,7 +135,7 @@ export default function PerformancePreview() {
 
   return (
     <div className="px-4 sm:px-6 lg:px-8">
-      <div className="flex justify-end">
+      <div className="flex md:justify-end">
         <AvatarList
           users={users}
           selectedUserIds={selectedUserIds}
@@ -146,7 +146,7 @@ export default function PerformancePreview() {
           fetchKanbonList={fetchPerformance}
         />
       </div>
-      <div className="flex justify-center items-center pb-6 border-b border-[#31394f14]">
+      <div className="flex justify-center items-center pb-6 md:py-0 py-3 border-b border-[#31394f14]">
         <Link href="/">
           <Image src={leftarrow} alt="Back" width={16} height={16} />
         </Link>
@@ -172,11 +172,10 @@ export default function PerformancePreview() {
           </Button>
 
           <div
-            className={`transition-all duration-300 ease-in-out overflow-hidden bg-white border shadow rounded mt-2 ${
-              showCalendar
-                ? "max-h-[500px] opacity-100 scale-100"
-                : "max-h-0 opacity-0 scale-95"
-            }`}
+            className={`transition-all duration-300 ease-in-out overflow-hidden bg-white border shadow rounded mt-2 ${showCalendar
+              ? "max-h-[500px] opacity-100 scale-100"
+              : "max-h-0 opacity-0 scale-95"
+              }`}
           >
             <div className="flex justify-end p-2">
               <Button
@@ -198,7 +197,7 @@ export default function PerformancePreview() {
 
         <div
           className="w-full md:w-2/3 lg:w-3/4"
-          // style={{ width: "75%", margin: "auto" }}
+        // style={{ width: "75%", margin: "auto" }}
         >
           <MyChart data={data} />
         </div>

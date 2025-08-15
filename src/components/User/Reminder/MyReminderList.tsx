@@ -49,11 +49,11 @@ export default function MyReminderList() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
-      <div className="flex justify-center items-center p-[24px] border-b border-[#31394f14]">
-          <Link href="/">
-            <Image src={leftarrow} alt="Back" width={16} height={16} />
-          </Link>
+    <div className="max-w-6xl mx-auto md:p-6">
+      <div className="flex justify-center items-center md:p-[24px] p-2 border-b border-[#31394f14]">
+        <Link href="/">
+          <Image src={leftarrow} alt="Back" width={16} height={16} />
+        </Link>
         <H3 className="text-center flex-1 text-base sm:text-lg md:text-xl">My Reminders</H3>
       </div>
 

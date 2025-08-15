@@ -60,7 +60,7 @@ const TimeSheetList = () => {
     start: today(getLocalTimeZone()).add({ weeks: -1 }),
     end: today(getLocalTimeZone()).add({ weeks: 1 }),
   });
-  
+
   const [showCalendar, setShowCalendar] = useState(false);
 
   const fetchTasks = async (userIds: string[]) => {
@@ -73,7 +73,7 @@ const TimeSheetList = () => {
       // let taskRes;
 
       if (userIds.length > 0) {
-       const taskRes = await TaskService.getTasksByAssignedUser(userIds.join(","), {
+        const taskRes = await TaskService.getTasksByAssignedUser(userIds.join(","), {
           start: startDate.format("YYYY-MM-DD"),
           end: endDate.format("YYYY-MM-DD"),
           page,
@@ -97,7 +97,7 @@ const TimeSheetList = () => {
           keyword: debouncedSearch,
           sortOrder,
         });
-      
+
 
         setTasks(
           (res.data || []).map((task) => ({
@@ -183,9 +183,9 @@ const TimeSheetList = () => {
 
   return (
     <div className="flex">
-      <main className="flex-1 p-6">
+      <main className="flex-1 p-6 sm:p-6 md:p-8 w-[100%]">
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-semibold">Time Sheet</h1>
+          <h1 className="md:text-2xl font-semibold">Time Sheet</h1>
           <AvatarList
             users={users}
             selectedUserIds={selectedUserIds}
@@ -209,11 +209,10 @@ const TimeSheetList = () => {
             </Button>
 
             <div
-              className={`transition-all duration-300 ease-in-out overflow-hidden bg-white border shadow rounded mt-2 ${
-                showCalendar
-                  ? "max-h-[500px] opacity-100 scale-100"
-                  : "max-h-0 opacity-0 scale-95"
-              }`}
+              className={`transition-all duration-300 ease-in-out overflow-hidden bg-white border shadow rounded mt-2 ${showCalendar
+                ? "max-h-[500px] opacity-100 scale-100"
+                : "max-h-0 opacity-0 scale-95"
+                }`}
             >
               <div className="flex justify-end p-2">
                 <Button
@@ -232,7 +231,7 @@ const TimeSheetList = () => {
               </div>
             </div>
           </div>
-          <div className="w-[85%]">
+          <div className="md:w-[85%]">
             <Datagrid
               headers={headers}
               rows={rows}

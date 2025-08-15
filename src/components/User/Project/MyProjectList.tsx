@@ -84,10 +84,10 @@ export default function MyProjects() {
 
 
   return (
-    <div className="max-w-6xl mx-auto">
-      <div className="main-content">
+    <div className="max-w-6xl mx-auto md:p-0 p-2">
+      <div className="main-content sm:p-2">
         <div>
-          <div className="flex justify-center items-center p-[24px] border-b border-[#31394f14]">
+          <div className="flex justify-center items-center md:p-[24px] p-2 border-b border-[#31394f14]">
             <div className="w-10">
               <Link href="/">
                 <Image src={leftarrow} alt="Logo" width={16} height={16} />

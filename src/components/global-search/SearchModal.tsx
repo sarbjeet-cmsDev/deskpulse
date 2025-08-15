@@ -25,9 +25,9 @@ export function SearchModal({
   const [loading, setLoading] = useState(false);
   const debouncedQuery = useDebounce(query, 400);
   const inputRef = useRef<HTMLInputElement>(null);
-  const pathname = usePathname(); 
+  const pathname = usePathname();
 
-  
+
   useEffect(() => {
     if (open) {
       setTimeout(() => inputRef.current?.focus(), 0);
@@ -68,7 +68,7 @@ export function SearchModal({
     };
   }, [debouncedQuery, open, minChars, fetcher]);
 
-  
+
   useEffect(() => {
     if (!open) return;
     const handler = (e: KeyboardEvent) => {
@@ -78,12 +78,12 @@ export function SearchModal({
     return () => window.removeEventListener("keydown", handler);
   }, [open, onClose]);
 
-  
+
   const overlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) onClose();
   };
 
-  
+
   const handleSelect = useCallback(() => {
     onClose();
   }, [onClose]);
@@ -92,11 +92,11 @@ export function SearchModal({
 
   return (
     <div
-      className="fixed inset-0 bg-black/40 flex items-start justify-center z-50 p-4"
+      className="fixed inset-0 bg-black/40 md:flex items-start justify-center z-50 p-4"
       onMouseDown={overlayClick}
     >
       <div
-        className="bg-white rounded-xl shadow-lg w-full max-w-lg p-6 relative"
+        className="bg-white rounded-xl shadow-lg w-full md:max-w-lg p-6 max-w-[330px] relative"
         role="dialog"
         aria-modal="true"
       >
@@ -112,7 +112,7 @@ export function SearchModal({
           ref={inputRef}
           type="text"
           placeholder={placeholder}
-          className="w-full border px-3 py-2 rounded mb-4"
+          className="md:w-full border px-3 py-2 rounded mb-4"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />

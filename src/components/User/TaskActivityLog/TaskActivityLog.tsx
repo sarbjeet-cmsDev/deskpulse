@@ -25,7 +25,7 @@ export default function TaskActivityLog({ code }: Props) {
   const [totalItems, setTotalItems] = useState<number>(0);
   const itemsPerPage = 5;
 
-  
+
 
   useEffect(() => {
     if (!code) return;
@@ -44,7 +44,7 @@ export default function TaskActivityLog({ code }: Props) {
           currentPage,
           itemsPerPage
         );
-        
+
         setLogs(res.taskactivitylog);
         setTotalItems(res.total);
       } catch (error) {
@@ -62,14 +62,14 @@ export default function TaskActivityLog({ code }: Props) {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
-      <div className="flex justify-center items-center p-[24px] border-b border-[#31394f14]">
-        <div className="w-[2%]">
+    <div className="max-w-6xl mx-auto md:p-6 p-3">
+      <div className="flex justify-center items-center md:p-[24px] border-b border-[#31394f14]">
+        <div className="md:w-[2%]">
           <Link href={`/task/${code}`}>
             <Image src={leftarrow} alt="Back" width={16} height={16} />
           </Link>
         </div>
-        <H3 className="w-[98%] text-center">Task Activity Logs</H3>
+        <H3 className="w-[98%] text-center md:p-0 p-1">Task Activity Logs</H3>
       </div>
 
       {loading ? (

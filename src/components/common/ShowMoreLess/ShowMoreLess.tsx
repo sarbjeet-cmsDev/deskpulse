@@ -42,7 +42,7 @@ export default function ShowMoreLess({
         Show Less
       </Button>
 
-      <span className="text-sm text-gray-600">
+      <span className="text-sm text-gray-600 text-center">
         Showing {Math.min(visibleCount, totalItems)} of {totalItems}
       </span>
 

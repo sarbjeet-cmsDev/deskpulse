@@ -30,19 +30,20 @@ interface Props {
 export default function LineChart({ data }: Props) {
   const options = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: { position: "top" as const },
       title: { display: true, text: "Performance Report" },
     },
     scales: {
       x: {
-      ticks: {
-        maxRotation: 45,
-        minRotation: 45,
-        autoSkip: true,
-        maxTicksLimit: 40,
+        ticks: {
+          maxRotation: 45,
+          minRotation: 45,
+          autoSkip: true,
+          maxTicksLimit: 40,
+        },
       },
-    },
       y: {
         min: 0,
         max: 100,

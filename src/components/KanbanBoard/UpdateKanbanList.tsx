@@ -184,7 +184,7 @@ export const UpdateKanbanList = ({
 
 
   return (
-    <div className="container mx-auto max-w-3xl">
+    <div className="container mx-auto max-w-3xl md:p-0 p-1">
       <H3 className="py-6">Edit Kanban Lists for {project?.title}</H3>
 
       <DndContext

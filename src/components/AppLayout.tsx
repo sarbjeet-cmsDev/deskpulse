@@ -1,5 +1,5 @@
 "use client";
-import { useEffect,useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import ProtectedRoute from "@/components/ProtectRoutes/ProtectedRoute";
 import TopHeader from "@/components/IndexPage/TopHeader";
@@ -7,8 +7,8 @@ import { Link } from "@heroui/link";
 // import { getSocket } from "@/utils/socket";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
-import {  useSelector } from "react-redux";
-import {  RootState } from "@/store/store";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 import NotificationService from "@/service/notification.service";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -23,58 +23,58 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }
 
 
-//   const socketRef = useRef(getSocket());
+  //   const socketRef = useRef(getSocket());
 
-  
-// useEffect(() => {
-//   if (!userData?.id) return;
 
-//   const socket = socketRef.current;
-//   if (!socket) return;
+  // useEffect(() => {
+  //   if (!userData?.id) return;
 
-//   const fetchNotification = async () => {
-//     try {
-//       const res: any = await NotificationService.getNotificationByUserId(userData.id);
-//       setNotificationCount(res?.notifications?.count || 0);
-//     } catch (err) {
-//       console.error("Failed to fetch notifications:", err);
-//     }
-//   };
+  //   const socket = socketRef.current;
+  //   if (!socket) return;
 
-//   const handleNotification = ({ message, taskId }: { message: string; taskId: string }) => {
-//     if (Notification.permission === "granted") {
-//       new Notification("Notification Received", {
-//         body: message,
-//         icon: "/icons/notification.png",
-//       });
-//     }
+  //   const fetchNotification = async () => {
+  //     try {
+  //       const res: any = await NotificationService.getNotificationByUserId(userData.id);
+  //       setNotificationCount(res?.notifications?.count || 0);
+  //     } catch (err) {
+  //       console.error("Failed to fetch notifications:", err);
+  //     }
+  //   };
 
-//     fetchNotification();
-//   };
+  //   const handleNotification = ({ message, taskId }: { message: string; taskId: string }) => {
+  //     if (Notification.permission === "granted") {
+  //       new Notification("Notification Received", {
+  //         body: message,
+  //         icon: "/icons/notification.png",
+  //       });
+  //     }
 
-//   socket.on("receive-notification", handleNotification);
+  //     fetchNotification();
+  //   };
 
-//   fetchNotification();
+  //   socket.on("receive-notification", handleNotification);
 
-//   return () => {
-//     socket.off("receive-notification", handleNotification);
-//   };
-// }, [userData?.id]);
+  //   fetchNotification();
 
-// useEffect(() => {
-//   if (Notification.permission !== "granted" && Notification.permission !== "denied") {
-//     Notification.requestPermission();
-//   }
-// }, []);
+  //   return () => {
+  //     socket.off("receive-notification", handleNotification);
+  //   };
+  // }, [userData?.id]);
+
+  // useEffect(() => {
+  //   if (Notification.permission !== "granted" && Notification.permission !== "denied") {
+  //     Notification.requestPermission();
+  //   }
+  // }, []);
 
   return (
     <ProtectedRoute>
       <div className="flex flex-col min-h-screen text-sm md:text-base">
         <div className="sticky top-0 z-50">
           {/* <TopHeader notificationCount={notificationCount}/> */}
-          <TopHeader/>
+          <TopHeader />
         </div>
-        <main className="pt-6 px-4 md:px-8 lg:px-10 flex-grow mb-10">{children}</main>
+        <main className="pt-6 md:px-4 md:px-8 lg:px-10 flex-grow mb-10">{children}</main>
         <footer className="w-full flex items-center justify-center py-4 bg-theme-primary text-white text-xs sm:text-sm">
           <Link
             // isExternal

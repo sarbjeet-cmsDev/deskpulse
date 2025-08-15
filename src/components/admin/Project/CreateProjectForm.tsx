@@ -167,7 +167,7 @@ const CreateProjectForm = () => {
     <div className="min-h-screen flex justify-center pt-10">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="w-full max-w-2xl bg-white p-6 rounded border border-gray-300 shadow space-y-4"
+        className="w-full max-w-2xl bg-white md:p-6 rounded md:border border-gray-300 shadow space-y-4"
       >
         <div className="flex justify-center items-center p-[20px] border-b border-[#31394f14]">
           <div className="w-[5%]">

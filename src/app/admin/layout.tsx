@@ -12,15 +12,15 @@ interface Props {
 const AdminLayout = ({ children }: Props) => {
   return (
     <AdminProtectedRoute>
-       <ReduxProvider>
-   
-          <div className="flex">
-            {/* <Sidebar /> */}
-            <div className="flex flex-col flex-1 w-[100%]">
-              {/* <AdminNavbar /> */}
-              <main className="p-4">{children}</main>
-            </div>
+      <ReduxProvider>
+
+        <div className="flex">
+          {/* <Sidebar /> */}
+          <div className="flex flex-col flex-1 w-[100%]">
+            {/* <AdminNavbar /> */}
+            <main className="md:p-4">{children}</main>
           </div>
+        </div>
       </ReduxProvider>
     </AdminProtectedRoute>
   );

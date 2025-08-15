@@ -116,11 +116,10 @@ export default function PerformancePreview() {
           </Button>
 
           <div
-            className={`transition-all duration-300 ease-in-out overflow-hidden bg-white border shadow rounded mt-2 ${
-              showCalendar
-                ? "max-h-[500px] opacity-100 scale-100"
-                : "max-h-0 opacity-0 scale-95"
-            }`}
+            className={`transition-all duration-300 ease-in-out overflow-hidden bg-white border shadow rounded mt-2 ${showCalendar
+              ? "max-h-[500px] opacity-100 scale-100"
+              : "max-h-0 opacity-0 scale-95"
+              }`}
           >
             <div className="flex justify-end p-2">
               <Button
@@ -141,8 +140,8 @@ export default function PerformancePreview() {
         </div>
 
         <div
-          className="w-full md:w-2/3 lg:w-3/4"
-          // style={{ width: "75%", margin: "auto" }}
+          className="w-full md:w-2/3 lg:w-3/4 md:h-[600px] h-[400px]"
+        // style={{ width: "75%", margin: "auto" }}
         >
           <MyChart data={data} />
         </div>

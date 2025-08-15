@@ -179,7 +179,7 @@ const DescriptionInputToolbar = ({
   }, []);
 
   return (
-    <div className="p-4 bg-white border rounded">
+    <div className="md:p-4 bg-white md:border rounded">
       <label className="block text-sm font-medium text-gray-700 mb-2">
         {title}
         {/* <span className="text-red-500">*</span> */}

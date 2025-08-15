@@ -281,7 +281,7 @@ export default function MyProjectDetails({ code }: Props) {
   if (!project) return <div className="p-6 text-center">Project not found</div>;
   return (
     <div className="max-w-6xl mx-auto">
-      <div className="main-content">
+      <div className="main-content md:p-0 p-3">
         <div>
           <div className="flex justify-between items-center border-b border-[#31394f14] pb-4 max-[768px]:flex-wrap max-[768px]:gap-[10px]">
             <div className="flex items-center gap-2">

@@ -1,7 +1,7 @@
 "use client";
 import { H3 } from "@/components/Heading/H3";
 import ProjectCard from "@/components/IndexPage/ProjectCard";
-import { useEffect,useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ProjectService from "@/service/project.service";
 import Link from "next/link";
 import { P } from "@/components/ptag";
@@ -49,33 +49,33 @@ export default function Dashboard() {
 
   const socketRef = useRef(getSocket());
 
-useEffect(()=>{
-  console.log("socket is connected")
-const socket = socketRef.current;
+  useEffect(() => {
+    console.log("socket is connected")
+    const socket = socketRef.current;
 
-if(!socket.connected){
-  socket.connect();
-}
-socket.on('connect', () => {
-    socket.emit('register-user', user.id); // Send your user ID immediately
-  });
+    if (!socket.connected) {
+      socket.connect();
+    }
+    socket.on('connect', () => {
+      socket.emit('register-user', user.id); // Send your user ID immediately
+    });
 
 
-  // return () => {
-  //   socket.off('connect');
-  //   socket.off('receive-message');
-  //   socket.off('connect_error');
-  //   socket.off('disconnect');
-  //   socket.disconnect();
-  // };
+    // return () => {
+    //   socket.off('connect');
+    //   socket.off('receive-message');
+    //   socket.off('connect_error');
+    //   socket.off('disconnect');
+    //   socket.disconnect();
+    // };
 
-},[])
+  }, [])
 
 
   const router = useRouter();
   return (
     <div>
-      <div className="main-content">
+      <div className="main-content md:p-0 p-2">
         <div className="rounded-tl-[24px] rounded-tr-[24px] bg-white">
           <div className="max-w-6xl mx-auto">
             {reminder?.length > 0 && (
@@ -101,7 +101,7 @@ socket.on('connect', () => {
                 View All
               </Link>
             </div>
-            <div className="pt-4 flex justify-center items-center gap-4 flex-wrap flex-row">
+            <div className="pt-4 flex justify-center items-center gap-4 flex-wrap md:flex-row flex-col">
               {loading ? (
                 <p>Loading projects...</p>
               ) : projects.length === 0 ? (
@@ -110,7 +110,7 @@ socket.on('connect', () => {
               ) : (
                 projects.map((project) => (
                   <Link
-                    className="max-w-[calc(50%-1em)]"
+                    className="md:max-w-[calc(50%-1em)]"
                     key={project._id}
                     href={`/project/${project.code}`}
                   >

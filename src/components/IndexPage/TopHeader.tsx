@@ -79,16 +79,16 @@ export default function TopHeader() {
           icon: "/bell.png",
         });
       }
-      if (user?._id || user?.id) {
+      if (userData?._id || userData?.id) {
 
-        dispatch(fetchNotificationCount(user?._id || user?.id));
+        dispatch(fetchNotificationCount(userData?._id || userData?.id));
       }
     };
 
     socket.on("receive-notification", handleNotification);
-    if (user?._id || user?.id) {
+    if (userData?._id || userData?.id) {
 
-      dispatch(fetchNotificationCount(user?._id || user?.id));
+      dispatch(fetchNotificationCount(userData?._id || userData?.id));
     }
 
     return () => {
@@ -101,7 +101,7 @@ export default function TopHeader() {
       Notification.requestPermission();
     }
   }, []);
-  
+
 
 
 

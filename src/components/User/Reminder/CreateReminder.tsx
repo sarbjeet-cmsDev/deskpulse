@@ -37,7 +37,7 @@ export default function CreateReminder() {
     try {
       setLoading(true);
       const response = await ReminderService.createReminder(data);
-      
+
       reset();
       router.push("/reminder");
     } catch (error) {
@@ -50,7 +50,7 @@ export default function CreateReminder() {
 
   return (
     <div className="max-w-6xl mx-auto">
-      <div className="flex justify-center items-center p-[24px] border-b border-[#31394f14]">
+      <div className="flex justify-center items-center md:p-[24px] p-2 border-b border-[#31394f14]">
         <Link href="/">
           <Image src={leftarrow} alt="Back" width={16} height={16} />
         </Link>

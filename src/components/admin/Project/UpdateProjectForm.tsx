@@ -53,7 +53,7 @@ const UpdateProjectForm = ({ id }: Props) => {
   const [lightboxImage, setLightboxImage] = useState("");
 
   const user: any = useSelector((state: RootState) => state.user.data);
-  
+
 
   const {
     register,
@@ -165,10 +165,10 @@ const UpdateProjectForm = ({ id }: Props) => {
     : ProjectAvtar.src;
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row justify-center items-start gap-6 p-4">
+    <div className="min-h-screen flex flex-col lg:flex-row justify-center items-start gap-6 md:p-4 p-3">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="w-full lg:max-w-2xl bg-white p-6 rounded shadow border border-gray-300 space-y-4"
+        className="w-full lg:max-w-2xl bg-white md:p-6 p-2 rounded shadow border border-gray-300 space-y-4"
       >
         <div className="flex justify-center items-center pb-5 border-b border-[#31394f14]">
           <Link href="/admin/project">

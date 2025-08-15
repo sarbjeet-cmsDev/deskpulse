@@ -11,7 +11,7 @@ interface ReminderListProps {
 
 export default function ReminderList({ reminders }: ReminderListProps) {
   if (!reminders?.length) {
-    return <div className="text-gray-500">No reminders available.</div>;
+    return <div className="text-gray-500 text-center">No reminders available.</div>;
   }
 
   return (
@@ -19,9 +19,9 @@ export default function ReminderList({ reminders }: ReminderListProps) {
       {reminders.map((reminder) => {
         const formattedStart = reminder?.start
           ? new Date(reminder.start).toLocaleString("en-IN", {
-              dateStyle: "medium",
-              timeStyle: "short",
-            })
+            dateStyle: "medium",
+            timeStyle: "short",
+          })
           : null;
 
         return (
@@ -36,22 +36,22 @@ export default function ReminderList({ reminders }: ReminderListProps) {
               <span className="text-[#333] font-medium truncate">
                 {reminder.title || "Untitled Reminder"}
               </span>
-             <div className="flex items-center gap-2">
-              {formattedStart && (
-                <div className="flex items-center text-sm text-gray-500 gap-1 whitespace-nowrap">
-                  <span>🕒</span>
-                  <span>{formattedStart}</span>
-                </div>
-              )}
+              <div className="flex items-center gap-2">
+                {formattedStart && (
+                  <div className="flex items-center text-sm text-gray-500 gap-1 whitespace-nowrap">
+                    <span>🕒</span>
+                    <span>{formattedStart}</span>
+                  </div>
+                )}
 
-              <Image
-                      src={info}
-                      alt="Details"
-                      width={20}
-                      height={20}
-                      className="cursor-pointer opacity-70 hover:opacity-100"
-                    />
-                    </div>
+                <Image
+                  src={info}
+                  alt="Details"
+                  width={20}
+                  height={20}
+                  className="cursor-pointer opacity-70 hover:opacity-100"
+                />
+              </div>
             </Link>
           </li>
         );

@@ -162,17 +162,17 @@ export default function TaskDetails({ id }: Props) {
   const handleViewKanban = () => {
     router.push(`/project/projectDetail/${task?.project}`);
   };
- 
+
 
   const handleUpdateTaskDescription = (id: string) => {
     return async (description: string) => {
-    
+
       try {
         await TaskService.updateTask(id, {
           description,
         });
 
-    
+
       } catch (error) {
         console.error(error);
       }
@@ -194,7 +194,7 @@ export default function TaskDetails({ id }: Props) {
     await TaskService.updateTask(taskId, data);
     setEditTaskTitle(false)
     fetchTask(taskId)
-   
+
   })
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -212,10 +212,10 @@ export default function TaskDetails({ id }: Props) {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [editTaskTitle]);
- 
+
   return (
     <div className="max-w-6xl mx-auto">
-      <div className="main-content">
+      <div className="main-content md:p-0 p-3">
         <div>
           <div className="flex justify-between items-center border-b border-[#31394f14]">
             <div className="flex items-center gap-2">
@@ -229,7 +229,7 @@ export default function TaskDetails({ id }: Props) {
                 {editTaskTitle ? (
 
                   <form onSubmit={handleSubmit(onSubmit)}>
-                    <div className="flex gap-2 my-7 w-[600px]">
+                    <div className="flex gap-2 my-7 md:w-[600px]">
 
                       <Input  {...register("title")} className="w-full cursor-pointer" defaultValue={task?.title} />
                       <Button type="submit" className="bg-theme-primary">Update</Button>

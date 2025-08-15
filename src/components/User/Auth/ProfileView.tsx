@@ -17,7 +17,7 @@ import { RootState, AppDispatch } from "@/store/store";
 import { fetchUserProfile, updateUserAvatar } from "@/store/slices/userSlice";
 import Link from "next/link";
 import Cookies from "js-cookie";
-import { getSocket } from "@/utils/socket"; 
+import { getSocket } from "@/utils/socket";
 
 export default function AuthProfileView() {
   const dispatch = useDispatch<AppDispatch>();
@@ -27,8 +27,8 @@ export default function AuthProfileView() {
   const [imageSrc, setImageSrc] = useState<string>(defaultAvatar.src);
 
   const handleLogout = () => {
-      const socket = getSocket();
-     socket.disconnect();
+    const socket = getSocket();
+    socket.disconnect();
     dispatch(signOut());
     localStorage.removeItem("token");
     localStorage.removeItem("type");
@@ -74,7 +74,7 @@ export default function AuthProfileView() {
 
   return (
     <div className="max-w-6xl mx-auto">
-      <div className="flex justify-center items-center p-[24px] border-b border-[#31394f14]">
+      <div className="flex justify-center items-center md:p-[24px] p-1 border-b border-[#31394f14]">
         <div className="w-10">
           <Link href={href}>
             <Image src={leftarrow} alt="Logo" width={16} height={16} />

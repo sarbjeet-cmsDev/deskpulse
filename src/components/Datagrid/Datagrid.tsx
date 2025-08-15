@@ -60,7 +60,7 @@ const DataGrid: React.FC<DataGridProps> = ({
     }
   }, [searchInput]);
   const currentPageFromRoute = parseInt(searchParams.get('page') || '1', 10);
-  
+
 
   const startRecord = pagination.total_records === 0 ? 0 : (pagination.current_page - 1) * pagination.limit + 1;
   const endRecord = Math.min(
@@ -68,7 +68,7 @@ const DataGrid: React.FC<DataGridProps> = ({
     pagination.total_records
   );
 
-   const handlePageChange = (newPage: number) => {
+  const handlePageChange = (newPage: number) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("page", newPage.toString());
     router.push(`${pathname}?${params.toString()}`);
@@ -130,7 +130,7 @@ const DataGrid: React.FC<DataGridProps> = ({
                 onSearch?.("");
               }
             }}
-            className="p-2 border rounded-md w-full max-w-md"
+            className="p-2 border rounded-md md:w-full md:max-w-md"
           />
           <button
             onClick={() => {
@@ -193,11 +193,10 @@ const DataGrid: React.FC<DataGridProps> = ({
                       row.actions.map((action, i) => (
                         <button
                           key={i}
-                          className={`px-3 py-1 rounded text-white text-sm ${
-                            action.title === "Delete"
-                              ? "bg-red-500 hover:bg-red-600"
-                              : "btn-primary"
-                          }`}
+                          className={`px-3 py-1 rounded text-white text-sm ${action.title === "Delete"
+                            ? "bg-red-500 hover:bg-red-600"
+                            : "btn-primary"
+                            }`}
                           onClick={() => onAction?.(action.title, row)}
                         >
                           {action.title}
@@ -219,7 +218,7 @@ const DataGrid: React.FC<DataGridProps> = ({
         <div className="text-sm text-dark">
           Showing {startRecord}–{endRecord} of {pagination.total_records}
         </div>
-        <div className="flex items-center flex-wrap gap-1 text-sm">
+        <div className="flex items-center md:flex-wrap gap-1 text-sm">
           <button
             onClick={() => handlePageChange?.(pagination.current_page - 1)}
             disabled={pagination.current_page <= 1 || loading}

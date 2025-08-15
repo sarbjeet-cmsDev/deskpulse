@@ -29,7 +29,7 @@ export default function SubTasks({
   );
 
   if (!tasks?.length) {
-    return <div className="text-gray-500">No tasks available.</div>;
+    return <div className="text-gray-500 text-center">No tasks available.</div>;
   }
 
   const uniqueStatuses = kanbanList?.length
@@ -94,7 +94,7 @@ export default function SubTasks({
                     </span>
 
                     <div className="flex items-center gap-4 shrink-0 max-[768px]:flex-column max-[768px]:items-start max-[768px]:flex-wrap max-[768px]:max-w-[100%]">
-                       <div className="flex item-center gap-2 max-[768px]:min-w-[100%] max-[768px]:w-[100%]">
+                      <div className="flex item-center gap-2 max-[768px]:min-w-[100%] max-[768px]:w-[100%]">
                         <span className="text-[#333] font-bold">Assign to:</span>
                         <span>{`${task.assigned_to?.firstName} ${task.assigned_to?.lastName}`}</span>
                       </div>

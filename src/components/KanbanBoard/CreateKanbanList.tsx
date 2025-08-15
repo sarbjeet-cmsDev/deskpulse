@@ -60,19 +60,19 @@ export const CreateKanbanList = () => {
   };
   return (
     <div className="container mx-auto max-w-3xl">
-      <div className="flex justify-center items-center p-[24px] border-b border-[#31394f14]">
-        <div className="w-[2%]">
+      <div className="flex md:justify-center justify-between items-center md:p-[24px] p-3 border-b border-[#31394f14]">
+        <div className="md:w-[2%]" >
           <Link href={`/admin/project`}>
             <Image src={leftarrow} alt="Back" width={16} height={16} />
           </Link>
         </div>
-        <H3 className="w-[98%] text-center">Create Kanban</H3>
+        <H3 className="md:w-[98%] text-center">Create Kanban</H3>
       </div>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="py-3">
           <label className="block text-sm font-medium text-gray-700 mb-1">
-          Kanban Title
-        </label>
+            Kanban Title
+          </label>
           <Input
             type="text"
             placeholder="Kanban Title"
@@ -83,7 +83,7 @@ export const CreateKanbanList = () => {
           )}
         </div>
 
-         <label className="block text-sm font-medium text-gray-700 mb-1 mt-1">
+        <label className="block text-sm font-medium text-gray-700 mb-1 mt-1">
           Sort Order
         </label>
         <Input
@@ -102,7 +102,7 @@ export const CreateKanbanList = () => {
           <p className="text-red-500 text-sm">{errors.sort_order.message}</p>
         )}
 
-         <label className="block text-sm font-medium text-gray-700 mb-1 mt-4">
+        <label className="block text-sm font-medium text-gray-700 mb-1 mt-4">
           Select project
         </label>
         <select
