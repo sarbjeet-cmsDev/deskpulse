@@ -23,6 +23,7 @@ import { signOut } from "@/store/slices/authSlice";
 import router from "next/router";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import { getSocket } from "@/utils/socket"; 
 // import Cookies from "js-cookie";
 
 export default function LeftMenuDrawer() {
@@ -84,6 +85,8 @@ export default function LeftMenuDrawer() {
   
   const router = useRouter();
   const handleLogout = () => {
+    const socket = getSocket();
+         socket.disconnect();
     dispatch(signOut());
     localStorage.removeItem("token");
     localStorage.removeItem("type");
