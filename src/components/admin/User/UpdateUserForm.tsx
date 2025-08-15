@@ -21,7 +21,7 @@ interface Props {
 
 type UpdateUserInput = z.infer<typeof userUpdateSchema>;
 
-const UpdateUserForm = ({id}: Props) => {
+const UpdateUserForm = ({ id }: Props) => {
   const router = useRouter();
   // const { id } = useParams<{ id: string }>();
   const [loading, setLoading] = useState(false);
@@ -67,9 +67,9 @@ const UpdateUserForm = ({id}: Props) => {
     setLoading(true);
     try {
       await AdminUserService.updateUser(id, {
-  ...data,
-  roles: [data.roles], 
-});
+        ...data,
+        roles: [data.roles],
+      });
 
       router.push("/admin/user");
     } catch (error) {
@@ -82,19 +82,19 @@ const UpdateUserForm = ({id}: Props) => {
   if (initialLoading) return <div className="p-6">Loading user...</div>;
 
   return (
-    <div className="min-h-screen flex justify-center items-start pt-5">
+    <div className="min-h-screen flex justify-center items-start md:pt-5">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="w-full max-w-xl bg-white p-6 rounded shadow space-y-4"
+        className="w-full max-w-xl bg-white md:p-6 p-2 rounded shadow space-y-4"
       >
-        <div className="flex justify-center items-center p-[24px] border-b border-[#31394f14]">
-        <div className="w-[5%]">
-          <Link href="/admin/user">
-            <Image src={leftarrow} alt="Back" width={16} height={16} />
-          </Link>
+        <div className="flex justify-center items-center md:p-[24px] p-3 border-b border-[#31394f14]">
+          <div className="md:w-[5%]">
+            <Link href="/admin/user">
+              <Image src={leftarrow} alt="Back" width={16} height={16} />
+            </Link>
+          </div>
+          <H3 className="w-[98%] text-center">Update User</H3>
         </div>
-        <H3 className="w-[98%] text-center">Update User</H3>
-      </div>
 
         <Input placeholder="Username" {...register("username")} />
         {errors.username && (
@@ -137,13 +137,13 @@ const UpdateUserForm = ({id}: Props) => {
           )}
         </div>
 
-    
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             User Roles
           </label>
           <select
-    
+
             {...register("roles")}
             className="w-full border border-gray-300 rounded px-3 py-2"
           >

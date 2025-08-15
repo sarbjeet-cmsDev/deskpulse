@@ -196,7 +196,7 @@ export default function PerformancePreview() {
         </div>
 
         <div
-          className="w-full md:w-2/3 lg:w-3/4"
+          className="w-full md:w-2/3 lg:w-3/4 md:h-[600px] h-[400px]"
         // style={{ width: "75%", margin: "auto" }}
         >
           <MyChart data={data} />

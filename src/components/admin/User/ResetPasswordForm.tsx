@@ -42,19 +42,19 @@ const ResetPasswordForm = ({ id }: Props) => {
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-start pt-10">
+    <div className="min-h-screen flex justify-center items-start md:pt-10">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="w-full max-w-md bg-white p-6 rounded shadow space-y-4"
+        className="w-full max-w-md bg-white md:p-6 p-3 rounded shadow space-y-4"
       >
-       <div className="flex justify-center items-center p-[24px] border-b border-[#31394f14]">
-        <div className="w-[5%]">
-          <Link href="/admin/user">
-            <Image src={leftarrow} alt="Back" width={30} height={30} />
-          </Link>
+        <div className="flex justify-center items-center md:p-[24px] p-2 border-b border-[#31394f14]">
+          <div className="w-[5%]">
+            <Link href="/admin/user">
+              <Image src={leftarrow} alt="Back" width={30} height={30} />
+            </Link>
+          </div>
+          <H3 className="w-[98%] text-center">Reset Password</H3>
         </div>
-        <H3 className="w-[98%] text-center">Reset Password</H3>
-      </div>
 
         <Input
           type="password"

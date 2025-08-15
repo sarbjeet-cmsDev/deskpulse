@@ -194,7 +194,7 @@ const TimeSheetList = () => {
           />
         </div>
         <div className="flex flex-col md:flex-row md:items-start py-6 gap-2">
-          <div className="w-[15%]">
+          <div className="md:w-[15%]">
             <Button
               onPress={() => setShowCalendar(!showCalendar)}
               className="flex items-center gap-9 border px-4 py-2 rounded bg-white shadow text-sm font-medium"
