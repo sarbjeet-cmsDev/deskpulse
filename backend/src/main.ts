@@ -17,6 +17,8 @@ dotenv.config({ path: "../.env" });
 
 async function bootstrap() {
   const expressApp = express(); // 👈 use this for both NestJS and Socket.IO
+  expressApp.use(express.json({ limit: '10mb' }));
+  expressApp.use(express.urlencoded({ limit: '10mb', extended: true }));
   expressApp.use(
     cors({
       origin: "http://localhost:3000",
