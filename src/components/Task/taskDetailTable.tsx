@@ -163,7 +163,7 @@ export default function DetailsTable({
     await TaskService.updateTask(taskId, data);
     setEditEstimate(false)
     fetchTask(taskId)
-    console.log(data)
+   
   })
 
   useEffect(() => {

@@ -37,7 +37,7 @@ export default function CreateReminder() {
     try {
       setLoading(true);
       const response = await ReminderService.createReminder(data);
-      console.log(response.message, response.reminder);
+      
       reset();
       router.push("/reminder");
     } catch (error) {

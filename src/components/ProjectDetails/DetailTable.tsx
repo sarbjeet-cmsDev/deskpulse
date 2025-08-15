@@ -45,8 +45,7 @@ export default function Details({
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
 
   const loginUser: any = useSelector((state: RootState) => state.user.data);
-  console.log(loginUser, "loggedIn user Detail");
-
+ 
   const {
     team = [],
     leader,
@@ -66,7 +65,7 @@ export default function Details({
   const socketRef = useRef(getSocket());
 
   const handleUserUpdate = async (updatedIds: string[]) => {
-    console.log(updatedIds, "ids");
+    
     try {
       await AdminProjectService.updateProject(projectId, {
         users: updatedIds,
@@ -75,7 +74,7 @@ export default function Details({
 
       //socket
       if (updatedIds?.length) {
-        console.log("hi while update project in task list");
+     
         if (!socketRef.current.connected) {
           socketRef.current.connect();
         }

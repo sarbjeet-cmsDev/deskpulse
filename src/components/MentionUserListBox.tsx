@@ -33,7 +33,7 @@ export default function MentionUserListModal({
   const [userOptions, setUserOptions] = useState<IUserOption[]>([]);
   const [inputValue, setInputValue] = useState("");
     const user: any = useSelector((state: RootState) => state.user.data);
-console.log(user,"loggedIn user Detail")
+
 useEffect(()=>{
   task
 },[taskId])
@@ -73,7 +73,7 @@ useEffect(()=>{
 
   const socketRef = useRef(getSocket());
   const handleConfirmAssign = () => {
-    console.log(selectedUser,"selected user ")
+ 
 
  if (!socketRef.current.connected) {
         socketRef.current.connect();

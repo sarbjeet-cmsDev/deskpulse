@@ -11,7 +11,7 @@ async getPerformanceByUser(params?: { start?: string; end?: string }): Promise<a
     }
 
   );
-  console.log("res.data",res.data)
+  
   return res.data;
 },
 }

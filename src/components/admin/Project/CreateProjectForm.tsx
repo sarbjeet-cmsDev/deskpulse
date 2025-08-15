@@ -37,7 +37,7 @@ const CreateProjectForm = () => {
   const [inputValue, setInputValue] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const user: any = useSelector((state: RootState) => state.user.data);
-  console.log(user, "loggedIn user Detail");
+
 
   const {
     register,
@@ -151,7 +151,7 @@ const CreateProjectForm = () => {
         });
 
         console.log(
-          "✅ socket event 'task-updated' hit while assigned user in task"
+          "✅ socket event 'task-updated' hit while assigned user in Project"
         );
       }
 

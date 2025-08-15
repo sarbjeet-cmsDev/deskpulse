@@ -20,7 +20,7 @@ export const fetchNotificationCount = createAsyncThunk(
   async (userId: string, { rejectWithValue }) => {
     try {
       const res: any = await NotificationService.getNotificationByUserId(userId);
-      console.log(res,"response++")
+     
       return res?.notifications?.count || 0;
     } catch (err: any) {
       return rejectWithValue(err.message || "Failed to fetch notifications");

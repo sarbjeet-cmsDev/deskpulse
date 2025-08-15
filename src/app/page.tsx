@@ -50,7 +50,7 @@ export default function Dashboard() {
   const socketRef = useRef(getSocket());
 
 useEffect(()=>{
-  console.log("socket is there")
+  console.log("socket is connected")
 const socket = socketRef.current;
 
 if(!socket.connected){

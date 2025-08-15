@@ -66,9 +66,9 @@ export default function MultiSelectUserModal({
   }, [isOpen, activeUsers, fetchUsers]);
 
   const handleConfirm = () => {
-    console.log("hello hitting here",selectedUsers)
+  
     const ids = selectedUsers.map((u) => u.value);
-    console.log(ids,"idss")
+  
     onConfirm(ids);
     onClose();
   };

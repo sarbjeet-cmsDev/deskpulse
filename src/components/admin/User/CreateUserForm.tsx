@@ -46,7 +46,7 @@ const CreateUserComponent = () => {
     setLoading(true);
     try {
       const { confirmPassword, ...payload } = data;
-      console.log(payload, "payload");
+     
       await AdminUserService.createUser(payload);
 
       router.push("/admin/user");

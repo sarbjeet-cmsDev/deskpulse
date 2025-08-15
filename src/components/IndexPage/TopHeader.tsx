@@ -101,7 +101,7 @@ export default function TopHeader() {
       Notification.requestPermission();
     }
   }, []);
-  console.log(count, "countcountcount")
+  
 
 
 

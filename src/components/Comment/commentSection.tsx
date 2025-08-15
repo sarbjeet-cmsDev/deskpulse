@@ -67,8 +67,7 @@ export default function CommentInputSection({
   const user: any = useSelector((state: RootState) => state.user.data);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
-  console.log(content, "content");
-  console.log(user, "incoming user");
+ 
   useEffect(() => {
     if (isEditing && defaultValue) {
       setContent(defaultValue);
@@ -113,18 +112,18 @@ export default function CommentInputSection({
 
   const socketRef = useRef(getSocket());
 
-  useEffect(() => {
-    const socket = socketRef.current;
+  // useEffect(() => {
+  //   const socket = socketRef.current;
 
-    if (!socket.connected) {
-      socket.connect();
-    }
+  //   if (!socket.connected) {
+  //     socket.connect();
+  //   }
 
-    socket.on("connect", () => {
-      console.log("Socket connected inside comment section:", socket.id);
-    });
+  //   socket.on("connect", () => {
+  //     console.log("Socket connected inside comment section:", socket.id);
+  //   });
 
-  }, []);
+  // }, []);
 
   const mentionSource = useCallback(
     async (
@@ -215,7 +214,7 @@ export default function CommentInputSection({
         throw new Error("User ID is required to create a comment.");
       }
 
-      console.log(mentionedUserIds, "mention user id");
+      
       const payload = {
         content: html,
         task: taskId,
@@ -241,7 +240,7 @@ export default function CommentInputSection({
         description: "mentioned you in a comment",
       });
 
-      console.log("✅ socket event 'task-updated' emitted for:");
+      console.log("✅ socket event 'task-updated' emitted for mention in comment");
 
       setContent("");
       onCommentCreated();
@@ -410,7 +409,7 @@ export default function CommentInputSection({
                     setLoading(false);
                   });
 
-                console.log("hello save hit");
+               
               } else if (isEditing) {
                 handleEdit();
               } else {

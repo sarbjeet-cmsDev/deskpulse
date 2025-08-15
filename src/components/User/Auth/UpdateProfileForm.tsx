@@ -45,7 +45,7 @@ const UpdateAuthProfileForm = ({id}:Props) => {
     const fetchUser = async () => {
       try {
         const user = await UserService.getUserById();
-        console.log("user UpdateUserProfile ", user);
+    
         const defaultDateOfBirth = user.dateOfBirth
           ? new Date(user.dateOfBirth).toISOString().split("T")[0] 
           : "";

@@ -53,7 +53,7 @@ const UpdateProjectForm = ({ id }: Props) => {
   const [lightboxImage, setLightboxImage] = useState("");
 
   const user: any = useSelector((state: RootState) => state.user.data);
-  console.log(user, "loggedIn user Detail");
+  
 
   const {
     register,
@@ -129,7 +129,7 @@ const UpdateProjectForm = ({ id }: Props) => {
       await AdminProjectService.updateProject(id, formData);
 
       if (data?.users?.length) {
-        console.log("hi while update project");
+        console.log("hit socket while update project");
         if (!socketRef.current.connected) {
           socketRef.current.connect();
         }
@@ -146,7 +146,7 @@ const UpdateProjectForm = ({ id }: Props) => {
         });
 
         console.log(
-          "✅ socket event 'task-updated' hit while assigned user in task"
+          "✅ socket event 'task-updated' hit while assigned user in Project"
         );
       }
 

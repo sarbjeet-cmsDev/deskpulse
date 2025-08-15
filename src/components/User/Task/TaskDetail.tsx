@@ -166,7 +166,7 @@ export default function TaskDetails({ id }: Props) {
 
   const handleUpdateTaskDescription = (id: string) => {
     return async (description: string) => {
-      console.log("hiitt")
+    
       try {
         await TaskService.updateTask(id, {
           description,
@@ -194,7 +194,7 @@ export default function TaskDetails({ id }: Props) {
     await TaskService.updateTask(taskId, data);
     setEditTaskTitle(false)
     fetchTask(taskId)
-    console.log(data)
+   
   })
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -212,7 +212,7 @@ export default function TaskDetails({ id }: Props) {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [editTaskTitle]);
-  console.log(user, "useruser")
+ 
   return (
     <div className="max-w-6xl mx-auto">
       <div className="main-content">
