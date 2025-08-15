@@ -100,6 +100,10 @@ export class ProjectService {
     id: string,
     updateProjectDto: UpdateProjectDto
   ): Promise<Project> {
+
+    if(!updateProjectDto.users){
+      updateProjectDto.users = []
+    }
     const sanitized = this.sanitizeObjectIds(updateProjectDto);
     const updatedProject = await this.projectModel
       .findByIdAndUpdate(id, sanitized, { new: true })
