@@ -19,7 +19,7 @@ interface ClientToServerEvents {
   "task-updated": (data: {taskId: string;sender: string;receiverId: string;description: string;}) => void;
 }
 
-const SOCKET_URL = "http://localhost:3001"; // adjust if needed
+const SOCKET_URL = `${process.env.NEXT_PUBLIC_BACKEND_HOST}`; // adjust if needed
 
 let socket: Socket<ServerToClientEvents, ClientToServerEvents> | null = null;
 

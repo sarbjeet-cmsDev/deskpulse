@@ -21,7 +21,7 @@ async function bootstrap() {
   expressApp.use(express.urlencoded({ limit: '10mb', extended: true }));
   expressApp.use(
     cors({
-      origin: "http://localhost:3000",
+      origin: `${process.env.FRONTEND_URL}`,
       credentials: true,
     })
   );

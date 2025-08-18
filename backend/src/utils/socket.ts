@@ -14,7 +14,7 @@ let io: Server;
 export function initSocketIO(server: HttpServer) {
   io = new Server(server, {
     cors: {
-      origin: "http://localhost:3000",
+      origin: `${process.env.FRONTEND_URL}`,
       methods: ["GET", "POST"],
       credentials: true,
     },
@@ -88,16 +88,4 @@ export function getIO(): Server {
   return io;
 }
 
-/**
- * Emit notification count update to a specific user
- */
-// export function emitNotificationCount(userId: string, count: number) {
-//   console.log("hitting totl count")
-//   const socketId = userSockets.get(userId);
-//   if (socketId && io) {
-//     io.to(socketId).emit("notification-count", { count });
-//     console.log(`🔔 Sent notification-count to user ${userId} (${socketId}): ${count}`);
-//   } else {
-//     console.log(`⚠️ User ${userId} not connected, can't send notification-count`);
-//   }
-// }
+
