@@ -14,7 +14,7 @@ let io: Server;
 export function initSocketIO(server: HttpServer) {
   io = new Server(server, {
     cors: {
-      origin: `${process.env.FRONTEND_URL}`,
+      origin: `${process.env.SOCKET_FRONTEND}`,
       methods: ["GET", "POST"],
       credentials: true,
     },
