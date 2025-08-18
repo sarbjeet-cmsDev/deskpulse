@@ -151,7 +151,7 @@ export default function PerformancePreview() {
           <Image src={leftarrow} alt="Back" width={16} height={16} />
         </Link>
 
-        <H3 className=" text-center flex-1 text-base sm:text-lg md:text-xl">
+        <H3 className=" text-center flex-1 text-base sm:text-lg md:text-xl md:text-center text-end">
           Performance
         </H3>
       </div>

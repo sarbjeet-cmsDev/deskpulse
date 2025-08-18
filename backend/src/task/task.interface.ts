@@ -60,6 +60,7 @@ export interface Task extends Document {
   total_timespent: any;
   created_by: MongooseSchema.Types.ObjectId;
   updated_by?: MongooseSchema.Types.ObjectId;
+  estimated_time?: string
 }
 
 interface TaskDetails {

@@ -57,7 +57,7 @@ export default function Dashboard() {
       socket.connect();
     }
     socket.on('connect', () => {
-      socket.emit('register-user', user.id); // Send your user ID immediately
+      socket.emit('register-user', user?.id || user?._id); // Send your user ID immediately
     });
 
 

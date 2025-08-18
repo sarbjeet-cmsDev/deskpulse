@@ -20,10 +20,9 @@ import Link from "next/link";
 import { getGreeting } from "@/utils/greetings";
 import { useDispatch } from "react-redux";
 import { signOut } from "@/store/slices/authSlice";
-import router from "next/router";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Cookies from "js-cookie";
-import { getSocket } from "@/utils/socket"; 
+import { getSocket } from "@/utils/socket";
 // import Cookies from "js-cookie";
 
 export default function LeftMenuDrawer() {
@@ -43,7 +42,6 @@ export default function LeftMenuDrawer() {
 
   const [version, setVersion] = useState(Date.now());
 
-
   useEffect(() => {
     if (userData?.profileImage) {
       setImageSrc(
@@ -53,7 +51,6 @@ export default function LeftMenuDrawer() {
       setImageSrc(avatar.src);
     }
   }, [userData, version]);
- 
 
   const userMenuItems = [
     { label: "Home", href: "/" },
@@ -82,11 +79,12 @@ export default function LeftMenuDrawer() {
   ];
 
   const menuItems = user?.role === "admin" ? adminMenuItems : userMenuItems;
-  
+
   const router = useRouter();
+  const pathname = usePathname();
   const handleLogout = () => {
     const socket = getSocket();
-         socket.disconnect();
+    socket.disconnect();
     dispatch(signOut());
     localStorage.removeItem("token");
     localStorage.removeItem("type");
@@ -196,7 +194,11 @@ export default function LeftMenuDrawer() {
                   ) : (
                     <Link href={item.href} key={index} passHref>
                       <P
-                        className="text-start px-4 py-2 bg-white font-semibold text-black text-[16px] border border-none rounded-md hover:bg-[#7980ff] hover:text-white cursor-pointer transition-colors duration-500"
+                        className={`text-start px-4 py-2 font-semibold text-[16px] border border-none rounded-md cursor-pointer transition-colors duration-500
+                ${pathname === item.href
+                            ? "bg-blue-500 text-white"
+                            : "bg-white text-black hover:bg-[#7980ff] hover:text-white"
+                          }`}
                         onClick={onClose}
                       >
                         {item.label}

@@ -1,5 +1,4 @@
 "use client";
-import { useSearchParams } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import { ReadonlyURLSearchParams } from 'next/navigation';
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
@@ -188,7 +187,7 @@ const DataGrid: React.FC<DataGridProps> = ({
                       {row[header.id]}
                     </td>
                   ))}
-                  <td className="px-4 py-2 space-x-2 flex">
+                  <td className="px-4 py-2 ">
                     {row.actions && row.actions.length > 0 ? (
                       row.actions.map((action, i) => (
                         <button

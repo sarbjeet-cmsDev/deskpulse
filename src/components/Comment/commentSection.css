@@ -20,22 +20,32 @@
 }
 
 .description-content .ql-editor {
-  font-size: 17px; 
+  font-size: 17px;
   line-height: 1.4;
 }
 
 .ql-code-block-container {
   background-color: #262624;
   padding: 15px;
-  border : none;
+  border: none;
   border-radius: 5px;
 }
 
-.ql-code-block{
-  color:white;
+.ql-code-block {
+  color: white;
 }
 
-/* .ql-ui{
-  text-align:right;
-} */
+.updateSaveButton {
+  display: none;
+}
 
+.show-save-btn {
+  display: block !important;
+}
+
+.cancelButton {
+  display: none;
+}
+.show-cancel-btn {
+  display: block !important;
+}

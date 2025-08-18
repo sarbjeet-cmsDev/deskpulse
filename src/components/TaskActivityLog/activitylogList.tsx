@@ -8,7 +8,7 @@ interface TaskActivityLogListProps {
 
 export default function TaskActivityLogList({ logs }: TaskActivityLogListProps) {
   if (!logs.length) {
-    return <div className="text-gray-500">No activity logs available.</div>;
+    return <div className="text-gray-500 text-center">No activity logs available.</div>;
   }
 
   return (

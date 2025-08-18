@@ -1,12 +1,10 @@
 "use client";
 import { H5 } from "@/components/Heading/H5";
-import { P } from "@/components/ptag";
 import Image from "next/image";
 import leftarrow from "@/assets/images/back.png";
 import ProjectAvtar from "@/assets/images/projectimage.png";
 import Details from "@/components/ProjectDetails/DetailTable";
 import SubTasks from "@/components/ProjectDetails/SubTaskList";
-import DropDownOptions from "@/components/ProjectDetails/DropDown";
 import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import ProjectService from "@/service/project.service";
@@ -14,16 +12,13 @@ import TaskService, { ITask } from "@/service/task.service";
 import CreateTaskModal from "@/components/Task/createTaskModal";
 import { RootState } from "@/store/store";
 import { useSelector } from "react-redux";
-import { IUserRedux } from "@/types/user.interface";
 import Link from "next/link";
 import { Button } from "@heroui/button";
 import AvatarList from "@/components/IndexPage/avatarlist";
 import AdminUserService from "@/service/adminUser.service";
 import { ProjectKanbon } from "@/service/projectKanbon.service";
 import { KanbanColumn } from "@/types/projectKanbon.interface";
-import CommentInputSection from "@/components/Comment/commentSection";
 import DropdownOptions from "@/components/DropdownOptions";
-import { H3 } from "@/components/Heading/H3";
 import ImageLightbox from "@/components/common/ImagePopUp/ImageLightbox";
 
 interface Props {
@@ -372,7 +367,7 @@ export default function MyProjectDetails({ code }: Props) {
                     dangerouslySetInnerHTML={{
                       __html:
                         project?.deploy_instruction ||
-                        "<p>No description provided.</p>",
+                        "<p>No Instruction provided.</p>",
                     }}
                   />
                 </div>
@@ -385,7 +380,7 @@ export default function MyProjectDetails({ code }: Props) {
                     dangerouslySetInnerHTML={{
                       __html:
                         project?.critical_notes ||
-                        "<p>No description provided.</p>",
+                        "<p>No Critical Notes provided.</p>",
                     }}
                   />
                 </div>

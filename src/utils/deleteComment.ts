@@ -4,7 +4,7 @@ import CommentService from "@/service/comment.service";
 export const deleteComment = async (commentId: string, fetchComments?: any) => {
   const confirmed = await SweetAlert({
     title: "Are you sure?",
-    text: `You are about to delete comment  this comment"}`,
+    text: `You are about to delete this comment`,
     confirmButtonText: "Yes, delete it!",
     cancelButtonText: "No, cancel!",
   });

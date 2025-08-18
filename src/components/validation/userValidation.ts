@@ -39,30 +39,30 @@ export const userSchemaBase = z.object({
   gender: z
     .string()
     .nonempty("Please select gender")
-    // .transform((val) => (val === "" ? undefined : val))
-    // .refine(
-    //   (val) => val === undefined || genderEnum.options.includes(val as any),
-    //   {
-    //     message: "Please select gender",
-    //   }
-    // )
-    // .optional()
-    ,
-  
-    roles: z
+  // .transform((val) => (val === "" ? undefined : val))
+  // .refine(
+  //   (val) => val === undefined || genderEnum.options.includes(val as any),
+  //   {
+  //     message: "Please select gender",
+  //   }
+  // )
+  // .optional()
+  ,
+
+  roles: z
     .string().nonempty("Please select role"),
-    
-    isActive: z.boolean().optional(),
-    
-    dateOfBirth: z
+
+  isActive: z.boolean().optional(),
+
+  dateOfBirth: z
     .union([z.string(), z.date()])
     .transform((val) => (typeof val === "string" ? new Date(val) : val))
     .optional(),
-    
-    profileImage: z.string().url("Invalid image URL").optional(),
-    
-    // roles: z.array(z.string()).optional(),
-    // roles: z.array(userRoleEnum).nonempty("At least one user role is required"),
+
+  profileImage: z.string().url("Invalid image URL").optional(),
+
+  // roles: z.array(z.string()).optional(),
+  // roles: z.array(userRoleEnum).nonempty("At least one user role is required"),
 
   hobbies: z.array(z.string()).optional(),
   aboutUs: z.string().optional(),
@@ -228,15 +228,16 @@ export const userLoginSchema = z.object({
 });
 
 
-export const updateEstimateSchema=z.object({
- estimated_time: z.coerce
-  .number({
-    required_error: "EstimateTime is required",
-    invalid_type_error: "EstimateTime must be a number",
-  })
-  .min(1, { message: "EstimateTime must be greater than 0" })
+export const updateEstimateSchema = z.object({
+  estimated_time: z
+    .string()
+    .min(1, { message: "Estimate is required." })
+    .refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
+      message: "Estimate must be a number it's value is greater than 0.",
+    }),
+  // .min(1, { message: "EstimateTime must be greater than 0" })
 });
 
-export const updateTaskTitleSchema=z.object({
- title: z.string().nonempty("Title is required")
+export const updateTaskTitleSchema = z.object({
+  title: z.string().nonempty("Title is required")
 });

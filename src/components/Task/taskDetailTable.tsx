@@ -17,6 +17,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { updateEstimateSchema } from "../validation/userValidation";
 import { zodResolver } from "@hookform/resolvers/zod";
+import formatMinutes from "@/utils/formatMinutes";
 
 interface DetailsProps {
   project: {
@@ -45,12 +46,6 @@ type User = {
   avatar?: string;
 };
 
-function formatMinutes(min: string | number): string {
-  const totalMinutes = Number(min);
-  const hours = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
-  return `${hours}h${minutes > 0 ? ` ${minutes}m` : ""}`;
-}
 
 export enum PriorityEnum {
   LOW = "low",
@@ -163,7 +158,7 @@ export default function DetailsTable({
     await TaskService.updateTask(taskId, data);
     setEditEstimate(false)
     fetchTask(taskId)
-   
+
   })
 
   useEffect(() => {
@@ -410,8 +405,8 @@ export default function DetailsTable({
                   <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="flex gap-2">
 
-                      <Input  {...register("estimated_time")} min={1} className="w-[100px] cursor-pointer" type="number" defaultValue={task?.estimated_time} />
-                      <Button type="submit" className="bg-theme-primary">Update</Button>
+                      <Input  {...register("estimated_time")} type="text" className="w-[100px] cursor-pointer" defaultValue={task?.estimated_time} />
+                      <Button type="submit" className="bg-theme-primary text-white">Update</Button>
                     </div>
 
                     {errors.estimated_time && (
@@ -421,7 +416,7 @@ export default function DetailsTable({
                 ) : (
                   <div>
 
-                    {formatMinutes(task?.estimated_time)}
+                    {formatMinutes(Number(task?.estimated_time) * 60)}
                   </div>
                 )}
                 {!editEstimate && user?.role === "admin" && (

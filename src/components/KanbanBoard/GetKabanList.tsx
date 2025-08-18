@@ -11,7 +11,6 @@ import SubTasks from "../ProjectDetails/SubTaskList";
 import AdminUserService from "@/service/adminUser.service";
 import { RootState } from "@/store/store";
 import { useSelector } from "react-redux";
-import Image from "next/image";
 import AvatarList from "../IndexPage/avatarlist";
 import ProjectService from "@/service/project.service";
 
@@ -165,7 +164,7 @@ export const GetKanbonList = () => {
         </div>
       )}
 
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between md:p-0 p-2">
         <div className="flex flex-start gap-5 p-5">
           <Button
             variant="bordered"
@@ -272,7 +271,7 @@ export const GetKanbonList = () => {
           })}
         </div>
       ) : (
-        <div className="container mx-auto max-w-3xl">
+        <div className="container mx-auto max-w-3xl md:p-0 p-3">
           <SubTasks tasks={taskList} kanbanList={kanbanList} />
         </div>
       )}

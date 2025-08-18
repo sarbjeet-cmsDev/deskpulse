@@ -5,17 +5,12 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  userSchemaBaseUpdate,
-  userUpdateSchema,
-} from "@/components/validation/userValidation";
+import { userSchemaBaseUpdate } from "@/components/validation/userValidation";
 import { Input } from "@/components/Form/Input";
 import { Button } from "@/components/Form/Button";
-import { H1 } from "@/components/Heading/H1";
-import { useParams, useRouter } from "next/navigation";
-import AdminUserService, { IUser } from "@/service/adminUser.service";
+import { useRouter } from "next/navigation";
+import AdminUserService from "@/service/adminUser.service";
 import UserService from "@/service/user.service";
-import { H2 } from "@/components/Heading/H2";
 import { H3 } from "@/components/Heading/H3";
 import Link from "next/link";
 
@@ -25,7 +20,7 @@ interface Props {
 
 type UpdateUserInput = z.infer<typeof userSchemaBaseUpdate>;
 
-const UpdateAuthProfileForm = ({id}:Props) => {
+const UpdateAuthProfileForm = ({ id }: Props) => {
   const router = useRouter();
   // const { id } = useParams<{ id: string }>();
   const [loading, setLoading] = useState(false);
@@ -40,14 +35,13 @@ const UpdateAuthProfileForm = ({id}:Props) => {
     resolver: zodResolver(userSchemaBaseUpdate),
   });
 
-
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const user = await UserService.getUserById();
-    
+
         const defaultDateOfBirth = user.dateOfBirth
-          ? new Date(user.dateOfBirth).toISOString().split("T")[0] 
+          ? new Date(user.dateOfBirth).toISOString().split("T")[0]
           : "";
         reset({
           username: user.username ?? "",
@@ -98,8 +92,8 @@ const UpdateAuthProfileForm = ({id}:Props) => {
   if (initialLoading) return <div className="p-6">Loading user...</div>;
 
   return (
-    <div className="min-h-screen mx-auto container max-w-3xl flex-col justify-center items-start pt-10">
-      <div className="flex justify-center items-center p-[24px] border-b border-[#31394f14]">
+    <div className="min-h-screen mx-auto container max-w-3xl flex-col justify-center items-start md:pt-10">
+      <div className="flex justify-center items-center md:p-[24px] p-2 border-b border-[#31394f14]">
         <div className="w-10">
           <Link href="/auth/profile">
             <Image src={leftarrow} alt="Logo" width={16} height={16} />
@@ -166,7 +160,9 @@ const UpdateAuthProfileForm = ({id}:Props) => {
               {...register("gender")}
               className="w-full border rounded px-3 py-2"
             >
-              <option value="" disabled>Select gender</option>
+              <option value="" disabled>
+                Select gender
+              </option>
               <option value="male">Male</option>
               <option value="female">Female</option>
               <option value="other">Other</option>

@@ -76,7 +76,7 @@ export class CreateTaskDto {
 
 
   @IsOptional()
-  @IsNumber()
+  // @IsNumber()
   estimated_time?: number;
 
   @IsOptional()
@@ -151,7 +151,7 @@ export class UpdateTaskDto {
 
 
   @IsOptional()
-  @IsNumber()
+  // @IsNumber()
   estimated_time?: number;
 
   @IsOptional()
@@ -183,7 +183,7 @@ export class UpdateTaskStatusUpdateDto {
   @IsOptional()
   updated_by?: MongooseSchema.Types.ObjectId;
 
-   @IsOptional()
+  @IsOptional()
   @IsEnum(PriorityEnum)
   priority?: PriorityEnum;
 }

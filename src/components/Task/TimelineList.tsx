@@ -5,6 +5,7 @@ import TimelineService, { ITimeline } from "@/service/timeline.service";
 import CreateTimelineModal from "./createTimelineModal";
 import Pagination from "../Pagination/pagination";
 import { ITask } from "@/service/task.service";
+import formatMinutes from "@/utils/formatMinutes";
 
 interface TimelineListProps {
   timelines: ITimeline[];
@@ -15,15 +16,9 @@ interface TimelineListProps {
   itemsPerPage: number;
   onPageChange: (page: number) => void;
   refreshTimelines: () => void;
-  refreshTask:() => void;
+  refreshTask: () => void;
 }
 
-function formatMinutes(min: string | number): string {
-  const totalMinutes = Number(min);
-  const hours = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
-  return `${hours}h${minutes > 0 ? ` ${minutes}m` : ""}`;
-}
 
 export default function TimelineList({
   timelines,
@@ -143,7 +138,7 @@ export default function TimelineList({
 
       <ul>
         {filteredTimelines.map((timeline) => (
-          
+
           <li
             key={timeline._id}
             className="inactive flex justify-between items-center bg-[#f8fafc] w-full py-[15px] px-[20px] rounded-[8px] border-l-[8px] border-l-[#5fd788] mt-[16px]"

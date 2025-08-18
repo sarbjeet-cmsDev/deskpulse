@@ -18,12 +18,12 @@ export class TimelineService {
     private readonly projectService: ProjectService,
     private readonly userService: UserService,
     private eventEmitter: EventEmitter2
-  ) {}
+  ) { }
 
   async create(createTimelineDto: CreateTimelineDto): Promise<Timeline> {
     if (createTimelineDto.time_spent) {
-    createTimelineDto.time_spent = Number(createTimelineDto.time_spent) * 60; 
-  }
+      createTimelineDto.time_spent = Number(createTimelineDto.time_spent) * 60;
+    }
 
     const createdTimeline = new this.timelineModel(createTimelineDto);
     const savedTimeline = await createdTimeline.save();
@@ -79,6 +79,9 @@ export class TimelineService {
         timeline.task.toString(),
         -timeline.time_spent
       );
+      this.eventEmitter.emit('timeline.deleted', {
+        timeLineObj: timeline,
+      });
     }
 
     return timeline;

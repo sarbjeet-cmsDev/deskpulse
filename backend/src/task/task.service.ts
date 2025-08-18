@@ -23,14 +23,15 @@ export class TaskService {
     private readonly userservices: UserService,
     private eventEmitter: EventEmitter2
   ) { }
-
   async create(createTaskDto: CreateTaskDto): Promise<Task> {
+
+
     const { code: projectCode } = await this.projectService.findOne(
       createTaskDto.project.toString()
     );
-     if (createTaskDto.estimated_time) {
-    createTaskDto.estimated_time = Number(createTaskDto.estimated_time) * 60; 
-  }
+    // if (createTaskDto.estimated_time) {
+    //   createTaskDto.estimated_time = Number(createTaskDto.estimated_time) * 60;
+    // }
     const tasks = await this.taskModel.find({
       code: new RegExp(`^${projectCode}-\\d{2,}$`),
     });
@@ -42,20 +43,16 @@ export class TaskService {
 
     const status = createTaskDto.status ?? TaskStatusEnum.BACKLOG;
     const maxSortTask = await this.taskModel
-    .findOne({
-      project: createTaskDto.project,
-      status: status, 
-    })
-    .sort({ sort_order: -1 }) 
-    .select("sort_order")
-    .lean();
-
-    console.log("Incoming status:", createTaskDto.status);
-    console.log("Last task found:", maxSortTask);
+      .findOne({
+        project: createTaskDto.project,
+        status: status,
+      })
+      .sort({ sort_order: -1 })
+      .select("sort_order")
+      .lean();
 
     const newSortOrder = maxSortTask?.sort_order ?? -1;
     createTaskDto.sort_order = newSortOrder + 1;
-   console.log("Final sort_order to save:", createTaskDto.sort_order);
 
     const createdTask = new this.taskModel(createTaskDto);
     this.eventEmitter.emit("task.created", { taskObj: createdTask });
@@ -67,17 +64,17 @@ export class TaskService {
   }
 
   async findAll(
-     page: number,
+    page: number,
     limit: number,
     keyword?: string,
     sortOrder: "asc" | "desc" = "asc"
-  ): Promise<{data: Task[]; total: number; page: number; limit: number;totalPages: number;}> {
-     let safePage = Math.max(Number(page) || 1, 1);
+  ): Promise<{ data: Task[]; total: number; page: number; limit: number; totalPages: number; }> {
+    let safePage = Math.max(Number(page) || 1, 1);
     let safeLimit = Math.max(Number(limit) || 10, 1);
     const MAX_LIMIT = 200;
     if (safeLimit > MAX_LIMIT) safeLimit = MAX_LIMIT;
 
- 
+
     const filter: Record<string, any> = {};
     if (keyword && keyword.trim()) {
       filter.$or = [
@@ -97,14 +94,14 @@ export class TaskService {
 
     const skip = (safePage - 1) * safeLimit;
 
-     const data = await this.taskModel
+    const data = await this.taskModel
       .find(filter)
       .sort({ createdAt: sortOrder === 'desc' ? 1 : -1 })
       .skip(skip)
       .limit(safeLimit)
       .exec();
 
-    
+
     return {
       data,
       total,
@@ -132,50 +129,50 @@ export class TaskService {
       assigned_to: { $in: userIds },
       project: projectId,
     })
-    .populate('assigned_to')
-    .sort({ sort_order: -1 })
+      .populate('assigned_to')
+      .sort({ sort_order: -1 })
   }
 
-async findByAssignedToUser(
-  userIds: string[],
-  page: number,
-  limit: number,
-  start?: string,
-  end?: string
-): Promise<{ data: Task[]; total: number; page: number; limit: number }> {
-  const skip = (page - 1) * limit;
+  async findByAssignedToUser(
+    userIds: string[],
+    page: number,
+    limit: number,
+    start?: string,
+    end?: string
+  ): Promise<{ data: Task[]; total: number; page: number; limit: number }> {
+    const skip = (page - 1) * limit;
 
-  const filter: Record<string, any> = { assigned_to: { $in: userIds } };
+    const filter: Record<string, any> = { assigned_to: { $in: userIds } };
 
-  // ✅ Date Range Filter
-  if (start && end) {
-    filter.createdAt = {
-      $gte: new Date(start),
-      $lte: new Date(end),
+    // ✅ Date Range Filter
+    if (start && end) {
+      filter.createdAt = {
+        $gte: new Date(start),
+        $lte: new Date(end),
+      };
+    }
+
+    const [data, total] = await Promise.all([
+      this.taskModel
+        .find(filter)
+        .skip(skip)
+        .limit(limit)
+        .populate('project')
+        .populate('assigned_to')
+        // .sort({ sort_order: -1 })
+        .sort({ createdAt: -1 })
+
+        .exec(),
+      this.taskModel.countDocuments(filter),
+    ]);
+
+    return {
+      data,
+      page,
+      limit,
+      total,
     };
   }
-
-  const [data, total] = await Promise.all([
-    this.taskModel
-      .find(filter)
-      .skip(skip)
-      .limit(limit)
-      .populate('project')
-      .populate('assigned_to')
-      // .sort({ sort_order: -1 })
-    .sort({ createdAt: -1 })
-
-      .exec(),
-    this.taskModel.countDocuments(filter),
-  ]);
-
-  return {
-    data,
-    page,
-    limit,
-    total,
-  };
-}
 
 
   async findOne(id: string): Promise<Task> {
@@ -287,7 +284,7 @@ async findByAssignedToUser(
     if (!task) {
       throw new NotFoundException(`Task with ID ${id} not found.`);
     }
-    const oldTaskStatus = task.status; 
+    const oldTaskStatus = task.status;
     const updatedTask = await this.taskModel
       .findByIdAndUpdate(id, updateTaskDto, { new: true })
       .exec();
@@ -307,116 +304,116 @@ async findByAssignedToUser(
   }
 
   async search(keyword: string, projectsList: any) {
-  const regex = new RegExp(keyword, "i");
-  const projectIds = projectsList.map(project => project._id);
+    const regex = new RegExp(keyword, "i");
+    const projectIds = projectsList.map(project => project._id);
 
-  const filters: any = {
-    $and: [
-      { project: { $in: projectIds } }, 
-      {
-        $or: [
-          { code: { $regex: regex } },
-          { title: { $regex: regex } },
-          { description: { $regex: regex } },
-        ],
-      },
-    ],
-  };
+    const filters: any = {
+      $and: [
+        { project: { $in: projectIds } },
+        {
+          $or: [
+            { code: { $regex: regex } },
+            { title: { $regex: regex } },
+            { description: { $regex: regex } },
+          ],
+        },
+      ],
+    };
 
-  return this.taskModel
-    .find(filters)
-    .sort({ updatedAt: -1, createdAt: -1 }) 
-     .limit(10)    
-    .exec();
-}
-
-async reorderTask(taskId: string, targetTaskId: string, status: string) {
-  const task = await this.taskModel.findById(taskId);
-  const targetTask = await this.taskModel.findById(targetTaskId);
-
-  if (!task || !targetTask) throw new NotFoundException("Task(s) not found");
-
-  if (task.status !== status || targetTask.status !== status) return;
-
-  const tasks = await this.taskModel
-    .find({ project: task.project, status })
-    .sort({ sort_order: 1 });
-
-  const filtered = tasks.filter((t) => t._id.toString() !== taskId);
-
-  const targetIndex = filtered.findIndex((t) => t._id.toString() === targetTaskId);
-  if (targetIndex === -1) return;
-
-  filtered.splice(targetIndex, 0, task);
-
-  for (let i = 0; i < filtered.length; i++) {
-    await this.taskModel.findByIdAndUpdate(filtered[i]._id, {
-      sort_order: i,
-    });
+    return this.taskModel
+      .find(filters)
+      .sort({ updatedAt: -1, createdAt: -1 })
+      .limit(10)
+      .exec();
   }
 
-  return { message: 'Task Reordered successfully' };
-}
+  async reorderTask(taskId: string, targetTaskId: string, status: string) {
+    const task = await this.taskModel.findById(taskId);
+    const targetTask = await this.taskModel.findById(targetTaskId);
 
-async getTaskDetails(
-  page: number,
-  limit: number,
-  keyword?: string,
-  sortOrder: "asc" | "desc" = "asc",
-  start?: string,
-  end?: string
-): Promise<{
-  data: Task[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}> {
-  let safePage = Math.max(Number(page) || 1, 1);
-  let safeLimit = Math.max(Number(limit) || 10, 1);
-  const MAX_LIMIT = 200;
-  if (safeLimit > MAX_LIMIT) safeLimit = MAX_LIMIT;
+    if (!task || !targetTask) throw new NotFoundException("Task(s) not found");
 
-  const filter: Record<string, any> = {};
+    if (task.status !== status || targetTask.status !== status) return;
 
-  if (keyword && keyword.trim()) {
-    filter.$or = [
-      { title: { $regex: keyword.trim(), $options: 'i' } },
-      { code: { $regex: keyword.trim(), $options: 'i' } },
-    ];
+    const tasks = await this.taskModel
+      .find({ project: task.project, status })
+      .sort({ sort_order: 1 });
+
+    const filtered = tasks.filter((t) => t._id.toString() !== taskId);
+
+    const targetIndex = filtered.findIndex((t) => t._id.toString() === targetTaskId);
+    if (targetIndex === -1) return;
+
+    filtered.splice(targetIndex, 0, task);
+
+    for (let i = 0; i < filtered.length; i++) {
+      await this.taskModel.findByIdAndUpdate(filtered[i]._id, {
+        sort_order: i,
+      });
+    }
+
+    return { message: 'Task Reordered successfully' };
   }
 
-  // ✅ Date Range Filter
-  if (start && end) {
-    filter.createdAt = {
-      $gte: new Date(start),
-      $lte: new Date(end),
+  async getTaskDetails(
+    page: number,
+    limit: number,
+    keyword?: string,
+    sortOrder: "asc" | "desc" = "asc",
+    start?: string,
+    end?: string
+  ): Promise<{
+    data: Task[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> {
+    let safePage = Math.max(Number(page) || 1, 1);
+    let safeLimit = Math.max(Number(limit) || 10, 1);
+    const MAX_LIMIT = 200;
+    if (safeLimit > MAX_LIMIT) safeLimit = MAX_LIMIT;
+
+    const filter: Record<string, any> = {};
+
+    if (keyword && keyword.trim()) {
+      filter.$or = [
+        { title: { $regex: keyword.trim(), $options: 'i' } },
+        { code: { $regex: keyword.trim(), $options: 'i' } },
+      ];
+    }
+
+    // ✅ Date Range Filter
+    if (start && end) {
+      filter.createdAt = {
+        $gte: new Date(start),
+        $lte: new Date(end),
+      };
+    }
+
+    const total = await this.taskModel.countDocuments(filter).exec();
+    const totalPages = total === 0 ? 0 : Math.ceil(total / safeLimit);
+    if (totalPages > 0 && safePage > totalPages) safePage = totalPages;
+
+    const skip = (safePage - 1) * safeLimit;
+
+    const data = await this.taskModel
+      .find(filter)
+      .sort({ createdAt: sortOrder === 'desc' ? 1 : -1 })
+      // .sort({ sortOrder: -1 })
+      .skip(skip)
+      .limit(safeLimit)
+      .populate('project')
+      .populate('assigned_to')
+      .exec();
+
+    return {
+      data,
+      total,
+      page: safePage,
+      limit: safeLimit,
+      totalPages,
     };
   }
-
-  const total = await this.taskModel.countDocuments(filter).exec();
-  const totalPages = total === 0 ? 0 : Math.ceil(total / safeLimit);
-  if (totalPages > 0 && safePage > totalPages) safePage = totalPages;
-
-  const skip = (safePage - 1) * safeLimit;
-
-  const data = await this.taskModel
-    .find(filter)
-    .sort({ createdAt: sortOrder === 'desc' ? 1 : -1 })
-    // .sort({ sortOrder: -1 })
-    .skip(skip)
-    .limit(safeLimit)
-    .populate('project')
-    .populate('assigned_to')
-    .exec();
-
-  return {
-    data,
-    total,
-    page: safePage,
-    limit: safeLimit,
-    totalPages,
-  };
-}
 
 }

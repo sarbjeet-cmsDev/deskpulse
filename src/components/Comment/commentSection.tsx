@@ -67,7 +67,9 @@ export default function CommentInputSection({
   const user: any = useSelector((state: RootState) => state.user.data);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
- 
+  const saveBtnRef = useRef<HTMLButtonElement>(null);
+  const cancelBtnRef = useRef<HTMLButtonElement>(null);
+
   useEffect(() => {
     if (isEditing && defaultValue) {
       setContent(defaultValue);
@@ -155,14 +157,23 @@ export default function CommentInputSection({
       syntax: { hljs },
       toolbar: {
         container: [
-          [{ header: [1, 2, false] }],
+          [{ color: [] }, { background: [] }],
+          [{ align: [] }],
+          [{ script: "sub" }, { script: "super" }],
+          [{ size: ["small", false, "large", "huge"] }],
+          [{ header: [1, 2, 3, 4, 5, 6, false] }],
           ["bold", "italic", "underline"],
-          ["link", "image", "code-block"],
+          ["link", "image", "code-block", "format"],
           [{ list: "ordered" }, { list: "bullet" }],
+          [{ direction: "rtl" }],
           ["clean"],
+          ["blockquote"],
+          ["formatCode"]
+          // [{ font: [] }]
         ],
         handlers: {
           image: imageHandler,
+
         },
       },
       mention: {
@@ -214,7 +225,7 @@ export default function CommentInputSection({
         throw new Error("User ID is required to create a comment.");
       }
 
-      
+
       const payload = {
         content: html,
         task: taskId,
@@ -284,18 +295,37 @@ export default function CommentInputSection({
 
   const handleFocus = () => {
     wrapperRef.current?.classList.add("show-toolbar");
+    saveBtnRef.current?.classList.add("show-save-btn");
+    cancelBtnRef.current?.classList.add("show-cancel-btn");
   };
 
   const handleBlur = (e: React.FocusEvent) => {
-    if (!wrapperRef.current?.contains(e.relatedTarget as Node)) {
-      wrapperRef.current?.classList.remove("show-toolbar");
+    if (
+      wrapperRef.current?.contains(e.relatedTarget as Node) ||
+      saveBtnRef.current === e.relatedTarget ||
+      cancelBtnRef.current === e.relatedTarget
+    ) {
+      return; // still inside → don't hide
     }
+
+    wrapperRef.current?.classList.remove("show-toolbar");
+    saveBtnRef.current?.classList.remove("show-save-btn");
+    cancelBtnRef.current?.classList.remove("show-cancel-btn");
   };
+
+
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(event.target as Node) &&
+        saveBtnRef.current !== event.target &&
+        cancelBtnRef.current !== event.target
+      ) {
         wrapperRef.current.classList.remove("show-toolbar");
+        saveBtnRef.current?.classList.remove("show-save-btn");
+        cancelBtnRef.current?.classList.remove("show-cancel-btn");
       }
     }
 
@@ -304,6 +334,7 @@ export default function CommentInputSection({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
 
   const handleExternalSubmit = async () => {
     const editor = quillRef.current?.getEditor();
@@ -384,7 +415,7 @@ export default function CommentInputSection({
 
       <div className="flex justify-end gap-2 mt-4">
         {onCancel && (
-          <Button variant="light" onPress={onCancel} className="px-4">
+          <Button variant="light" onPress={onCancel} className="px-4 cancelButton" ref={cancelBtnRef}>
             Cancel
           </Button>
         )}
@@ -392,8 +423,9 @@ export default function CommentInputSection({
         {isButton === true ? (
           <Button
             onFocus={handleFocus}
+            // id="updateSaveButton"
+            ref={saveBtnRef}
             onPress={() => {
-
               if (onClick) {
                 if (title !== "Description") {
                   if (!content || stripHtml(content) === "") {
@@ -408,8 +440,6 @@ export default function CommentInputSection({
                     console.error("Failed to update description:", err);
                     setLoading(false);
                   });
-
-               
               } else if (isEditing) {
                 handleEdit();
               } else {
@@ -417,10 +447,11 @@ export default function CommentInputSection({
               }
             }}
             disabled={loading}
-            className="btn-primary"
+            className="btn-primary updateSaveButton"
           >
             {isEditing ? "Update" : "Save"}
           </Button>
+
         ) : null}
       </div>
 

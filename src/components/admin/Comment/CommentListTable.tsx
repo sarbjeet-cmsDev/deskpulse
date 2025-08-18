@@ -35,7 +35,7 @@ function stripHtml(html: string): string {
 const CommentListTable = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-     const pathname = usePathname();
+  const pathname = usePathname();
 
   const [comments, setComments] = useState<Comment[]>([]);
   const [search, setSearch] = useState("");
@@ -55,11 +55,11 @@ const CommentListTable = () => {
         keyword: debouncedSearch,
         sortOrder,
       });
-        const commentsWithPlainText = (res.data as Comment[]).map((comment) => ({
-      ...comment,
-      content: highlightMentions(stripHtml(comment.content)),
-    }));
-     
+      const commentsWithPlainText = (res.data as Comment[]).map((comment) => ({
+        ...comment,
+        content: highlightMentions(stripHtml(comment.content)),
+      }));
+
       setComments(commentsWithPlainText);
       setTotalRecords(res.total);
       setTotalPages(res.totalPages);
@@ -108,9 +108,9 @@ const CommentListTable = () => {
             setSearch(query);
             setPage(1);
           }}
-          
+
           onAction={async (action, row) => {
-           
+
             if (action === "Edit") {
               router.push(`/admin/project/update/${row._id}`);
             } else if (action === "Delete") {

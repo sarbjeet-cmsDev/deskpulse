@@ -1,6 +1,5 @@
 "use client";
 import { H5 } from "@/components/Heading/H5";
-import { P } from "@/components/ptag";
 import Image from "next/image";
 import leftarrow from "@/assets/images/back.png";
 import { useEffect, useRef, useState } from "react";
@@ -16,7 +15,6 @@ import { RootState } from "@/store/store";
 import { IComment } from "@/types/comment.interface";
 import CommentService from "@/service/comment.service";
 import CommentList from "@/components/Comment/CommentList";
-import Pagination from "@/components/Pagination/pagination";
 import CommentInputSection from "@/components/Comment/commentSection";
 import TaskChecklistService from "@/service/taskChecklist.service";
 import CreateChecklistModal from "@/components/TaskChecklist/createChecklistModal";
@@ -29,8 +27,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { updateTaskTitleSchema } from "@/components/validation/userValidation";
 import { z } from "zod";
 import { Input } from "@/components/Form/Input";
-import { Button } from "@heroui/button";
 import { CiEdit } from "react-icons/ci";
+import { Button } from "@/components/Form/Button";
 
 
 interface Props {
@@ -232,7 +230,7 @@ export default function TaskDetails({ id }: Props) {
                     <div className="flex gap-2 my-7 md:w-[600px]">
 
                       <Input  {...register("title")} className="w-full cursor-pointer" defaultValue={task?.title} />
-                      <Button type="submit" className="bg-theme-primary">Update</Button>
+                      <Button type="submit" className="bg-theme-primary text-white">Update</Button>
                     </div>
 
                     {errors.title && (
@@ -242,7 +240,7 @@ export default function TaskDetails({ id }: Props) {
                 ) : (
                   <div className="flex items-center gap-2">
 
-                    <H5 className="w-[98%] text-left">{task?.title}</H5>
+                    <H5 className="text-left">{task?.title}</H5>
 
                     {!editTaskTitle && user?.role === "admin" && (
 
@@ -324,10 +322,13 @@ export default function TaskDetails({ id }: Props) {
                   <H5>Task Checklist</H5>
                   <CreateChecklistModal onCreate={handleCreateTaskChecklist} />
                 </div>
-                <TaskChecklist
-                  taskchecklist={taskChecklist}
-                  refreshList={() => fetchTaskchecklist(taskId)}
-                />
+                {taskChecklist?.length > 0 && (
+
+                  <TaskChecklist
+                    taskchecklist={taskChecklist}
+                    refreshList={() => fetchTaskchecklist(taskId)}
+                  />
+                )}
               </div>
 
               <CommentInputSection
