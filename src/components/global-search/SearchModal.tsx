@@ -96,7 +96,7 @@ export function SearchModal({
       onMouseDown={overlayClick}
     >
       <div
-        className="bg-white rounded-xl shadow-lg w-full md:max-w-lg p-6 max-w-[330px] relative"
+        className="bg-white rounded-xl shadow-lg overflow-auto w-full md:max-w-lg p-6 max-w-[330px] relative"
         role="dialog"
         aria-modal="true"
       >

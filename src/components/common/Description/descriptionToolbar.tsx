@@ -177,7 +177,39 @@ const DescriptionInputToolbar = ({
     wrapper.addEventListener("click", handleClick);
     return () => wrapper.removeEventListener("click", handleClick);
   }, []);
+  useEffect(() => {
+    if (!quillRef.current) return;
+    const editor = quillRef.current.getEditor();
 
+    editor.root.addEventListener("DOMSubtreeModified", () => {
+      editor.root.querySelectorAll("pre.ql-syntax").forEach((block: any) => {
+        hljs.highlightElement(block);
+      });
+    });
+  }, []);
+  function cleanQuillHtml(html: string) {
+    const temp = document.createElement("div");
+    temp.innerHTML = html;
+
+    temp.querySelectorAll("p").forEach((p) => {
+      const text = p.textContent?.trim() || "";
+      if (text === "PlainBashC++C#CSSDiffHTML/XMLJavaJavaScriptMarkdownPHPPythonRubySQL") {
+        p.remove();
+      }
+    });
+
+    temp.querySelectorAll("select.ql-ui").forEach((el) => el.remove());
+
+    return temp.innerHTML;
+  }
+
+
+  useEffect(() => {
+    // if (isEditing && defaultValue) {
+    const sanitized = cleanQuillHtml(content);
+    setContent(sanitized);
+    // }
+  }, []);
   return (
     <div className="md:p-4 bg-white md:border rounded">
       <label className="block text-sm font-medium text-gray-700 mb-2">

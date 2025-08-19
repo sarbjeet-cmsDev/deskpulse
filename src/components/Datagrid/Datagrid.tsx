@@ -187,12 +187,12 @@ const DataGrid: React.FC<DataGridProps> = ({
                       {row[header.id]}
                     </td>
                   ))}
-                  <td className="px-4 py-2 ">
+                  <td className="px-4 py-2 md:block flex">
                     {row.actions && row.actions.length > 0 ? (
                       row.actions.map((action, i) => (
                         <button
                           key={i}
-                          className={`px-3 py-1 rounded text-white text-sm ${action.title === "Delete"
+                          className={`px-3 py-1 ml-2 rounded md:mt-0 mt-2  text-white text-sm ${action.title === "Delete"
                             ? "bg-red-500 hover:bg-red-600"
                             : "btn-primary"
                             }`}

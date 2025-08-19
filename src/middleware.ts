@@ -3,6 +3,7 @@ import type { NextRequest } from "next/server";
 
 export function middleware(req: NextRequest) {
   const token = req.cookies.get("token")?.value;
+  const type = req.cookies.get("role")?.value;
 
   const publicPaths = [
     "/auth/login",
@@ -22,6 +23,16 @@ export function middleware(req: NextRequest) {
 
   if (token && isPublicRoute) {
     return NextResponse.redirect(new URL("/", req.url));
+  }
+
+  if (token && type) {
+    if (type === "user" && req.nextUrl.pathname.startsWith("/admin")) {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
+
+    // if (type === "admin" && req.nextUrl.pathname.startsWith("/user")) {
+    //   return NextResponse.redirect(new URL("/admin", req.url));
+    // }
   }
 
   return NextResponse.next();

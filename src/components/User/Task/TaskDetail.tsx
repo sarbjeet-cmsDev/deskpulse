@@ -22,19 +22,11 @@ import TaskChecklist from "@/components/TaskChecklist/taskChecklist";
 import { ITaskChecklist } from "@/types/taskchecklist.interface";
 import DropdownOptions from "@/components/DropdownOptions";
 import DetailsTable from "@/components/Task/taskDetailTable";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { updateTaskTitleSchema } from "@/components/validation/userValidation";
-import { z } from "zod";
-import { Input } from "@/components/Form/Input";
-import { CiEdit } from "react-icons/ci";
-import { Button } from "@/components/Form/Button";
-
+import { EstimateTime } from "./EstimateTime";
 
 interface Props {
   id: string;
 }
-type TaskTitleInput = z.infer<typeof updateTaskTitleSchema>;
 
 export default function TaskDetails({ id }: Props) {
   const params = useParams();
@@ -43,17 +35,12 @@ export default function TaskDetails({ id }: Props) {
   const [task, setTask] = useState<ITask | null>(null);
   const [taskChecklist, setTaskChecklist] = useState<ITaskChecklist[]>([]);
   const [project, setProject] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
   const [timelines, setTimelines] = useState<ITimeline[]>([]);
   const [timelineTotal, setTimelineTotal] = useState<number>(0);
   const [timelinePage, setTimelinePage] = useState<number>(1);
   const [timelineLimit, setTimelineLimit] = useState<number>(5);
   const [taskId, setTaskId] = useState<any>(null);
   const [comments, setComments] = useState<IComment[]>([]);
-  const [commentTotal, setCommentTotal] = useState<number>(0);
-  const [activeEditId, setActiveEditId] = useState<string | null>(null);
-  const [editTaskTitle, setEditTaskTitle] = useState(false)
-  const editTitleRef = useRef<HTMLDivElement>(null);
 
   const user: IUserRedux | null = useSelector(
     (state: RootState) => state.auth.user
@@ -69,7 +56,6 @@ export default function TaskDetails({ id }: Props) {
   const fetchTask = async (id: string) => {
     try {
       const data = await TaskService.getTaskById(id);
-      // getTaskByCode
       setTask(data);
 
       if (data.project) {
@@ -80,8 +66,6 @@ export default function TaskDetails({ id }: Props) {
       fetchTaskchecklist(id);
     } catch (error) {
       console.error("Failed to load task:", error);
-    } finally {
-      setLoading(false);
     }
   };
   useEffect(() => {
@@ -126,11 +110,9 @@ export default function TaskDetails({ id }: Props) {
       const BIG_LIMIT = 1000;
       const res = await CommentService.getCommentsByTask(taskId, 1, BIG_LIMIT);
       setComments(res.data);
-      setCommentTotal(res.total);
     } catch (error) {
       console.error("Failed to load comments:", error);
       setComments([]);
-      setCommentTotal(0);
     }
   };
 
@@ -161,55 +143,17 @@ export default function TaskDetails({ id }: Props) {
     router.push(`/project/projectDetail/${task?.project}`);
   };
 
-
   const handleUpdateTaskDescription = (id: string) => {
     return async (description: string) => {
-
       try {
         await TaskService.updateTask(id, {
           description,
         });
-
-
       } catch (error) {
         console.error(error);
       }
     };
   };
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<TaskTitleInput>({
-    resolver: zodResolver(updateTaskTitleSchema),
-    defaultValues: {
-      title: task?.title
-    }
-  });
-
-  const onSubmit = (async (data: any) => {
-    await TaskService.updateTask(taskId, data);
-    setEditTaskTitle(false)
-    fetchTask(taskId)
-
-  })
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (
-        editTitleRef.current &&
-        !editTitleRef.current.contains(e.target as Node)
-      ) {
-        setEditTaskTitle(false);
-      }
-    }
-    if (editTaskTitle) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [editTaskTitle]);
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -222,35 +166,12 @@ export default function TaskDetails({ id }: Props) {
                   <Image src={leftarrow} alt="Logo" width={16} height={16} />
                 </Link>
               </div>
-              <div ref={editTitleRef} className="flex">
-
-                {editTaskTitle ? (
-
-                  <form onSubmit={handleSubmit(onSubmit)}>
-                    <div className="flex gap-2 my-7 md:w-[600px]">
-
-                      <Input  {...register("title")} className="w-full cursor-pointer" defaultValue={task?.title} />
-                      <Button type="submit" className="bg-theme-primary text-white">Update</Button>
-                    </div>
-
-                    {errors.title && (
-                      <p className="text-xs text-red-500 mt-2 ml-1">{errors.title.message}</p>
-                    )}
-                  </form>
-                ) : (
-                  <div className="flex items-center gap-2">
-
-                    <H5 className="text-left">{task?.title}</H5>
-
-                    {!editTaskTitle && user?.role === "admin" && (
-
-                      <CiEdit size={20} className="cursor-pointer" onClick={() => setEditTaskTitle(true)} />
-                    )}
-                  </div>
-                )}
-              </div>
-
-
+              <EstimateTime
+                user={user}
+                task={task}
+                taskId={taskId}
+                fetchTask={fetchTask}
+              />
             </div>
             <div className="">
               <DropdownOptions
@@ -280,9 +201,7 @@ export default function TaskDetails({ id }: Props) {
                 defaultValue={task.description}
                 title="Description"
                 onClick={handleUpdateTaskDescription(task?._id)}
-                onCommentCreated={() => {
-                  setActiveEditId(null);
-                }}
+
                 isButton={true}
                 inline={true}
                 isEditing
@@ -323,7 +242,6 @@ export default function TaskDetails({ id }: Props) {
                   <CreateChecklistModal onCreate={handleCreateTaskChecklist} />
                 </div>
                 {taskChecklist?.length > 0 && (
-
                   <TaskChecklist
                     taskchecklist={taskChecklist}
                     refreshList={() => fetchTaskchecklist(taskId)}
@@ -344,7 +262,6 @@ export default function TaskDetails({ id }: Props) {
 
               <CommentList
                 comments={comments}
-                // refreshComments={() => fetchComments()}
                 refreshComments={fetchComments}
                 fetchComments={() => fetchComments()}
               />

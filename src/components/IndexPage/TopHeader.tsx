@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import bell from "@/assets/images/bell.png";
-import { Button } from "@heroui/button";
 import { useRef } from "react";
 import { openDrawer } from "@/store/slices/drawerSlice";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,17 +13,11 @@ import LeftMenuDrawer from "../HeaderMenuDrawer/leftmenudrawer";
 import { fetchUserProfile } from "@/store/slices/userSlice";
 import { H3 } from "../Heading/H3";
 import Link from "next/link";
-import { Input } from "../Form/Input";
 import { GlobalSearch } from "../global-search/GlobalSearch";
 import { searchAll } from "@/service/searchService";
-import { P } from "../ptag";
-import NotificationService from "@/service/notification.service";
-import { NotifyNotifications } from "../Notification/NotifyNotification";
 import { getSocket } from "@/utils/socket";
 import { fetchNotificationCount } from "@/store/slices/NotificationSlice";
-// import {}"../../../src/assets/images"
 export default function TopHeader() {
-  // console.log(notificationCount,"notificationCountnotificationCount")
   const [notificationCount, setNotificationCount] = useState<number>(0);
   const dispatch = useDispatch<AppDispatch>();
   const user: any = useSelector((state: RootState) => state.user.data);
@@ -63,18 +56,11 @@ export default function TopHeader() {
     const socket = socketRef.current;
     if (!socket) return;
 
-    const fetchNotification = async () => {
-      try {
-        // const res: any = await NotificationService.getNotificationByUserId(userData.id);
-        // setNotificationCount(res?.notifications?.count || 0);
-      } catch (err) {
-        console.error("Failed to fetch notifications:", err);
-      }
-    };
+
 
     const handleNotification = ({ message, taskId }: { message: string; taskId: string }) => {
       if (Notification.permission === "granted") {
-       
+
         new Notification("Notification Received", {
           body: message,
           icon: "/bell.png",
@@ -88,7 +74,7 @@ export default function TopHeader() {
 
     socket.on("receive-notification", handleNotification);
     if (userData?._id || userData?.id) {
-    
+
 
       dispatch(fetchNotificationCount(userData?._id || userData?.id));
     }

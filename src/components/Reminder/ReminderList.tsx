@@ -15,7 +15,7 @@ export default function ReminderList({ reminders }: ReminderListProps) {
   }
 
   return (
-    <ul className="mt-6">
+    <ul className="mt-6 md:p-0 p-2">
       {reminders.map((reminder) => {
         const formattedStart = reminder?.start
           ? new Date(reminder.start).toLocaleString("en-IN", {

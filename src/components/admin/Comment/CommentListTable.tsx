@@ -90,7 +90,7 @@ const CommentListTable = () => {
 
   return (
     <div className="flex">
-      <main className="flex-1 p-6">
+      <main className="flex-1 p-6 sm:p-6 md:p-8 w-[100%]">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-semibold">Comment List</h1>
         </div>

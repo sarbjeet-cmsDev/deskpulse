@@ -13,7 +13,8 @@ import ReminderService from "@/service/reminder.service";
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Button } from "@heroui/button";
+import { Input } from "@/components/Form/Input";
+import { Button } from "@/components/Form/Button";
 
 export default function CreateReminder() {
   const [loading, setLoading] = useState(false);
@@ -67,7 +68,7 @@ export default function CreateReminder() {
         >
           <div>
             <label className="block mb-1">Title</label>
-            <input
+            <Input
               {...register("title")}
               className="border p-2 w-full rounded"
               placeholder="Enter title"
@@ -79,7 +80,7 @@ export default function CreateReminder() {
 
           <div>
             <label className="block mb-1">Start Date & Time</label>
-            <input
+            <Input
               type="datetime-local"
               {...register("start")}
               className="border p-2 w-full rounded"
@@ -92,12 +93,15 @@ export default function CreateReminder() {
 
           <div>
             <label className="block mb-1">End Date & Time</label>
-            <input
+            <Input
               type="datetime-local"
               {...register("end")}
               className="border p-2 w-full rounded"
               min={new Date().toISOString().slice(0, 16)}
             />
+            {errors.end && (
+              <p className="text-red-500 text-sm">{errors.end.message}</p>
+            )}
           </div>
 
           <div className="flex items-center gap-2">
@@ -107,7 +111,7 @@ export default function CreateReminder() {
 
           <div>
             <label className="block mb-1">Alert Before (minutes)</label>
-            <input
+            <Input
               type="number"
               {...register("alert_before", { valueAsNumber: true })}
               className="border p-2 w-full rounded"

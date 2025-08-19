@@ -20,20 +20,17 @@
 }
 
 .description-content .ql-editor {
-  font-size: 17px; 
+  font-size: 17px;
   line-height: 1.2;
 }
-
-
 
 .ql-code-block-container {
   background-color: #262624;
   padding: 15px;
-  border : none;
+  border: none;
   border-radius: 5px;
 }
 
-
-.ql-code-block{
-  color:white;
+.ql-code-block {
+  color: white;
 }

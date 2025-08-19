@@ -33,11 +33,7 @@ export default function TaskActivityLog({ code }: Props) {
     const fetchLogs = async () => {
       try {
         setLoading(true);
-        // const res = await TaskActivityLogService.getByTaskId(
-        //   taskId as string,
-        //   currentPage,
-        //   itemsPerPage
-        // );
+
 
         const res = await TaskActivityLogService.getByTaskCode(
           code as string,

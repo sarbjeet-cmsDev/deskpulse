@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { SearchModal } from "./SearchModal";
 import { SearchResponse } from "./types";
+import { Button } from "../Form/Button";
 
 export interface GlobalSearchProps {
   fetcher: (query: string) => Promise<SearchResponse>;
@@ -30,16 +31,16 @@ export function GlobalSearch({
 
   return (
     <>
-   
-      <button
+
+      <Button
         type="button"
         className="w-full text-left border rounded px-3 py-2 bg-white hover:bg-gray-50"
         onClick={() => setOpen(true)}
       >
         {placeholder}
-      </button>
+      </Button>
 
-   
+
       <SearchModal
         open={open}
         onClose={() => setOpen(false)}

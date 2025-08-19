@@ -8,11 +8,12 @@ interface Props {
 }
 
 export default function ImageLightbox({ open, imageUrl, onClose }: Props) {
-    // if (!imageUrl) return null;
+  // if (!imageUrl) return null;
   return (
     <Lightbox
       open={open}
       close={onClose}
+      carousel={{ finite: true }}
       slides={[{ src: imageUrl }]}
     />
   );

@@ -72,9 +72,11 @@ export default function CommentInputSection({
 
   useEffect(() => {
     if (isEditing && defaultValue) {
-      setContent(defaultValue);
+      const sanitized = cleanQuillHtml(defaultValue);
+      setContent(sanitized);
     }
   }, [defaultValue, isEditing]);
+
 
   const imageHandler = () => {
     const input = document.createElement("input");
@@ -179,12 +181,19 @@ export default function CommentInputSection({
     const temp = document.createElement("div");
     temp.innerHTML = html;
 
-    temp
-      .querySelectorAll("select.ql-code-block-language")
-      .forEach((el) => el.remove());
+    temp.querySelectorAll("p").forEach((p) => {
+      const text = p.textContent?.trim() || "";
+      if (text === "PlainBashC++C#CSSDiffHTML/XMLJavaJavaScriptMarkdownPHPPythonRubySQL") {
+        p.remove();
+      }
+    });
+
+    temp.querySelectorAll("select.ql-ui").forEach((el) => el.remove());
 
     return temp.innerHTML;
   }
+
+
 
   const extractMentionedUserIds = (html: string): string[] => {
     const parser = document.createElement("div");
@@ -197,9 +206,9 @@ export default function CommentInputSection({
 
   const handleCreate = async () => {
     const editor = quillRef.current?.getEditor();
-    const html = editor?.root.innerHTML || "";
+    let html = editor?.root.innerHTML || "";
 
-    // html = cleanQuillHtml(html);
+    html = cleanQuillHtml(html);
 
     if (!html || stripHtml(html) === "") {
       setError("Comment is required");

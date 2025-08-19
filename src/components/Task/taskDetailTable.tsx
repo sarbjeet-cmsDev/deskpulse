@@ -90,7 +90,7 @@ export default function DetailsTable({
       setAssignedUser([user as IUser]);
       fetchKanbanList(task?.project);
       if (onTaskUpdate) onTaskUpdate();
-    } catch (error) {}
+    } catch (error) { }
   };
 
   useEffect(() => {
@@ -206,11 +206,28 @@ export default function DetailsTable({
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <AvatarList
-                users={safeUsers}
-                selectedUserIds={[]}
-                onClick={handleOpenModal}
-              />
+              {safeUsers.length === 0 ? (
+                <div
+                  className="add-member"
+                  onClick={() => setIsModalOpen(true)}
+                >
+                  <a
+                    href="#"
+                    className="text-[#7980ff] border border-[#7980ff] px-[2px] rounded-[2px] text-[10px]"
+                  >
+                    +
+                  </a>
+                </div>
+              ) : (
+                <AvatarList
+                  users={safeUsers}
+                  selectedUserIds={[]}
+                  onClick={handleOpenModal}
+                />
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+
               <MentionUserListModal
                 taskId={taskId}
                 users={safeUsers}
@@ -402,7 +419,7 @@ export default function DetailsTable({
             </div>
             <div className="flex items-center gap-2">
               <div
-                className="py-[2px]  rounded-[8px] text-[15px] leading-[16px] flex gap-4"
+                className="py-[2px] px-[8px]  rounded-[8px] text-[15px] leading-[16px] flex gap-4"
                 ref={dropdownRef}
               >
                 {editEstimate ? (

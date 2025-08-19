@@ -6,7 +6,7 @@ import ProjectAvtar from "@/assets/images/projectimage.png";
 import Details from "@/components/ProjectDetails/DetailTable";
 import SubTasks from "@/components/ProjectDetails/SubTaskList";
 import { useEffect, useRef, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import ProjectService from "@/service/project.service";
 import TaskService, { ITask } from "@/service/task.service";
 import CreateTaskModal from "@/components/Task/createTaskModal";
@@ -18,35 +18,24 @@ import AvatarList from "@/components/IndexPage/avatarlist";
 import AdminUserService from "@/service/adminUser.service";
 import { ProjectKanbon } from "@/service/projectKanbon.service";
 import { KanbanColumn } from "@/types/projectKanbon.interface";
-import DropdownOptions from "@/components/DropdownOptions";
-import ImageLightbox from "@/components/common/ImagePopUp/ImageLightbox";
 import { getSocket } from "@/utils/socket";
+import { InstructionCard } from "./InstructionCard";
+import { UploadImage } from "./UploadImage";
 
 interface Props {
   code: string;
 }
 
 export default function MyProjectDetails({ code }: Props) {
-  const descriptionRef = useRef<HTMLDivElement | null>(null);
-  const deployRef = useRef<HTMLDivElement | null>(null);
-  const notesRef = useRef<HTMLDivElement | null>(null);
-  const [lightboxOpen, setLightboxOpen] = useState(false);
-  const [currentImage, setCurrentImage] = useState<string | null>(null);
-  const params = useParams();
-  const [projectId, setProjectId] = useState<any>(null)
-  //   const projectId = params?.projectId as string;
+  const [projectId, setProjectId] = useState<any>(null);
   const router = useRouter();
   const [project, setProject] = useState<any>();
   const [loading, setLoading] = useState(true);
   const [tasks, setTasks] = useState<ITask[]>([]);
-  const [taskTotal, setTaskTotal] = useState<number>(0);
-  const [taskPage, setTaskPage] = useState<number>(1);
-  const [taskLimit, setTaskLimit] = useState<number>(5);
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const [users, setUsers] = useState([]);
   const [kanbanList, setKanbanList] = useState<KanbanColumn[]>([]);
   const user: any = useSelector((state: RootState) => state.auth.user);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [version, setVersion] = useState<number>(Date.now());
 
   const [projectImage, setProjectImage] = useState<string>(ProjectAvtar.src);
@@ -54,14 +43,13 @@ export default function MyProjectDetails({ code }: Props) {
 
   const socketRef = useRef(getSocket());
 
-
-  const fetchProjectByCode = (async () => {
-    const result = await ProjectService.getProjectByCode(code)
-    setProjectId(result?._id)
-  })
+  const fetchProjectByCode = async () => {
+    const result = await ProjectService.getProjectByCode(code);
+    setProjectId(result?._id);
+  };
   useEffect(() => {
-    fetchProjectByCode()
-  }, [code])
+    fetchProjectByCode();
+  }, [code]);
 
   useEffect(() => {
     if (project?.avatar) {
@@ -73,7 +61,6 @@ export default function MyProjectDetails({ code }: Props) {
 
   const fetchKanbonList = async (userIds: string[]) => {
     try {
-
       const res = await ProjectKanbon.getProjectKanbonList(projectId);
       let taskRes;
 
@@ -84,7 +71,6 @@ export default function MyProjectDetails({ code }: Props) {
         );
       } else {
         if (projectId) {
-
           taskRes = await TaskService.getTasksByProject(projectId);
         }
       }
@@ -139,7 +125,6 @@ export default function MyProjectDetails({ code }: Props) {
       fetchKanbonList([]);
     }
     if (projectId) {
-
       fetchUsers();
     }
   }, [user?.id]);
@@ -148,24 +133,18 @@ export default function MyProjectDetails({ code }: Props) {
       const res = await TaskService.getTasksByProject(projectId, page, limit);
 
       if (res?.tasks || res?.data) {
-        setTasks(res.tasks || res.data); // <-- this ensures tasks are stored
+        setTasks(res.tasks || res.data);
       }
-
-      setTaskTotal(res.total || 0);
-      setTaskPage(res.page || 1);
-      setTaskLimit(res.limit || limit);
     } catch (error) {
       console.error("Failed to fetch tasks:", error);
     }
   };
-
 
   const fetchProject = async () => {
     try {
       if (!projectId) return;
 
       const data = await ProjectService.getProjectById(projectId as string);
-      // const data = await ProjectService.getProjectByCode(projectId as string);
       setProject(data);
       fetchTasks(data._id);
       fetchUsers();
@@ -181,8 +160,6 @@ export default function MyProjectDetails({ code }: Props) {
       fetchProject();
     }
   }, [projectId]);
-
-
 
   const refreshTasks = () => {
     if (project?._id) fetchTasks(project._id);
@@ -208,7 +185,7 @@ export default function MyProjectDetails({ code }: Props) {
       refreshTasks();
       fetchTaskByKanbonList([]);
       fetchTasks(project._id);
-      
+
       if (title) {
         if (!socketRef.current.connected) {
           socketRef.current.connect();
@@ -219,83 +196,23 @@ export default function MyProjectDetails({ code }: Props) {
 
         socketRef.current.emit("task-updated", {
           taskId: "1111",
-          sender: assigned_to ? (loginUser.firstName + " " + loginUser.lastName) : 'This',
+          sender: assigned_to
+            ? loginUser.firstName + " " + loginUser.lastName
+            : "This",
           receiverId: assigned_to || user?.id || "",
-          description: assigned_to  ? `Assigned you a task : ${title}` : `${title} task is assigned by you.`,
+          description: assigned_to
+            ? `Assigned you a task : ${title}`
+            : `${title} task is assigned by you.`,
         });
 
         console.log(
           "✅ socket event 'task-updated' hit while assigned user in project"
         );
       }
-
     } catch (error) {
       console.error(error);
     }
   };
-
-  const handleUpdateProjectDescription = (id: string) => {
-    return async (description: string) => {
-      try {
-        await ProjectService.updateProject(id, {
-          description,
-          is_active: true,
-        });
-        fetchProject();
-      } catch (error) {
-        console.error(error);
-      }
-    };
-  };
-
-  const handleProjectAvatar = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    try {
-      const res = await ProjectService.uploadProjectAvatar(
-        projectId as string,
-        file
-      );
-
-      if (res) {
-        const avatarUrl = res?.avatar
-          ? `${process.env.NEXT_PUBLIC_BACKEND_HOST}${res?.avatar}?v=${version}`
-          : ProjectAvtar.src;
-        setProjectImage(avatarUrl);
-        setVersion(Date.now());
-        fetchProject();
-      } else {
-        console.error("Upload failed");
-      }
-    } catch (error) {
-      console.error("Upload error:", error);
-    }
-  };
-
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      const target = e.target as HTMLImageElement;
-      if (target?.tagName === "IMG") {
-        setCurrentImage(target.src);
-        setLightboxOpen(true);
-      }
-    };
-
-    const containers = [
-      descriptionRef.current,
-      deployRef.current,
-      notesRef.current,
-    ];
-    containers.forEach((el) => el?.addEventListener("click", handler));
-
-    return () => {
-      containers.forEach((el) => el?.removeEventListener("click", handler));
-    };
-  }, [project]);
 
   if (loading) return <div className="p-6 text-center">Loading project...</div>;
   if (!project) return <div className="p-6 text-center">Project not found</div>;
@@ -327,25 +244,11 @@ export default function MyProjectDetails({ code }: Props) {
               >
                 View Kanban
               </Button>
-              <div className="">
-                <input
-                  type="file"
-                  accept="image/*"
-                  ref={fileInputRef}
-                  onChange={handleFileChange}
-                  className="hidden"
-                />
-                <DropdownOptions
-                  options={[
-                    {
-                      key: "Update Project Avatar",
-                      label: "Update Project Avatar",
-                      color: "primary",
-                      onClick: handleProjectAvatar,
-                    },
-                  ]}
-                />
-              </div>
+              <UploadImage
+                project={project}
+                projectId={projectId}
+                fetchProject={fetchProject}
+              />
             </div>
           </div>
           <div className="">
@@ -370,53 +273,7 @@ export default function MyProjectDetails({ code }: Props) {
                 )}
               </div>
 
-              <div className="flex flex-col gap-2 py-5">
-                <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-                  <H5 className=" font-semibold mb-2">Project Description</H5>
-                  <div
-                    ref={descriptionRef}
-                    className="prose max-w-none [&_img]:w-28 [&_img]:rounded-xl"
-                    dangerouslySetInnerHTML={{
-                      __html:
-                        project?.description ||
-                        "<p>No description provided.</p>",
-                    }}
-                  />
-                </div>
-
-                <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-200">
-                  <H5 className="font-semibold mb-2">Deploy Instruction</H5>
-                  <div
-                    ref={deployRef}
-                    className="prose max-w-none [&_img]:w-28 [&_img]:rounded-xl"
-                    dangerouslySetInnerHTML={{
-                      __html:
-                        project?.deploy_instruction ||
-                        "<p>No Instruction provided.</p>",
-                    }}
-                  />
-                </div>
-
-                <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-200">
-                  <H5 className="font-semibold mb-2">Critical Notes</H5>
-                  <div
-                    ref={notesRef}
-                    className="prose max-w-none [&_img]:w-28 [&_img]:rounded-xl"
-                    dangerouslySetInnerHTML={{
-                      __html:
-                        project?.critical_notes ||
-                        "<p>No Critical Notes provided.</p>",
-                    }}
-                  />
-                </div>
-                {lightboxOpen && (
-                  <ImageLightbox
-                    open={lightboxOpen}
-                    imageUrl={currentImage ?? ""}
-                    onClose={() => setLightboxOpen(false)}
-                  />
-                )}
-              </div>
+              <InstructionCard project={project} />
               <Details
                 project={project}
                 user={users}

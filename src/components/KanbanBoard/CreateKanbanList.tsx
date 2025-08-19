@@ -68,7 +68,7 @@ export const CreateKanbanList = () => {
         </div>
         <H3 className="md:w-[98%] text-center">Create Kanban</H3>
       </div>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit)} className="p-3">
         <div className="py-3">
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Kanban Title

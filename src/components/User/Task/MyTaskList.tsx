@@ -3,7 +3,6 @@
 import Image from "next/image";
 import leftarrow from "@/assets/images/back.png";
 import { H3 } from "@/components/Heading/H3";
-import Pagination from "@/components/Pagination/pagination";
 import { useEffect, useState } from "react";
 import TaskService, { ITask } from "@/service/task.service";
 import SubTasks from "@/components/ProjectDetails/SubTaskList";
@@ -13,14 +12,11 @@ export default function MyTaskList() {
   const [tasks, setTasks] = useState<ITask[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [totalItems, setTotalItems] = useState<number>(0);
-  const itemsPerPage = 9;
   const fetchTasks = async (page: number) => {
     setLoading(true);
     try {
       const res = await TaskService.getMyTasks();
       setTasks(res?.data || []);
-      setTotalItems(res?.total || 0);
     } catch (error) {
       console.error("Failed to load tasks:", error);
       setTasks([]);
@@ -32,10 +28,6 @@ export default function MyTaskList() {
   useEffect(() => {
     fetchTasks(currentPage);
   }, [currentPage]);
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
 
   return (
     <div className="max-w-6xl mx-auto">

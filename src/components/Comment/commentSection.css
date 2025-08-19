@@ -49,3 +49,16 @@
 .show-cancel-btn {
   display: block !important;
 }
+/* Hide the long language list inside code blocks */
+.ql-container pre code::before {
+  content: none !important;
+}
+
+/* Optional: force syntax highlighting to still work */
+.ql-syntax {
+  display: block;
+  overflow-x: auto;
+}
+
+/* Hide language list text from code blocks */
+/* Hide the language <select> */

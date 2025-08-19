@@ -2,10 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-
 :root {
   --color-primary: #7980ff;
-  --color-secondary: #6366F1;
+  --color-secondary: #6366f1;
   --color-warm-gray: #f2c497;
 }
 
@@ -51,7 +50,9 @@ input[type="range"].range-primary {
 .link-primary {
   color: var(--color-primary);
   text-decoration: none;
-  transition: color 0.2s ease, text-decoration 0.2s ease;
+  transition:
+    color 0.2s ease,
+    text-decoration 0.2s ease;
 }
 
 .link-primary:hover {
@@ -62,4 +63,11 @@ input[type="range"].range-primary {
   gap: 1rem !important;
   display: flex !important;
   justify-content: center;
+}
+
+.projectDescription select,
+.deployInstruction select,
+.criticalNotes select {
+  pointer-events: none !important;
+  display: none;
 }

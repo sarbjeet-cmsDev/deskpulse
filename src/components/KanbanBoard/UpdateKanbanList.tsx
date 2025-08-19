@@ -149,7 +149,7 @@ export const UpdateKanbanList = ({
       setTask((prev: any[]) =>
         prev.map((t) =>
           matchingTasks.find((mt: any) => mt._id === t._id)
-            ? { ...t, status: "Backlog" }
+            ? { ...t, status: "backlog" }
             : t
         )
       );
