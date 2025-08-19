@@ -9,6 +9,7 @@ export interface TaskStatusUpdatedPayload {
   taskDetails: any;
   userDetails: any;
   projectObj:any;
+  code:string;
   oldTaskStatus: string;
   newTaskStatus: string;
 }

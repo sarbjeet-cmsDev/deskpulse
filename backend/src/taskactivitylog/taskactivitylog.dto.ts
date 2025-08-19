@@ -6,6 +6,9 @@ export class CreateTaskActivityLogDto {
   @IsMongoId({ message: 'Task must be a valid Mongo ID' })
   task?: string;
 
+  @IsString()
+  code?: string;
+
   @IsOptional()
   @IsMongoId({ message: 'Project must be a valid Mongo ID' })
   project?: string;

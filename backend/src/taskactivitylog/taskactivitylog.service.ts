@@ -55,12 +55,12 @@ export class TaskactivitylogService {
 
     const [taskactivitylog, total] = await Promise.all([
       this.taskChecklistModel
-        .find({ task: code })
+        .find({ code: code })
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
         .exec(),
-      this.taskChecklistModel.countDocuments({ task: code }),
+      this.taskChecklistModel.countDocuments({ code: code }),
     ]);
 
     return { taskactivitylog, total };

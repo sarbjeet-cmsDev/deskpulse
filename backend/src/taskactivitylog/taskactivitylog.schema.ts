@@ -13,6 +13,9 @@ export class Taskactivitylog {
   })
   task: MongooseSchema.Types.ObjectId;
 
+  @Prop({ required: true, ref: 'Task' })
+  code: string;
+
   @Prop({
     type: MongooseSchema.Types.ObjectId,
     ref: 'Project',

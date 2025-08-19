@@ -50,6 +50,7 @@ export class TaskActivityLogListener {
     const UserData = await this.userservices.findOne(taskUsers.toString())
     const TaskAssignDto: CreateTaskActivityLogDto = {
       project: taskObj.project._id.toString(),
+      code:taskObj?.code,
       task: taskObj._id.toString(),
       description: `Task "${taskObj.title}" has been created and assigned to ${UserData.username}. Due: ${taskObj.due_date ? new Date(taskObj.due_date).toLocaleString() : 'No due date'}, Priority: ${taskObj.priority}, Status: ${taskObj.status}.`,
     }
@@ -70,6 +71,7 @@ export class TaskActivityLogListener {
     const TaskAssignDto: CreateTaskActivityLogDto = {
       project: taskObj.project._id.toString(),
       task: taskObj._id.toString(),
+      code:taskObj?.code,
       description: ` Task "${taskObj.title}" was assigned to ${UserData.username} — Due by ${taskObj.due_date ? new Date(taskObj.due_date).toLocaleString() : 'No due date'}, Priority: ${taskObj.priority}, Status: ${taskObj.status}`,
     }
     try {
@@ -88,6 +90,7 @@ export class TaskActivityLogListener {
       project: taskObj.project._id.toString(),
       task: taskObj._id.toString(),
       description: `Task status was updated from "${oldTaskStatus}" to "${taskObj.status}" by ${updatedBy.username} on ${new Date(taskObj.updatedAt).toLocaleString()}.`,
+      code:taskObj?.code
     };
     try {
       await this.taskactivitylogService.create(updateTaskActivityLogDto);
@@ -107,6 +110,7 @@ export class TaskActivityLogListener {
     
     const updateTaskActivityLogDto: CreateTaskActivityLogDto = {
       task: TaskObj._id.toString(),
+      code:TaskObj?.code,
       project: TaskObj.project.toString(),
       description: `Worked ${formatMinutes(timeLineObj.time_spent)}  on task "${TaskObj.title}" — general updates and review. Comment: ${timeLineObj.comment}. On ${new Date(timeLineObj.date).toLocaleDateString()} by "${timeLineCreatedBy.username}"`,
     };
@@ -133,6 +137,7 @@ export class TaskActivityLogListener {
       const UserData = await this.userservices.findOne(user.toString())
       commentsMentionedLogDto.push({
         task: CommentObj.task.toString(),
+        code:CommentObj?.code,
         project: TaskObj.project.toString(),
         description: `${UserData.username} commented "${commentContent}" — ${new Date(CommentObj.createdAt).toLocaleString()} : Created BY ${updatedBy.username}`,
       })
@@ -159,6 +164,7 @@ export class TaskActivityLogListener {
     const TaskObj = await this.taskServices.findOne(taskChecklistObj.task.toString());
     const updateTaskActivityLogDto: CreateTaskActivityLogDto = {
       task: taskChecklistObj.task.toString(),
+      code:taskChecklistObj?.code,
       project: TaskObj.project.toString(),
       description: `Checklist item "${taskChecklistObj.title}" was created for task "${TaskObj.title}" with status "${taskChecklistObj.status}". Created by "${timeLineCreatedBy.username}".`,
     };
