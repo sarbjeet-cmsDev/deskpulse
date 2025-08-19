@@ -74,6 +74,7 @@ export default function TopHeader() {
 
     const handleNotification = ({ message, taskId }: { message: string; taskId: string }) => {
       if (Notification.permission === "granted") {
+       
         new Notification("Notification Received", {
           body: message,
           icon: "/bell.png",
@@ -87,7 +88,7 @@ export default function TopHeader() {
 
     socket.on("receive-notification", handleNotification);
     if (userData?._id || userData?.id) {
-      console.log("hit")
+    
 
       dispatch(fetchNotificationCount(userData?._id || userData?.id));
     }

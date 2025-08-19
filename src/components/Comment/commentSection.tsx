@@ -114,18 +114,7 @@ export default function CommentInputSection({
 
   const socketRef = useRef(getSocket());
 
-  // useEffect(() => {
-  //   const socket = socketRef.current;
-
-  //   if (!socket.connected) {
-  //     socket.connect();
-  //   }
-
-  //   socket.on("connect", () => {
-  //     console.log("Socket connected inside comment section:", socket.id);
-  //   });
-
-  // }, []);
+ 
 
   const mentionSource = useCallback(
     async (

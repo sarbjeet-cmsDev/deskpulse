@@ -61,13 +61,6 @@ export default function Dashboard() {
     });
 
 
-    // return () => {
-    //   socket.off('connect');
-    //   socket.off('receive-message');
-    //   socket.off('connect_error');
-    //   socket.off('disconnect');
-    //   socket.disconnect();
-    // };
 
   }, [])
 

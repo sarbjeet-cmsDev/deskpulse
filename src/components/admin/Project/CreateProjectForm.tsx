@@ -38,7 +38,6 @@ const CreateProjectForm = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const user: any = useSelector((state: RootState) => state.user.data);
 
-
   const {
     register,
     handleSubmit,

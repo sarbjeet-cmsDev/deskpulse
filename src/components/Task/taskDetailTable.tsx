@@ -109,25 +109,6 @@ export default function DetailsTable({
       if (onTaskUpdate) onTaskUpdate();
       handleCloseModal();
 
-      if (userId?.length) {
-        if (!socketRef.current.connected) {
-          socketRef.current.connect();
-        }
-        socketRef.current.on("connect", () => {
-          socketRef.current.emit("register-user", loginUser.id); // Send your user ID immediately
-        });
-
-        socketRef.current.emit("task-updated", {
-          taskId: "1111",
-          sender: loginUser.firstName + " " + loginUser.lastName,
-          receiverId: userId,
-          description: "Assigned You a Task",
-        });
-
-        console.log(
-          "✅ socket event 'task-updated' hit while assigned user in project"
-        );
-      }
     } catch (error) {
       console.error("Failed to assign task:", error);
     }

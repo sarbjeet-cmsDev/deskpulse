@@ -1,12 +1,12 @@
-import { useState, useCallback, useEffect,useRef } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { Modal, ModalBody, ModalContent } from "@heroui/react";
 import ReactSelect from "react-select";
 import { debounce } from "lodash";
 import AdminUserService, { IUser } from "@/service/adminUser.service";
 import ProjectService from "@/service/project.service";
 import { getSocket } from "@/utils/socket"; // Adjust path as needed
-import {  useSelector } from "react-redux";
-import {  RootState } from "@/store/store";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 export interface IUserOption {
   label: string;
   value: string;
@@ -17,8 +17,8 @@ interface MentionUserListModalProps {
   onClose: () => void;
   taskId: string;
   onAssigned: (userId: string) => void;
-  users:any;
-  task:any;
+  users: any;
+  task: any;
 }
 
 export default function MentionUserListModal({
@@ -32,21 +32,22 @@ export default function MentionUserListModal({
   const [selectedUser, setSelectedUser] = useState<IUserOption | null>(null);
   const [userOptions, setUserOptions] = useState<IUserOption[]>([]);
   const [inputValue, setInputValue] = useState("");
-    const user: any = useSelector((state: RootState) => state.user.data);
+  const user: any = useSelector((state: RootState) => state.user.data);
 
-useEffect(()=>{
-  task
-},[taskId])
- 
+  useEffect(() => {
+    task;
+  }, [taskId]);
 
   const fetchUsers = useCallback(
     debounce(async (input: string) => {
       if (!task?.project) return;
       try {
-       
-        const usersData = await ProjectService.getProjectUsers(task.project, input);
-        const users = usersData.users || []
-     
+        const usersData = await ProjectService.getProjectUsers(
+          task.project,
+          input
+        );
+        const users = usersData.users || [];
+
         const options = users.map((user: IUser) => ({
           label: `${user.firstName} ${user.lastName} (${user.email})`,
           value: user._id,
@@ -64,32 +65,29 @@ useEffect(()=>{
     if (isOpen && task?.project) {
       fetchUsers("");
       const selected = users.map((user: IUser) => ({
-      label: `${user.firstName || user.username} ${user.lastName || ""}`,
-      value: user._id,
-    }));
-     setSelectedUser(selected);
+        label: `${user.firstName || user.username} ${user.lastName || ""}`,
+        value: user._id,
+      }));
+      setSelectedUser(selected);
     }
-  }, [isOpen,users]);
+  }, [isOpen, users]);
 
   const socketRef = useRef(getSocket());
   const handleConfirmAssign = () => {
- 
+   
+    if (!socketRef.current.connected) {
+      socketRef.current.connect();
+    }
+    socketRef.current.emit("task-updated", {
+      taskId: taskId, // You need to replace this with the actual task ID
+      sender: user.firstName + " " + user.lastName,
+      receiverId: `${selectedUser?.value}`,
+      description: "Assigned You a Task",
+    });
 
- if (!socketRef.current.connected) {
-        socketRef.current.connect();
-      }
-      socketRef.current.on("connect", () => {
-        socketRef.current.emit("register-user", user.id); // Send your user ID immediately
-      });
-
-      socketRef.current.emit("task-updated", {
-        taskId: taskId, // You need to replace this with the actual task ID
-        sender: user.firstName + " " + user.lastName,
-        receiverId: `${selectedUser?.value}`,
-        description: "Assigned You a Task",
-      });
-
-      console.log("✅ socket event 'task-updated' hit while assigned user in task");
+    console.log(
+      "✅ socket event 'task-updated' hit while assigned user in task"
+    );
 
     if (!selectedUser) return;
     try {
