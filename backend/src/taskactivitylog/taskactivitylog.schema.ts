@@ -13,7 +13,7 @@ export class Taskactivitylog {
   })
   task: MongooseSchema.Types.ObjectId;
 
-  @Prop({ required: true, ref: 'Task' })
+  @Prop({ required: false, ref: 'Task' })
   code: string;
 
   @Prop({

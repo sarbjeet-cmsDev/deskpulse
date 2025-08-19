@@ -158,13 +158,14 @@ export class TaskActivityLogListener {
 
   @OnEvent('taskchecklist.created', { async: true })
   async handleTaskCheckListCreatedEvent(payload: { taskChecklistObj: any }) {
+    console.log("hit in checklist")
     const taskChecklistObj = payload.taskChecklistObj;
 
     const timeLineCreatedBy = await this.userservices.findOne(taskChecklistObj.created_by.toString());
     const TaskObj = await this.taskServices.findOne(taskChecklistObj.task.toString());
     const updateTaskActivityLogDto: CreateTaskActivityLogDto = {
       task: taskChecklistObj.task.toString(),
-      code:taskChecklistObj?.code,
+      code:TaskObj?.code,
       project: TaskObj.project.toString(),
       description: `Checklist item "${taskChecklistObj.title}" was created for task "${TaskObj.title}" with status "${taskChecklistObj.status}". Created by "${timeLineCreatedBy.username}".`,
     };
