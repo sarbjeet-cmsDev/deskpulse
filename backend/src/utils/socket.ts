@@ -51,6 +51,7 @@ export function initSocketIO(server: HttpServer) {
 
         const receiverSocketId = userSockets.get(receiverId);
         if (receiverSocketId) {
+          console.log("receiver id",receiverSocketId)
           io.to(receiverSocketId).emit("receive-notification", {
             message: `${sender} ${description}`,
             taskId,

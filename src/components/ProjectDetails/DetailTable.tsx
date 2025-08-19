@@ -92,7 +92,7 @@ export default function Details({
         });
 
         console.log(
-          "✅ socket event 'task-updated' hit while assigned user in task"
+          "✅ socket event 'task-updated' hit while assigned user in project"
         );
       }
       setTeamUserIds(updatedIds);

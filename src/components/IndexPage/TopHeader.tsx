@@ -87,6 +87,7 @@ export default function TopHeader() {
 
     socket.on("receive-notification", handleNotification);
     if (userData?._id || userData?.id) {
+      console.log("hit")
 
       dispatch(fetchNotificationCount(userData?._id || userData?.id));
     }

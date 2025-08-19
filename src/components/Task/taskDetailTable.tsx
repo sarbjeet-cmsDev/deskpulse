@@ -18,6 +18,7 @@ import { z } from "zod";
 import { updateEstimateSchema } from "../validation/userValidation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import formatMinutes from "@/utils/formatMinutes";
+import { getSocket } from "@/utils/socket";
 
 interface DetailsProps {
   project: {
@@ -34,7 +35,7 @@ interface DetailsProps {
   };
   taskId: string;
   task: any;
-  fetchTask?: any
+  fetchTask?: any;
 
   onTaskUpdate: () => void;
 }
@@ -45,7 +46,6 @@ type User = {
   lastName: string;
   avatar?: string;
 };
-
 
 export enum PriorityEnum {
   LOW = "low",
@@ -59,7 +59,7 @@ export default function DetailsTable({
   taskId,
   task,
   onTaskUpdate,
-  fetchTask
+  fetchTask,
 }: DetailsProps) {
   const [email, setEmail] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -69,10 +69,10 @@ export default function DetailsTable({
   const [users, setUsers] = useState([]);
   const user: any = useSelector((state: RootState) => state.auth.user);
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
-  const [editEstimate, setEditEstimate] = useState(false)
+  const [editEstimate, setEditEstimate] = useState(false);
   const [assignedUser, setAssignedUser] = useState<IUser[]>([]);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
+  const loginUser: any = useSelector((state: RootState) => state.user.data);
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -82,13 +82,15 @@ export default function DetailsTable({
     setIsModalOpen(false);
   };
 
+  const socketRef = useRef(getSocket());
+
   const fetchAssignedUser = async (id: string) => {
     try {
       const user = await UserService.getAssignedUser(id);
       setAssignedUser([user as IUser]);
       fetchKanbanList(task?.project);
       if (onTaskUpdate) onTaskUpdate();
-    } catch (error) { }
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -106,6 +108,26 @@ export default function DetailsTable({
       fetchAssignedUser(userId);
       if (onTaskUpdate) onTaskUpdate();
       handleCloseModal();
+
+      if (userId?.length) {
+        if (!socketRef.current.connected) {
+          socketRef.current.connect();
+        }
+        socketRef.current.on("connect", () => {
+          socketRef.current.emit("register-user", loginUser.id); // Send your user ID immediately
+        });
+
+        socketRef.current.emit("task-updated", {
+          taskId: "1111",
+          sender: loginUser.firstName + " " + loginUser.lastName,
+          receiverId: userId,
+          description: "Assigned You a Task",
+        });
+
+        console.log(
+          "✅ socket event 'task-updated' hit while assigned user in project"
+        );
+      }
     } catch (error) {
       console.error("Failed to assign task:", error);
     }
@@ -150,16 +172,15 @@ export default function DetailsTable({
   } = useForm<EstimateInput>({
     resolver: zodResolver(updateEstimateSchema),
     defaultValues: {
-      estimated_time: task?.estimated_time
-    }
+      estimated_time: task?.estimated_time,
+    },
   });
 
-  const onSubmit = (async (data: any) => {
+  const onSubmit = async (data: any) => {
     await TaskService.updateTask(taskId, data);
-    setEditEstimate(false)
-    fetchTask(taskId)
-
-  })
+    setEditEstimate(false);
+    fetchTask(taskId);
+  };
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -353,9 +374,10 @@ export default function DetailsTable({
               </span>
             </div>
             <div className="flex items-center gap-2">
-
               <button
-                onClick={() => user?.role === "admin" && setIsPriorityModalOpen(true)}
+                onClick={() =>
+                  user?.role === "admin" && setIsPriorityModalOpen(true)
+                }
                 className="bg-theme-primary text-white text-[12px] px-[9px] py-[4px] rounded-[8px] font-500"
               >
                 {task?.priority?.toUpperCase()}
@@ -398,30 +420,42 @@ export default function DetailsTable({
               </span>
             </div>
             <div className="flex items-center gap-2">
-
-              <div className="py-[2px]  rounded-[8px] text-[15px] leading-[16px] flex gap-4" ref={dropdownRef}>
-
+              <div
+                className="py-[2px]  rounded-[8px] text-[15px] leading-[16px] flex gap-4"
+                ref={dropdownRef}
+              >
                 {editEstimate ? (
                   <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="flex gap-2">
-
-                      <Input  {...register("estimated_time")} type="text" className="w-[100px] cursor-pointer" defaultValue={task?.estimated_time} />
-                      <Button type="submit" className="bg-theme-primary text-white">Update</Button>
+                      <Input
+                        {...register("estimated_time")}
+                        type="text"
+                        className="w-[100px] cursor-pointer"
+                        defaultValue={task?.estimated_time}
+                      />
+                      <Button
+                        type="submit"
+                        className="bg-theme-primary text-white"
+                      >
+                        Update
+                      </Button>
                     </div>
 
                     {errors.estimated_time && (
-                      <p className="text-xs text-red-500 mt-2 ml-1">{errors.estimated_time.message}</p>
+                      <p className="text-xs text-red-500 mt-2 ml-1">
+                        {errors.estimated_time.message}
+                      </p>
                     )}
                   </form>
                 ) : (
-                  <div>
-
-                    {formatMinutes(Number(task?.estimated_time) * 60)}
-                  </div>
+                  <div>{formatMinutes(Number(task?.estimated_time) * 60)}</div>
                 )}
                 {!editEstimate && user?.role === "admin" && (
-
-                  <CiEdit size={20} className="cursor-pointer" onClick={() => setEditEstimate(true)} />
+                  <CiEdit
+                    size={20}
+                    className="cursor-pointer"
+                    onClick={() => setEditEstimate(true)}
+                  />
                 )}
               </div>
             </div>

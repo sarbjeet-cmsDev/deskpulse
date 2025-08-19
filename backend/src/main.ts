@@ -1,36 +1,21 @@
-// main.ts
-
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
-import * as dotenv from "dotenv";
-import * as express from "express";
-import * as cors from "cors";
 import { createServer } from "http";
-import { Server } from "socket.io";
-import { ExpressAdapter } from "@nestjs/platform-express";
+import * as express from "express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
-import { UnprocessableEntityException, ValidationPipe } from "@nestjs/common";
+import { ValidationPipe, UnprocessableEntityException } from "@nestjs/common";
 import { join } from "path";
 import { AllExceptionsFilter } from "./shared/http-exception.filter";
 import { initSocketIO } from "./utils/socket";
+import * as dotenv from "dotenv";
+
 dotenv.config({ path: "../.env" });
 
 async function bootstrap() {
-  const expressApp = express(); // 👈 use this for both NestJS and Socket.IO
-  expressApp.use(express.json({ limit: '10mb' }));
-  expressApp.use(express.urlencoded({ limit: '10mb', extended: true }));
-  expressApp.use(
-    cors({
-      origin: `${process.env.SOCKET_FRONTEND}`,
-      credentials: true,
-    })
-  );
+  const app = await NestFactory.create(AppModule, { cors: false });
+  app.use(express.json({ limit: '10mb' }));
+  app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
-  // Create NestJS app with ExpressAdapter
-  const app = await NestFactory.create(
-    AppModule,
-    new ExpressAdapter(expressApp)
-  );
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -44,9 +29,8 @@ async function bootstrap() {
       },
     })
   );
-
   app.useGlobalFilters(new AllExceptionsFilter());
-  app.use("/uploads", express.static(join(__dirname, "..", "uploads")));
+  app.use("/uploads", require("express").static(join(__dirname, "..", "uploads")));
 
   const config = new DocumentBuilder()
     .setTitle("Deskpulse API")
@@ -56,23 +40,20 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup("api", app, document);
 
-  // 👇 Prepare Nest app before starting HTTP server
+  app.enableCors({
+    origin: process.env.SOCKET_FRONTEND,
+    credentials: true,
+  });
+
   await app.init();
 
-  // 👇 Create raw HTTP server (bind both NestJS + Socket.IO here)
-  const httpServer = createServer(expressApp);
+  const httpServer = app.getHttpServer();
 
-  // 👇 Initialize Socket.IO
   initSocketIO(httpServer);
 
-
-
-
   const port = process.env.BACKEND_PORT || 3001;
-
-  // 👇 Start both NestJS and Socket.IO on the same server
-  httpServer.listen(port, () => {
-    console.log(`🚀 Backend  running on PORT :${port}`);
+  await app.listen(port, "0.0.0.0", () => {
+    console.log(`🚀 Backend running on PORT: ${port}`);
   });
 }
 

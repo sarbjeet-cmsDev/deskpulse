@@ -20,6 +20,7 @@ import { ProjectKanbon } from "@/service/projectKanbon.service";
 import { KanbanColumn } from "@/types/projectKanbon.interface";
 import DropdownOptions from "@/components/DropdownOptions";
 import ImageLightbox from "@/components/common/ImagePopUp/ImageLightbox";
+import { getSocket } from "@/utils/socket";
 
 interface Props {
   code: string;
@@ -49,6 +50,9 @@ export default function MyProjectDetails({ code }: Props) {
   const [version, setVersion] = useState<number>(Date.now());
 
   const [projectImage, setProjectImage] = useState<string>(ProjectAvtar.src);
+  const loginUser: any = useSelector((state: RootState) => state.user.data);
+
+  const socketRef = useRef(getSocket());
 
 
   const fetchProjectByCode = (async () => {
@@ -204,6 +208,27 @@ export default function MyProjectDetails({ code }: Props) {
       refreshTasks();
       fetchTaskByKanbonList([]);
       fetchTasks(project._id);
+      
+      if (title) {
+        if (!socketRef.current.connected) {
+          socketRef.current.connect();
+        }
+        socketRef.current.on("connect", () => {
+          socketRef.current.emit("register-user", loginUser.id);
+        });
+
+        socketRef.current.emit("task-updated", {
+          taskId: "1111",
+          sender: assigned_to ? (loginUser.firstName + " " + loginUser.lastName) : 'This',
+          receiverId: assigned_to || user?.id || "",
+          description: assigned_to  ? `Assigned you a task : ${title}` : `${title} task is assigned by you.`,
+        });
+
+        console.log(
+          "✅ socket event 'task-updated' hit while assigned user in project"
+        );
+      }
+
     } catch (error) {
       console.error(error);
     }
