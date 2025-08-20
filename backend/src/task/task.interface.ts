@@ -61,6 +61,7 @@ export interface Task extends Document {
   created_by: MongooseSchema.Types.ObjectId;
   updated_by?: MongooseSchema.Types.ObjectId;
   estimated_time?: string
+  isArchived?: Boolean
 }
 
 interface TaskDetails {

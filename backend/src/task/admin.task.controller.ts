@@ -4,13 +4,14 @@ import {
   Param,
   Delete,
   Query,
+  Patch,
 } from "@nestjs/common";
 import { TaskService } from "./task.service";
 import { Task } from "./task.interface";
 
 @Controller("api/admin/task")
 export class AdminTaskController {
-  constructor(private readonly taskService: TaskService) {}
+  constructor(private readonly taskService: TaskService) { }
 
 
   @Get()
@@ -29,7 +30,7 @@ export class AdminTaskController {
   }
 
 
- 
+
   @Delete(":id")
   async remove(@Param("id") id: string): Promise<any> {
     await this.taskService.remove(id);
@@ -38,32 +39,35 @@ export class AdminTaskController {
     };
   }
 
-@Get("timesheet")
-async findTaskTimeSheet(
-  @Query("page") page: number = 1,
-  @Query("limit") limit: number = 10,
-  @Query("keyword") keyword?: string,
-  @Query("sortOrder") sortOrder: "asc" | "desc" = "asc",
-  @Query("start") start?: string,
-  @Query("end") end?: string
-): Promise<{ data: Task[]; total: number; page: number; limit: number; totalPages: number }> {
-  return this.taskService.getTaskDetails(
-    page,
-    limit,
-    keyword,
-    sortOrder,
-    start,
-    end
-  );
-}
+  @Get("timesheet")
+  async findTaskTimeSheet(
+    @Query("page") page: number = 1,
+    @Query("limit") limit: number = 10,
+    @Query("keyword") keyword?: string,
+    @Query("sortOrder") sortOrder: "asc" | "desc" = "asc",
+    @Query("start") start?: string,
+    @Query("end") end?: string
+  ): Promise<{ data: Task[]; total: number; page: number; limit: number; totalPages: number }> {
+    return this.taskService.getTaskDetails(
+      page,
+      limit,
+      keyword,
+      sortOrder,
+      start,
+      end
+    );
+  }
 
- @Get("fetch/:id")
+  @Get("fetch/:id")
   async findOne(@Param("id") id: string): Promise<Task> {
     return this.taskService.findOne(id);
   }
 
- @Get("fetchByCode/:code")
+  @Get("fetchByCode/:code")
   async findByCode(@Param("code") code: string): Promise<Task> {
     return this.taskService.findByCode(code);
   }
+
+
+
 }

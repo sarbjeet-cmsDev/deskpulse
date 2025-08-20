@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { ReadonlyURLSearchParams } from 'next/navigation';
-import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
+import { ReadonlyURLSearchParams } from "next/navigation";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import Pagination from "../Pagination/pagination";
 
 type Header = {
   id: string;
@@ -17,6 +18,7 @@ type Row = {
 type Pagination = {
   current_page: number;
   total_page: number;
+  total?: number;
   total_records: number;
   limit: number;
 };
@@ -58,10 +60,11 @@ const DataGrid: React.FC<DataGridProps> = ({
       return () => clearTimeout(delay);
     }
   }, [searchInput]);
-  const currentPageFromRoute = parseInt(searchParams.get('page') || '1', 10);
-
-
-  const startRecord = pagination.total_records === 0 ? 0 : (pagination.current_page - 1) * pagination.limit + 1;
+  const currentPageFromRoute = parseInt(searchParams.get("page") || "1", 10);
+  const startRecord =
+    pagination.total_records === 0
+      ? 0
+      : (pagination.current_page - 1) * pagination.limit + 1;
   const endRecord = Math.min(
     startRecord + pagination.limit - 1,
     pagination.total_records
@@ -72,7 +75,6 @@ const DataGrid: React.FC<DataGridProps> = ({
     params.set("page", newPage.toString());
     router.push(`${pathname}?${params.toString()}`);
   };
-
 
   // const pageNumbers = Array.from(
   //   { length: pagination.total_page },
@@ -95,7 +97,7 @@ const DataGrid: React.FC<DataGridProps> = ({
       const end = Math.min(total_page - 1, current_page + range);
 
       if (start > 2) {
-        pages.push('left-ellipsis');
+        pages.push("left-ellipsis");
       }
 
       for (let i = start; i <= end; i++) {
@@ -103,7 +105,7 @@ const DataGrid: React.FC<DataGridProps> = ({
       }
 
       if (end < total_page - 1) {
-        pages.push('right-ellipsis');
+        pages.push("right-ellipsis");
       }
 
       pages.push(total_page);
@@ -113,7 +115,6 @@ const DataGrid: React.FC<DataGridProps> = ({
   };
 
   const pageNumbers = getPageNumbers();
-
   return (
     <div className="space-y-4">
       {onSearch && (
@@ -212,47 +213,15 @@ const DataGrid: React.FC<DataGridProps> = ({
         </table>
       </div>
 
-      {/* Pagination Info + Controls */}
-      <div className="flex flex-col sm:flex-row justify-between items-center gap-3">
-        <div className="text-sm text-dark">
-          Showing {startRecord}–{endRecord} of {pagination.total_records}
-        </div>
-        <div className="flex items-center md:flex-wrap gap-1 text-sm">
-          <button
-            onClick={() => handlePageChange?.(pagination.current_page - 1)}
-            disabled={pagination.current_page <= 1 || loading}
-            className={`px-3 py-1 border rounded disabled:opacity-50 cursor-pointer ${pagination.current_page <= 1 || loading ? "!cursor-not-allowed" : ""}`}
-          >
-            Prev
-          </button>
 
-          {pageNumbers.map((num, index) =>
-            typeof num === "string" ? (
-              <span key={`ellipsis-${index}`} className="px-2 text-gray-400 select-none">...</span>
-            ) : (
-              <button
-                key={`page-${num}`}
-                disabled={loading}
-                onClick={() => handlePageChange?.(num)}
-                className={`px-3 py-1 border rounded cursor-pointer ${num === currentPageFromRoute
-                  ? 'bg-gray-200 text-black font-semibold'
-                  : 'text-dark'
-                  } ${loading ? "!cursor-not-allowed" : ""}`}
-              >
-                {num}
-              </button>
-            )
-          )}
+      <Pagination
+        currentPage={currentPageFromRoute}
+        totalItems={pagination.total_records}
+        itemsPerPage={pagination.limit}
+        onPageChange={handlePageChange}
+      />
 
-          <button
-            onClick={() => handlePageChange?.(pagination.current_page + 1)}
-            disabled={pagination.current_page >= pagination.total_page || loading}
-            className={`px-3 py-1 border rounded disabled:opacity-50 cursor-pointer ${pagination.current_page >= pagination.total_page || loading ? "!cursor-not-allowed" : ""}`}
-          >
-            Next
-          </button>
-        </div>
-      </div>
+
     </div>
   );
 };

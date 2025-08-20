@@ -1,5 +1,7 @@
 import {
   ConflictException,
+  forwardRef,
+  Inject,
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
@@ -11,6 +13,7 @@ import { UserService } from "src/user/user.service";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { CreateProjectDto, UpdateProjectDto, UpdateProjectKanbanOrderDto } from "./project.dto";
 import { log } from "console";
+import { TaskService } from "src/task/task.service";
 
 @Injectable()
 export class ProjectService {
@@ -18,7 +21,10 @@ export class ProjectService {
     @InjectModel(Project.name) private projectModel: Model<ProjectDocument>,
     private readonly kanbanService: ProjectKanbanService,
     private eventEmitter: EventEmitter2,
-    private readonly userservices: UserService
+    private readonly userservices: UserService,
+    @Inject(forwardRef(() => TaskService))
+
+    private readonly taskservices: TaskService
   ) { }
   private sanitizeObjectIds(payload: any) {
     const keysToSanitize = [
@@ -101,7 +107,7 @@ export class ProjectService {
     updateProjectDto: UpdateProjectDto
   ): Promise<Project> {
 
-    if(!updateProjectDto.users){
+    if (!updateProjectDto.users) {
       updateProjectDto.users = []
     }
     const sanitized = this.sanitizeObjectIds(updateProjectDto);
@@ -322,6 +328,25 @@ export class ProjectService {
     };
   }
 
+  async updateTaskReOrder(projectId: string, dto: UpdateProjectKanbanOrderDto) {
+    const project = await this.projectModel.findById(projectId);
+    if (!project) {
+      throw new NotFoundException(`Project with ID ${projectId} not found`);
+    }
+    for (const item of dto.data) {
+      const taskCoulmn = await this.taskservices.findById(item._id);
+      if (!taskCoulmn) {
+        throw new NotFoundException(`Task column with ID ${item._id} not found`);
+      }
+    }
 
+    const updates = dto.data.map(item =>
+      this.taskservices.update(item._id, { sort_order: item.sort_order })
+    );
+    await Promise.all(updates);
+    return {
+      message: "Task order updated successfully!",
+    };
+  }
 
 }

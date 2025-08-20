@@ -26,9 +26,7 @@ export const GetKanbonList = () => {
   const [taskView, setTaskView] = useState<"kanban" | "list">("kanban");
   const [users, setUsers] = useState([]);
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
-  const [scrollDirection, setScrollDirection] = useState<
-    "left" | "right" | null
-  >(null);
+  const [scrollDirection, setScrollDirection] = useState<"left" | "right" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [dragOverTaskId, setDragOverTaskId] = useState<string | null>(null);
 
@@ -41,22 +39,15 @@ export const GetKanbonList = () => {
       let taskRes;
 
       if (userIds.length > 0) {
-        taskRes = await TaskService.getTasksByUserIds(
-          projectId,
-          userIds.join(",")
-        );
+        taskRes = await TaskService.getTasksByUserIds(projectId, userIds.join(","));
       } else {
         taskRes = await TaskService.getTasksByProject(projectId);
       }
 
-      if (res?.data) {
-        setKanbanList(res.data);
-      }
+      if (res?.data) setKanbanList(res.data);
 
       const tasks = taskRes?.data || taskRes?.tasks;
-      if (tasks) {
-        setTaskList(tasks);
-      }
+      if (tasks) setTaskList(tasks);
 
       setError(null);
     } catch (error) {
@@ -70,9 +61,7 @@ export const GetKanbonList = () => {
       const data: any = await AdminUserService.getAllUsers();
       const result = await ProjectService.getProjectById(projectId);
       const userIds = new Set(result?.users || []);
-      const matchingUsers = data.data.filter((user: any) =>
-        userIds.has(user._id)
-      );
+      const matchingUsers = data.data.filter((user: any) => userIds.has(user._id));
       if (matchingUsers.length > 0) setUsers(matchingUsers);
     } catch (err) {
       console.error("Failed to fetch users", err);
@@ -93,6 +82,7 @@ export const GetKanbonList = () => {
     fetchKanbonList(selectedUserIds);
   }, [selectedUserIds]);
 
+  // Auto-scroll while dragging near edges
   useEffect(() => {
     const container = scrollContainerRef.current;
     if (!container || !scrollDirection) return;
@@ -132,22 +122,65 @@ export const GetKanbonList = () => {
     setDraggedTask(task);
   };
 
-  const handleDrop = async (columnTitle: string) => {
+  // Drop on column = move to another status
+  const handleColumnDrop = async (columnTitle: string) => {
     setScrollDirection(null);
     if (!draggedTask || draggedTask.status === columnTitle) return;
 
     try {
-      await TaskService.updateTaskStatus(draggedTask._id, {
-        status: columnTitle,
-      });
-      const updatedTasks = taskList.map((t) =>
-        t._id === draggedTask._id ? { ...t, status: columnTitle } : t
+      await TaskService.updateTaskStatus(draggedTask._id, { status: columnTitle });
+      setTaskList((prev) =>
+        prev.map((t) =>
+          t._id === draggedTask._id ? { ...t, status: columnTitle } : t
+        )
       );
-      setTaskList(updatedTasks);
     } catch (err) {
       console.error("Failed to update task status:", err);
     } finally {
       setDraggedTask(null);
+    }
+  };
+
+  // Drop on card = reorder inside same column
+  const handleCardDrop = async (e: React.DragEvent, columnTitle: string, targetTaskId: string) => {
+    e.stopPropagation(); // prevent column drop
+
+    if (!draggedTask || draggedTask._id === targetTaskId || draggedTask.status !== columnTitle) {
+      setDraggedTask(null);
+      setDragOverTaskId(null);
+      return;
+    }
+
+    try {
+      const ordered = taskList
+        .filter((t) => t.status === columnTitle)
+        .sort((a: any, b: any) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
+
+      const draggedIndex = ordered.findIndex((t) => t._id === draggedTask._id);
+      const targetIndex = ordered.findIndex((t) => t._id === targetTaskId);
+
+      // Move dragged before target
+      ordered.splice(draggedIndex, 1);
+      ordered.splice(targetIndex, 0, draggedTask);
+
+      const updatedData = ordered.map((t, idx) => ({
+        _id: t._id,
+        sort_order: idx,
+      }));
+
+      await TaskService.reorderTasks(projectId, updatedData);
+
+      setTaskList((prev) =>
+        prev.map((t) => {
+          const updated = updatedData.find((u) => u._id === t._id);
+          return updated ? { ...t, sort_order: updated.sort_order } : t;
+        })
+      );
+    } catch (err) {
+      console.error("Failed to reorder tasks:", err);
+    } finally {
+      setDraggedTask(null);
+      setDragOverTaskId(null);
     }
   };
 
@@ -197,15 +230,16 @@ export const GetKanbonList = () => {
           className="flex w-full gap-4 overflow-x-auto p-2 h-[calc(100vh-190px)] bg-gray-100"
         >
           {kanbanList.map((column) => {
-            const matchingCards = taskList.filter(
-              (card) => card.status === column.title
-            );
+            const matchingCards = taskList
+              .filter((card) => card.status === column.title)
+              .sort((a: any, b: any) => (b.sort_order ?? 0) - (a.sort_order ?? 0));
 
             return (
               <div
                 key={column._id}
                 className="flex flex-col bg-white shadow-md rounded-lg w-80 min-w-[20rem] p-4 !h-[calc(100vh-225px)] overflow-y-auto"
-                onDrop={() => handleDrop(column.title)}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={() => handleColumnDrop(column.title)}
               >
                 <h3 className="text-lg font-semibold mb-4 text-gray-800">
                   {column.title}
@@ -213,24 +247,9 @@ export const GetKanbonList = () => {
 
                 <div className="flex flex-col gap-3">
                   {matchingCards.map((card: any) => (
-                    // <div
-                    //   key={card._id}
-                    //   className="bg-gray-50 border border-gray-200 rounded-md p-3 shadow-sm hover:bg-gray-100 cursor-pointer transition"
-                    //   draggable
-                    //   onClick={() => router.push(`/task/${card._id}`)}
-                    //   onDragStart={() => handleDragStart(card)}
-                    // >
-                    //   <p className="text-sm font-medium text-gray-700">
-                    //     {card.title}
-                    //     {/* {card.assigned_to} */}
-                    //   </p>
-                    // </div>
-
                     <div
                       key={card._id}
-                      className={`bg-gray-50 border border-gray-200 rounded-md p-3 shadow-sm hover:bg-gray-100 cursor-pointer transition ${dragOverTaskId === card._id
-                        ? "ring-2 ring-blue-400"
-                        : ""
+                      className={`bg-gray-50 border border-gray-200 rounded-md p-3 shadow-sm hover:bg-gray-100 cursor-pointer transition ${dragOverTaskId === card._id ? "ring-2 ring-blue-400" : ""
                         }`}
                       draggable
                       onClick={() => router.push(`/task/${card.code}`)}
@@ -239,26 +258,8 @@ export const GetKanbonList = () => {
                         e.preventDefault();
                         setDragOverTaskId(card._id);
                       }}
-                      onDrop={async () => {
-                        if (
-                          draggedTask &&
-                          dragOverTaskId &&
-                          draggedTask._id !== dragOverTaskId &&
-                          draggedTask.status === column.title
-                        ) {
-                          try {
-                            await TaskService.reorderTask(draggedTask._id, {
-                              targetTaskId: dragOverTaskId,
-                              status: column.title,
-                            });
-                            fetchKanbonList(selectedUserIds);
-                          } catch (err) {
-                            console.error("Failed to reorder tasks:", err);
-                          }
-                        }
-                        setDraggedTask(null);
-                        setDragOverTaskId(null);
-                      }}
+                      onDragLeave={() => setDragOverTaskId(null)}
+                      onDrop={(e) => handleCardDrop(e, column.title, card._id)}
                     >
                       <p className="text-sm font-medium text-gray-700">
                         {card.title}

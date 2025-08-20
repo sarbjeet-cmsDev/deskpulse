@@ -34,11 +34,11 @@ const Users = () => {
   const [sortField, setSortField] = useState<SortField>("firstName");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const debouncedSearch = useDebounce(search, 300);
-
+  const currentPageFromRoute = parseInt(searchParams.get("page") || "1", 10);
   const fetchUsers = async () => {
     try {
       const data = await AdminUserService.getAllUsers({
-        page,
+        page: currentPageFromRoute,
         limit,
         keyword: debouncedSearch,
         sortField,
@@ -98,7 +98,7 @@ const Users = () => {
             pagination={{
               total_records: totalRecords,
               total_page: totalPages,
-              current_page: page,
+              current_page: currentPageFromRoute,
               limit,
             }}
             onSearch={(query) => {

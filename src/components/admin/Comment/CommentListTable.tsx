@@ -46,11 +46,11 @@ const CommentListTable = () => {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [sortField, setSortField] = useState("code");
   const debouncedSearch = useDebounce(search, 300);
-
+  const currentPageFromRoute = parseInt(searchParams.get("page") || "1", 10);
   const fetchComments = async () => {
     try {
       const res = await AdminCommentService.getAllComments({
-        page,
+        page: currentPageFromRoute,
         limit,
         keyword: debouncedSearch,
         sortOrder,
@@ -101,7 +101,7 @@ const CommentListTable = () => {
           pagination={{
             total_records: totalRecords,
             total_page: totalPages,
-            current_page: page,
+            current_page: currentPageFromRoute,
             limit: limit,
           }}
           onSearch={(query) => {

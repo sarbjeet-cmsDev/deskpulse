@@ -27,7 +27,7 @@ import { CurrentUser } from "src/shared/current-user.decorator";
 @Controller("api/tasks")
 @UseGuards(JwtAuthGuard)
 export class TaskController {
-  constructor(private readonly taskService: TaskService) {}
+  constructor(private readonly taskService: TaskService) { }
   private readonly logger = new Logger(TaskController.name);
 
   @Post()
@@ -159,11 +159,13 @@ export class TaskController {
     );
   }
 
-  @Patch(":id/reorder")
-  async reorderTask(
-    @Param("id") id: string,
-    @Body() body: { targetTaskId: string; status: string }
-  ) {
-    return this.taskService.reorderTask(id, body.targetTaskId, body.status);
+  @Patch("archive/:taskId")
+  async archiveTask(@Param("taskId") taskId: string): Promise<Task> {
+    return this.taskService.update(taskId, { isArchived: true });
+  }
+
+  @Patch("unArchive/:taskId")
+  async unArchiveTask(@Param("taskId") taskId: string): Promise<Task> {
+    return this.taskService.update(taskId, { isArchived: false });
   }
 }

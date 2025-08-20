@@ -12,6 +12,14 @@ export class Task {
   @Prop({ required: true })
   title: string;
 
+  @Prop({
+    required: true,
+    default: false,
+  })
+  isArchived: Boolean;
+
+
+
   @Prop()
   description: string;
 

@@ -41,11 +41,12 @@ const NotificationListTable = () => {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [sortField, setSortField] = useState("code");
   const debouncedSearch = useDebounce(search, 300);
+  const currentPageFromRoute = parseInt(searchParams.get("page") || "1", 10);
 
   const fetchNotifictions = async () => {
     try {
       const res = await AdminNotificationService.getAllNotification({
-        page,
+        page: currentPageFromRoute,
         limit,
         keyword: debouncedSearch,
         sortOrder,
@@ -83,7 +84,6 @@ const NotificationListTable = () => {
     ),
     actions: [{ title: "Delete" }],
   }));
-
   return (
     <div className="flex">
       <main className="flex-1 p-6 sm:p-6 md:p-8 w-[100%]">
@@ -97,7 +97,7 @@ const NotificationListTable = () => {
           pagination={{
             total_records: totalRecords,
             total_page: totalPages,
-            current_page: page,
+            current_page: currentPageFromRoute,
             limit: limit,
           }}
           onSearch={(query) => {

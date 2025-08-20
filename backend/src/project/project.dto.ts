@@ -100,7 +100,7 @@ export class CreateProjectDto {
   updated_by?: MongooseSchema.Types.ObjectId;
 }
 
-export class UpdateProjectDto extends CreateProjectDto {}
+export class UpdateProjectDto extends CreateProjectDto { }
 
 
 class KanbanSortItemDto {
@@ -117,4 +117,21 @@ export class UpdateProjectKanbanOrderDto {
   @ValidateNested({ each: true })
   @Type(() => KanbanSortItemDto)
   data: KanbanSortItemDto[];
+}
+
+
+class TaskSortItemDto {
+  @IsString()
+  _id: string;
+
+  @IsNumber()
+  @Min(0)
+  sort_order: number;
+}
+
+export class UpdateTaskReorderOrderDto {
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => TaskSortItemDto)
+  data: TaskSortItemDto[];
 }

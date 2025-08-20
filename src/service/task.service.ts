@@ -14,9 +14,9 @@ export interface ITask {
   KanbanColumn?: any;
   description: string;
   priority: string;
-  status:string;
-  estimated_time?:number
-  totaltaskminutes?:number
+  status: string;
+  estimated_time?: number
+  totaltaskminutes?: number
   code: string;
 
   // Add more fields as needed
@@ -29,7 +29,7 @@ export interface CreateTaskDto {
   assigned_to: string;
   description?: string;
   due_date?: string;
-  estimated_time?:number;
+  estimated_time?: number;
 }
 
 export interface ITaskResponse {
@@ -66,7 +66,7 @@ const TaskService = {
     const res = await axiosClient.get(`${API_URL}/tasks/fetch/${id}`);
     return res.data;
   },
-async getTaskByCode(code: string): Promise<ITask> {
+  async getTaskByCode(code: string): Promise<ITask> {
     const res = await axiosClient.get(`${API_URL}/tasks/code/${code}`);
     return res.data;
   },
@@ -99,12 +99,12 @@ async getTaskByCode(code: string): Promise<ITask> {
     return res.data;
   },
 
-async getTasksByAssignedUser(userIds: string, params?: { start?: string; end?: string, page?: number; }): Promise<ITaskResponse> {
-  const res = await axiosClient.get(`${API_URL}/tasks/assigned-to`, {
-    params: { userIds, ...params },
-  });
-  return res.data;
-},
+  async getTasksByAssignedUser(userIds: string, params?: { start?: string; end?: string, page?: number; }): Promise<ITaskResponse> {
+    const res = await axiosClient.get(`${API_URL}/tasks/assigned-to`, {
+      params: { userIds, ...params },
+    });
+    return res.data;
+  },
 
 
   // Get tasks where a user is report-to
@@ -137,10 +137,24 @@ async getTasksByAssignedUser(userIds: string, params?: { start?: string; end?: s
     return res.data;
   },
 
-  async reorderTask(taskId: string, data: { targetTaskId: string; status: string }) {
-    const res = await axiosClient.patch(`${API_URL}/tasks/${taskId}/reorder`, data)
-  return res.data ;
-},
+  async reorderTasks(projectId: any, data: any) {
+    const res = await axiosClient.put(`${API_URL}/projects/${projectId}/task/order`, { data });
+    return res.data;
+  },
+
+
+
+
+
+
+
+  async archiveTask(taskId: string): Promise<void> {
+    await axiosClient.patch(`${API_URL}/tasks/archive/${taskId}`);
+  },
+
+  async unArchiveTask(taskId: string): Promise<void> {
+    await axiosClient.patch(`${API_URL}/tasks/unArchive/${taskId}`);
+  },
 };
 
 export default TaskService;

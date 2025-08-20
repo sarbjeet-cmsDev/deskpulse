@@ -23,6 +23,7 @@ import { ITaskChecklist } from "@/types/taskchecklist.interface";
 import DropdownOptions from "@/components/DropdownOptions";
 import DetailsTable from "@/components/Task/taskDetailTable";
 import { EstimateTime } from "./EstimateTime";
+import Swal from "sweetalert2";
 
 interface Props {
   id: string;
@@ -155,6 +156,35 @@ export default function TaskDetails({ id }: Props) {
     };
   };
 
+  const handleArchiveTask = (async () => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: `You are about to archieve Task: "${task?.code}"`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, Archieve it!",
+      cancelButtonText: "No, cancel!",
+      reverseButtons: true,
+      customClass: {
+        confirmButton:
+          "bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 focus:outline-none mr-2",
+        cancelButton:
+          "bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 focus:outline-none mr-2",
+      },
+      buttonsStyling: false,
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await TaskService.archiveTask(task?._id as string);
+        router.push(`/project/${task?.code?.split("-")[0]}`)
+        // await fetchTasks();
+      } catch (err) {
+        Swal.fire("Error", "Failed to delete project.", "error");
+      }
+    }
+  })
+
   return (
     <div className="max-w-6xl mx-auto">
       <div className="main-content md:p-0 p-3">
@@ -188,6 +218,12 @@ export default function TaskDetails({ id }: Props) {
                     color: "primary",
                     onClick: handleViewKanban,
                   },
+                  {
+                    key: "Archive Task",
+                    label: "Archive Task",
+                    color: "primary",
+                    onClick: handleArchiveTask,
+                  }
                 ]}
               />
             </div>

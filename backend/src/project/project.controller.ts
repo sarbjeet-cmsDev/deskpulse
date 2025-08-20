@@ -19,11 +19,12 @@ import { CurrentUser } from "src/shared/current-user.decorator";
 import { UseInterceptors, UploadedFile } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { multerOptions } from "../shared/multer.config";
+import { UpdateTasktKanbanOrderDto } from "src/task/task.dto";
 
 @Controller("api/projects")
 @UseGuards(JwtAuthGuard)
 export class ProjectController {
-  constructor(private readonly projectService: ProjectService) {}
+  constructor(private readonly projectService: ProjectService) { }
 
   @Get("me")
   async getMyProjects(
@@ -101,7 +102,7 @@ export class ProjectController {
     };
   }
 
- 
+
 
   @Post("upload-avatar/:projectId")
   @UseInterceptors(FileInterceptor("file", multerOptions))
@@ -117,4 +118,17 @@ export class ProjectController {
   async getProjectById(@Param("id") id: string, @Query("keyword") keyword?: string): Promise<Project> {
     return this.projectService.findProjectUsers(id, keyword);
   }
+
+  @Put(":projectId/task/order")
+  async updateTaskReOrder(
+    @Param("projectId") projectId: string,
+    @Body() updateTasktKanbanOrderDto: UpdateTasktKanbanOrderDto
+  ): Promise<any> {
+    await this.projectService.updateTaskReOrder(projectId, updateTasktKanbanOrderDto);
+    return {
+      message: "Task sort_order updated successfully!",
+    };
+  }
+
+
 }

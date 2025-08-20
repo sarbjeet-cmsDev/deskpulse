@@ -62,6 +62,7 @@ export default function MyReminderList() {
       ) : (
         <ReminderList reminders={reminders} />
       )}
+      {/* {totalItems > 5 && ( */}
 
       <Pagination
         currentPage={currentPage}
@@ -69,6 +70,7 @@ export default function MyReminderList() {
         itemsPerPage={itemsPerPage}
         onPageChange={handlePageChange}
       />
+      {/* )} */}
     </div>
   );
 }

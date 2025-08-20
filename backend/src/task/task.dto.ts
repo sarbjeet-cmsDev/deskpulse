@@ -7,6 +7,9 @@ import {
   IsBoolean,
   IsDate,
   IsEnum,
+  IsArray,
+  ValidateNested,
+  Min,
 } from 'class-validator';
 import { Schema as MongooseSchema, Types } from 'mongoose';
 import { AcceptanceLevelEnum, PriorityEnum, TaskTypeEnum } from './task.interface';
@@ -39,7 +42,7 @@ export class CreateTaskDto {
   project?: MongooseSchema.Types.ObjectId;
 
   @IsOptional()
-  @IsNumber()
+  // @IsNumber()
   sort_order?: number;
 
   @IsOptional()
@@ -92,9 +95,16 @@ export class CreateTaskDto {
 
   @IsOptional()
   updated_by?: MongooseSchema.Types.ObjectId;
+
+  @IsOptional()
+  isArchived?: Boolean
 }
 
 export class UpdateTaskDto {
+
+
+
+
   @IsOptional()
   @IsString()
   title?: string;
@@ -162,6 +172,9 @@ export class UpdateTaskDto {
   created_by?: MongooseSchema.Types.ObjectId;
   @IsOptional()
   updated_by?: MongooseSchema.Types.ObjectId;
+
+  @IsOptional()
+  isArchived?: Boolean
 }
 
 export class UpdateTaskStatusUpdateDto {
@@ -186,4 +199,24 @@ export class UpdateTaskStatusUpdateDto {
   @IsOptional()
   @IsEnum(PriorityEnum)
   priority?: PriorityEnum;
+
+  @IsOptional()
+  isArchived?: Boolean
+}
+
+// DTO
+class TaskSortItemDto {
+  @IsString()
+  _id: string;
+
+  @IsNumber()
+  @Min(0)
+  sort_order: number;
+}
+
+export class UpdateTasktKanbanOrderDto {
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => TaskSortItemDto)
+  data: TaskSortItemDto[];
 }
