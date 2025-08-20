@@ -58,8 +58,11 @@ export const GetKanbonList = () => {
 
   const fetchUsers = async () => {
     try {
+      console.log("hiit")
       const data: any = await AdminUserService.getAllUsers();
+      console.log(data,"data of all project")
       const result = await ProjectService.getProjectById(projectId);
+      console.log(result,"result")
       const userIds = new Set(result?.users || []);
       const matchingUsers = data.data.filter((user: any) => userIds.has(user._id));
       if (matchingUsers.length > 0) setUsers(matchingUsers);
@@ -189,93 +192,97 @@ export const GetKanbonList = () => {
     localStorage.setItem("taskView", view);
   };
 
-  return (
-    <div className="mt-[-40px]">
-      {error && (
-        <div className="bg-red-100 text-red-700 p-2 rounded mb-4 mx-4">
-          {error}
-        </div>
-      )}
-
-      <div className="flex items-center justify-between md:p-0 p-2">
-        <div className="flex flex-start gap-5 p-5">
-          <Button
-            variant="bordered"
-            className={`border-none ${taskView === "list" ? "bg-blue-500 text-white" : ""}`}
-            onPress={() => handleTaskView("list")}
-          >
-            List
-          </Button>
-          <Button
-            variant="bordered"
-            className={`border-none ${taskView === "kanban" ? "bg-blue-500 text-white" : ""}`}
-            onPress={() => handleTaskView("kanban")}
-          >
-            Kanban
-          </Button>
-        </div>
-
-        <AvatarList
-          users={users}
-          selectedUserIds={selectedUserIds}
-          setSelectedUserIds={setSelectedUserIds}
-          fetchKanbonList={fetchKanbonList}
-        />
+ return (
+  <div className="mt-[-40px]">
+    {error && (
+      <div className="bg-red-100 text-red-700 p-3 rounded-lg mb-4 mx-4 shadow-sm border border-red-300">
+        {error}
       </div>
+    )}
 
-      {taskView === "kanban" ? (
-        <div
-          ref={scrollContainerRef}
-          onDragOver={handleDragOver}
-          className="flex w-full gap-4 overflow-x-auto p-2 h-[calc(100vh-190px)] bg-gray-100"
+    {/* Header Section */}
+    <div className="flex items-center justify-between md:p-0 p-3">
+      {/* View Toggle Buttons */}
+      <div className="flex gap-3 p-3 mt-2 bg-white rounded-xl shadow-sm">
+        <Button
+          variant="bordered"
+          className={`rounded-xl px-6 py-2 font-medium transition ${
+            taskView === "list"
+              ? "bg-blue-600 text-white shadow-md"
+              : "hover:bg-gray-100 text-gray-700"
+          }`}
+          onPress={() => handleTaskView("list")}
         >
-          {kanbanList.map((column) => {
-            const matchingCards = taskList
-              .filter((card) => card.status === column.title)
-              .sort((a: any, b: any) => (b.sort_order ?? 0) - (a.sort_order ?? 0));
-
-            return (
-              <div
-                key={column._id}
-                className="flex flex-col bg-white shadow-md rounded-lg w-80 min-w-[20rem] p-4 !h-[calc(100vh-225px)] overflow-y-auto"
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={() => handleColumnDrop(column.title)}
-              >
-                <h3 className="text-lg font-semibold mb-4 text-gray-800">
-                  {column.title}
-                </h3>
-
-                <div className="flex flex-col gap-3">
-                  {matchingCards.map((card: any) => (
-                    <div
-                      key={card._id}
-                      className={`bg-gray-50 border border-gray-200 rounded-md p-3 shadow-sm hover:bg-gray-100 cursor-pointer transition ${dragOverTaskId === card._id ? "ring-2 ring-blue-400" : ""
-                        }`}
-                      draggable
-                      onClick={() => router.push(`/task/${card.code}`)}
-                      onDragStart={() => handleDragStart(card)}
-                      onDragOver={(e) => {
-                        e.preventDefault();
-                        setDragOverTaskId(card._id);
-                      }}
-                      onDragLeave={() => setDragOverTaskId(null)}
-                      onDrop={(e) => handleCardDrop(e, column.title, card._id)}
-                    >
-                      <p className="text-sm font-medium text-gray-700">
-                        {card.title}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      ) : (
-        <div className="container mx-auto max-w-3xl md:p-0 p-3">
-          <SubTasks tasks={taskList} kanbanList={kanbanList} />
-        </div>
-      )}
+          List
+        </Button>
+        <Button
+          variant="bordered"
+          className={`rounded-xl px-6 py-2 font-medium transition ${
+            taskView === "kanban"
+              ? "bg-blue-600 text-white shadow-md"
+              : "hover:bg-gray-100 text-gray-700"
+          }`}
+          onPress={() => handleTaskView("kanban")}
+        >
+          Kanban
+        </Button>
+      </div>
     </div>
-  );
-};
+
+    {taskView === "kanban" ? (
+      <div
+        ref={scrollContainerRef}
+        onDragOver={handleDragOver}
+        className="flex w-full gap-4 overflow-x-auto p-2 h-[calc(100vh-190px)] bg-gray-100"
+      >
+        {kanbanList.map((column) => {
+          const matchingCards = taskList
+            .filter((card) => card.status === column.title)
+            .sort((a: any, b: any) => (b.sort_order ?? 0) - (a.sort_order ?? 0));
+
+          return (
+            <div
+              key={column._id}
+              className="flex flex-col bg-white shadow-md rounded-lg w-80 min-w-[20rem] p-4 !h-[calc(100vh-225px)] overflow-y-auto"
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={() => handleColumnDrop(column.title)}
+            >
+              <h3 className="text-lg font-semibold mb-4 text-gray-800">
+                {column.title}
+              </h3>
+
+              <div className="flex flex-col gap-3">
+                {matchingCards.map((card: any) => (
+                  <div
+                    key={card._id}
+                    className={`bg-gray-50 border border-gray-200 rounded-md p-3 shadow-sm hover:bg-gray-100 cursor-pointer transition ${
+                      dragOverTaskId === card._id ? "ring-2 ring-blue-400" : ""
+                    }`}
+                    draggable
+                    onClick={() => router.push(`/task/${card.code}`)}
+                    onDragStart={() => handleDragStart(card)}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      setDragOverTaskId(card._id);
+                    }}
+                    onDragLeave={() => setDragOverTaskId(null)}
+                    onDrop={(e) => handleCardDrop(e, column.title, card._id)}
+                  >
+                    <p className="text-sm font-medium text-gray-700">
+                      {card.title}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div> // ✅ This closes the scrollable kanban container
+    ) : (
+      <div className="container mx-auto max-w-3xl md:p-0 p-3">
+        <SubTasks tasks={taskList} kanbanList={kanbanList} />
+      </div>
+    )}
+  </div>
+);
+}
