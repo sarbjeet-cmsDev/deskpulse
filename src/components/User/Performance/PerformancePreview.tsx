@@ -14,7 +14,7 @@ import { Button } from "@heroui/button";
 import ChevronUp from "@/assets/images/chevronup.svg";
 import ChevronDown from "@/assets/images/chevrondown.svg";
 import TaskButton from "@/components/taskButton";
-import CreateGlobalTaskModal from "@/components/CreateGlobalTaskModal";
+
 
 dayjs.extend(isSameOrBefore);
 
@@ -22,10 +22,7 @@ export default function PerformancePreview() {
 
 
 
- const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
 
   const [data, setData] = useState<{ labels: string[]; datasets: any[] }>({
     labels: [],
@@ -158,18 +155,7 @@ export default function PerformancePreview() {
           <MyChart data={data} />
         </div>
       </div>
-            <TaskButton onClick={openModal} />
-
-      {isModalOpen && (
-<CreateGlobalTaskModal
-  isOpen={isModalOpen}
-  onClose={closeModal}
-  onCreate={async (title, description, due_date, estimated_time, assigned_to, projectId) => {
-    // Your API call or logic
-
-  }}
-/>
-)}
+   
     </div>
   );
 }

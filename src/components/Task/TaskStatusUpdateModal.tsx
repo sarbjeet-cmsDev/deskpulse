@@ -32,8 +32,7 @@ export default function TaskPropertyUpdateModal({
   }, [isOpen, currentValue]);
 
   const handleConfirm = async () => {
-    console.log(currentValue,"cutrent value")
-    console.log(onUpdate,"on updte")
+  
     try {
       await TaskService.updateTaskStatus(taskId, { [fieldName]: selectedValue });
       onUpdate?.();

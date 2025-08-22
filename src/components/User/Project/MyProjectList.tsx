@@ -13,8 +13,7 @@ import { KanbanColumn } from "@/types/projectKanbon.interface";
 import { ITask } from "@/service/task.service";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import TaskButton from "@/components/taskButton";
-import CreateGlobalTaskModal from "@/components/CreateGlobalTaskModal";
+
 
 export default function MyProjects() {
   const user: any = useSelector((state: RootState) => state.auth.user);
@@ -24,10 +23,7 @@ export default function MyProjects() {
   const [totalItems, setTotalItems] = useState<number>(0);
   const itemsPerPage = 20;
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
 
   useEffect(() => {
     const loadProjects = async (page: number) => {
@@ -136,24 +132,7 @@ export default function MyProjects() {
           </div>
         </div>
       </div>
-      <TaskButton onClick={openModal} />
-
-      {isModalOpen && (
-        <CreateGlobalTaskModal
-          isOpen={isModalOpen}
-          onClose={closeModal}
-          onCreate={async (
-            title,
-            description,
-            due_date,
-            estimated_time,
-            assigned_to,
-            projectId
-          ) => {
-            // Your API call or logic
-          }}
-        />
-      )}
+   
     </div>
   );
 }

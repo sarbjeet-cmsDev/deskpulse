@@ -9,6 +9,7 @@ import { EventEmitter2 } from "@nestjs/event-emitter";
 import { ProjectService } from "src/project/project.service";
 import { log } from "console";
 import { UserService } from "src/user/user.service";
+import { Types } from "mongoose";
 
 @Injectable()
 export class TimelineService {
@@ -112,8 +113,81 @@ export class TimelineService {
   }
 
   async findByUserId(userId: string): Promise<Timeline[]> {
+
+
     return this.timelineModel.find({ user: userId }).exec();
   }
+
+async findTimeLineByUserId(
+  userId: string,
+  page: number,
+  limit: number,
+  startDate?: string,
+  endDate?: string
+): Promise<{ data: Timeline[]; total: number; page: number; limit: number }> {
+  const skip = (page - 1) * limit;
+
+  const matchFilter: any = {
+    user: new Types.ObjectId(userId),
+  };
+
+ 
+  if (startDate || endDate) {
+    matchFilter.date = {};
+    if (startDate) {
+      matchFilter.date.$gte = new Date(startDate);
+    }
+    if (endDate) {
+      matchFilter.date.$lte = new Date(endDate);
+    }
+  }
+
+  const total = await this.timelineModel.countDocuments(matchFilter);
+
+  const data = await this.timelineModel.aggregate([
+    {
+      $match: matchFilter,
+    },
+    {
+      $lookup: {
+        from: 'tasks',
+        localField: 'task',
+        foreignField: '_id',
+        as: 'tasks',
+      },
+    },
+    {
+      $unwind: '$tasks',
+    },
+    {
+      $project: {
+        _id: 1,
+        date: 1,
+        time_spent: 1,
+        comment: 1,
+        taskId: '$task',
+        task_title: '$tasks.title',
+      },
+    },
+    {
+      $skip: skip,
+    },
+    {
+      $limit: limit,
+    },
+  ]);
+
+  
+
+  return {
+    data,
+    total,
+    page,
+    limit,
+  };
+}
+
+
 
   async removeByTaskId(taskId: string): Promise<{ deletedCount?: number }> {
     return this.timelineModel.deleteMany({ task: taskId }).exec();

@@ -55,6 +55,14 @@ export class AdminProjectController {
     );
   }
 
+  @Get("/allProject")
+async findAllProject(): Promise<{ data: Project[]; total: number }> {
+ 
+  return this.projectService.findAllProjectDetail();
+}
+
+
+
   // ✅ Get Project by ID
   @Get(":id")
   async findOne(@Param("id") id: string): Promise<any> {

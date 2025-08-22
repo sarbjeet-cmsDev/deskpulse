@@ -1,265 +1,216 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import ProjectService from "@/service/project.service";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+
+import TimelineService from "@/service/timeline.service";
+
+import Datagrid from "@/components/Datagrid/Datagrid";
 import AvatarList from "@/components/IndexPage/avatarlist";
-import TaskButton from "@/components/taskButton";
-import CreateGlobalTaskModal from "@/components/CreateGlobalTaskModal";
+import { Button } from "@heroui/button";
+import { RangeCalendar } from "@heroui/react";
 
-type ProjectTask = {
-  totaltaskminutes: number;
-};
+import { today, getLocalTimeZone } from "@internationalized/date";
+import dayjs from "dayjs";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+dayjs.extend(isSameOrBefore);
 
-type ProjectEntry = {
-  title: string;
-  tasks: ProjectTask[];
-};
+import Image from "next/image";
+import ChevronUp from "@/assets/images/chevronup.svg";
+import ChevronDown from "@/assets/images/chevrondown.svg";
 
-type ProjectItem = {
-  _id: string;
-  project: ProjectEntry[];
-};
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+  useEffect(() => {
+    const handler = setTimeout(() => setDebouncedValue(value), delay);
+    return () => clearTimeout(handler);
+  }, [value, delay]);
+  return debouncedValue;
+}
 
-type FlattenedProject = {
-  parentId: string;
-  title: string;
-  tasks: ProjectTask[];
-  totalMinutes: number;
+type Task = {
+  task_title: string;
+  comment: string;
+  time_spent: number;
 };
 
 const TimeSheetList = () => {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const user: any = useSelector((state: RootState) => state.auth.user);
 
-  const [flattenedProjects, setFlattenedProjects] = useState<FlattenedProject[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 300);
+
   const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
-  const itemsPerPage = 5;
-  const [loading, setLoading] = useState(false);
-  const [searchTitle, setSearchTitle] = useState("");
 
-const [isModalOpen, setIsModalOpen] = useState(false);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [sortField, setSortField] = useState("task_title");
 
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+  const [users, setUsers] = useState([]);
 
+  const [selectedRange, setSelectedRange] = useState<{
+    start: any;
+    end: any;
+  }>({
+    start: today(getLocalTimeZone()).add({ weeks: -1 }),
+    end: today(getLocalTimeZone()).add({ weeks: 1 }),
+  });
 
+  const [showCalendar, setShowCalendar] = useState(false);
 
-  // Sync page with URL on mount & on URL changes
   useEffect(() => {
     const pageFromUrl = parseInt(searchParams.get("page") || "1", 10);
-    if (!isNaN(pageFromUrl) && pageFromUrl !== page) {
-      setPage(pageFromUrl);
-    }
+    if (pageFromUrl !== page) setPage(pageFromUrl);
   }, [searchParams]);
 
-  // Update URL when page changes
   useEffect(() => {
-    const params = new URLSearchParams(searchParams as any);
-    params.set("page", String(page));
-    if (searchTitle) params.set("title", searchTitle);
-    else params.delete("title");
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-  }, [page, searchTitle]);
+    if (user?.id) {
+      fetchTasks();
+    }
+  }, [user?.id, debouncedSearch, page, sortOrder, sortField, selectedRange]);
 
-  // Reset page to 1 when searchTitle changes
-  useEffect(() => {
-    setPage(1);
-  }, [searchTitle]);
+ const fetchTasks = async () => {
+  try {
+    const startDate = selectedRange.start.toDate(getLocalTimeZone()).toISOString();
+    const endDate = selectedRange.end.toDate(getLocalTimeZone()).toISOString();
 
-  // Fetch projects on page or searchTitle change
-  useEffect(() => {
-    const fetchProjects = async () => {
-      setLoading(true);
-      try {
-        const res = await ProjectService.getProjectsDetail(page, itemsPerPage, searchTitle);
-        const projectData = res?.data || [];
+    const res = await TimelineService.getTimeLineList(user?.id, page, limit, startDate, endDate);
 
-        const allProjects: FlattenedProject[] = [];
-        projectData.forEach((projectItem: ProjectItem) => {
-          projectItem.project.forEach((proj) => {
-            const totalMinutes = (proj.tasks || []).reduce(
-              (acc, task) => acc + (task.totaltaskminutes || 0),
-              0
-            );
-            allProjects.push({
-              parentId: projectItem._id,
-              title: proj.title,
-              tasks: proj.tasks,
-              totalMinutes,
-            });
-          });
-        });
+    const timelineData = res?.data || [];
 
-        setFlattenedProjects(allProjects);
-        setTotalRecords(res?.total || 0);
-        setTotalPages(Math.ceil((res?.total || 0) / itemsPerPage));
-      } catch (err) {
-        console.error("Error fetching projects:", err);
-        setFlattenedProjects([]);
-        setTotalRecords(0);
-        setTotalPages(1);
-      } finally {
-        setLoading(false);
-      }
-    };
+    const cleanedTasks: Task[] = timelineData.map((item: any) => ({
+      task_title: item.task_title,
+      comment: item.comment,
+      time_spent: item.time_spent,
+    }));
 
-    fetchProjects();
-  }, [page, searchTitle]);
+    setTasks(cleanedTasks);
+    setTotalRecords(res.total || 0);
+    setTotalPages(Math.ceil((res.total || 0) / limit));
+  } catch (err) {
+    console.error("Failed to fetch tasks", err);
+  }
+};
 
   const headers = [
-    { id: "taskNumber", title: "S.no" },
-    { id: "title", title: "Project Assigned" },
-    { id: "totaltaskminutes", title: "Time Logged" },
+    { id: "taskNumber", title: "TimeSheet", is_sortable: false },
+    { id: "task_title", title: "Task Title" },
+    { id: "comment", title: "Log" },
+    { id: "time_spent", title: "Spent Time" },
   ];
 
-  const rows = flattenedProjects.map((proj, index) => {
-    const hours = Math.floor(proj.totalMinutes / 60);
-    const minutes = proj.totalMinutes % 60;
+  const rows = tasks.map((task, index) => {
+    const totalMinutes = task.time_spent || 0;
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
     const formattedTime =
-      proj.totalMinutes === 0
-        ? "0"
-        : hours > 0
-        ? `${hours}h ${minutes}min`
-        : `${minutes}min`;
+      hours > 0 ? `${hours}h ${minutes}min` : `${minutes}min`;
+
+    const globalIndex = (page - 1) * limit + index + 1;
 
     return {
-      _id: `${proj.parentId}-${index}`,
-      taskNumber: (page - 1) * itemsPerPage + index + 1,
-      title: proj.title || "—",
-      totaltaskminutes: formattedTime,
+      ...task,
+      taskNumber: globalIndex,
+      time_spent: formattedTime,
+      task_title: task.task_title || "—",
+      comment: task.comment,
     };
   });
 
-  const goToPage = (newPage: number) => {
-    if (newPage < 1 || newPage > totalPages) return;
-    setPage(newPage);
-  };
-return (
-  <div className="min-h-screen bg-gray-100 py-10">
-    <main className="max-w-7xl mx-auto px-6">
-      <div className="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
-        <h1 className="text-3xl font-semibold text-gray-900 tracking-tight">Time Sheet</h1>
-        <AvatarList users={[]} selectedUserIds={[]} setSelectedUserIds={() => {}} />
-      </div>
+  const formattedRange = `${dayjs(
+    selectedRange.start.toDate(getLocalTimeZone())
+  ).format("DD MMM YY")} - ${dayjs(
+    selectedRange.end.toDate(getLocalTimeZone())
+  ).format("DD MMM YY")}`;
 
+  return (
+    <div className="flex flex-col min-h-screen bg-gray-50">
+      <main className="flex-1 p-4 sm:p-6 md:p-8 w-full">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+          <h1 className="text-xl md:text-2xl font-semibold text-gray-800">
+            Time Sheet
+          </h1>
+          <AvatarList
+            users={users}
+            selectedUserIds={selectedUserIds}
+            setSelectedUserIds={setSelectedUserIds}
+          />
+        </div>
 
-      <div className="mb-8 max-w-sm">
-        <label htmlFor="searchTitle" className="block text-gray-700 font-semibold mb-2">
-          Filter by Project 
-        </label>
-        <input
-          id="searchTitle"
-          type="text"
-          value={searchTitle}
-          onChange={(e) => setSearchTitle(e.target.value)}
-          placeholder="Search project title..."
-          className="w-full rounded-md border border-gray-300 px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition"
-          autoComplete="off"
-        />
-      </div>
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="md:w-1/4 w-full">
+            <Button
+              onPress={() => setShowCalendar(!showCalendar)}
+              className="flex justify-between items-center w-full border px-4 py-2 rounded bg-white shadow-sm text-sm font-medium"
+            >
+              <span>{formattedRange}</span>
+              <Image
+                src={showCalendar ? ChevronUp : ChevronDown}
+                alt="Toggle Calendar"
+                width={16}
+                height={16}
+              />
+            </Button>
 
-      {/* Table Container */}
-      <div className="overflow-x-auto rounded-xl bg-white shadow-lg ring-1 ring-black ring-opacity-5">
-        {loading ? (
-          <div className="flex justify-center items-center h-48 text-gray-400 font-medium">
-            Loading...
+            <div
+              className={`transition-all duration-300 ease-in-out overflow-hidden border bg-white shadow rounded mt-2 ${
+                showCalendar
+                  ? "max-h-[500px] opacity-100 scale-100"
+                  : "max-h-0 opacity-0 scale-95"
+              }`}
+            >
+              <div className="flex justify-end p-2">
+                <Button
+                  onPress={() => setShowCalendar(false)}
+                  className="text-sm text-gray-500 hover:text-gray-800"
+                >
+                  ✕
+                </Button>
+              </div>
+              <div className="p-2">
+                <RangeCalendar
+                  aria-label="Select Range"
+                  value={selectedRange}
+                  onChange={setSelectedRange}
+                />
+              </div>
+            </div>
           </div>
-        ) : (
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gradient-to-r from-indigo-50 to-indigo-100">
-              <tr>
-                {headers.map(({ id, title }) => (
-                  <th
-                    key={id}
-                    scope="col"
-                    className="px-8 py-4 text-left text-xs font-semibold text-indigo-700 uppercase tracking-wider select-none"
-                  >
-                    {title}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {rows.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={headers.length}
-                    className="py-12 text-center text-gray-500 text-lg italic"
-                  >
-                    No records found.
-                  </td>
-                </tr>
-              ) : (
-                rows.map((row, idx) => (
-                  <tr
-                    key={row._id}
-                    className="hover:bg-indigo-50 transition-colors duration-200 cursor-pointer"
-                  >
-                    <td className="whitespace-nowrap px-8 py-5 text-sm font-medium text-gray-700">
-                      {row.taskNumber}
-                    </td>
-                    <td className="whitespace-nowrap px-8 py-5 text-sm font-semibold text-gray-900">
-                      {row.title}
-                    </td>
-                    <td className="whitespace-nowrap px-8 py-5 text-sm text-gray-600">
-                      {row.totaltaskminutes}
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        )}
-      </div>
 
-      {/* Pagination */}
-      <nav
-        className="mt-10 flex justify-center items-center gap-4"
-        aria-label="Pagination"
-      >
-        <button
-          onClick={() => goToPage(page - 1)}
-          disabled={page === 1 || loading}
-          className="rounded-full border border-indigo-300 bg-white px-5 py-2 text-indigo-600 font-semibold hover:bg-indigo-100 disabled:opacity-50 disabled:cursor-not-allowed transition"
-          aria-label="Previous Page"
-        >
-          &larr; Previous
-        </button>
-
-        <span className="font-semibold text-gray-700">
-          Page <span className="text-indigo-600">{page}</span> of{" "}
-          <span className="text-indigo-600">{totalPages}</span>
-        </span>
-
-        <button
-          onClick={() => goToPage(page + 1)}
-          disabled={page === totalPages || loading}
-          className="rounded-full border border-indigo-300 bg-white px-5 py-2 text-indigo-600 font-semibold hover:bg-indigo-100 disabled:opacity-50 disabled:cursor-not-allowed transition"
-          aria-label="Next Page"
-        >
-          Next &rarr;
-        </button>
-      </nav>
-    </main>
-          <TaskButton onClick={openModal} />
-
-      {isModalOpen && (
-<CreateGlobalTaskModal
-  isOpen={isModalOpen}
-  onClose={closeModal}
-  onCreate={async (title, description, due_date, estimated_time, assigned_to, projectId) => {
-    // Your API call or logic
-
-  }}
-/>
-)}
-  </div>
-);
-
-
+          <div className="md:w-3/4 w-full">
+            <Datagrid
+              headers={headers}
+              rows={rows}
+              pagination={{
+                total_records: totalRecords,
+                total_page: totalPages,
+                current_page: page,
+                limit: limit,
+              }}
+              sort={{ field: sortField, order: sortOrder }}
+              onSort={(field) => {
+                setSortField(field);
+                setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+                setPage(1);
+              }}
+              router={router}
+              pathname={pathname}
+              searchParams={searchParams}
+            />
+          </div>
+        </div>
+      </main>
+    </div>
+  );
 };
 
 export default TimeSheetList;

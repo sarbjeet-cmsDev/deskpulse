@@ -90,36 +90,40 @@ export default function CreateGlobalTaskModal({
   const projectId = watch("projectId");
 
   // Fetch project list
-  useEffect(() => {
-    async function fetchProjects() {
-      try {
-        // const getCookie = (name: string) => {
-        //   const match = document.cookie
-        //     .split("; ")
-        //     .find((row) => row.startsWith(name + "="));
-        //   return match ? decodeURIComponent(match.split("=")[1]) : null;
-        // };
+useEffect(() => {
+  async function fetchProjects() {
+    try {
+      const getCookie = (name: string) => {
+        const match = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith(name + "="));
+        return match ? decodeURIComponent(match.split("=")[1]) : null;
+      };
 
-        // const role = getCookie("role");
-        // console.log("User role from cookie:", role);
-        // if(role === "admin"){
-        //   console.log("yes admin")
-        //    const res = await AdminProjectService.getAllProjects();
-        //    console.log(res, " admin api response")
-        // }
-        const res = await ProjectService.getProjectByUserId();
-        const options = (res?.data || []).map((p: any) => ({
-          value: p._id,
-          label: p.title,
-        }));
-        setProjectOptions(options);
-      } catch (err) {
-        console.error("Error fetching projects:", err);
+      const role = getCookie("role");
+    
+
+      let res;
+
+      if (role === "admin") { 
+        res = await AdminProjectService.getAllProjectListing();  
+      } else {  
+        res = await ProjectService.getProjectByUserId();
       }
-    }
 
-    fetchProjects();
-  }, []);
+      const options = (res?.data || []).map((p: any) => ({
+        value: p._id,
+        label: p.title,
+      }));
+
+      setProjectOptions(options);
+    } catch (err) {
+      console.error("Error fetching projects:", err);
+    }
+  }
+
+  fetchProjects();
+}, []);
 
   // Fetch users based on selected project
   useEffect(() => {
@@ -170,7 +174,7 @@ export default function CreateGlobalTaskModal({
         due_date,
         estimated_time: values.estimated_time,
       });
-      console.log(res, "response");
+     
       if (title) {
         if (!socketRef.current.connected) {
           socketRef.current.connect();
@@ -203,9 +207,7 @@ export default function CreateGlobalTaskModal({
     }
   };
 
-  const onInvalid = (errors: any) => {
-    console.log("Validation errors:", errors);
-  };
+  
 
   return (
     <Modal isOpen={isOpen} onOpenChange={(open) => !open && onClose()}>

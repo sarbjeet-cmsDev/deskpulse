@@ -43,6 +43,15 @@ const AdminProjectService = {
     };
   },
 
+async getAllProjectListing  (): Promise<{ data: IProject[]; total: number }>  {
+  const res = await axiosClient.get(`${API_URL}/admin/project/allProject`);
+  return {
+    data: res.data.data,
+    total: res.data.total,
+  };
+},
+
+
   //  Get single project by ID
   async getProjectById(id: string): Promise<IProject> {
     const res = await axiosClient.get(`${API_URL}/admin/project/${id}`);

@@ -132,7 +132,7 @@ const CreateProjectForm = () => {
       }
 
       await AdminProjectService.createProject(formData);
-      // console.log(project, "after creating project ");
+     
       if (data?.users?.length) {
         if (!socketRef.current.connected) {
           socketRef.current.connect();

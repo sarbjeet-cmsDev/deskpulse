@@ -9,8 +9,7 @@ import SubTasks from "@/components/ProjectDetails/SubTaskList";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
-import TaskButton from "@/components/taskButton";
-import CreateGlobalTaskModal from "@/components/CreateGlobalTaskModal";
+
 
 export default function MyTaskList() {
   const pathname = usePathname();
@@ -22,10 +21,6 @@ export default function MyTaskList() {
 
 
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
 
 
 
@@ -66,18 +61,7 @@ export default function MyTaskList() {
           </>
         )}
       </div>
-            <TaskButton onClick={openModal} />
 
-      {isModalOpen && (
-<CreateGlobalTaskModal
-  isOpen={isModalOpen}
-  onClose={closeModal}
-  onCreate={async (title, description, due_date, estimated_time, assigned_to, projectId) => {
-    // Your API call or logic
-
-  }}
-/>
-)}
     </div>
   );
 }

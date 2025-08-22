@@ -158,7 +158,7 @@ export class TaskActivityLogListener {
 
   @OnEvent('taskchecklist.created', { async: true })
   async handleTaskCheckListCreatedEvent(payload: { taskChecklistObj: any }) {
-    console.log("hit in checklist")
+  
     const taskChecklistObj = payload.taskChecklistObj;
 
     const timeLineCreatedBy = await this.userservices.findOne(taskChecklistObj.created_by.toString());

@@ -74,9 +74,31 @@ export class TimelineController {
 
     return this.timelineService.findByTaskId(taskId, pageNumber, limitNumber);
   }
+
   @Get("user/:userId")
   async findByUserId(@Param("userId") userId: string): Promise<Timeline[]> {
     return this.timelineService.findByUserId(userId);
+  }
+
+  @Get("user/timeline/:userId")
+  async findTimelineByUserId(
+    @Param("userId") userId: string,
+    @Query("page") page: string = "1",
+    @Query("limit") limit: string = "10",
+    @Query("startDate") startDate?: string,
+    @Query("endDate") endDate?: string
+  ): Promise<{ data: Timeline[]; total: number; page: number; limit: number }> {
+  
+    const pageNumber = Math.max(parseInt(page, 10) || 1, 1);
+    const limitNumber = Math.max(parseInt(limit, 10) || 4, 1);
+
+    return this.timelineService.findTimeLineByUserId(
+      userId,
+      pageNumber,
+      limitNumber,
+      startDate,
+      endDate
+    );
   }
 
   @Get("project/:projectId")

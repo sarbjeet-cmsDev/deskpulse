@@ -13,8 +13,7 @@ import { RootState } from "@/store/store";
 import { useSelector } from "react-redux";
 import TaskService from "@/service/task.service";
 import { getSocket } from "@/utils/socket"; //socket
-import TaskButton from "@/components/taskButton";
-import CreateGlobalTaskModal from "@/components/CreateGlobalTaskModal";
+
 
 export default function Dashboard() {
   const [projects, setProjects] = useState<any[]>([]);
@@ -22,10 +21,6 @@ export default function Dashboard() {
   const [reminder, setReminder] = useState<any>([]);
   const [task, setTask] = useState<any>([]);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
 
   const user: any = useSelector((state: RootState) => state.auth.user);
   useEffect(() => {
@@ -145,24 +140,7 @@ export default function Dashboard() {
         </div>
       </div>
       
-      <TaskButton onClick={openModal} />
 
-      {isModalOpen && (
-        <CreateGlobalTaskModal
-          isOpen={isModalOpen}
-          onClose={closeModal}
-          onCreate={async (
-            title,
-            description,
-            due_date,
-            estimated_time,
-            assigned_to,
-            projectId
-          ) => {
-            // Your API call or logic
-          }}
-        />
-      )}
     </div>
   );
 }

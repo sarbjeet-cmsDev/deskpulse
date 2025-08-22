@@ -15,17 +15,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/Form/Input";
 import { Button } from "@/components/Form/Button";
-import TaskButton from "@/components/taskButton";
-import CreateGlobalTaskModal from "@/components/CreateGlobalTaskModal";
+
 
 export default function CreateReminder() {
   const [loading, setLoading] = useState(false);
 
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
+ 
 
   const router = useRouter();
   const {
@@ -141,18 +137,7 @@ export default function CreateReminder() {
           </Button>
         </form>
       </div>
-            <TaskButton onClick={openModal} />
-
-      {isModalOpen && (
-<CreateGlobalTaskModal
-  isOpen={isModalOpen}
-  onClose={closeModal}
-  onCreate={async (title, description, due_date, estimated_time, assigned_to, projectId) => {
-    // Your API call or logic
-
-  }}
-/>
-)}
+  
     </div>
   );
 }

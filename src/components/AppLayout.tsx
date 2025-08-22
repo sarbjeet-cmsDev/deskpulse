@@ -5,10 +5,18 @@ import TopHeader from "@/components/IndexPage/TopHeader";
 import { Link } from "@heroui/link";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import TaskButton from "@/components/taskButton";
+import CreateGlobalTaskModal from "@/components/CreateGlobalTaskModal";
+import { useState } from "react";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   const pathname = usePathname();
+
+   const [isModalOpen, setIsModalOpen] = useState(false);
+  
+    const openModal = () => setIsModalOpen(true);
+    const closeModal = () => setIsModalOpen(false);
 
   const userData: any = useSelector((state: RootState) => state.auth.user);
   const hideLayout = pathname.startsWith("/auth/login");
@@ -39,6 +47,24 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </p>
           </Link>
         </footer>
+          <TaskButton onClick={openModal} />
+
+      {isModalOpen && (
+        <CreateGlobalTaskModal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          onCreate={async (
+            title,
+            description,
+            due_date,
+            estimated_time,
+            assigned_to,
+            projectId
+          ) => {
+            // Your API call or logic
+          }}
+        />
+      )}
       </div>
     </ProtectedRoute>
   );

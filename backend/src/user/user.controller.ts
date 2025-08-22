@@ -57,7 +57,7 @@ export class UserController {
     @Req() req: any
   ) {
     const fileExtension = path.extname(file.filename);
-    console.log("fileExtension", fileExtension);
+   
     const now = new Date();
     const year = now.getFullYear().toString();
     const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -71,7 +71,7 @@ export class UserController {
     fs.renameSync(file.path, targetPath);
  
     const fileUrl = `/uploads/${year}/${month}/${day}/${file.filename}`.replace(/\\/g, '/');
-    console.log("fileUrl", fileUrl);
+   
 
     return this.userService.updateUserAvatar(userId, fileUrl);
   }

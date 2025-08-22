@@ -54,8 +54,7 @@ export default function ProjectCard({
     try {
       const newFavoriteStatus = !isFavorite;
 
-      console.log(`Project Code: ${project.code}`);
-      console.log(`Setting isFavorite to:`, newFavoriteStatus);
+     
 
       const response = await ProjectService.updateFavProject(projectId, {
         isFavorite: newFavoriteStatus,

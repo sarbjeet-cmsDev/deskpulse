@@ -98,6 +98,29 @@ const TimelineService = {
     return response.data;
   },
 
+  async getTimeLineList(
+    userId: string,
+    page: number = 1,
+    limit: number = 10,
+    startDate?: string,
+    endDate?: string
+  ): Promise<ITimelineResponse> {
+   
+    const response = await axiosClient.get(
+      `${API_URL}/timelines/user/timeline/${userId}`,
+      {
+        params: {
+          page,
+          limit,
+          startDate,
+          endDate,
+        },
+      }
+    );
+
+    return response.data;
+  },
+
   async getTimelinesByProject(
     projectId: string,
     from?: string,

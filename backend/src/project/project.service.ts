@@ -93,6 +93,15 @@ export class ProjectService {
     return this.projectModel.find().exec();
   }
 
+  async findAllProjectDetail(): Promise<{ data: Project[]; total: number }> {
+   
+  const data = await this.projectModel.find().lean().exec();
+ 
+  return {
+    data,
+    total: data.length,
+  };
+}
   async findOne(id: string): Promise<Project> {
     const project = await this.projectModel.findById(id).lean();
     if (!project) {
@@ -116,7 +125,7 @@ export class ProjectService {
     if (!updateProjectDto.users) {
       updateProjectDto.users = [];
     }
-    console.log(id, updateProjectDto,"incoming body")
+   
     const sanitized = this.sanitizeObjectIds(updateProjectDto);
     const updatedProject = await this.projectModel
       .findByIdAndUpdate(id, sanitized, { new: true })
@@ -140,7 +149,7 @@ export class ProjectService {
     updateProjectDto: UpdateProjectDto
   ): Promise<Project> {
     
-    console.log(id, updateProjectDto,"incoming body")
+ 
     const sanitized = this.sanitizeObjectIds(updateProjectDto);
     const updatedProject = await this.projectModel
       .findByIdAndUpdate(id, sanitized, { new: true })
@@ -220,6 +229,7 @@ export class ProjectService {
         .exec(),
       this.projectModel.countDocuments({ users: userId }),
     ]);
+   
     return {
       data,
       page,
@@ -394,7 +404,7 @@ async findUserProjectDetail(
   limit: number,
   title?: string // add optional title filter
 ): Promise<{ data: any[]; total: number; page: number; limit: number }> {
-  console.log(page, limit, "page and limit");
+ 
   const skip = (page - 1) * limit;
   const objectUserId = new Types.ObjectId(userId);
 
