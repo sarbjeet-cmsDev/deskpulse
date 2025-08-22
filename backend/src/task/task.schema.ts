@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
-import { AcceptanceLevelEnum, PriorityEnum, TaskStatusEnum, TaskTypeEnum } from './task.interface';
+import { AcceptanceLevelEnum, PriorityEnum,ClientAcceptance, TaskStatusEnum, TaskTypeEnum } from './task.interface';
 
 export type TaskDocument = Task & Document;
 
@@ -57,6 +57,13 @@ export class Task {
     default: PriorityEnum.MEDIUM,
   })
   priority: PriorityEnum;
+
+   @Prop({
+    type: String,
+    enum: Object.values(ClientAcceptance),
+    default: ClientAcceptance.PENDING,
+  })
+  client_acceptance :ClientAcceptance;
 
   @Prop({
     type: String,
