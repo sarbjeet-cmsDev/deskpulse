@@ -18,6 +18,8 @@ import ChevronDown from "@/assets/images/chevrondown.svg";
 import { RangeCalendar } from "@heroui/react";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import dayjs from "dayjs";
+import AdminTimelineService from "@/service/adminTimeline.service";
+import TimelineService from "@/service/timeline.service";
 dayjs.extend(isSameOrBefore);
 
 function useDebounce<T>(value: T, delay: number): T {
@@ -35,6 +37,7 @@ type Task = {
   title: string;
   assigned_to: any;
   totaltaskminutes: any;
+  time_spent:any;
 };
 
 const TimeSheetList = () => {
@@ -74,22 +77,24 @@ const TimeSheetList = () => {
 
       if (userIds.length > 0) {
         const taskRes = await TaskService.getTasksByAssignedUser(userIds.join(","), {
+        // const taskRes = await TimelineService.getTimeLineList(userIds.join(","), {
           start: startDate.format("YYYY-MM-DD"),
           end: endDate.format("YYYY-MM-DD"),
           page,
         });
 
         setTasks(
-          (taskRes.data || []).map((task) => ({
+          (taskRes.data || []).map((task:any) => ({
             ...task,
-            totaltaskminutes: task.totaltaskminutes ?? 0,
+            time_spent: task.time_spent ?? 0,
           }))
         );
         setTotalRecords(taskRes.total || 0);
         setTotalPages(Math.ceil((taskRes.total || 0) / limit) || 1);
         setLimit(taskRes.limit || limit);
       } else {
-        const res = await AdminTaskService.getAllTasksDetails({
+        // const res = await AdminTaskService.getAllTasksDetails({
+         const res = await AdminTimelineService.getAllTimelineDetails({
           start: startDate.format("YYYY-MM-DD"),
           end: endDate.format("YYYY-MM-DD"),
           page,
@@ -100,9 +105,9 @@ const TimeSheetList = () => {
 
 
         setTasks(
-          (res.data || []).map((task) => ({
+          (res.data || []).map((task:any) => ({
             ...task,
-            totaltaskminutes: task.totaltaskminutes ?? 0,
+            time_spent: task.time_spent ?? 0,
           }))
         );
         setTotalRecords(res.total || 0);
@@ -146,14 +151,15 @@ const TimeSheetList = () => {
 
   const headers = [
     { id: "taskNumber", title: "TimeSheet", is_sortable: false },
-    { id: "title", title: "Task Title" },
+    { id: "project_name", title: "Project" },
+    { id: "task_title", title: "Task Title" },
+    { id: "comment", title: "Log Time" },
     { id: "totaltaskminutes", title: "Spent Time" },
-    { id: "projectTitle", title: "Project" },
-    { id: "assignedUserName", title: "User" },
+    { id: "username", title: "User" },
   ];
 
   const rows = (tasks ?? []).map((task, index) => {
-    const totalMinutes = task.totaltaskminutes || 0;
+    const totalMinutes = task.time_spent || 0;
     const hours = Math.floor(totalMinutes / 60);
     const minutes = totalMinutes % 60;
     const formattedTime =

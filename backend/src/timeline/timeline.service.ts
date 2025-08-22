@@ -241,4 +241,127 @@ async findTimeLineByUserId(
       limit,
     };
   }
+
+  async getAllTimelines(
+  page: number,
+  limit: number,
+  keyword?: string,
+  sortOrder: "asc" | "desc" = "asc",
+  start?: string,
+  end?: string
+): Promise<{
+  data: any[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}> {
+  let safePage = Math.max(Number(page) || 1, 1);
+  let safeLimit = Math.max(Number(limit) || 10, 1);
+  const MAX_LIMIT = 200;
+  if (safeLimit > MAX_LIMIT) safeLimit = MAX_LIMIT;
+
+  const filter: Record<string, any> = {};
+
+  // keyword search (task title / code via $lookup later won’t work directly)
+  if (keyword && keyword.trim()) {
+    filter.comment = { $regex: keyword.trim(), $options: "i" };
+  }
+
+  // date filter
+  if (start && end) {
+    filter.date = {
+      $gte: new Date(start),
+      $lte: new Date(end),
+    };
+  }
+
+  // count total first
+  const total = await this.timelineModel.countDocuments(filter).exec();
+  const totalPages = total === 0 ? 0 : Math.ceil(total / safeLimit);
+  if (totalPages > 0 && safePage > totalPages) safePage = totalPages;
+
+  const pipeline: any[] = [
+    { $match: filter },
+    { $sort: { createdAt: sortOrder === "desc" ? -1 : 1 } },
+
+    // pagination
+    { $skip: (safePage - 1) * safeLimit },
+    { $limit: safeLimit },
+
+    {
+      $lookup: {
+        from: "tasks",
+        localField: "task",
+        foreignField: "_id",
+        as: "task_detail",
+      },
+    },
+    { $unwind: { path: "$task_detail", preserveNullAndEmptyArrays: true } },
+    {
+      $project: {
+        _id: 1,
+        comment: 1,
+        task: 1,
+        date: 1,
+        user: 1,
+        time_spent: 1,
+        task_title: "$task_detail.title",
+        task_id: "$task_detail._id",
+        project_id: "$task_detail.project",
+        assigned_id: "$task_detail.assigned_to",
+      },
+    },
+    {
+      $lookup: {
+        from: "projects",
+        localField: "project_id",
+        foreignField: "_id",
+        as: "project_detail",
+      },
+    },
+    { $unwind: { path: "$project_detail", preserveNullAndEmptyArrays: true } },
+    {
+      $lookup: {
+        from: "users",
+        localField: "user",
+        foreignField: "_id",
+        as: "user_detail",
+      },
+    },
+    { $unwind: { path: "$user_detail", preserveNullAndEmptyArrays: true } },
+    {
+      $project: {
+        _id: 1,
+        comment: 1,
+        user: 1,
+        task: 1,
+        date: 1,
+        time_spent: 1,
+        task_title: 1,
+        task_id: 1,
+        project_id: 1,
+        assigned_id: 1,
+        project_name: "$project_detail.title",
+        username: {
+          $concat: [
+            { $ifNull: ["$user_detail.firstName", ""] },
+            " ",
+            { $ifNull: ["$user_detail.lastName", ""] },
+          ],
+        },
+      },
+    },
+  ];
+
+  const data = await this.timelineModel.aggregate(pipeline).exec();
+
+  return {
+    data,
+    total,
+    page: safePage,
+    limit: safeLimit,
+    totalPages,
+  };
+}
 }

@@ -37,6 +37,7 @@ export class PerformanceService {
 
   // Acceptance weights
   private readonly AcceptanceWeightage = [
+    { AcceptanceType: 'pending', weight: 0 },
     { AcceptanceType: 'Average', weight: 5 },
     { AcceptanceType: 'Good', weight: 10 },
     { AcceptanceType: 'Satisfied', weight: 15 },
@@ -57,7 +58,7 @@ export class PerformanceService {
   async createPerformance(TaskObj: any) {
     const taskType = TaskObj.type;
     const priorityType = TaskObj.priority;
-    const acceptanceType = TaskObj.acceptance;
+    const acceptanceType = TaskObj.client_acceptance;
     const revisionType = TaskObj.rivision;
 
     const taskTypeWeight =
@@ -76,6 +77,7 @@ export class PerformanceService {
         revisionType >= 3 ? t.RevisionType === 3 : t.RevisionType === revisionType
       )?.weight || 0;
 
+
     // Timeliness calculation
     const TaskDueDate = dayjs(TaskObj.due_date);
     const completedDate = dayjs(TaskObj.updatedAt);
@@ -83,6 +85,7 @@ export class PerformanceService {
     if (completedDate.isBefore(TaskDueDate) || completedDate.isSame(TaskDueDate)) {
       timelinessWeight = 10;
     }
+
 
     // Max possible weights per category
     const taskTypeMax = 50;
@@ -104,6 +107,8 @@ export class PerformanceService {
     const acceptanceScore = (acceptanceWeight / acceptanceMax) * acceptancePercent;
     const revisionScore = (revisionWeight / revisionMax) * revisionPercent;
     const timelinessScore = (timelinessWeight / timelinessMax) * timelinessPercent;
+
+
 
     const totalScore = Math.min(
       Math.round(
@@ -143,6 +148,7 @@ export class PerformanceService {
 
   const taskIds = tasks.data.map((task) => task._id);
 
+
   const matchQuery: any = { task: { $in: taskIds } };
 
   if (start && end) {
@@ -157,7 +163,7 @@ export class PerformanceService {
     { $sort: { updatedAt: -1 } },
     {
       $group: {
-        _id: "$task",
+        _id: "$_id",
         task: { $first: "$task" },
         result: { $first: "$result" },
         updatedAt: { $first: "$updatedAt" },
@@ -188,9 +194,9 @@ export class PerformanceService {
         values.reduce((sum, val) => sum + val, 0) / values.length,
     }),
   );
-
   return averagedPerformance; 
 }
+
 
 async getPerformanceForAdmin(
   userId?: string,

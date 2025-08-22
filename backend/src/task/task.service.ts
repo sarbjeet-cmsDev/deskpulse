@@ -297,9 +297,22 @@ export class TaskService {
       throw new NotFoundException(`Task with ID ${id} not found.`);
     }
     const oldTaskStatus = task.status;
+    const newTaskStatus = updateTaskDto.status;
+
+    let revisionIncrement = 0;
+    if(newTaskStatus === "done" && oldTaskStatus !== "done"){
+       revisionIncrement = 1;
+    }
+
     const updatedTask = await this.taskModel
-      .findByIdAndUpdate(id, updateTaskDto, { new: true })
+      .findByIdAndUpdate(id,
+        {
+          ...updateTaskDto,
+          ...(revisionIncrement > 0 && {rivision: task.rivision + revisionIncrement})
+        },  
+        { new: true })
       .exec();
+
     this.eventEmitter.emit("task.status.updated", {
       taskObj: updatedTask,
       oldTaskStatus: oldTaskStatus,
@@ -350,68 +363,165 @@ export class TaskService {
 
 
 
+  // async getTaskDetails(
+  //   page: number,
+  //   limit: number,
+  //   keyword?: string,
+  //   sortOrder: "asc" | "desc" = "asc",
+  //   start?: string,
+  //   end?: string
+  // ): Promise<{
+  //   data: Task[];
+  //   total: number;
+  //   page: number;
+  //   limit: number;
+  //   totalPages: number;
+  // }> {
+  //   let safePage = Math.max(Number(page) || 1, 1);
+  //   let safeLimit = Math.max(Number(limit) || 10, 1);
+  //   const MAX_LIMIT = 200;
+  //   if (safeLimit > MAX_LIMIT) safeLimit = MAX_LIMIT;
+
+  //   const filter: Record<string, any> = {};
+  //   filter.isArchived = false;
+
+  //   if (keyword && keyword.trim()) {
+  //     filter.$or = [
+  //       { title: { $regex: keyword.trim(), $options: 'i' } },
+  //       { code: { $regex: keyword.trim(), $options: 'i' } },
+
+  //     ];
+  //   }
+
+  //   // ✅ Date Range Filter
+  //   if (start && end) {
+  //     filter.createdAt = {
+  //       $gte: new Date(start),
+  //       $lte: new Date(end),
+  //     };
+  //   }
+
+  //   const total = await this.taskModel.countDocuments(filter).exec();
+  //   const totalPages = total === 0 ? 0 : Math.ceil(total / safeLimit);
+  //   if (totalPages > 0 && safePage > totalPages) safePage = totalPages;
+
+  //   const skip = (safePage - 1) * safeLimit;
+
+  //   const data = await this.taskModel
+  //     .find(filter)
+  //     .sort({ createdAt: sortOrder === 'desc' ? 1 : -1 })
+  //     // .sort({ sortOrder: -1 })
+  //     .skip(skip)
+  //     .limit(safeLimit)
+  //     .populate('project')
+  //     .populate('assigned_to')
+  //     .exec();
+
+  //   return {
+  //     data,
+  //     total,
+  //     page: safePage,
+  //     limit: safeLimit,
+  //     totalPages,
+  //   };
+  // }
+
   async getTaskDetails(
-    page: number,
-    limit: number,
-    keyword?: string,
-    sortOrder: "asc" | "desc" = "asc",
-    start?: string,
-    end?: string
-  ): Promise<{
-    data: Task[];
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-  }> {
-    let safePage = Math.max(Number(page) || 1, 1);
-    let safeLimit = Math.max(Number(limit) || 10, 1);
-    const MAX_LIMIT = 200;
-    if (safeLimit > MAX_LIMIT) safeLimit = MAX_LIMIT;
+  page: number,
+  limit: number,
+  keyword?: string,
+  sortOrder: "asc" | "desc" = "asc",
+  start?: string,
+  end?: string
+): Promise<{
+  data: any[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}> {
+  let safePage = Math.max(Number(page) || 1, 1);
+  let safeLimit = Math.max(Number(limit) || 10, 1);
+  const MAX_LIMIT = 200;
+  if (safeLimit > MAX_LIMIT) safeLimit = MAX_LIMIT;
 
-    const filter: Record<string, any> = {};
-    filter.isArchived = false;
+  const filter: Record<string, any> = { isArchived: false };
 
-    if (keyword && keyword.trim()) {
-      filter.$or = [
-        { title: { $regex: keyword.trim(), $options: 'i' } },
-        { code: { $regex: keyword.trim(), $options: 'i' } },
+  if (keyword && keyword.trim()) {
+    filter.$or = [
+      { title: { $regex: keyword.trim(), $options: 'i' } },
+      { code: { $regex: keyword.trim(), $options: 'i' } },
+    ];
+  }
 
-      ];
-    }
-
-    // ✅ Date Range Filter
-    if (start && end) {
-      filter.createdAt = {
-        $gte: new Date(start),
-        $lte: new Date(end),
-      };
-    }
-
-    const total = await this.taskModel.countDocuments(filter).exec();
-    const totalPages = total === 0 ? 0 : Math.ceil(total / safeLimit);
-    if (totalPages > 0 && safePage > totalPages) safePage = totalPages;
-
-    const skip = (safePage - 1) * safeLimit;
-
-    const data = await this.taskModel
-      .find(filter)
-      .sort({ createdAt: sortOrder === 'desc' ? 1 : -1 })
-      // .sort({ sortOrder: -1 })
-      .skip(skip)
-      .limit(safeLimit)
-      .populate('project')
-      .populate('assigned_to')
-      .exec();
-
-    return {
-      data,
-      total,
-      page: safePage,
-      limit: safeLimit,
-      totalPages,
+  if (start && end) {
+    filter.createdAt = {
+      $gte: new Date(start),
+      $lte: new Date(end),
     };
   }
+
+  // Build aggregation pipeline
+  const pipeline: any[] = [
+    { $match: filter },
+
+    // sort
+    { $sort: { createdAt: sortOrder === "desc" ? -1 : 1 } },
+
+    // pagination
+    { $skip: (safePage - 1) * safeLimit },
+    { $limit: safeLimit },
+
+    // join project
+    {
+      $lookup: {
+        from: "projects",
+        localField: "project",
+        foreignField: "_id",
+        as: "project",
+      },
+    },
+    { $unwind: { path: "$project", preserveNullAndEmptyArrays: true } },
+
+    // join assigned_to user
+    {
+      $lookup: {
+        from: "users",
+        localField: "assigned_to",
+        foreignField: "_id",
+        as: "assigned_to",
+      },
+    },
+    { $unwind: { path: "$assigned_to", preserveNullAndEmptyArrays: true } },
+
+    // join timelines
+    {
+      $lookup: {
+        from: "timelines",
+        localField: "_id",
+        foreignField: "task",
+        as: "timelines",
+      },
+    },
+  ];
+
+  // Run pipeline
+  const data = await this.taskModel.aggregate(pipeline).exec();
+
+  // Total count (for pagination)
+  const total = await this.taskModel.countDocuments(filter).exec();
+  const totalPages = total === 0 ? 0 : Math.ceil(total / safeLimit);
+  if (totalPages > 0 && safePage > totalPages) safePage = totalPages;
+
+  return {
+    data,
+    total,
+    page: safePage,
+    limit: safeLimit,
+    totalPages,
+  };
+}
+
 
   async findById(id: string) {
     const column = await this.taskModel.findById(id);

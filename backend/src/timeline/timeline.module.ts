@@ -6,6 +6,7 @@ import { TimelineSchema } from './timeline.schema';
 import { TaskModule } from 'src/task/task.module';
 import { ProjectModule } from 'src/project/project.module';
 import { UserModule } from 'src/user/user.module';
+import { AdminTimelineController } from './admin.timeline.controller';
 
 @Module({
   imports: [
@@ -14,7 +15,7 @@ import { UserModule } from 'src/user/user.module';
     ProjectModule, // ✅ Correct! Import the module that provides ProjectService
     UserModule
   ],
-  controllers: [TimelineController],
+  controllers: [TimelineController,AdminTimelineController],
   providers: [TimelineService],
 })
 export class TimelineModule {}

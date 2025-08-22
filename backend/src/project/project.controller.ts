@@ -42,7 +42,7 @@ export class ProjectController {
   }
 
   //full project detail
-  @Get("user")
+  @Get("userDetails")
   async getUserProject(
     @CurrentUser() user: any,
     @Query("page") page: string = "1",
