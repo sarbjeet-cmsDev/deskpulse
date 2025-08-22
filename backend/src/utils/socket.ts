@@ -27,7 +27,7 @@ export function initSocketIO(server: HttpServer) {
     socket.on("register-user", (userId: string) => {
       userSockets.set(userId, socket.id);
       console.log(`✅ Registered user: ${userId} → ${socket.id}`);
-      console.log("📋 Connected users:");
+      
       for (const [uid, sid] of userSockets.entries()) {
         console.log(`- ${uid}: ${sid}`);
       }

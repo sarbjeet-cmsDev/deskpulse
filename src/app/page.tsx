@@ -12,9 +12,9 @@ import { useRouter } from "next/navigation";
 import { RootState } from "@/store/store";
 import { useSelector } from "react-redux";
 import TaskService from "@/service/task.service";
-import { getSocket } from "@/utils/socket";  //socket 
-
-
+import { getSocket } from "@/utils/socket"; //socket
+import TaskButton from "@/components/taskButton";
+import CreateGlobalTaskModal from "@/components/CreateGlobalTaskModal";
 
 export default function Dashboard() {
   const [projects, setProjects] = useState<any[]>([]);
@@ -22,16 +22,28 @@ export default function Dashboard() {
   const [reminder, setReminder] = useState<any>([]);
   const [task, setTask] = useState<any>([]);
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
   const user: any = useSelector((state: RootState) => state.auth.user);
   useEffect(() => {
     const loadProjects = async () => {
       try {
         const res = await ProjectService.getProjectByUserId();
-        const reminderResult = await ReminderService.getActiveReminderById(user?.id);
+
+        const favoriteProjects = (res?.data || []).filter(
+          (project: any) => project.isFavorite === true
+        );
+
+        const reminderResult = await ReminderService.getActiveReminderById(
+          user?.id
+        );
         const getTask = await TaskService.getMyTasks();
         setTask(getTask?.data?.slice(0, 5));
         setReminder(reminderResult?.reminders?.slice(0, 5));
-        setProjects(res.data);
+        setProjects(favoriteProjects);
       } catch (error) {
         console.error("Error fetching projects:", error);
       } finally {
@@ -50,20 +62,16 @@ export default function Dashboard() {
   const socketRef = useRef(getSocket());
 
   useEffect(() => {
-    console.log("socket is connected")
+    console.log("socket is connected");
     const socket = socketRef.current;
 
     if (!socket.connected) {
       socket.connect();
     }
-    socket.on('connect', () => {
-      socket.emit('register-user', user?.id || user?._id); // Send your user ID immediately
+    socket.on("connect", () => {
+      socket.emit("register-user", user?.id || user?._id); // Send your user ID immediately
     });
-
-
-
-  }, [])
-
+  }, []);
 
   const router = useRouter();
   return (
@@ -86,7 +94,7 @@ export default function Dashboard() {
               </>
             )}
             <div className="pt-4 flex justify-between items-center">
-              <H3>Recent Projects</H3>
+              <H3>Fav Projects</H3>
               <Link
                 className="font-bold text-[#31394f99]"
                 href={`/project/list`}
@@ -98,8 +106,11 @@ export default function Dashboard() {
               {loading ? (
                 <p>Loading projects...</p>
               ) : projects.length === 0 ? (
-                <div className="w-full"><p className="text-gray-500 text-left flex items-left justify-left">No projects available.</p></div>
-
+                <div className="w-full">
+                  <p className="text-gray-500 text-left flex items-left justify-left">
+                    No favourite Project available.
+                  </p>
+                </div>
               ) : (
                 projects.map((project) => (
                   <Link
@@ -107,9 +118,11 @@ export default function Dashboard() {
                     key={project._id}
                     href={`/project/${project.code}`}
                   >
-                    <ProjectCard project={project}
+                    <ProjectCard
+                      project={project}
                       kanban={[]}
-                      taskCounts={{}} />
+                      taskCounts={{}}
+                    />
                   </Link>
                 ))
               )}
@@ -131,6 +144,25 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+      
+      <TaskButton onClick={openModal} />
+
+      {isModalOpen && (
+        <CreateGlobalTaskModal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          onCreate={async (
+            title,
+            description,
+            due_date,
+            estimated_time,
+            assigned_to,
+            projectId
+          ) => {
+            // Your API call or logic
+          }}
+        />
+      )}
     </div>
   );
 }

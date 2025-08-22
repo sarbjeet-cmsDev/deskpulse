@@ -25,6 +25,7 @@ export interface Project {
   avatar?: string;
   created_by: MongooseSchema.Types.ObjectId;
   updated_by?: MongooseSchema.Types.ObjectId;
+  isFavorite?:boolean
 }
 
 export interface ProjectDocument extends Project, Document {}

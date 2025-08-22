@@ -12,6 +12,9 @@ import Link from "next/link";
 import Pagination from "@/components/Pagination/pagination";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import TaskButton from "@/components/taskButton";
+import CreateGlobalTaskModal from "@/components/CreateGlobalTaskModal";
+
 
 export default function MyReminderList() {
   const [reminders, setReminders] = useState<IReminder[]>([]);
@@ -19,6 +22,14 @@ export default function MyReminderList() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalItems, setTotalItems] = useState<number>(0);
   const itemsPerPage = 5;
+
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
+
   const user: any = useSelector((state: RootState) => state.auth.user);
 
   useEffect(() => {
@@ -71,6 +82,19 @@ export default function MyReminderList() {
         onPageChange={handlePageChange}
       />
       {/* )} */}
+
+           <TaskButton onClick={openModal} />
+
+      {isModalOpen && (
+<CreateGlobalTaskModal
+  isOpen={isModalOpen}
+  onClose={closeModal}
+  onCreate={async (title, description, due_date, estimated_time, assigned_to, projectId) => {
+    // Your API call or logic
+
+  }}
+/>
+)}
     </div>
   );
 }

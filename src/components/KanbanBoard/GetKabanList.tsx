@@ -58,11 +58,11 @@ export const GetKanbonList = () => {
 
   const fetchUsers = async () => {
     try {
-      console.log("hiit")
+     
       const data: any = await AdminUserService.getAllUsers();
-      console.log(data,"data of all project")
+     
       const result = await ProjectService.getProjectById(projectId);
-      console.log(result,"result")
+      
       const userIds = new Set(result?.users || []);
       const matchingUsers = data.data.filter((user: any) => userIds.has(user._id));
       if (matchingUsers.length > 0) setUsers(matchingUsers);
@@ -200,9 +200,9 @@ export const GetKanbonList = () => {
       </div>
     )}
 
-    {/* Header Section */}
+   
     <div className="flex items-center justify-between md:p-0 p-3">
-      {/* View Toggle Buttons */}
+     
       <div className="flex gap-3 p-3 mt-2 bg-white rounded-xl shadow-sm">
         <Button
           variant="bordered"
@@ -226,14 +226,22 @@ export const GetKanbonList = () => {
         >
           Kanban
         </Button>
+    
       </div>
+          <AvatarList
+          users={users}
+          selectedUserIds={selectedUserIds}
+          setSelectedUserIds={setSelectedUserIds}
+          fetchKanbonList={fetchKanbonList}
+          
+        />
     </div>
 
     {taskView === "kanban" ? (
       <div
         ref={scrollContainerRef}
         onDragOver={handleDragOver}
-        className="flex w-full gap-4 overflow-x-auto p-2 h-[calc(100vh-190px)] bg-gray-100"
+        className="flex w-full gap-5 overflow-x-auto p-4 h-[calc(100vh-190px)] bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl"
       >
         {kanbanList.map((column) => {
           const matchingCards = taskList
@@ -243,20 +251,26 @@ export const GetKanbonList = () => {
           return (
             <div
               key={column._id}
-              className="flex flex-col bg-white shadow-md rounded-lg w-80 min-w-[20rem] p-4 !h-[calc(100vh-225px)] overflow-y-auto"
+              className="flex flex-col bg-white shadow-lg rounded-2xl w-80 min-w-[20rem] p-5 !h-[calc(100vh-225px)] overflow-y-auto border border-gray-200 hover:shadow-xl transition"
               onDragOver={(e) => e.preventDefault()}
               onDrop={() => handleColumnDrop(column.title)}
             >
-              <h3 className="text-lg font-semibold mb-4 text-gray-800">
+              <h3 className="text-lg font-semibold mb-4 text-gray-800 flex items-center gap-2">
+                <span className="w-3  h-3 bg-blue-500 rounded-full"></span>
                 {column.title}
+                <span className="ml-auto text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+                  {matchingCards.length}
+                </span>
               </h3>
 
               <div className="flex flex-col gap-3">
                 {matchingCards.map((card: any) => (
                   <div
                     key={card._id}
-                    className={`bg-gray-50 border border-gray-200 rounded-md p-3 shadow-sm hover:bg-gray-100 cursor-pointer transition ${
-                      dragOverTaskId === card._id ? "ring-2 ring-blue-400" : ""
+                    className={`bg-gray-50 border border-gray-200 rounded-lg p-4 shadow-sm cursor-pointer transition hover:bg-blue-50 hover:shadow-md ${
+                      dragOverTaskId === card._id
+                        ? "ring-2 ring-blue-400"
+                        : ""
                     }`}
                     draggable
                     onClick={() => router.push(`/task/${card.code}`)}

@@ -100,7 +100,12 @@ export class CreateProjectDto {
   updated_by?: MongooseSchema.Types.ObjectId;
 }
 
-export class UpdateProjectDto extends CreateProjectDto { }
+
+export class UpdateProjectDto extends CreateProjectDto {
+  @IsOptional()
+  @IsBoolean()
+  isFavorite?: boolean;
+}
 
 
 class KanbanSortItemDto {

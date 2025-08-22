@@ -24,7 +24,7 @@ import { UpdateTasktKanbanOrderDto } from "src/task/task.dto";
 @Controller("api/projects")
 @UseGuards(JwtAuthGuard)
 export class ProjectController {
-  constructor(private readonly projectService: ProjectService) { }
+  constructor(private readonly projectService: ProjectService) {}
 
   @Get("me")
   async getMyProjects(
@@ -38,6 +38,25 @@ export class ProjectController {
       user.userId,
       pageNumber,
       limitNumber
+    );
+  }
+
+  //full project detail
+  @Get("user")
+  async getUserProject(
+    @CurrentUser() user: any,
+    @Query("page") page: string = "1",
+    @Query("limit") limit: string = "4",
+    @Query("title") title?: string 
+  ): Promise<{ data: Project[]; total: number; page: number; limit: number }> {
+    const pageNumber = parseInt(page, 10);
+    const limitNumber = parseInt(limit, 10);
+
+    return this.projectService.findUserProjectDetail(
+      user.userId,
+      pageNumber,
+      limitNumber,
+      title 
     );
   }
 
@@ -96,13 +115,24 @@ export class ProjectController {
     @Param("id") id: string,
     @Body() updateProjectDto: UpdateProjectDto
   ): Promise<any> {
-    await this.projectService.update(id, updateProjectDto);
+    let updatedProject = await this.projectService.update(id, updateProjectDto);
     return {
       message: "Project updated successfully!",
+      data: updatedProject,
     };
   }
 
-
+  @Put("/addfav/:id")
+  async updateProjectFav(
+    @Param("id") id: string,
+    @Body() updateProjectDto: UpdateProjectDto
+  ): Promise<any> {
+    let updatedProject = await this.projectService.updateProjectFav(id, updateProjectDto);
+    return {
+      message: "Project updated successfully!",
+      data: updatedProject,
+    };
+  }
 
   @Post("upload-avatar/:projectId")
   @UseInterceptors(FileInterceptor("file", multerOptions))
@@ -115,7 +145,10 @@ export class ProjectController {
   }
 
   @Get("users/:id")
-  async getProjectById(@Param("id") id: string, @Query("keyword") keyword?: string): Promise<Project> {
+  async getProjectById(
+    @Param("id") id: string,
+    @Query("keyword") keyword?: string
+  ): Promise<Project> {
     return this.projectService.findProjectUsers(id, keyword);
   }
 
@@ -124,11 +157,19 @@ export class ProjectController {
     @Param("projectId") projectId: string,
     @Body() updateTasktKanbanOrderDto: UpdateTasktKanbanOrderDto
   ): Promise<any> {
-    await this.projectService.updateTaskReOrder(projectId, updateTasktKanbanOrderDto);
+    await this.projectService.updateTaskReOrder(
+      projectId,
+      updateTasktKanbanOrderDto
+    );
     return {
       message: "Task sort_order updated successfully!",
     };
   }
 
-
+  // @Put("isFavorite")
+  // async addFavProject(
+  //    @Param("projectId") projectId: string,
+  // ):Promise<any>{
+  //   await this.projectService.
+  // }
 }

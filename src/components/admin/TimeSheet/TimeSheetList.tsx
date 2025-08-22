@@ -181,119 +181,123 @@ const TimeSheetList = () => {
     selectedRange.end.toDate(getLocalTimeZone())
   ).format("DD MMM YY")}`;
 
-  return (
-    <div className="flex">
-      <main className="flex-1 p-6 sm:p-6 md:p-8 w-[100%]">
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="md:text-2xl font-semibold">Time Sheet</h1>
-          <AvatarList
-            users={users}
-            selectedUserIds={selectedUserIds}
-            setSelectedUserIds={setSelectedUserIds}
-            fetchKanbonList={fetchTasks}
-          />
-        </div>
-        <div className="flex flex-col md:flex-row md:items-start py-6 gap-2">
-          <div className="md:w-[15%]">
-            <Button
-              onPress={() => setShowCalendar(!showCalendar)}
-              className="flex items-center gap-9 border px-4 py-2 rounded bg-white shadow text-sm font-medium"
-            >
-              {formattedRange}
-              <Image
-                src={showCalendar ? ChevronUp : ChevronDown}
-                alt="Toggle"
-                width={16}
-                height={16}
-              />
-            </Button>
+return (
+  <div className="flex flex-col min-h-screen bg-gray-50">
+    <main className="flex-1 p-4 sm:p-6 md:p-8 w-full">
+    
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+        <h1 className="text-xl md:text-2xl font-semibold text-gray-800">Time Sheet</h1>
+        <AvatarList
+          users={users}
+          selectedUserIds={selectedUserIds}
+          setSelectedUserIds={setSelectedUserIds}
+          fetchKanbonList={fetchTasks}
+        />
+      </div>
 
-            <div
-              className={`transition-all duration-300 ease-in-out overflow-hidden bg-white border shadow rounded mt-2 ${showCalendar
+     
+      <div className="flex flex-col md:flex-row gap-4">
+    
+        <div className="md:w-1/4 w-full">
+          <Button
+            onPress={() => setShowCalendar(!showCalendar)}
+            className="flex justify-between items-center w-full border px-4 py-2 rounded bg-white shadow-sm text-sm font-medium"
+          >
+            <span>{formattedRange}</span>
+            <Image
+              src={showCalendar ? ChevronUp : ChevronDown}
+              alt="Toggle Calendar"
+              width={16}
+              height={16}
+            />
+          </Button>
+
+          <div
+            className={`transition-all duration-300 ease-in-out overflow-hidden border bg-white shadow rounded mt-2 ${
+              showCalendar
                 ? "max-h-[500px] opacity-100 scale-100"
                 : "max-h-0 opacity-0 scale-95"
-                }`}
-            >
-              <div className="flex justify-end p-2">
-                <Button
-                  onPress={() => setShowCalendar(false)}
-                  className="text-sm text-gray-500 hover:text-gray-800"
-                >
-                  ✕
-                </Button>
-              </div>
-              <div className="p-2">
-                <RangeCalendar
-                  aria-label="Select Range"
-                  value={selectedRange}
-                  onChange={setSelectedRange}
-                />
-              </div>
+            }`}
+          >
+            <div className="flex justify-end p-2">
+              <Button
+                onPress={() => setShowCalendar(false)}
+                className="text-sm text-gray-500 hover:text-gray-800"
+              >
+                ✕
+              </Button>
+            </div>
+            <div className="p-2">
+              <RangeCalendar
+                aria-label="Select Range"
+                value={selectedRange}
+                onChange={setSelectedRange}
+              />
             </div>
           </div>
-          <div className="md:w-[85%]">
-            <Datagrid
-              headers={headers}
-              rows={rows}
-              pagination={{
-                total_records: totalRecords,
-                total_page: totalPages,
-                current_page: page,
-                limit: limit,
-              }}
-              // onSearch={(query) => {
-              //   setSearch(query);
-              //   setPage(1);
-              // }}
-              onAction={async (action, row) => {
-                if (action === "Edit") {
-                  router.push(`/admin/project/update/${row._id}`);
-                } else if (action === "Delete") {
-                  const result = await Swal.fire({
-                    title: "Are you sure?",
-                    text: `You are about to delete Task: "${row.code}"`,
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonText: "Yes, delete it!",
-                    cancelButtonText: "No, cancel!",
-                    reverseButtons: true,
-                    customClass: {
-                      confirmButton:
-                        "bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 focus:outline-none mr-2",
-                      cancelButton:
-                        "bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 focus:outline-none mr-2",
-                    },
-                    buttonsStyling: false,
-                  });
+        </div>
 
-                  if (result.isConfirmed) {
-                    try {
-                      await AdminTaskService.deleteTask(row._id);
-                      setTasks((prev) => prev.filter((p) => p._id !== row._id));
-                      setTotalRecords((prev) => prev - 1);
-                      await fetchTasks([]);
-                    } catch (err) {
-                      console.error("Delete failed", err);
-                      Swal.fire("Error", "Failed to delete project.", "error");
-                    }
+   
+        <div className="md:w-3/4 w-full">
+          <Datagrid
+            headers={headers}
+            rows={rows}
+            pagination={{
+              total_records: totalRecords,
+              total_page: totalPages,
+              current_page: page,
+              limit: limit,
+            }}
+            onAction={async (action, row) => {
+              if (action === "Edit") {
+                router.push(`/admin/project/update/${row._id}`);
+              } else if (action === "Delete") {
+                const result = await Swal.fire({
+                  title: "Are you sure?",
+                  text: `You are about to delete Task: "${row.code}"`,
+                  icon: "warning",
+                  showCancelButton: true,
+                  confirmButtonText: "Yes, delete it!",
+                  cancelButtonText: "No, cancel!",
+                  reverseButtons: true,
+                  customClass: {
+                    confirmButton:
+                      "bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 focus:outline-none mr-2",
+                    cancelButton:
+                      "bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 focus:outline-none mr-2",
+                  },
+                  buttonsStyling: false,
+                });
+
+                if (result.isConfirmed) {
+                  try {
+                    await AdminTaskService.deleteTask(row._id);
+                    setTasks((prev) => prev.filter((p) => p._id !== row._id));
+                    setTotalRecords((prev) => prev - 1);
+                    await fetchTasks([]);
+                  } catch (err) {
+                    console.error("Delete failed", err);
+                    Swal.fire("Error", "Failed to delete project.", "error");
                   }
                 }
-              }}
-              sort={{ field: sortField, order: sortOrder }}
-              onSort={(field) => {
-                setSortField(field);
-                setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
-                setPage(1);
-              }}
-              router={router}
-              pathname={pathname}
-              searchParams={searchParams}
-            />
-          </div>
+              }
+            }}
+            sort={{ field: sortField, order: sortOrder }}
+            onSort={(field) => {
+              setSortField(field);
+              setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+              setPage(1);
+            }}
+            router={router}
+            pathname={pathname}
+            searchParams={searchParams}
+          />
         </div>
-      </main>
-    </div>
-  );
+      </div>
+    </main>
+  </div>
+);
+
 };
 
 export default TimeSheetList;

@@ -58,13 +58,14 @@ export default function LeftMenuDrawer() {
     { label: "My Projects", href: "/project/list" },
     { label: "MY Task", href: "/mytask" },
     { label: "Reminder", href: "/reminder" },
+    {label:"My Timesheet" , href: "/timesheet"},
     { label: "Create Reminder", href: "/reminder/create" },
     { label: "My Performance", href: "/performance" },
     { label: "Logout", href: "#" },
   ];
 
   const adminMenuItems = [
-    { label: "Home", href: "/admin" },
+    { label: "Home", href: "/" }, 
     { label: "Profile", href: "/auth/profile" },
     { label: "Projects", href: "/admin/project" },
     { label: "Users", href: "/admin/user" },

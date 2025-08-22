@@ -12,7 +12,7 @@ import { TaskModule } from 'src/task/task.module';
   imports: [
     MongooseModule.forFeature([{ name: 'Project', schema: ProjectSchema }]),
     ProjectKanbanModule,
-    UserModule,
+     forwardRef(() => UserModule),   // <-- fixed
     forwardRef(() => TaskModule),   // <-- fixed
   ],
   controllers: [ProjectController, AdminProjectController],

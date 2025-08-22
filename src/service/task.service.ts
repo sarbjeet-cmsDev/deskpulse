@@ -25,11 +25,11 @@ export interface ITask {
 export interface CreateTaskDto {
   title: string;
   project: string;
-  report_to: string;
+  report_to?: string;
   assigned_to: string;
   description?: string;
   due_date?: string;
-  estimated_time?: number;
+  estimated_time?: any;
 }
 
 export interface ITaskResponse {

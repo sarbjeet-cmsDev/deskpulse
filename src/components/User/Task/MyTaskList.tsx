@@ -7,11 +7,28 @@ import { useEffect, useState } from "react";
 import TaskService, { ITask } from "@/service/task.service";
 import SubTasks from "@/components/ProjectDetails/SubTaskList";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
+import TaskButton from "@/components/taskButton";
+import CreateGlobalTaskModal from "@/components/CreateGlobalTaskModal";
 
 export default function MyTaskList() {
+  const pathname = usePathname();
+  const router = useRouter();
   const [tasks, setTasks] = useState<ITask[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState<number>(1);
+
+
+
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
+
+
   const fetchTasks = async (page: number) => {
     setLoading(true);
     try {
@@ -32,10 +49,8 @@ export default function MyTaskList() {
   return (
     <div className="max-w-6xl mx-auto">
       <div className="flex justify-center items-center md:p-[24px] p-2 border-b border-[#31394f14]">
-        <div className="w-10">
-          <Link href="/">
-            <Image src={leftarrow} alt="Back" width={16} height={16} />
-          </Link>
+        <div className="w-10 cursor-pointer" onClick={() => router.back()}>
+          <Image src={leftarrow} alt="Back" width={16} height={16} />
         </div>
         <H3 className="w-[98%] text-center">My Task</H3>
       </div>
@@ -51,6 +66,18 @@ export default function MyTaskList() {
           </>
         )}
       </div>
+            <TaskButton onClick={openModal} />
+
+      {isModalOpen && (
+<CreateGlobalTaskModal
+  isOpen={isModalOpen}
+  onClose={closeModal}
+  onCreate={async (title, description, due_date, estimated_time, assigned_to, projectId) => {
+    // Your API call or logic
+
+  }}
+/>
+)}
     </div>
   );
 }

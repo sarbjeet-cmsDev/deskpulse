@@ -113,7 +113,7 @@ const CreateProjectForm = () => {
   const socketRef = useRef(getSocket());
 
   const onSubmit = async (data: CreateProjectInput) => {
-    // console.log(data, "incoming data while createing project");
+  
     try {
       const formData: any = new FormData();
 

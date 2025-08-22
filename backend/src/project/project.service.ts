@@ -8,24 +8,31 @@ import {
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { Project, ProjectDocument } from "./project.schema";
+import { User, UserDocument } from "../user/user.schema";
 import { ProjectKanbanService } from "../project-kanban/project_kanban.service";
 import { UserService } from "src/user/user.service";
 import { EventEmitter2 } from "@nestjs/event-emitter";
-import { CreateProjectDto, UpdateProjectDto, UpdateProjectKanbanOrderDto } from "./project.dto";
+import {
+  CreateProjectDto,
+  UpdateProjectDto,
+  UpdateProjectKanbanOrderDto,
+} from "./project.dto";
 import { log } from "console";
 import { TaskService } from "src/task/task.service";
+import { Types } from "mongoose";
 
 @Injectable()
 export class ProjectService {
   constructor(
     @InjectModel(Project.name) private projectModel: Model<ProjectDocument>,
+    @InjectModel("User") private readonly userModel: Model<UserDocument>,
     private readonly kanbanService: ProjectKanbanService,
     private eventEmitter: EventEmitter2,
     private readonly userservices: UserService,
     @Inject(forwardRef(() => TaskService))
-
+    @Inject(forwardRef(() => TaskService))
     private readonly taskservices: TaskService
-  ) { }
+  ) {}
   private sanitizeObjectIds(payload: any) {
     const keysToSanitize = [
       "team_leader",
@@ -106,10 +113,10 @@ export class ProjectService {
     id: string,
     updateProjectDto: UpdateProjectDto
   ): Promise<Project> {
-
     if (!updateProjectDto.users) {
-      updateProjectDto.users = []
+      updateProjectDto.users = [];
     }
+    console.log(id, updateProjectDto,"incoming body")
     const sanitized = this.sanitizeObjectIds(updateProjectDto);
     const updatedProject = await this.projectModel
       .findByIdAndUpdate(id, sanitized, { new: true })
@@ -124,6 +131,32 @@ export class ProjectService {
     }
     return updatedProject;
   }
+
+
+
+
+  async updateProjectFav(
+    id: string,
+    updateProjectDto: UpdateProjectDto
+  ): Promise<Project> {
+    
+    console.log(id, updateProjectDto,"incoming body")
+    const sanitized = this.sanitizeObjectIds(updateProjectDto);
+    const updatedProject = await this.projectModel
+      .findByIdAndUpdate(id, sanitized, { new: true })
+      .exec();
+    if (!updatedProject) {
+      throw new NotFoundException(`Project with ID ${id} not found.`);
+    }
+    if (updateProjectDto.users && updateProjectDto.users.length > 0) {
+      this.eventEmitter.emit("project.assigned", {
+        projectObj: updatedProject,
+      });
+    }
+    return updatedProject;
+  }
+
+
 
   async remove(id: string): Promise<boolean> {
     const project = await this.projectModel.findById(id).exec();
@@ -276,7 +309,10 @@ export class ProjectService {
       .exec();
   }
 
-  async findProjectUsers(projectId: string, keyword?: string): Promise<Project> {
+  async findProjectUsers(
+    projectId: string,
+    keyword?: string
+  ): Promise<Project> {
     const project = await this.projectModel
       .findById(projectId)
       .populate({
@@ -284,12 +320,12 @@ export class ProjectService {
         select: "firstName lastName email",
         match: keyword
           ? {
-            $or: [
-              { firstName: { $regex: keyword, $options: "i" } },
-              { lastName: { $regex: keyword, $options: "i" } },
-              { email: { $regex: keyword, $options: "i" } },
-            ],
-          }
+              $or: [
+                { firstName: { $regex: keyword, $options: "i" } },
+                { lastName: { $regex: keyword, $options: "i" } },
+                { email: { $regex: keyword, $options: "i" } },
+              ],
+            }
           : undefined,
       })
       .exec();
@@ -304,7 +340,6 @@ export class ProjectService {
     } as any;
   }
 
-
   async updateKanbanOrder(projectId: string, dto: UpdateProjectKanbanOrderDto) {
     const project = await this.projectModel.findById(projectId);
     if (!project) {
@@ -314,11 +349,13 @@ export class ProjectService {
     for (const item of dto.data) {
       const kanbanColumn = await this.kanbanService.findById(item._id);
       if (!kanbanColumn) {
-        throw new NotFoundException(`Kanban column with ID ${item._id} not found`);
+        throw new NotFoundException(
+          `Kanban column with ID ${item._id} not found`
+        );
       }
     }
 
-    const updates = dto.data.map(item =>
+    const updates = dto.data.map((item) =>
       this.kanbanService.update(item._id, { sort_order: item.sort_order })
     );
     await Promise.all(updates);
@@ -336,11 +373,13 @@ export class ProjectService {
     for (const item of dto.data) {
       const taskCoulmn = await this.taskservices.findById(item._id);
       if (!taskCoulmn) {
-        throw new NotFoundException(`Task column with ID ${item._id} not found`);
+        throw new NotFoundException(
+          `Task column with ID ${item._id} not found`
+        );
       }
     }
 
-    const updates = dto.data.map(item =>
+    const updates = dto.data.map((item) =>
       this.taskservices.update(item._id, { sort_order: item.sort_order })
     );
     await Promise.all(updates);
@@ -348,5 +387,111 @@ export class ProjectService {
       message: "Task order updated successfully!",
     };
   }
+
+async findUserProjectDetail(
+  userId: string,
+  page: number,
+  limit: number,
+  title?: string // add optional title filter
+): Promise<{ data: any[]; total: number; page: number; limit: number }> {
+  console.log(page, limit, "page and limit");
+  const skip = (page - 1) * limit;
+  const objectUserId = new Types.ObjectId(userId);
+
+  // If title filter is provided, add a match stage for projects matching the title (case-insensitive)
+  const titleMatchStage = title
+    ? [
+        {
+          $match: {
+            "project.title": { $regex: new RegExp(title, "i") },
+          },
+        },
+      ]
+    : [];
+
+  const aggregationPipeline = [
+    { $match: { _id: objectUserId } },
+    {
+      $lookup: {
+        from: "projects",
+        localField: "_id",
+        foreignField: "users",
+        as: "project",
+      },
+    },
+    { $unwind: "$project" },
+    ...titleMatchStage, // <-- Insert filter here if needed
+    {
+      $lookup: {
+        from: "tasks",
+        let: { projectId: "$project._id", userId: "$_id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ["$project", "$$projectId"] },
+                  { $eq: ["$assigned_to", "$$userId"] },
+                ],
+              },
+            },
+          },
+        ],
+        as: "project.tasks",
+      },
+    },
+    { $skip: skip }, // Pagination
+    { $limit: limit },
+    {
+      $group: {
+        _id: "$_id",
+        username: { $first: "$username" },
+        email: { $first: "$email" },
+        firstName: { $first: "$firstName" },
+        lastName: { $first: "$lastName" },
+        phone: { $first: "$phone" },
+        gender: { $first: "$gender" },
+        isActive: { $first: "$isActive" },
+        roles: { $first: "$roles" },
+        userRoles: { $first: "$userRoles" },
+        hobbies: { $first: "$hobbies" },
+        receiveEmailNotifications: { $first: "$receiveEmailNotifications" },
+        createdAt: { $first: "$createdAt" },
+        updatedAt: { $first: "$updatedAt" },
+        project: { $push: "$project" },
+      },
+    },
+  ];
+
+  // Count pipeline to count total filtered projects
+  const countPipeline = [
+    { $match: { _id: objectUserId } },
+    {
+      $lookup: {
+        from: "projects",
+        localField: "_id",
+        foreignField: "users",
+        as: "project",
+      },
+    },
+    { $unwind: "$project" },
+    ...titleMatchStage, // <-- Filter here too
+    { $count: "total" },
+  ];
+
+  const [result, countResult] = await Promise.all([
+    this.userModel.aggregate(aggregationPipeline),
+    this.userModel.aggregate(countPipeline),
+  ]);
+
+  const total = countResult[0]?.total || 0;
+
+  return {
+    data: result,
+    total,
+    page,
+    limit,
+  };
+}
 
 }

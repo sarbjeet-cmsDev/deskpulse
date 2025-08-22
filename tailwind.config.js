@@ -16,7 +16,11 @@ const config = {
     },
   },
   darkMode: "class",
-  plugins: [heroui()],
+  plugins: [
+    heroui(),
+    require("tailwindcss-animate"),
+     require('@tailwindcss/typography'),
+  ],
 }
 
 module.exports = config;

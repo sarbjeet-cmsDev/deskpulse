@@ -13,6 +13,8 @@ import { KanbanColumn } from "@/types/projectKanbon.interface";
 import { ITask } from "@/service/task.service";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import TaskButton from "@/components/taskButton";
+import CreateGlobalTaskModal from "@/components/CreateGlobalTaskModal";
 
 export default function MyProjects() {
   const user: any = useSelector((state: RootState) => state.auth.user);
@@ -22,11 +24,19 @@ export default function MyProjects() {
   const [totalItems, setTotalItems] = useState<number>(0);
   const itemsPerPage = 20;
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
   useEffect(() => {
     const loadProjects = async (page: number) => {
       setLoading(true);
       try {
-        const res = await ProjectService.getProjectByUserId(currentPage, itemsPerPage);
+        const res = await ProjectService.getProjectByUserId(
+          currentPage,
+          itemsPerPage
+        );
         setProjects(res?.data || []);
         setTotalItems(res?.total || 0);
       } catch (error) {
@@ -44,13 +54,17 @@ export default function MyProjects() {
     setCurrentPage(page);
   };
 
-
-  const [projectKanbanMap, setProjectKanbanMap] = useState<Record<string, { kanbans: KanbanColumn[], counts: Record<string, number> }>>({});
+  const [projectKanbanMap, setProjectKanbanMap] = useState<
+    Record<string, { kanbans: KanbanColumn[]; counts: Record<string, number> }>
+  >({});
 
   const fetchKanbonList = async () => {
     try {
       const projectIds: string[] = projects.map((item) => item._id);
-      const resultMap: Record<string, { kanbans: KanbanColumn[], counts: Record<string, number> }> = {};
+      const resultMap: Record<
+        string,
+        { kanbans: KanbanColumn[]; counts: Record<string, number> }
+      > = {};
 
       for (const projectId of projectIds) {
         const kanbanRes = await ProjectKanbon.getProjectKanbonList(projectId);
@@ -60,8 +74,8 @@ export default function MyProjects() {
         const tasks: ITask[] = taskRes?.data || taskRes?.tasks || [];
 
         const counts: Record<string, number> = {};
-        kanbans.forEach(k => {
-          counts[k.title] = tasks.filter(t => t.status === k.title).length;
+        kanbans.forEach((k) => {
+          counts[k.title] = tasks.filter((t) => t.status === k.title).length;
         });
 
         resultMap[projectId] = {
@@ -81,7 +95,6 @@ export default function MyProjects() {
       fetchKanbonList();
     }
   }, [projects]);
-
 
   return (
     <div className="max-w-6xl mx-auto md:p-0 p-2">
@@ -103,12 +116,13 @@ export default function MyProjects() {
                 <p>No projects found.</p>
               ) : (
                 projects.map((project) => (
-                  <Link key={project._id} href={`/project/${project.code}`} className="w-full">
-                    <ProjectCard project={project}
-                      kanban={projectKanbanMap[project._id]?.kanbans || []}
-                      taskCounts={projectKanbanMap[project._id]?.counts || {}}
-                    />
-                  </Link>
+                  <ProjectCard
+                    key={project._id}
+                    project={project}
+                    kanban={projectKanbanMap[project._id]?.kanbans || []}
+                    taskCounts={projectKanbanMap[project._id]?.counts || {}}
+                    linkTo={`/project/${project.code}`} // pass link prop
+                  />
                 ))
               )}
 
@@ -122,6 +136,24 @@ export default function MyProjects() {
           </div>
         </div>
       </div>
+      <TaskButton onClick={openModal} />
+
+      {isModalOpen && (
+        <CreateGlobalTaskModal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          onCreate={async (
+            title,
+            description,
+            due_date,
+            estimated_time,
+            assigned_to,
+            projectId
+          ) => {
+            // Your API call or logic
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -8,6 +8,6 @@ import { AdminUserController } from './admin.user.controller';
   imports: [MongooseModule.forFeature([{ name: 'User', schema: UserSchema }])],
   controllers: [UserController, AdminUserController],
   providers: [UserService],
-  exports: [UserService], // <- This allows other modules to use UserService
+  exports: [UserService,MongooseModule], // <- This allows other modules to use UserService
 })
 export class UserModule {}

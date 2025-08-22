@@ -192,7 +192,7 @@ export default function TaskDetails({ id }: Props) {
           <div className="flex justify-between items-center border-b border-[#31394f14]">
             <div className="flex items-center gap-2">
               <div className="w-10">
-                <Link href={`/project/${task?.code?.split("-")[0]}`}>
+                <Link href={`/mytask`}>
                   <Image src={leftarrow} alt="Logo" width={16} height={16} />
                 </Link>
               </div>

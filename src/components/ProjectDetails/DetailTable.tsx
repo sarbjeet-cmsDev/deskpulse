@@ -45,7 +45,7 @@ export default function Details({
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
 
   const loginUser: any = useSelector((state: RootState) => state.user.data);
- 
+
   const {
     team = [],
     leader,

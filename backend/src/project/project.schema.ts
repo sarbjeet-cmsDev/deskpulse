@@ -63,6 +63,9 @@ export class Project {
   @Prop({ default: 0 })
   sort_order: number;
 
+    @Prop({ default: false })
+  isFavorite: boolean;
+
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: false })
   created_by: MongooseSchema.Types.ObjectId;
 
