@@ -19,7 +19,7 @@ export class TimelineService {
     private readonly projectService: ProjectService,
     private readonly userService: UserService,
     private eventEmitter: EventEmitter2
-  ) { }
+  ) {}
 
   async create(createTimelineDto: CreateTimelineDto): Promise<Timeline> {
     if (createTimelineDto.time_spent) {
@@ -80,7 +80,7 @@ export class TimelineService {
         timeline.task.toString(),
         -timeline.time_spent
       );
-      this.eventEmitter.emit('timeline.deleted', {
+      this.eventEmitter.emit("timeline.deleted", {
         timeLineObj: timeline,
       });
     }
@@ -113,81 +113,74 @@ export class TimelineService {
   }
 
   async findByUserId(userId: string): Promise<Timeline[]> {
-
-
     return this.timelineModel.find({ user: userId }).exec();
   }
 
-async findTimeLineByUserId(
-  userId: string,
-  page: number,
-  limit: number,
-  startDate?: string,
-  endDate?: string
-): Promise<{ data: Timeline[]; total: number; page: number; limit: number }> {
-  const skip = (page - 1) * limit;
+  async findTimeLineByUserId(
+    userId: string,
+    page: number,
+    limit: number,
+    startDate?: string,
+    endDate?: string
+  ): Promise<{ data: Timeline[]; total: number; page: number; limit: number }> {
+    const skip = (page - 1) * limit;
 
-  const matchFilter: any = {
-    user: new Types.ObjectId(userId),
-  };
+    const matchFilter: any = {
+      user: new Types.ObjectId(userId),
+    };
 
- 
-  if (startDate || endDate) {
-    matchFilter.date = {};
-    if (startDate) {
-      matchFilter.date.$gte = new Date(startDate);
+    if (startDate || endDate) {
+      matchFilter.date = {};
+      if (startDate) {
+        matchFilter.date.$gte = new Date(startDate);
+      }
+      if (endDate) {
+        matchFilter.date.$lte = new Date(endDate);
+      }
     }
-    if (endDate) {
-      matchFilter.date.$lte = new Date(endDate);
-    }
+
+    const total = await this.timelineModel.countDocuments(matchFilter);
+
+    const data = await this.timelineModel.aggregate([
+      {
+        $match: matchFilter,
+      },
+      {
+        $lookup: {
+          from: "tasks",
+          localField: "task",
+          foreignField: "_id",
+          as: "tasks",
+        },
+      },
+      {
+        $unwind: "$tasks",
+      },
+      {
+        $project: {
+          _id: 1,
+          date: 1,
+          time_spent: 1,
+          comment: 1,
+          taskId: "$task",
+          task_title: "$tasks.title",
+        },
+      },
+      {
+        $skip: skip,
+      },
+      {
+        $limit: limit,
+      },
+    ]);
+
+    return {
+      data,
+      total,
+      page,
+      limit,
+    };
   }
-
-  const total = await this.timelineModel.countDocuments(matchFilter);
-
-  const data = await this.timelineModel.aggregate([
-    {
-      $match: matchFilter,
-    },
-    {
-      $lookup: {
-        from: 'tasks',
-        localField: 'task',
-        foreignField: '_id',
-        as: 'tasks',
-      },
-    },
-    {
-      $unwind: '$tasks',
-    },
-    {
-      $project: {
-        _id: 1,
-        date: 1,
-        time_spent: 1,
-        comment: 1,
-        taskId: '$task',
-        task_title: '$tasks.title',
-      },
-    },
-    {
-      $skip: skip,
-    },
-    {
-      $limit: limit,
-    },
-  ]);
-
-  
-
-  return {
-    data,
-    total,
-    page,
-    limit,
-  };
-}
-
-
 
   async removeByTaskId(taskId: string): Promise<{ deletedCount?: number }> {
     return this.timelineModel.deleteMany({ task: taskId }).exec();
@@ -243,52 +236,40 @@ async findTimeLineByUserId(
   }
 
   async getAllTimelines(
-  page: number,
-  limit: number,
-  keyword?: string,
-  sortOrder: "asc" | "desc" = "asc",
-  start?: string,
-  end?: string
-): Promise<{
-  data: any[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}> {
-  let safePage = Math.max(Number(page) || 1, 1);
-  let safeLimit = Math.max(Number(limit) || 10, 1);
-  const MAX_LIMIT = 200;
-  if (safeLimit > MAX_LIMIT) safeLimit = MAX_LIMIT;
+    page: number,
+    limit: number,
+    keyword?: string,
+    sortOrder: "asc" | "desc" = "desc",
+    start?: string,
+    end?: string,
+    projectId?: string
+  ): Promise<{
+    data: any[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> {
+    let safePage = Math.max(Number(page) || 1, 1);
+    let safeLimit = Math.max(Number(limit) || 10, 1);
+    const MAX_LIMIT = 200;
+    if (safeLimit > MAX_LIMIT) safeLimit = MAX_LIMIT;
 
-  const filter: Record<string, any> = {};
+    const filter: Record<string, any> = {};
 
-  // keyword search (task title / code via $lookup later won’t work directly)
-  if (keyword && keyword.trim()) {
-    filter.comment = { $regex: keyword.trim(), $options: "i" };
-  }
+    if (keyword && keyword.trim()) {
+      filter.comment = { $regex: keyword.trim(), $options: "i" };
+    }
 
-  // date filter
-  if (start && end) {
-    filter.date = {
-      $gte: new Date(start),
-      $lte: new Date(end),
-    };
-  }
+    if (start && end) {
+      filter.date = {
+        $gte: new Date(start),
+        $lte: new Date(end),
+      };
+    }
 
-  // count total first
-  const total = await this.timelineModel.countDocuments(filter).exec();
-  const totalPages = total === 0 ? 0 : Math.ceil(total / safeLimit);
-  if (totalPages > 0 && safePage > totalPages) safePage = totalPages;
-
-  const pipeline: any[] = [
+     const countPipeline: any[] = [
     { $match: filter },
-    { $sort: { createdAt: sortOrder === "desc" ? -1 : 1 } },
-
-    // pagination
-    { $skip: (safePage - 1) * safeLimit },
-    { $limit: safeLimit },
-
     {
       $lookup: {
         from: "tasks",
@@ -298,70 +279,233 @@ async findTimeLineByUserId(
       },
     },
     { $unwind: { path: "$task_detail", preserveNullAndEmptyArrays: true } },
-    {
-      $project: {
-        _id: 1,
-        comment: 1,
-        task: 1,
-        date: 1,
-        user: 1,
-        time_spent: 1,
-        task_title: "$task_detail.title",
-        task_id: "$task_detail._id",
-        project_id: "$task_detail.project",
-        assigned_id: "$task_detail.assigned_to",
-      },
-    },
-    {
-      $lookup: {
-        from: "projects",
-        localField: "project_id",
-        foreignField: "_id",
-        as: "project_detail",
-      },
-    },
-    { $unwind: { path: "$project_detail", preserveNullAndEmptyArrays: true } },
-    {
-      $lookup: {
-        from: "users",
-        localField: "user",
-        foreignField: "_id",
-        as: "user_detail",
-      },
-    },
-    { $unwind: { path: "$user_detail", preserveNullAndEmptyArrays: true } },
-    {
-      $project: {
-        _id: 1,
-        comment: 1,
-        user: 1,
-        task: 1,
-        date: 1,
-        time_spent: 1,
-        task_title: 1,
-        task_id: 1,
-        project_id: 1,
-        assigned_id: 1,
-        project_name: "$project_detail.title",
-        username: {
-          $concat: [
-            { $ifNull: ["$user_detail.firstName", ""] },
-            " ",
-            { $ifNull: ["$user_detail.lastName", ""] },
-          ],
-        },
-      },
-    },
+    ...(projectId ? [{ $match: { "task_detail.project": new Types.ObjectId(projectId) } }] : []),
+    { $count: "total" },
   ];
 
-  const data = await this.timelineModel.aggregate(pipeline).exec();
+  const countResult = await this.timelineModel.aggregate(countPipeline).exec();
+  const total = countResult.length > 0 ? countResult[0].total : 0;
+  const totalPages = total === 0 ? 0 : Math.ceil(total / safeLimit);
+  if (totalPages > 0 && safePage > totalPages) safePage = totalPages;
 
-  return {
-    data,
-    total,
-    page: safePage,
-    limit: safeLimit,
-    totalPages,
-  };
-}
+    // count total first
+    // const total = await this.timelineModel.countDocuments(filter).exec();
+    // const totalPages = total === 0 ? 0 : Math.ceil(total / safeLimit);
+    // if (totalPages > 0 && safePage > totalPages) safePage = totalPages;
+
+    const pipeline: any[] = [
+      { $match: filter },
+      { $sort: { createdAt: sortOrder === "desc" ? 1 : -1 } },
+
+      // pagination
+      { $skip: (safePage - 1) * safeLimit },
+      { $limit: safeLimit },
+
+      {
+        $lookup: {
+          from: "tasks",
+          localField: "task",
+          foreignField: "_id",
+          as: "task_detail",
+        },
+      },
+      { $unwind: { path: "$task_detail", preserveNullAndEmptyArrays: true } },
+      ...(projectId
+        ? [{ $match: { "task_detail.project": new Types.ObjectId(projectId) } }]
+        : []),
+      {
+        $project: {
+          _id: 1,
+          comment: 1,
+          task: 1,
+          date: 1,
+          user: 1,
+          time_spent: 1,
+          task_title: "$task_detail.title",
+          task_id: "$task_detail._id",
+          project_id: "$task_detail.project",
+          assigned_id: "$task_detail.assigned_to",
+        },
+      },
+      {
+        $lookup: {
+          from: "projects",
+          localField: "project_id",
+          foreignField: "_id",
+          as: "project_detail",
+        },
+      },
+      {
+        $unwind: { path: "$project_detail", preserveNullAndEmptyArrays: true },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "user",
+          foreignField: "_id",
+          as: "user_detail",
+        },
+      },
+      { $unwind: { path: "$user_detail", preserveNullAndEmptyArrays: true } },
+      {
+        $project: {
+          _id: 1,
+          comment: 1,
+          user: 1,
+          task: 1,
+          date: 1,
+          time_spent: 1,
+          task_title: 1,
+          task_id: 1,
+          project_id: 1,
+          assigned_id: 1,
+          project_name: "$project_detail.title",
+          username: {
+            $concat: [
+              { $ifNull: ["$user_detail.firstName", ""] },
+              " ",
+              { $ifNull: ["$user_detail.lastName", ""] },
+            ],
+          },
+        },
+      },
+    ];
+
+    const data = await this.timelineModel.aggregate(pipeline).exec();
+
+    return {
+      data,
+      total,
+      page: safePage,
+      limit: safeLimit,
+      totalPages,
+    };
+  }
+
+  async findUsersTimeLine(
+    userIds: string[],
+    page: number,
+    limit: number,
+    sortOrder: "asc" | "desc" = "desc",
+    startDate?: string,
+    endDate?: string,
+    projectId?: string
+  ): Promise<{
+    data: Timeline[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> {
+    const skip = (page - 1) * limit;
+
+    let safePage = Math.max(Number(page) || 1, 1);
+    let safeLimit = Math.max(Number(limit) || 10, 1);
+    const MAX_LIMIT = 200;
+    if (safeLimit > MAX_LIMIT) safeLimit = MAX_LIMIT;
+
+    const matchFilter: any = {
+      user: { $in: userIds.map((id) => new Types.ObjectId(id)) },
+    };
+
+    if (startDate || endDate) {
+      matchFilter.date = {};
+      if (startDate) {
+        matchFilter.date.$gte = new Date(startDate);
+      }
+      if (endDate) {
+        matchFilter.date.$lte = new Date(endDate);
+      }
+    }
+
+    const total = await this.timelineModel.countDocuments(matchFilter).exec();
+    const totalPages = total === 0 ? 0 : Math.ceil(total / safeLimit);
+    if (totalPages > 0 && safePage > totalPages) safePage = totalPages;
+
+    const pipeline: any[] = [
+      { $match: matchFilter },
+      { $sort: { createdAt: sortOrder === "desc" ? 1 : -1 } },
+      { $skip: (safePage - 1) * safeLimit },
+      { $limit: safeLimit },
+
+      {
+        $lookup: {
+          from: "tasks",
+          localField: "task",
+          foreignField: "_id",
+          as: "task_detail",
+        },
+      },
+      { $unwind: { path: "$task_detail", preserveNullAndEmptyArrays: true } },
+      ...(projectId
+        ? [{ $match: { "task_detail.project": new Types.ObjectId(projectId) } }]
+        : []),
+      {
+        $project: {
+          _id: 1,
+          comment: 1,
+          task: 1,
+          date: 1,
+          user: 1,
+          time_spent: 1,
+          task_title: "$task_detail.title",
+          task_id: "$task_detail._id",
+          project_id: "$task_detail.project",
+          assigned_id: "$task_detail.assigned_to",
+        },
+      },
+      {
+        $lookup: {
+          from: "projects",
+          localField: "project_id",
+          foreignField: "_id",
+          as: "project_detail",
+        },
+      },
+      {
+        $unwind: { path: "$project_detail", preserveNullAndEmptyArrays: true },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "user",
+          foreignField: "_id",
+          as: "user_detail",
+        },
+      },
+      { $unwind: { path: "$user_detail", preserveNullAndEmptyArrays: true } },
+      {
+        $project: {
+          _id: 1,
+          comment: 1,
+          user: 1,
+          task: 1,
+          date: 1,
+          time_spent: 1,
+          task_title: 1,
+          task_id: 1,
+          project_id: 1,
+          assigned_id: 1,
+          project_name: "$project_detail.title",
+          username: {
+            $concat: [
+              { $ifNull: ["$user_detail.firstName", ""] },
+              " ",
+              { $ifNull: ["$user_detail.lastName", ""] },
+            ],
+          },
+        },
+      },
+    ];
+
+    const data = await this.timelineModel.aggregate(pipeline).exec();
+
+    return {
+      data,
+      total,
+      page: safePage,
+      limit: safeLimit,
+      totalPages,
+    };
+  }
 }

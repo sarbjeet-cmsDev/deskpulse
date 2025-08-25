@@ -142,11 +142,17 @@ const DescriptionInputToolbar = ({
       syntax: { hljs },
       toolbar: {
         container: [
-          [{ header: [1, 2, false] }],
+          [{ color: [] }, { background: [] }],
+          [{ align: [] }],
+          [{ script: "sub" }, { script: "super" }],
+          [{ size: ["small", false, "large", "huge"] }],
+          [{ header: [1, 2, 3, 4, 5, 6, false] }],
           ["bold", "italic", "underline"],
-          ["link", "image", "code-block"],
+          ["link", "image", "code-block", "format"],
           [{ list: "ordered" }, { list: "bullet" }],
           ["clean"],
+          ["blockquote"],
+          ["formatCode"]
         ],
         handlers: {
           image: imageHandler,

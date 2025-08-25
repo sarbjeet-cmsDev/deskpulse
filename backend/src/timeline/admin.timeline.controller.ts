@@ -13,15 +13,41 @@ export class AdminTimelineController {
     @Query("keyword") keyword?: string,
     @Query("sortOrder") sortOrder: "asc" | "desc" = "asc",
     @Query("start") start?: string,
-    @Query("end") end?: string
+    @Query("end") end?: string,
+    @Query("projectId") projectId?: string
     ): Promise<{ data: Timeline[]; total: number; page: number; limit: number; totalPages: number }> {
     return await this.timelineService.getAllTimelines(
       page,
       limit,
       keyword,
       sortOrder,
-       start,
-      end
+      start,
+      end,
+      projectId
     );
   }
+
+  @Get("user")
+    async findTimelineByUser(
+      @Query("userIds") userIds?: string,
+      @Query("page") page: number = 1,
+      @Query("limit") limit: string = "10",
+      @Query("start") start?: string,
+      @Query("end") end?: string,
+      @Query("sortOrder") sortOrder: "asc" | "desc" = "asc",
+      @Query("projectId") projectId?: string
+    ): Promise<{ data: Timeline[]; total: number; page: number; limit: number,totalPages: number  }> {
+      const limitNumber = parseInt(limit, 10);
+  
+      const userIdArray = userIds.split(",");
+      return this.timelineService.findUsersTimeLine(
+        userIdArray,
+        page,
+        limitNumber,
+        sortOrder,
+        start,
+        end,
+        projectId
+      );
+    }
 }

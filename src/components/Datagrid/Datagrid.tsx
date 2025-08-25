@@ -228,7 +228,7 @@ const DataGrid: React.FC<DataGridProps> = ({
       <Pagination
         currentPage={currentPageFromRoute}
         totalItems={pagination.total_records}
-        itemsPerPage={pagination.limit}
+        itemsPerPage={pagination.total_page}
         onPageChange={handlePageChange}
       />
     </div>

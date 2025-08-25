@@ -1,14 +1,11 @@
 "use client";
-import { SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Datagrid from "@/components/Datagrid/Datagrid";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import AdminProjectService from "@/service/adminProject.service";
-import AdminTaskService from "@/service/adminTask.service";
 import AdminUserService from "@/service/adminUser.service";
-import ProjectService from "@/service/project.service";
-import TaskService from "@/service/task.service";
 import AvatarList from "@/components/IndexPage/avatarlist";
 import { getLocalTimeZone, today } from "@internationalized/date";
 import { Button } from "@heroui/button";
@@ -20,6 +17,8 @@ import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import dayjs from "dayjs";
 import AdminTimelineService from "@/service/adminTimeline.service";
 import TimelineService from "@/service/timeline.service";
+import ReactSelect from "react-select";
+import { useForm, Controller } from "react-hook-form";
 dayjs.extend(isSameOrBefore);
 
 function useDebounce<T>(value: T, delay: number): T {
@@ -41,6 +40,10 @@ type Task = {
 };
 
 const TimeSheetList = () => {
+  interface ProjectOption {
+    label: string;
+    value: string;
+  }
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -56,6 +59,7 @@ const TimeSheetList = () => {
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const debouncedSearch = useDebounce(search, 300);
   const [users, setUsers] = useState([]);
+   const [projectOptions, setProjectOptions] = useState<ProjectOption[]>([]);
   const [selectedRange, setSelectedRange] = useState<{
     start: any;
     end: any;
@@ -65,6 +69,12 @@ const TimeSheetList = () => {
   });
 
   const [showCalendar, setShowCalendar] = useState(false);
+  const {
+     control,
+     watch,
+     formState: { errors },
+   } = useForm({
+   });
 
   const fetchTasks = async (userIds: string[]) => {
     if (!selectedRange.start || !selectedRange.end) return;
@@ -72,19 +82,20 @@ const TimeSheetList = () => {
     const startDate = dayjs(selectedRange.start.toDate(getLocalTimeZone()));
     const endDate = dayjs(selectedRange.end.toDate(getLocalTimeZone()));
 
+     const selectedProjectId = watch("projectId");
+
     try {
-      // let taskRes;
 
       if (userIds.length > 0) {
-        const taskRes = await TaskService.getTasksByAssignedUser(userIds.join(","), {
-        // const taskRes = await TimelineService.getTimeLineList(userIds.join(","), {
+        const taskRes = await AdminTimelineService.getTimelineByUserId(userIds.join(","), {
           start: startDate.format("YYYY-MM-DD"),
           end: endDate.format("YYYY-MM-DD"),
           page,
+          projectId: selectedProjectId || undefined,
         });
 
         setTasks(
-          (taskRes.data || []).map((task:any) => ({
+          (taskRes.data ||  []).map((task:any) => ({
             ...task,
             time_spent: task.time_spent ?? 0,
           }))
@@ -93,17 +104,16 @@ const TimeSheetList = () => {
         setTotalPages(Math.ceil((taskRes.total || 0) / limit) || 1);
         setLimit(taskRes.limit || limit);
       } else {
-        // const res = await AdminTaskService.getAllTasksDetails({
          const res = await AdminTimelineService.getAllTimelineDetails({
           start: startDate.format("YYYY-MM-DD"),
           end: endDate.format("YYYY-MM-DD"),
+          projectId: selectedProjectId || undefined,
           page,
           limit,
           keyword: debouncedSearch,
           sortOrder,
         });
-
-
+        
         setTasks(
           (res.data || []).map((task:any) => ({
             ...task,
@@ -119,9 +129,29 @@ const TimeSheetList = () => {
     }
   };
 
+
+    
+useEffect(() => {
+  fetchTasks(selectedUserIds);
+}, [watch("projectId")]);
+
+  const fetchProjects = async() =>{
+    const projects = await AdminProjectService.getAllProjectListing()
+    console.log("projects",projects)
+    const options = (projects?.data || []).map((p: any) => ({
+        value: p._id,
+        label: p.title,
+      }));
+
+      setProjectOptions(options);
+
+  }
+
+
   useEffect(() => {
     fetchTasks([]);
     fetchUsers();
+    fetchProjects()
   }, [debouncedSearch, page, sortOrder, sortField]);
 
   useEffect(() => {
@@ -151,9 +181,9 @@ const TimeSheetList = () => {
 
   const headers = [
     { id: "taskNumber", title: "TimeSheet", is_sortable: false },
+    { id: "comment", title: "Timeline" },
     { id: "project_name", title: "Project" },
-    { id: "task_title", title: "Task Title" },
-    { id: "comment", title: "Log Time" },
+    { id: "task_title", title: "Task" },
     { id: "totaltaskminutes", title: "Spent Time" },
     { id: "username", title: "User" },
   ];
@@ -188,23 +218,50 @@ const TimeSheetList = () => {
   ).format("DD MMM YY")}`;
 
 return (
-  <div className="flex flex-col min-h-screen bg-gray-50">
+  <div className="flex flex-col">
     <main className="flex-1 p-4 sm:p-6 md:p-8 w-full">
     
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
         <h1 className="text-xl md:text-2xl font-semibold text-gray-800">Time Sheet</h1>
-        <AvatarList
-          users={users}
-          selectedUserIds={selectedUserIds}
-          setSelectedUserIds={setSelectedUserIds}
-          fetchKanbonList={fetchTasks}
-        />
+        <div className="flex flex-row gap-4">
+
+            <div className="w-full flex ">
+
+            <label className="block text-md font-bold text-gray-700 m-2">Select Project</label>
+
+            <Controller
+              name="projectId"
+              control={control}
+              render={({ field }) => {
+                const selectedOption =
+                projectOptions.find((opt) => opt.value === field.value) ||
+                null;
+                return (
+                  <ReactSelect
+                  options={projectOptions}
+                  value={selectedOption}
+                  onChange={(selected) =>
+                    field.onChange(selected?.value || null)
+                  }
+                  isClearable
+                  />
+                );
+              }}
+              />
+            </div>
+              <AvatarList
+                users={users}
+                selectedUserIds={selectedUserIds}
+                setSelectedUserIds={setSelectedUserIds}
+                fetchKanbonList={fetchTasks}
+              />
+              </div>
       </div>
 
      
-      <div className="flex flex-col md:flex-row gap-4">
+      <div className="flex flex-col md:flex-row gap-8">
     
-        <div className="md:w-1/4 w-full">
+        <div className="md:w-1/6 w-full">
           <Button
             onPress={() => setShowCalendar(!showCalendar)}
             className="flex justify-between items-center w-full border px-4 py-2 rounded bg-white shadow-sm text-sm font-medium"
@@ -244,7 +301,7 @@ return (
         </div>
 
    
-        <div className="md:w-3/4 w-full">
+        <div className="md:w-5/6 w-full">
           <Datagrid
             headers={headers}
             rows={rows}
@@ -260,7 +317,7 @@ return (
               } else if (action === "Delete") {
                 const result = await Swal.fire({
                   title: "Are you sure?",
-                  text: `You are about to delete Task: "${row.code}"`,
+                  text: `You are about to delete Timeline: "${row.comment}"`,
                   icon: "warning",
                   showCancelButton: true,
                   confirmButtonText: "Yes, delete it!",
@@ -277,7 +334,7 @@ return (
 
                 if (result.isConfirmed) {
                   try {
-                    await AdminTaskService.deleteTask(row._id);
+                    await TimelineService.deleteTimeline(row._id);
                     setTasks((prev) => prev.filter((p) => p._id !== row._id));
                     setTotalRecords((prev) => prev - 1);
                     await fetchTasks([]);
