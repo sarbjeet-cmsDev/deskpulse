@@ -16,7 +16,7 @@ export interface IUserPerformance {
 
 
 const AdminPerformanceService = {
- async getAllUsersPerformance(params?: {
+  async getAllUsersPerformance(params?: {
     userId?: string;
     start?: string;
     end?: string;
@@ -24,6 +24,25 @@ const AdminPerformanceService = {
     const res = await axiosClient.get(`${API_URL}/admin/performance/users-performance`, { params });
     return res.data;
   },
+
+  async getMultipleUsersPerformance(params?: {
+    userIds?: string[];
+    start?: string;
+    end?: string;
+  }): Promise<IUserPerformance[]> {
+    const queryParams = {
+      ...params,
+      userIds: params?.userIds ? JSON.stringify(params.userIds) : undefined,
+    };
+
+    const res = await axiosClient.get(
+      `${API_URL}/admin/performance/multipleUsers`,
+      { params: queryParams }
+    );
+
+    return res.data;
+  }
+
 }
 
 export default AdminPerformanceService;

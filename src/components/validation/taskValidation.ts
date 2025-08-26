@@ -62,7 +62,9 @@ export const taskGlobalSchema = z.object({
   projectId: z.string().nullable().refine((val) => val !== null && val !== "", {
     message: "Project is required",
   }),
-
+  status: z.string().nullable().refine((val) => val !== null && val !== "", {
+    message: "Kanban is required",
+  }),
   estimated_time: z
     .union([z.string(), z.number()])
     .transform((val) => {

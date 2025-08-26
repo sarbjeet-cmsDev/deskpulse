@@ -38,7 +38,7 @@ export default function Dashboard() {
         const getTask = await TaskService.getMyTasks();
         setTask(getTask?.data?.slice(0, 5));
         setReminder(reminderResult?.reminders?.slice(0, 5));
-        setProjects(favoriteProjects);
+        setProjects(favoriteProjects?.slice(0, 4));
       } catch (error) {
         console.error("Error fetching projects:", error);
       } finally {
@@ -139,7 +139,7 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
-      
+
 
     </div>
   );

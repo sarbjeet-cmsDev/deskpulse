@@ -5,7 +5,7 @@ import { JwtAuthGuard } from "src/guard/jwt-auth.guard";
 @Controller("api/admin/performance")
 @UseGuards(JwtAuthGuard)
 export class AdminPerformanceController {
-  constructor(private readonly performanceService: PerformanceService) {}
+  constructor(private readonly performanceService: PerformanceService) { }
 
   @Get("users-performance")
   async getAllUsersPerformance(
@@ -14,5 +14,14 @@ export class AdminPerformanceController {
     @Query("end") end?: string
   ): Promise<any> {
     return this.performanceService.getPerformanceForAdmin(userId, start, end);
+  }
+
+  @Get("multipleUsers")
+  async getAllPerformance(
+    @Query("userIds") userIds?: string,
+    @Query("start") start?: string,
+    @Query("end") end?: string,
+  ): Promise<any> {
+    return this.performanceService.getAllPerformanceFromAdmin(userIds, start, end);
   }
 }

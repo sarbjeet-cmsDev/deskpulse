@@ -30,6 +30,7 @@ export interface CreateTaskDto {
   description?: string;
   due_date?: string;
   estimated_time?: any;
+  status?: any
 }
 
 export interface ITaskResponse {
@@ -46,7 +47,7 @@ export interface UpdateTaskDto {
   assigned_to?: string;
   due_date?: string;
   description?: string;
-  client_acceptance?:string
+  client_acceptance?: string
 }
 
 const TaskService = {
@@ -142,12 +143,6 @@ const TaskService = {
     const res = await axiosClient.put(`${API_URL}/projects/${projectId}/task/order`, { data });
     return res.data;
   },
-
-
-
-
-
-
 
   async archiveTask(taskId: string): Promise<void> {
     await axiosClient.patch(`${API_URL}/tasks/archive/${taskId}`);

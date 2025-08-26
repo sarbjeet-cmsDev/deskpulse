@@ -24,13 +24,13 @@ import { UpdateTasktKanbanOrderDto } from "src/task/task.dto";
 @Controller("api/projects")
 @UseGuards(JwtAuthGuard)
 export class ProjectController {
-  constructor(private readonly projectService: ProjectService) {}
+  constructor(private readonly projectService: ProjectService) { }
 
   @Get("me")
   async getMyProjects(
     @CurrentUser() user: any,
     @Query("page") page: string = "1",
-    @Query("limit") limit: string = "4"
+    @Query("limit") limit: string = "100"
   ): Promise<{ data: Project[]; total: number; page: number; limit: number }> {
     const pageNumber = parseInt(page, 10);
     const limitNumber = parseInt(limit, 10);
@@ -47,7 +47,7 @@ export class ProjectController {
     @CurrentUser() user: any,
     @Query("page") page: string = "1",
     @Query("limit") limit: string = "4",
-    @Query("title") title?: string 
+    @Query("title") title?: string
   ): Promise<{ data: Project[]; total: number; page: number; limit: number }> {
     const pageNumber = parseInt(page, 10);
     const limitNumber = parseInt(limit, 10);
@@ -56,7 +56,7 @@ export class ProjectController {
       user.userId,
       pageNumber,
       limitNumber,
-      title 
+      title
     );
   }
 

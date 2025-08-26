@@ -144,100 +144,171 @@ export class PerformanceService {
   async getPerformanceByTaskandUserId(userId: string, start?: string, end?: string): Promise<any> {
     const pageNumber = parseInt('', 10);
     const limitNumber = parseInt('', 10);
-  const tasks = await this.taskService.findByAssignedUser(userId,pageNumber,limitNumber);
+    const tasks = await this.taskService.findByAssignedUser(userId, pageNumber, limitNumber);
 
-  const taskIds = tasks.data.map((task) => task._id);
+    const taskIds = tasks.data.map((task) => task._id);
 
 
-  const matchQuery: any = { task: { $in: taskIds } };
+    const matchQuery: any = { task: { $in: taskIds } };
 
-  if (start && end) {
-    matchQuery.updatedAt = {
-      $gte: new Date(start),
-      $lte: new Date(end),
-    };
-  }
+    if (start && end) {
+      matchQuery.updatedAt = {
+        $gte: new Date(start),
+        $lte: new Date(end),
+      };
+    }
 
-  const performances = await this.performanceModel.aggregate([
-    { $match: matchQuery },
-    { $sort: { updatedAt: -1 } },
-    {
-      $group: {
-        _id: "$_id",
-        task: { $first: "$task" },
-        result: { $first: "$result" },
-        updatedAt: { $first: "$updatedAt" },
+    const performances = await this.performanceModel.aggregate([
+      { $match: matchQuery },
+      { $sort: { updatedAt: -1 } },
+      {
+        $group: {
+          _id: "$_id",
+          task: { $first: "$task" },
+          result: { $first: "$result" },
+          updatedAt: { $first: "$updatedAt" },
+        },
       },
-    },
-  ]);
+    ]);
 
-  const result = performances.map((perf) => {
-    return {
-      date: dayjs(perf.updatedAt).format("YYYY-MM-DD"),
-      performance: parseInt(perf.result, 10),
-    };
-  });
-
- 
-  const groupedByDate = result.reduce((acc, curr) => {
-    if (!acc[curr.date]) {
-      acc[curr.date] = [];
-    }
-    acc[curr.date].push(curr.performance);
-    return acc;
-  }, {} as Record<string, number[]>);
-
-  const averagedPerformance = Object.entries(groupedByDate).map(
-    ([date, values]) => ({
-      date,
-      performance:
-        values.reduce((sum, val) => sum + val, 0) / values.length,
-    }),
-  );
-  return averagedPerformance; 
-}
+    const result = performances.map((perf) => {
+      return {
+        date: dayjs(perf.updatedAt).format("YYYY-MM-DD"),
+        performance: parseInt(perf.result, 10),
+      };
+    });
 
 
-async getPerformanceForAdmin(
-  userId?: string,
-  start?: string,
-  end?: string,
-): Promise<any[]> {
-  try {
-    const users = userId
-      ? [await this.userService.findOne(userId)]
-      : await this.userService.findUsersByRole('user');
+    const groupedByDate = result.reduce((acc, curr) => {
+      if (!acc[curr.date]) {
+        acc[curr.date] = [];
+      }
+      acc[curr.date].push(curr.performance);
+      return acc;
+    }, {} as Record<string, number[]>);
 
-
-    if (!users || users.length === 0) {
-      return [];
-    }
-  
-    const performancesByUser = await Promise.all(
-      users.map(async (user) => {
-        if (!user._id) {
-          console.warn('Invalid user object:', user);
-          return null;
-        }
-
-        const performance = await this.getPerformanceByTaskandUserId(
-          user._id.toString(),
-          start,
-          end,
-        );
-
-        return {
-          userId: user._id.toString(),
-          name: `${user.firstName} ${user.lastName}`,
-          performance,
-        };
+    const averagedPerformance = Object.entries(groupedByDate).map(
+      ([date, values]) => ({
+        date,
+        performance:
+          values.reduce((sum, val) => sum + val, 0) / values.length,
       }),
     );
-
-    return performancesByUser.filter(Boolean);
-  } catch (err) {
-    console.error('Error in getPerformanceForUsers:', err);
-    throw err;
+    return averagedPerformance;
   }
-}
+
+
+  async getPerformanceForAdmin(
+    userId?: string,
+    start?: string,
+    end?: string,
+  ): Promise<any[]> {
+    try {
+      const users = userId
+        ? [await this.userService.findOne(userId)]
+        : await this.userService.findUsersByRole('user');
+
+
+      if (!users || users.length === 0) {
+        return [];
+      }
+
+      const performancesByUser = await Promise.all(
+        users.map(async (user) => {
+          if (!user._id) {
+            return null;
+          }
+
+          const performance = await this.getPerformanceByTaskandUserId(
+            user._id.toString(),
+            start,
+            end,
+          );
+
+          return {
+            userId: user._id.toString(),
+            name: `${user.firstName} ${user.lastName}`,
+            performance,
+          };
+        }),
+      );
+
+      return performancesByUser.filter(Boolean);
+    } catch (err) {
+      console.error('Error in getPerformanceForUsers:', err);
+      throw err;
+    }
+  }
+
+  async getAllPerformanceFromAdmin(
+    userIds?: string,
+    start?: string,
+    end?: string,
+  ): Promise<any[]> {
+    try {
+      let users = [];
+      let ids: string[] = [];
+      if (userIds) {
+        try {
+          if (!userIds.trim().startsWith("[")) {
+            throw new Error("Invalid format");
+          }
+          if (!userIds.includes('"')) {
+            userIds = userIds.replace(/\[|\]/g, "")
+              .split(",")
+              .map((id) => `"${id.trim()}"`)
+              .join(",");
+            userIds = `[${userIds}]`;
+          }
+
+          ids = JSON.parse(userIds);
+        } catch (e) {
+          console.error("Invalid userIds format:", userIds);
+          throw new Error("Invalid userIds format, must be an array of ids");
+        }
+      }
+
+
+      if (ids.length > 0) {
+
+        users = await Promise.all(ids.map((id) => this.userService.findOne(id)));
+      } else {
+
+        return [];
+      }
+
+      users = users.filter(Boolean);
+
+      if (users.length === 0) {
+        return [];
+      }
+
+      const performancesByUser = await Promise.all(
+        users.map(async (user) => {
+          if (!user || !user._id) {
+            console.warn("Invalid user object:", user);
+            return null;
+          }
+
+          const performance = await this.getPerformanceByTaskandUserId(
+            user._id.toString(),
+            start,
+            end,
+          );
+
+          return {
+            userId: user._id.toString(),
+            name: `${user.firstName} ${user.lastName}`,
+            performance,
+          };
+        }),
+      );
+
+      return performancesByUser.filter(Boolean);
+    } catch (err) {
+      console.error("Error in getAllPerformanceFromAdmin:", err);
+      throw err;
+    }
+  }
+
 }

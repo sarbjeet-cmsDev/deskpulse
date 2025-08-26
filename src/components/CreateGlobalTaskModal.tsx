@@ -16,20 +16,9 @@ import { taskGlobalSchema } from "./validation/taskValidation";
 import { RootState } from "@/store/store";
 import { useSelector } from "react-redux";
 import AdminProjectService from "@/service/adminProject.service";
-
-interface ProjectOption {
-  label: string;
-  value: string;
-}
-
-interface FormValues {
-  title: string;
-  description: string;
-  due_date: string;
-  estimated_time: number;
-  assigned_to?: string | null;
-  projectId?: string | null;
-}
+import DescriptionInputToolbar from "./common/Description/descriptionToolbar";
+import { ProjectKanbon } from "@/service/projectKanbon.service";
+import { useParams, usePathname, useSearchParams } from "next/navigation";
 
 interface CreateGlobalTaskModalProps {
   isOpen: boolean;
@@ -40,7 +29,8 @@ interface CreateGlobalTaskModalProps {
     due_date: string,
     estimated_time: number,
     assigned_to?: string,
-    projectId?: string
+    projectId?: string,
+    kanban?: string
   ) => Promise<void>;
 }
 
@@ -49,10 +39,30 @@ export default function CreateGlobalTaskModal({
   onClose,
   onCreate,
 }: CreateGlobalTaskModalProps) {
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
   const [projectOptions, setProjectOptions] = useState<ProjectOption[]>([]);
   const [userOptions, setUserOptions] = useState<ProjectOption[]>([]);
   const [loading, setLoading] = useState(false);
+  const [kanbanList, setKanbanList] = useState<any>()
   const loginUser: any = useSelector((state: RootState) => state.user.data);
+  const [getProjectId, setGetProjectId] = useState()
+  const { projectId: code } = useParams()
+  const { id } = useParams()
+  const fetchProjectByCode = async () => {
+    const result = await ProjectService.getProjectByCode(code as string);
+    setGetProjectId(result?._id);
+  };
+  useEffect(() => {
+    if (code) {
+
+      fetchProjectByCode();
+    }
+  }, [code]);
+
+
+
+
   interface ProjectOption {
     label: string;
     value: string;
@@ -75,6 +85,7 @@ export default function CreateGlobalTaskModal({
         estimated_time: true,
         assigned_to: true,
         projectId: true,
+        status: true
       })
     ),
     defaultValues: {
@@ -84,11 +95,11 @@ export default function CreateGlobalTaskModal({
       estimated_time: "",
       assigned_to: null,
       projectId: null,
+      status: null
     },
   });
 
   const projectId = watch("projectId");
-
   // Fetch project list
   useEffect(() => {
     async function fetchProjects() {
@@ -134,6 +145,12 @@ export default function CreateGlobalTaskModal({
 
       try {
         const res = await ProjectService.getProjectUsers(projectId);
+        const result = await ProjectKanbon.getProjectKanbonList(projectId || getProjectId);
+        const KanbanListoptions = result.data?.map((kanban: any) => ({
+          value: kanban.title,
+          label: kanban.title,
+        }));
+        setKanbanList(KanbanListoptions)
         const users = res?.users || [];
 
         const options = users.map((user: IUser) => ({
@@ -151,6 +168,18 @@ export default function CreateGlobalTaskModal({
     fetchUsers();
   }, [projectId]);
 
+
+  useEffect(() => {
+    if (getProjectId || id) {
+      reset((prev: any) => ({
+        ...prev,
+        projectId: getProjectId || id, // auto-select project
+      }));
+    }
+  }, [getProjectId, id, reset]);
+
+
+
   const handleCreate = async (values: any) => {
     setLoading(true);
     // Destructure values from the form
@@ -161,6 +190,7 @@ export default function CreateGlobalTaskModal({
       due_date,
       estimated_time,
       assigned_to,
+      status
     } = values;
 
     try {
@@ -171,6 +201,7 @@ export default function CreateGlobalTaskModal({
         assigned_to: assigned_to || "",
         due_date,
         estimated_time: values.estimated_time,
+        status
       });
 
       if (title) {
@@ -224,7 +255,22 @@ export default function CreateGlobalTaskModal({
               type="text"
               {...register("description")}
             /> */}
-            <textarea
+            <Controller
+              name="description"
+              control={control}
+              render={({ field }) => (
+                <DescriptionInputToolbar
+                  title="Description"
+                  isButton={false}
+                  value={field.value}
+                  onChange={field.onChange}
+                />
+              )}
+            />
+            {errors.description && (
+              <p className="text-sm text-red-500">{errors.description.message}</p>
+            )}
+            {/* <textarea
               {...register("description")}
               rows={2}
               className="w-full rounded-lg border border-gray-100 bg-gray-100 p-2 focus:outline-none"
@@ -234,7 +280,7 @@ export default function CreateGlobalTaskModal({
               <p className="text-red-500 text-xs">
                 {errors.description.message}
               </p>
-            )}
+            )} */}
 
             <Input label="Due Date" type="date" {...register("due_date")} />
             {errors.due_date && (
@@ -257,17 +303,18 @@ export default function CreateGlobalTaskModal({
               name="projectId"
               control={control}
               render={({ field }) => {
+                const valueToUse = field.value || getProjectId || id || null;
+
                 const selectedOption =
-                  projectOptions.find((opt) => opt.value === field.value) ||
+                  projectOptions.find((opt) => opt.value === valueToUse) ||
                   null;
 
                 return (
                   <ReactSelect
                     options={projectOptions}
                     value={selectedOption}
-                    onChange={(selected) =>
-                      field.onChange(selected?.value ?? null)
-                    }
+                    onChange={(selected) => field.onChange(selected?.value ?? null)}
+
                     isClearable
                   />
                 );
@@ -277,7 +324,29 @@ export default function CreateGlobalTaskModal({
             {errors.projectId && (
               <p className="text-red-500 text-xs">{errors.projectId.message}</p>
             )}
+            <label className="block text-sm font-medium">Select Kanban</label>
+            <Controller
+              name="status"
+              control={control}
+              render={({ field }) => {
+                const selectedOption =
+                  kanbanList?.find((opt: any) => opt.value === field.value) || null;
 
+                return (
+                  <ReactSelect
+                    options={kanbanList}
+                    value={selectedOption}
+                    onChange={(selected) => field.onChange(selected?.value ?? null)}
+                    isClearable
+                  />
+                );
+              }}
+            />
+
+
+            {errors.status && (
+              <p className="text-red-500 text-xs">{errors.status.message}</p>
+            )}
             {/* Assigned To */}
             <label className="block text-sm font-medium">Assign User</label>
             <Controller

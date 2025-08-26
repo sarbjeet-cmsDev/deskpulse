@@ -7,7 +7,7 @@ const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 const axiosClient = createAxiosClient({ withCreds: true });
 
 const ProjectService = {
-  async getProjectByUserId(page = 1, limit = 4): Promise<IProjectResponse> {
+  async getProjectByUserId(page = 1, limit = 25): Promise<IProjectResponse> {
     try {
       const response = await axiosClient.get(
         `${API_URL}/projects/me?page=${page}&limit=${limit}`

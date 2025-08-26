@@ -22,8 +22,8 @@ export default function AvatarList({
   users = [],
   onClick,
   selectedUserIds = [],
-  setSelectedUserIds = () => {},
-  fetchKanbonList = () => {},
+  setSelectedUserIds = () => { },
+  fetchKanbonList = () => { },
 }: AvatarListProps) {
   const user = useSelector((state: RootState) => state.auth.user);
   const [imgErrors, setImgErrors] = useState<{ [userId: string]: boolean }>({});
@@ -91,10 +91,9 @@ export default function AvatarList({
                   title={`${usr.firstName} ${usr.lastName}`}
                   onClick={() => toggleUserSelection(usr._id)}
                   className={`flex items-center justify-center w-8 h-8 rounded-full text-white text-sm font-semibold transition cursor-pointer
-                    ${
-                      isActive
-                        ? "bg-green-600 scale-110 shadow-md"
-                        : "bg-blue-500 hover:bg-blue-600"
+                    ${isActive
+                      ? "bg-green-600 scale-110 shadow-md"
+                      : "bg-blue-500 hover:bg-blue-600"
                     }`}
                 >
                   {!hasImgError && profileImageUrl ? (
@@ -114,17 +113,17 @@ export default function AvatarList({
         </ul>
       )}
 
-{users.length > maxVisible && (
-      <div
-        className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-300 text-black cursor-pointer"
-        onClick={(e) => {
-          e.stopPropagation();
-          setDropdownOpen(!dropdownOpen);
-        }}
-      >
-        •••
-      </div>
-)}
+      {users.length > maxVisible && (
+        <div
+          className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-300 text-black cursor-pointer"
+          onClick={(e) => {
+            e.stopPropagation();
+            setDropdownOpen(!dropdownOpen);
+          }}
+        >
+          •••
+        </div>
+      )}
       {dropdownOpen && (
         <div className="absolute right-0 top-10 z-50 w-[300px] max-h-[400px] overflow-auto bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 p-4">
           <table className="min-w-full text-sm border-collapse">
@@ -147,11 +146,10 @@ export default function AvatarList({
                   >
                     <td className="py-2 px-3">
                       <div
-                        className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold text-xs ${
-                          selectedUserIds.includes(usr._id)
-                            ? "bg-green-600"
-                            : "bg-blue-500"
-                        }`}
+                        className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold text-xs ${selectedUserIds.includes(usr._id)
+                          ? "bg-green-600"
+                          : "bg-blue-500"
+                          }`}
                       >
                         {!hasImgError && profileImageUrl ? (
                           <img
