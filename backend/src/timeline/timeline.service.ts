@@ -249,9 +249,10 @@ export class TimelineService {
     page: number;
     limit: number;
     totalPages: number;
+    totalTimeSpent:number;
   }> {
     let safePage = Math.max(Number(page) || 1, 1);
-    let safeLimit = Math.max(Number(limit) || 10, 1);
+    let safeLimit = Math.max(Number(limit) || 25, 1);
     const MAX_LIMIT = 200;
     if (safeLimit > MAX_LIMIT) safeLimit = MAX_LIMIT;
 
@@ -297,7 +298,6 @@ export class TimelineService {
       { $match: filter },
       { $sort: { createdAt: sortOrder === "desc" ? 1 : -1 } },
 
-      // pagination
       { $skip: (safePage - 1) * safeLimit },
       { $limit: safeLimit },
 
@@ -323,8 +323,10 @@ export class TimelineService {
           time_spent: 1,
           task_title: "$task_detail.title",
           task_id: "$task_detail._id",
+          task_code:"$task_detail.code",
           project_id: "$task_detail.project",
           assigned_id: "$task_detail.assigned_to",
+          task_status:"$task_detail.status"
         },
       },
       {
@@ -357,6 +359,8 @@ export class TimelineService {
           time_spent: 1,
           task_title: 1,
           task_id: 1,
+          task_code:1,
+          task_status:1,
           project_id: 1,
           assigned_id: 1,
           project_name: "$project_detail.title",
@@ -373,12 +377,36 @@ export class TimelineService {
 
     const data = await this.timelineModel.aggregate(pipeline).exec();
 
+    const totalTimePipeline: any[] = [
+    { $match: filter },
+    {
+      $lookup: {
+        from: "tasks",
+        localField: "task",
+        foreignField: "_id",
+        as: "task_detail",
+      },
+    },
+    { $unwind: { path: "$task_detail", preserveNullAndEmptyArrays: true } },
+    ...(projectId ? [{ $match: { "task_detail.project": new Types.ObjectId(projectId) } }] : []),
+    {
+      $group: {
+        _id: null,
+        totalTimeSpent: { $sum: "$time_spent" },
+      },
+    },
+  ];
+
+  const totalTimeResult = await this.timelineModel.aggregate(totalTimePipeline).exec();
+  const totalTimeSpent = totalTimeResult.length > 0 ? totalTimeResult[0].totalTimeSpent : 0;
+
     return {
       data,
       total,
       page: safePage,
       limit: safeLimit,
       totalPages,
+      totalTimeSpent,
     };
   }
 
@@ -396,11 +424,12 @@ export class TimelineService {
     page: number;
     limit: number;
     totalPages: number;
+    totalTimeSpent:number;
   }> {
     const skip = (page - 1) * limit;
 
     let safePage = Math.max(Number(page) || 1, 1);
-    let safeLimit = Math.max(Number(limit) || 10, 1);
+    let safeLimit = Math.max(Number(limit) || 25, 1);
     const MAX_LIMIT = 200;
     if (safeLimit > MAX_LIMIT) safeLimit = MAX_LIMIT;
 
@@ -450,8 +479,10 @@ export class TimelineService {
           time_spent: 1,
           task_title: "$task_detail.title",
           task_id: "$task_detail._id",
+          task_code:"$task_detail.code",
           project_id: "$task_detail.project",
           assigned_id: "$task_detail.assigned_to",
+          task_status:"$task_detail.status"
         },
       },
       {
@@ -484,6 +515,8 @@ export class TimelineService {
           time_spent: 1,
           task_title: 1,
           task_id: 1,
+          task_code:1,
+          task_status:1,
           project_id: 1,
           assigned_id: 1,
           project_name: "$project_detail.title",
@@ -500,12 +533,36 @@ export class TimelineService {
 
     const data = await this.timelineModel.aggregate(pipeline).exec();
 
+    const totalTimePipeline: any[] = [
+    { $match: matchFilter },
+    {
+      $lookup: {
+        from: "tasks",
+        localField: "task",
+        foreignField: "_id",
+        as: "task_detail",
+      },
+    },
+    { $unwind: { path: "$task_detail", preserveNullAndEmptyArrays: true } },
+    ...(projectId ? [{ $match: { "task_detail.project": new Types.ObjectId(projectId) } }] : []),
+    {
+      $group: {
+        _id: null,
+        totalTimeSpent: { $sum: "$time_spent" },
+      },
+    },
+  ];
+
+  const totalTimeResult = await this.timelineModel.aggregate(totalTimePipeline).exec();
+  const totalTimeSpent = totalTimeResult.length > 0 ? totalTimeResult[0].totalTimeSpent : 0;
+
     return {
       data,
       total,
       page: safePage,
       limit: safeLimit,
       totalPages,
+      totalTimeSpent,
     };
   }
 }

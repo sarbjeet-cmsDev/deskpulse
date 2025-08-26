@@ -31,6 +31,7 @@ export interface ITimelineResponse {
   total: number;
   page: number;
   limit: number;
+  totalTimeSpent:number;
 }
 
 const TimelineService = {

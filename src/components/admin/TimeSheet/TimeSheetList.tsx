@@ -19,6 +19,9 @@ import AdminTimelineService from "@/service/adminTimeline.service";
 import TimelineService from "@/service/timeline.service";
 import ReactSelect from "react-select";
 import { useForm, Controller } from "react-hook-form";
+import { H1 } from "@/components/Heading/H1";
+import { H3 } from "@/components/Heading/H3";
+import { H2 } from "@/components/Heading/H2";
 dayjs.extend(isSameOrBefore);
 
 function useDebounce<T>(value: T, delay: number): T {
@@ -36,7 +39,7 @@ type Task = {
   title: string;
   assigned_to: any;
   totaltaskminutes: any;
-  time_spent:any;
+  time_spent: any;
 };
 
 const TimeSheetList = () => {
@@ -52,14 +55,15 @@ const TimeSheetList = () => {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(25);
   const [totalRecords, setTotalRecords] = useState(0);
+  const [totalTimeSpent, setTotalTimeSpent] = useState(0);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [sortField, setSortField] = useState("code");
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const debouncedSearch = useDebounce(search, 300);
   const [users, setUsers] = useState([]);
-   const [projectOptions, setProjectOptions] = useState<ProjectOption[]>([]);
+  const [projectOptions, setProjectOptions] = useState<ProjectOption[]>([]);
   const [selectedRange, setSelectedRange] = useState<{
     start: any;
     end: any;
@@ -68,13 +72,14 @@ const TimeSheetList = () => {
     end: today(getLocalTimeZone()).add({ weeks: 1 }),
   });
 
+  console.log("tasks",tasks)
+
   const [showCalendar, setShowCalendar] = useState(false);
   const {
-     control,
-     watch,
-     formState: { errors },
-   } = useForm({
-   });
+    control,
+    watch,
+    formState: { errors },
+  } = useForm({});
 
   const fetchTasks = async (userIds: string[]) => {
     if (!selectedRange.start || !selectedRange.end) return;
@@ -82,20 +87,22 @@ const TimeSheetList = () => {
     const startDate = dayjs(selectedRange.start.toDate(getLocalTimeZone()));
     const endDate = dayjs(selectedRange.end.toDate(getLocalTimeZone()));
 
-     const selectedProjectId = watch("projectId");
+    const selectedProjectId = watch("projectId");
 
     try {
-
       if (userIds.length > 0) {
-        const taskRes = await AdminTimelineService.getTimelineByUserId(userIds.join(","), {
-          start: startDate.format("YYYY-MM-DD"),
-          end: endDate.format("YYYY-MM-DD"),
-          page,
-          projectId: selectedProjectId || undefined,
-        });
+        const taskRes = await AdminTimelineService.getTimelineByUserId(
+          userIds.join(","),
+          {
+            start: startDate.format("YYYY-MM-DD"),
+            end: endDate.format("YYYY-MM-DD"),
+            page,
+            projectId: selectedProjectId || undefined,
+          }
+        );
 
         setTasks(
-          (taskRes.data ||  []).map((task:any) => ({
+          (taskRes.data || []).map((task: any) => ({
             ...task,
             time_spent: task.time_spent ?? 0,
           }))
@@ -103,8 +110,9 @@ const TimeSheetList = () => {
         setTotalRecords(taskRes.total || 0);
         setTotalPages(Math.ceil((taskRes.total || 0) / limit) || 1);
         setLimit(taskRes.limit || limit);
+        setTotalTimeSpent(taskRes.totalTimeSpent);
       } else {
-         const res = await AdminTimelineService.getAllTimelineDetails({
+        const res = await AdminTimelineService.getAllTimelineDetails({
           start: startDate.format("YYYY-MM-DD"),
           end: endDate.format("YYYY-MM-DD"),
           projectId: selectedProjectId || undefined,
@@ -113,9 +121,9 @@ const TimeSheetList = () => {
           keyword: debouncedSearch,
           sortOrder,
         });
-        
+
         setTasks(
-          (res.data || []).map((task:any) => ({
+          (res.data || []).map((task: any) => ({
             ...task,
             time_spent: task.time_spent ?? 0,
           }))
@@ -123,35 +131,32 @@ const TimeSheetList = () => {
         setTotalRecords(res.total || 0);
         setTotalPages(res.totalPages || 1);
         setLimit(res.limit || limit);
+        setTotalTimeSpent(res.totalTimeSpent);
       }
     } catch (error) {
       console.error("Failed to load tasks:", error);
     }
   };
 
+  useEffect(() => {
+    fetchTasks(selectedUserIds);
+  }, [watch("projectId")]);
 
-    
-useEffect(() => {
-  fetchTasks(selectedUserIds);
-}, [watch("projectId")]);
-
-  const fetchProjects = async() =>{
-    const projects = await AdminProjectService.getAllProjectListing()
-    console.log("projects",projects)
+  const fetchProjects = async () => {
+    const projects = await AdminProjectService.getAllProjectListing();
+    console.log("projects", projects);
     const options = (projects?.data || []).map((p: any) => ({
-        value: p._id,
-        label: p.title,
-      }));
+      value: p._id,
+      label: p.title,
+    }));
 
-      setProjectOptions(options);
-
-  }
-
+    setProjectOptions(options);
+  };
 
   useEffect(() => {
     fetchTasks([]);
     fetchUsers();
-    fetchProjects()
+    fetchProjects();
   }, [debouncedSearch, page, sortOrder, sortField]);
 
   useEffect(() => {
@@ -184,6 +189,7 @@ useEffect(() => {
     { id: "comment", title: "Timeline" },
     { id: "project_name", title: "Project" },
     { id: "task_title", title: "Task" },
+    { id: "task_status", title: "Task Status" },
     { id: "totaltaskminutes", title: "Spent Time" },
     { id: "username", title: "User" },
   ];
@@ -205,11 +211,9 @@ useEffect(() => {
         `${task.assigned_to?.firstName || ""} ${task.assigned_to?.lastName || ""}`.trim() ||
         "—",
       totaltaskminutes: formattedTime,
-      actions: [{ title: "Delete" }],
+      actions: [{ title: "View" }, { title: "Delete" }],
     };
   });
-
-
 
   const formattedRange = `${dayjs(
     selectedRange.start.toDate(getLocalTimeZone())
@@ -217,150 +221,177 @@ useEffect(() => {
     selectedRange.end.toDate(getLocalTimeZone())
   ).format("DD MMM YY")}`;
 
-return (
-  <div className="flex flex-col">
-    <main className="flex-1 p-4 sm:p-6 md:p-8 w-full">
-    
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-        <h1 className="text-xl md:text-2xl font-semibold text-gray-800">Time Sheet</h1>
-        <div className="flex flex-row gap-4">
+  const totalTime = totalTimeSpent || 0;
+  const hours = Math.floor(totalTime / 60);
+  const minutes = totalTime % 60;
+  const totalUpdatedTime =
+    hours > 0 ? `${hours}h ${minutes}min` : `${minutes}min`;
 
-            <div className="w-full flex ">
+  return (
+    <div className="flex flex-col">
+      <main className="flex-1 p-4 sm:p-6 md:p-8 w-full">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+          <h1 className="text-xl md:text-2xl font-semibold text-gray-800">
+            Time Sheet
+          </h1>
 
-            <label className="block text-md font-bold text-gray-700 m-2">Select Project</label>
+          <div className="flex flex-row gap-4 ">
+            <div className="md:w-1/3 w-full">
+              <Button
+                onPress={() => setShowCalendar(!showCalendar)}
+                className="flex justify-between items-center w-full border px-4 py-2 rounded bg-white shadow-sm text-sm font-medium"
+              >
+                <span>{formattedRange}</span>
+                <Image
+                  src={showCalendar ? ChevronUp : ChevronDown}
+                  alt="Toggle Calendar"
+                  width={16}
+                  height={16}
+                />
+              </Button>
 
-            <Controller
-              name="projectId"
-              control={control}
-              render={({ field }) => {
-                const selectedOption =
-                projectOptions.find((opt) => opt.value === field.value) ||
-                null;
-                return (
-                  <ReactSelect
-                  options={projectOptions}
-                  value={selectedOption}
-                  onChange={(selected) =>
-                    field.onChange(selected?.value || null)
-                  }
-                  isClearable
+              <div
+                className={`transition-all absolute duration-300 ease-in-out overflow-hidden border bg-white shadow rounded mt-2 ${
+                  showCalendar
+                    ? "max-h-[500px] opacity-100 scale-100"
+                    : "max-h-0 opacity-0 scale-95"
+                }`}
+              >
+                <div className="flex justify-end p-2">
+                  <Button
+                    onPress={() => setShowCalendar(false)}
+                    className="text-sm text-gray-500 hover:text-gray-800"
+                  >
+                    ✕
+                  </Button>
+                </div>
+                <div className="p-2">
+                  <RangeCalendar
+                    aria-label="Select Range"
+                    value={selectedRange}
+                    onChange={setSelectedRange}
                   />
-                );
-              }}
+                </div>
+              </div>
+            </div>
+            <div className="md:w-1/3 w-full">
+              <Controller
+                name="projectId"
+                control={control}
+                render={({ field }) => {
+                  const selectedOption =
+                    projectOptions.find((opt) => opt.value === field.value) ||
+                    null;
+                  return (
+                    <ReactSelect
+                      options={projectOptions}
+                      value={selectedOption}
+                      placeholder="Select Project"
+                      onChange={(selected) =>
+                        field.onChange(selected?.value || null)
+                      }
+                      isClearable
+                      styles={{
+                        control: (base) => ({
+                          ...base,
+                          minHeight: "40px",
+                        }),
+                        menu: (base) => ({
+                          ...base,
+                          zIndex: 9999,
+                          maxHeight: 200,
+                          overflowY: "auto",
+                          position: "absolute",
+                        }),
+                        menuList: (base) => ({
+                          ...base,
+                          paddingTop: 0,
+                          paddingBottom: 0,
+                        }),
+                      }}
+                    />
+                  );
+                }}
               />
             </div>
+            <div className="md:w-1/3 w-full">
               <AvatarList
                 users={users}
                 selectedUserIds={selectedUserIds}
                 setSelectedUserIds={setSelectedUserIds}
                 fetchKanbonList={fetchTasks}
               />
-              </div>
-      </div>
-
-     
-      <div className="flex flex-col md:flex-row gap-8">
-    
-        <div className="md:w-1/6 w-full">
-          <Button
-            onPress={() => setShowCalendar(!showCalendar)}
-            className="flex justify-between items-center w-full border px-4 py-2 rounded bg-white shadow-sm text-sm font-medium"
-          >
-            <span>{formattedRange}</span>
-            <Image
-              src={showCalendar ? ChevronUp : ChevronDown}
-              alt="Toggle Calendar"
-              width={16}
-              height={16}
-            />
-          </Button>
-
-          <div
-            className={`transition-all duration-300 ease-in-out overflow-hidden border bg-white shadow rounded mt-2 ${
-              showCalendar
-                ? "max-h-[500px] opacity-100 scale-100"
-                : "max-h-0 opacity-0 scale-95"
-            }`}
-          >
-            <div className="flex justify-end p-2">
-              <Button
-                onPress={() => setShowCalendar(false)}
-                className="text-sm text-gray-500 hover:text-gray-800"
-              >
-                ✕
-              </Button>
-            </div>
-            <div className="p-2">
-              <RangeCalendar
-                aria-label="Select Range"
-                value={selectedRange}
-                onChange={setSelectedRange}
-              />
             </div>
           </div>
         </div>
 
-   
-        <div className="md:w-5/6 w-full">
-          <Datagrid
-            headers={headers}
-            rows={rows}
-            pagination={{
-              total_records: totalRecords,
-              total_page: totalPages,
-              current_page: page,
-              limit: limit,
-            }}
-            onAction={async (action, row) => {
-              if (action === "Edit") {
-                router.push(`/admin/project/update/${row._id}`);
-              } else if (action === "Delete") {
-                const result = await Swal.fire({
-                  title: "Are you sure?",
-                  text: `You are about to delete Timeline: "${row.comment}"`,
-                  icon: "warning",
-                  showCancelButton: true,
-                  confirmButtonText: "Yes, delete it!",
-                  cancelButtonText: "No, cancel!",
-                  reverseButtons: true,
-                  customClass: {
-                    confirmButton:
-                      "bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 focus:outline-none mr-2",
-                    cancelButton:
-                      "bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 focus:outline-none mr-2",
-                  },
-                  buttonsStyling: false,
-                });
+        <div className="flex flex-col md:flex-row gap-8">
+          <div className="md:w-6/6 w-full">
+            <Datagrid
+              headers={headers}
+              rows={rows}
+              pagination={{
+                total_records: totalRecords,
+                total_page: totalPages,
+                current_page: page,
+                limit: limit,
+              }}
+              onAction={async (action, row) => {
+                if (action === "View") {
+                  router.push(`/task/${row.task_code}`);
+                } else if (action === "Delete") {
+                  const result = await Swal.fire({
+                    title: "Are you sure?",
+                    text: `You are about to delete Timeline: "${row.comment}"`,
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Yes, delete it!",
+                    cancelButtonText: "No, cancel!",
+                    reverseButtons: true,
+                    customClass: {
+                      confirmButton:
+                        "bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 focus:outline-none mr-2",
+                      cancelButton:
+                        "bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 focus:outline-none mr-2",
+                    },
+                    buttonsStyling: false,
+                  });
 
-                if (result.isConfirmed) {
-                  try {
-                    await TimelineService.deleteTimeline(row._id);
-                    setTasks((prev) => prev.filter((p) => p._id !== row._id));
-                    setTotalRecords((prev) => prev - 1);
-                    await fetchTasks([]);
-                  } catch (err) {
-                    console.error("Delete failed", err);
-                    Swal.fire("Error", "Failed to delete project.", "error");
+                  if (result.isConfirmed) {
+                    try {
+                      await TimelineService.deleteTimeline(row._id);
+                      setTasks((prev) => prev.filter((p) => p._id !== row._id));
+                      setTotalRecords((prev) => prev - 1);
+                      await fetchTasks([]);
+                    } catch (err) {
+                      console.error("Delete failed", err);
+                      Swal.fire("Error", "Failed to delete project.", "error");
+                    }
                   }
                 }
-              }
-            }}
-            sort={{ field: sortField, order: sortOrder }}
-            onSort={(field) => {
-              setSortField(field);
-              setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
-              setPage(1);
-            }}
-            router={router}
-            pathname={pathname}
-            searchParams={searchParams}
-          />
+              }}
+              sort={{ field: sortField, order: sortOrder }}
+              onSort={(field) => {
+                setSortField(field);
+                setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+                setPage(1);
+              }}
+              router={router}
+              pathname={pathname}
+              searchParams={searchParams}
+            />
+          </div>
         </div>
-      </div>
-    </main>
-  </div>
-);
 
+        <div className="flex items-center justify-between mt-10 p-4 bg-gray-50 rounded-2xl shadow-sm w-fit">
+          <H3 className="text-gray-700">Total Time Spent</H3>
+          <span className="ml-4 px-3 py-1 rounded-xl bg-theme-primary text-white font-semibold">
+            {totalUpdatedTime}
+          </span>
+        </div>
+      </main>
+    </div>
+  );
 };
 
 export default TimeSheetList;

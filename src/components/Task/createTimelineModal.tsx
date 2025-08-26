@@ -130,8 +130,8 @@ export default function CreateTimelineModal({
                   <div>
                     <textarea
                       {...register("comment")}
-                      rows={4}
-                      className="w-full rounded-lg border border-gray-100 bg-gray-100 p-2 focus:outline-none"
+                      rows={3}
+                      className="w-full rounded-lg border border-gray-100 bg-gray-100 p-3 focus:outline-none"
                       placeholder="Write your comment..."
                     />
                     {errors.comment && (

@@ -9,13 +9,13 @@ export class AdminTimelineController {
   @Get()
   async getAllTimelines(
     @Query("page") page: number = 1,
-    @Query("limit") limit: number = 10,
+    @Query("limit") limit: number = 25,
     @Query("keyword") keyword?: string,
     @Query("sortOrder") sortOrder: "asc" | "desc" = "asc",
     @Query("start") start?: string,
     @Query("end") end?: string,
     @Query("projectId") projectId?: string
-    ): Promise<{ data: Timeline[]; total: number; page: number; limit: number; totalPages: number }> {
+    ): Promise<{ data: Timeline[]; total: number; page: number; limit: number; totalPages: number;totalTimeSpent:number }> {
     return await this.timelineService.getAllTimelines(
       page,
       limit,
@@ -31,13 +31,13 @@ export class AdminTimelineController {
     async findTimelineByUser(
       @Query("userIds") userIds?: string,
       @Query("page") page: number = 1,
-      @Query("limit") limit: string = "10",
+      @Query("limit") limit: string = "25",
       @Query("start") start?: string,
       @Query("end") end?: string,
       @Query("sortOrder") sortOrder: "asc" | "desc" = "asc",
       @Query("projectId") projectId?: string
-    ): Promise<{ data: Timeline[]; total: number; page: number; limit: number,totalPages: number  }> {
-      const limitNumber = parseInt(limit, 10);
+    ): Promise<{ data: Timeline[]; total: number; page: number; limit: number,totalPages: number, totalTimeSpent:number  }> {
+      const limitNumber = parseInt(limit, 25);
   
       const userIdArray = userIds.split(",");
       return this.timelineService.findUsersTimeLine(
