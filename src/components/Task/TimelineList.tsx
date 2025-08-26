@@ -53,7 +53,7 @@ export default function TimelineList({
       await TimelineService.createTimeline({
         ...data,
         task: task?._id || "",
-        user: task?.report_to || "",
+        user: task?.report_to || task?.assigned_to || "",
       });
       refreshTimelines();
       refreshTask();

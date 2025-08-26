@@ -154,11 +154,19 @@ export default function CreateTaskModal({
                     )}
                   </div>
                   <div className="px-4">
-                    <Input
+                    {/* <Input
                       label="Description"
                       type="text"
                       placeholder="Enter task description"
                       {...register("description")}
+                    /> */}
+
+                    <textarea
+                    
+                      {...register("description")}
+                      rows={2}
+                      className="w-full rounded-lg border border-gray-100 bg-gray-100 p-2 focus:outline-none"
+                      placeholder="Write description..."
                     />
                     {errors.description && (
                       <p className="text-red-500 text-xs mt-1">

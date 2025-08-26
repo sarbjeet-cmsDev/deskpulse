@@ -102,7 +102,6 @@ export default function CreateGlobalTaskModal({
 
         const role = getCookie("role");
 
-
         let res;
 
         if (role === "admin") {
@@ -153,7 +152,6 @@ export default function CreateGlobalTaskModal({
   }, [projectId]);
 
   const handleCreate = async (values: any) => {
-
     setLoading(true);
     // Destructure values from the form
     const {
@@ -207,8 +205,6 @@ export default function CreateGlobalTaskModal({
     }
   };
 
-
-
   return (
     <Modal isOpen={isOpen} onOpenChange={(open) => !open && onClose()}>
       <ModalContent>
@@ -223,10 +219,16 @@ export default function CreateGlobalTaskModal({
               <p className="text-red-500 text-xs">{errors.title.message}</p>
             )}
 
-            <Input
+            {/* <Input
               label="Description"
               type="text"
               {...register("description")}
+            /> */}
+            <textarea
+              {...register("description")}
+              rows={2}
+              className="w-full rounded-lg border border-gray-100 bg-gray-100 p-2 focus:outline-none"
+              placeholder="Write description..."
             />
             {errors.description && (
               <p className="text-red-500 text-xs">
@@ -236,9 +238,7 @@ export default function CreateGlobalTaskModal({
 
             <Input label="Due Date" type="date" {...register("due_date")} />
             {errors.due_date && (
-              <p className="text-red-500 text-xs">
-                {errors.due_date.message}
-              </p>
+              <p className="text-red-500 text-xs">{errors.due_date.message}</p>
             )}
             <Input
               label="Time Estimate"
@@ -258,13 +258,16 @@ export default function CreateGlobalTaskModal({
               control={control}
               render={({ field }) => {
                 const selectedOption =
-                  projectOptions.find((opt) => opt.value === field.value) || null;
+                  projectOptions.find((opt) => opt.value === field.value) ||
+                  null;
 
                 return (
                   <ReactSelect
                     options={projectOptions}
                     value={selectedOption}
-                    onChange={(selected) => field.onChange(selected?.value ?? null)}
+                    onChange={(selected) =>
+                      field.onChange(selected?.value ?? null)
+                    }
                     isClearable
                   />
                 );
@@ -287,7 +290,9 @@ export default function CreateGlobalTaskModal({
                   <ReactSelect
                     options={userOptions}
                     value={selectedOption}
-                    onChange={(selected) => field.onChange(selected?.value ?? null)}
+                    onChange={(selected) =>
+                      field.onChange(selected?.value ?? null)
+                    }
                     isClearable
                   />
                 );
@@ -295,19 +300,16 @@ export default function CreateGlobalTaskModal({
             />
 
             {errors.assigned_to && (
-              <p className="text-red-500 text-xs">{errors.assigned_to.message}</p>
+              <p className="text-red-500 text-xs">
+                {errors.assigned_to.message}
+              </p>
             )}
 
-
             <div className="flex justify-end mt-4 space-x-2 ">
-              <Button
-
-                type="button" variant="light" onPress={onClose}>
+              <Button type="button" variant="light" onPress={onClose}>
                 Cancel
               </Button>
-              <Button
-                className="btn-primary"
-                type="submit" disabled={loading}>
+              <Button className="btn-primary" type="submit" disabled={loading}>
                 {loading ? "Creating..." : "Create Task"}
               </Button>
             </div>

@@ -30,7 +30,7 @@ export default function CreateTimelineModal({
   useEffect(() => {
     const now = new Date();
     const pastWeek = new Date();
-    pastWeek.setDate(now.getDate() - 6); 
+    pastWeek.setDate(now.getDate() - 6);
 
     setToday(now.toISOString().split("T")[0]);
     setWeekStart(pastWeek.toISOString().split("T")[0]);
@@ -128,10 +128,11 @@ export default function CreateTimelineModal({
                   </div>
 
                   <div>
-                    <Input
-                      type="text"
-                      label="Comment"
+                    <textarea
                       {...register("comment")}
+                      rows={4}
+                      className="w-full rounded-lg border border-gray-100 bg-gray-100 p-2 focus:outline-none"
+                      placeholder="Write your comment..."
                     />
                     {errors.comment && (
                       <p className="text-red-500 text-xs mt-1">
