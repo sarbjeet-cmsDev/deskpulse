@@ -35,17 +35,17 @@ export const taskCreateSchema = taskSchemaBase.extend({
   project: z.string().min(1, "Project is required"),
   report_to: z.string().min(1, "Report To is required"),
   estimated_time: z
-  .union([z.string(), z.number()])
-  .transform((val) => {
-    if (typeof val === "string") {
-      return val.trim() === "" ? undefined : parseFloat(val);
-    }
-    return val;
-  })
-  .refine((val) => val === undefined || (!isNaN(val) && val > 0), {
-    message: "Estimated time must be a number and greater than 0.",
-  })
-  .optional(),
+    .union([z.string(), z.number()])
+    .transform((val) => {
+      if (typeof val === "string") {
+        return val.trim() === "" ? undefined : parseFloat(val);
+      }
+      return val;
+    })
+    .refine((val) => val === undefined || (!isNaN(val) && val > 0), {
+      message: "Estimated time must be a number and greater than 0.",
+    })
+    .optional(),
 });
 
 
@@ -56,20 +56,25 @@ export const taskGlobalSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
   due_date: z.string().min(1, "Due date is required"),
-  assigned_to: z.string().nullable().optional(),
-  projectId: z.string().nullable().optional(),
+  assigned_to: z.string().nullable().refine((val) => val !== null && val !== "", {
+    message: "Assigned To is required",
+  }),
+  projectId: z.string().nullable().refine((val) => val !== null && val !== "", {
+    message: "Project is required",
+  }),
+
   estimated_time: z
-  .union([z.string(), z.number()])
-  .transform((val) => {
-    if (typeof val === "string") {
-      return val.trim() === "" ? undefined : parseFloat(val);
-    }
-    return val;
-  })
-  .refine((val) => val === undefined || (!isNaN(val) && val > 0), {
-    message: "Estimated time must be a number and greater than 0.",
-  })
-  .optional(),
+    .union([z.string(), z.number()])
+    .transform((val) => {
+      if (typeof val === "string") {
+        return val.trim() === "" ? undefined : parseFloat(val);
+      }
+      return val;
+    })
+    .refine((val) => val === undefined || (!isNaN(val) && val > 0), {
+      message: "Estimated time must be a number and greater than 0.",
+    })
+    .optional(),
 });
 
 

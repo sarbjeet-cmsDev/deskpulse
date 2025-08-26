@@ -4,7 +4,6 @@ import { User, UserSchema } from "./user/user.schema";
 import { UserSeeder } from "./user/user.seeder";
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
-console.log(process.env.MONGO_URI);
 seeder({
   imports: [
     ConfigModule.forRoot({

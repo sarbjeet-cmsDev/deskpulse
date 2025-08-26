@@ -3,6 +3,7 @@ import { Modal, ModalBody, ModalContent } from "@heroui/react";
 import ReactSelect, { MultiValue } from "react-select";
 import { debounce } from "lodash";
 import AdminUserService, { IUser } from "@/service/adminUser.service";
+import { Button } from "./Button";
 
 export interface IUserOption {
   label: string;
@@ -66,9 +67,9 @@ export default function MultiSelectUserModal({
   }, [isOpen, activeUsers, fetchUsers]);
 
   const handleConfirm = () => {
-  
+
     const ids = selectedUsers.map((u) => u.value);
-  
+
     onConfirm(ids);
     onClose();
   };
@@ -118,13 +119,13 @@ export default function MultiSelectUserModal({
               }}
             />
 
-            <button
+            <Button
               onClick={handleConfirm}
               disabled={selectedUsers.length === 0}
-              className="btn-primary text-white px-4 py-2 rounded mt-2 mx-auto block"
+              className={`btn-primary text-white px-4 py-2 rounded mt-2 mx-auto block ${selectedUsers.length === 0 ? "cursor-not-allowed" : ""}`}
             >
               Assign
-            </button>
+            </Button>
           </div>
         </ModalBody>
       </ModalContent>

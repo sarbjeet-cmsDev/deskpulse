@@ -90,40 +90,40 @@ export default function CreateGlobalTaskModal({
   const projectId = watch("projectId");
 
   // Fetch project list
-useEffect(() => {
-  async function fetchProjects() {
-    try {
-      const getCookie = (name: string) => {
-        const match = document.cookie
-          .split("; ")
-          .find((row) => row.startsWith(name + "="));
-        return match ? decodeURIComponent(match.split("=")[1]) : null;
-      };
+  useEffect(() => {
+    async function fetchProjects() {
+      try {
+        const getCookie = (name: string) => {
+          const match = document.cookie
+            .split("; ")
+            .find((row) => row.startsWith(name + "="));
+          return match ? decodeURIComponent(match.split("=")[1]) : null;
+        };
 
-      const role = getCookie("role");
-    
+        const role = getCookie("role");
 
-      let res;
 
-      if (role === "admin") { 
-        res = await AdminProjectService.getAllProjectListing();  
-      } else {  
-        res = await ProjectService.getProjectByUserId();
+        let res;
+
+        if (role === "admin") {
+          res = await AdminProjectService.getAllProjectListing();
+        } else {
+          res = await ProjectService.getProjectByUserId();
+        }
+
+        const options = (res?.data || []).map((p: any) => ({
+          value: p._id,
+          label: p.title,
+        }));
+
+        setProjectOptions(options);
+      } catch (err) {
+        console.error("Error fetching projects:", err);
       }
-
-      const options = (res?.data || []).map((p: any) => ({
-        value: p._id,
-        label: p.title,
-      }));
-
-      setProjectOptions(options);
-    } catch (err) {
-      console.error("Error fetching projects:", err);
     }
-  }
 
-  fetchProjects();
-}, []);
+    fetchProjects();
+  }, []);
 
   // Fetch users based on selected project
   useEffect(() => {
@@ -153,7 +153,7 @@ useEffect(() => {
   }, [projectId]);
 
   const handleCreate = async (values: any) => {
-    
+
     setLoading(true);
     // Destructure values from the form
     const {
@@ -174,7 +174,7 @@ useEffect(() => {
         due_date,
         estimated_time: values.estimated_time,
       });
-     
+
       if (title) {
         if (!socketRef.current.connected) {
           socketRef.current.connect();
@@ -207,7 +207,7 @@ useEffect(() => {
     }
   };
 
-  
+
 
   return (
     <Modal isOpen={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -235,7 +235,11 @@ useEffect(() => {
             )}
 
             <Input label="Due Date" type="date" {...register("due_date")} />
-
+            {errors.due_date && (
+              <p className="text-red-500 text-xs">
+                {errors.due_date.message}
+              </p>
+            )}
             <Input
               label="Time Estimate"
               type="text"
@@ -254,20 +258,22 @@ useEffect(() => {
               control={control}
               render={({ field }) => {
                 const selectedOption =
-                  projectOptions.find((opt) => opt.value === field.value) ||
-                  null;
+                  projectOptions.find((opt) => opt.value === field.value) || null;
+
                 return (
                   <ReactSelect
                     options={projectOptions}
                     value={selectedOption}
-                    onChange={(selected) =>
-                      field.onChange(selected?.value || null)
-                    }
+                    onChange={(selected) => field.onChange(selected?.value ?? null)}
                     isClearable
                   />
                 );
               }}
             />
+
+            {errors.projectId && (
+              <p className="text-red-500 text-xs">{errors.projectId.message}</p>
+            )}
 
             {/* Assigned To */}
             <label className="block text-sm font-medium">Assign User</label>
@@ -281,24 +287,27 @@ useEffect(() => {
                   <ReactSelect
                     options={userOptions}
                     value={selectedOption}
-                    onChange={(selected) =>
-                      field.onChange(selected?.value || null)
-                    }
+                    onChange={(selected) => field.onChange(selected?.value ?? null)}
                     isClearable
                   />
                 );
               }}
             />
 
+            {errors.assigned_to && (
+              <p className="text-red-500 text-xs">{errors.assigned_to.message}</p>
+            )}
+
+
             <div className="flex justify-end mt-4 space-x-2 ">
-              <Button 
-       
-              type="button" variant="light" onPress={onClose}>
+              <Button
+
+                type="button" variant="light" onPress={onClose}>
                 Cancel
               </Button>
-              <Button 
-              className="btn-primary"
-              type="submit" disabled={loading}>
+              <Button
+                className="btn-primary"
+                type="submit" disabled={loading}>
                 {loading ? "Creating..." : "Create Task"}
               </Button>
             </div>

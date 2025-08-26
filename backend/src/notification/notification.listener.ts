@@ -27,7 +27,7 @@ export class NotificationListener {
       const UserData = await this.userservices.findOne(user.toString())
       notifications.push({
         user: user._id.toString(),
-        content: `The project "${projectObj.title}" was successfully assigned by ${UserData.username} on ${new Date(projectObj.updatedAt).toLocaleString()}.`,
+        content: `The project "${projectObj.title}" was successfully assigned to ${UserData.username} on ${new Date(projectObj.updatedAt).toLocaleString()}.`,
         redirect_url: `${process.env.FRONTEND_URL}project/${projectObj._id.toString()}`,
       })
     }
@@ -112,7 +112,7 @@ export class NotificationListener {
     const TaskObj = await this.taskServices.findOne(timeLineObj.task.toString())
 
     const ProjectObj = await this.projectService.findOne(TaskObj.project.toString())
-    const content = `Worked ${formatMinutes(timeLineObj.time_spent) } on task "${TaskObj.title}" — general updates and review. Comment: ${timeLineObj.comment}. On ${new Date(timeLineObj.date).toLocaleString()} by "${timeLineCreatedBy.username}"`;
+    const content = `Worked ${formatMinutes(timeLineObj.time_spent)} on task "${TaskObj.title}" — general updates and review. Comment: ${timeLineObj.comment}. On ${new Date(timeLineObj.date).toLocaleString()} by "${timeLineCreatedBy.username}"`;
     const timelineLInk = `${process.env.FRONTEND_URL}/task/${TaskObj._id.toString()}`;
     const timelineCreatednotifications: CreateNotificationDto[] = [];
     if (ProjectObj.project_coordinator) {

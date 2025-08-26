@@ -12,7 +12,7 @@ import {
   Min,
 } from 'class-validator';
 import { Schema as MongooseSchema, Types } from 'mongoose';
-import { AcceptanceLevelEnum, PriorityEnum,ClientAcceptance, TaskTypeEnum } from './task.interface';
+import { AcceptanceLevelEnum, PriorityEnum, ClientAcceptance, TaskTypeEnum } from './task.interface';
 import { Prop } from '@nestjs/mongoose';
 
 
@@ -144,8 +144,8 @@ export class UpdateTaskDto {
   kanban?: MongooseSchema.Types.ObjectId;
 
   @IsOptional()
-  @IsDate()
-  @Type(() => Date)
+  // @IsDate()
+  // @Type(() => Date)
   due_date?: Date;
 
   @IsOptional()

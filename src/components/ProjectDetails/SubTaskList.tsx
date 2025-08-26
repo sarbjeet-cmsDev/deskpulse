@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import info from "@/assets/images/info.png";
 import ShowMoreLess from "../common/ShowMoreLess/ShowMoreLess";
+import { LuEye } from "react-icons/lu";
 
 interface KanbanItem {
   title: string;
@@ -111,13 +112,9 @@ export default function SubTasks({
                         <span className="text-[#333] font-bold">Due Date:</span>
                         <span>{formatDate(task.due_date)}</span>
                       </div>
-                      <Image
-                        src={info}
-                        alt="Details"
-                        width={20}
-                        height={20}
-                        className="cursor-pointer opacity-70 hover:opacity-100 max-[768px]:absolute max-[768px]:top-0 max-[768px]:right-0"
-                      />
+                      <LuEye size={20} />
+
+
                     </div>
                   </Link>
                 </li>

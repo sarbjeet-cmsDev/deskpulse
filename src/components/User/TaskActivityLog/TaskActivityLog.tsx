@@ -23,7 +23,7 @@ export default function TaskActivityLog({ code }: Props) {
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalItems, setTotalItems] = useState<number>(0);
-  const itemsPerPage = 5;
+  const itemsPerPage = 25;
 
 
 
