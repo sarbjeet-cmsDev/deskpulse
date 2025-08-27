@@ -11,7 +11,7 @@ interface TaskPropertyUpdateModalProps {
   isOpen: boolean;
   onClose: () => void;
   taskId: string;
-  fieldName: "status" | "priority" | "client_acceptance";
+  fieldName: "status" | "priority" | "client_acceptance" | "type"; 
   onUpdate: () => void;
   currentColor?: string
   setPriorityActiveColor?: any

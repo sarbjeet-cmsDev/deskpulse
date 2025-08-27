@@ -14,12 +14,21 @@ import { Button } from "@heroui/button";
 import ChevronUp from "@/assets/images/chevronup.svg";
 import ChevronDown from "@/assets/images/chevrondown.svg";
 import TaskButton from "@/components/taskButton";
+import { useRouter } from "next/navigation";
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 
 dayjs.extend(isSameOrBefore);
 
 export default function PerformancePreview() {
+<<<<<<< Updated upstream
   const calendarRef = useRef<HTMLDivElement | null>(null);
 
+=======
+>>>>>>> Stashed changes
+const router = useRouter();
   const [data, setData] = useState<{ labels: string[]; datasets: any[] }>({
     labels: [],
     datasets: [],
@@ -133,9 +142,11 @@ export default function PerformancePreview() {
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       <div className="flex justify-center items-center pb-6 border-b border-[#31394f14]">
-        <Link href="/">
-          <Image src={leftarrow} alt="Back" width={16} height={16} />
-        </Link>
+         <div className="w-10 cursor-pointer">
+                <span onClick={() => router.back()} >
+                  <Image src={leftarrow} alt="Back" width={16} height={16} />
+                </span>
+              </div>
 
         <H3 className=" text-center flex-1 text-base sm:text-lg md:text-xl">
           My Performance
