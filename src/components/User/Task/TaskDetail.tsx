@@ -191,10 +191,10 @@ export default function TaskDetails({ id }: Props) {
         <div>
           <div className="flex justify-between items-center border-b border-[#31394f14]">
             <div className="flex items-center gap-2">
-              <div className="w-10">
-                <Link href={`/mytask`}>
-                  <Image src={leftarrow} alt="Logo" width={16} height={16} />
-                </Link>
+              <div className="w-10 cursor-pointer">
+                <span onClick={() => router.back()} >
+                  <Image src={leftarrow} alt="Back" width={16} height={16} />
+                </span>
               </div>
               <EstimateTime
                 user={user}

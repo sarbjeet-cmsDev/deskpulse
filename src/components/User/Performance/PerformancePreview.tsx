@@ -15,19 +15,13 @@ import ChevronUp from "@/assets/images/chevronup.svg";
 import ChevronDown from "@/assets/images/chevrondown.svg";
 import TaskButton from "@/components/taskButton";
 import { useRouter } from "next/navigation";
-<<<<<<< Updated upstream
-=======
 
->>>>>>> Stashed changes
 
 dayjs.extend(isSameOrBefore);
 
 export default function PerformancePreview() {
-<<<<<<< Updated upstream
   const calendarRef = useRef<HTMLDivElement | null>(null);
 
-=======
->>>>>>> Stashed changes
 const router = useRouter();
   const [data, setData] = useState<{ labels: string[]; datasets: any[] }>({
     labels: [],

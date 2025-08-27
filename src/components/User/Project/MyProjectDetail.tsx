@@ -226,11 +226,11 @@ export default function MyProjectDetails({ code }: Props) {
         <div>
           <div className="flex justify-between items-center border-b border-[#31394f14] pb-4 max-[768px]:flex-wrap max-[768px]:gap-[10px]">
             <div className="flex items-center gap-2">
-              <div className="w-10">
-                <Link href="/project/list">
-                  <Image src={leftarrow} alt="Logo" width={16} height={16} />
-                </Link>
-              </div>
+              <div className="w-10 cursor-pointer">
+                <span onClick={() => router.back()} >
+                  <Image src={leftarrow} alt="Back" width={16} height={16} />
+                </span>
+                </div>
               <H5 className="w-[98%] text-center">{project.title}</H5>
             </div>
             <div className="flex items-center">

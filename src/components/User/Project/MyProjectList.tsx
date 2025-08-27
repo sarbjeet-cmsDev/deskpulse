@@ -2,6 +2,7 @@
 import { H5 } from "@/components/Heading/H5";
 import ProjectCard from "@/components/IndexPage/ProjectCard";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import leftarrow from "@/assets/images/back.png";
 import ProjectService from "@/service/project.service";
 import { useEffect, useState } from "react";
@@ -16,6 +17,7 @@ import { RootState } from "@/store/store";
 
 
 export default function MyProjects() {
+  const router = useRouter();
   const user: any = useSelector((state: RootState) => state.auth.user);
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -97,10 +99,10 @@ export default function MyProjects() {
       <div className="main-content sm:p-2">
         <div>
           <div className="flex justify-center items-center md:p-[24px] p-2 border-b border-[#31394f14]">
-            <div className="w-10">
-              <Link href="/">
-                <Image src={leftarrow} alt="Logo" width={16} height={16} />
-              </Link>
+            <div className="w-10 cursor-pointer">
+              <span onClick={() => router.back()} >
+                  <Image src={leftarrow} alt="Back" width={16} height={16} />
+                </span>
             </div>
             <H5 className="w-[98%] text-center">My Projects</H5>
           </div>

@@ -17,7 +17,6 @@ const AdminTimelineService = {
         projectId?:string;
       }): Promise<{ data: ITask[]; total: number; limit: number; totalPages: number, totalTimeSpent:number }> {
         const res = await axiosClient.get(`${API_URL}/admin/timelines`, { params });
-        console.log("timelinedata",res)
         return {
           data: res.data.data,
           total: res.data.total,
@@ -31,7 +30,6 @@ const AdminTimelineService = {
           const res = await axiosClient.get(`${API_URL}/admin/timelines/user`, {
             params: { userIds, ...params },
           });
-          console.log("usertimeline",res)
           return res.data;
         },
 

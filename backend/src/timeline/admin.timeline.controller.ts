@@ -31,19 +31,18 @@ export class AdminTimelineController {
     async findTimelineByUser(
       @Query("userIds") userIds?: string,
       @Query("page") page: number = 1,
-      @Query("limit") limit: string = "25",
+      @Query("limit") limit: number = 25,
       @Query("start") start?: string,
       @Query("end") end?: string,
       @Query("sortOrder") sortOrder: "asc" | "desc" = "asc",
       @Query("projectId") projectId?: string
     ): Promise<{ data: Timeline[]; total: number; page: number; limit: number,totalPages: number, totalTimeSpent:number  }> {
-      const limitNumber = parseInt(limit, 25);
   
       const userIdArray = userIds.split(",");
       return this.timelineService.findUsersTimeLine(
         userIdArray,
         page,
-        limitNumber,
+        limit,
         sortOrder,
         start,
         end,

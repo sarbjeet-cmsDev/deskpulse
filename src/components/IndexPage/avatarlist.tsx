@@ -69,7 +69,16 @@ export default function AvatarList({
     setImgErrors((prev) => ({ ...prev, [userId]: true }));
   };
 
-  const visibleUsers = users.slice(0, maxVisible);
+  const AllUser = (users || []).slice().sort((a, b) =>
+  a.firstName.localeCompare(b.firstName, "en", { sensitivity: "base" })
+);
+  // const AllUser = users || [];
+  console.log("AllUser",AllUser)
+  const visibleUsers = AllUser.slice(0, maxVisible);
+  const selected = (selectedUserIds.length > 0 ? AllUser.filter(u => selectedUserIds.includes(u._id)) : []);
+  const activeUsers = selected.slice(0, maxVisible);
+
+
 
   return (
     <div
@@ -79,9 +88,12 @@ export default function AvatarList({
     >
       {!dropdownOpen && (
         <ul className="flex items-center space-x-2">
-          {visibleUsers.map((usr) => {
+          {(selectedUserIds.length > 0 ? activeUsers : visibleUsers)
+          .map((usr) => {
             const initials = usr.firstName?.slice(0, 2).toUpperCase() || "NA";
             const isActive = selectedUserIds.includes(usr._id);
+            console.log("isActiveId",isActive)
+
             const hasImgError = imgErrors[usr._id];
             const profileImageUrl = `${process.env.NEXT_PUBLIC_BACKEND_HOST}${usr?.avatar || usr?.profileImage || ""}`;
 
@@ -134,7 +146,7 @@ export default function AvatarList({
               </tr>
             </thead>
             <tbody>
-              {users.map((usr) => {
+              {AllUser.map((usr) => {
                 const initials = usr.firstName?.slice(0, 2).toUpperCase() || "NA";
                 const hasImgError = imgErrors[usr._id];
                 const profileImageUrl = `${process.env.NEXT_PUBLIC_BACKEND_HOST}${usr?.avatar || usr?.profileImage || ""}`;

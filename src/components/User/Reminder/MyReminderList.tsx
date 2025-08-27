@@ -9,22 +9,18 @@ import { IReminder } from "@/types/reminder.interface";
 import Image from "next/image";
 import leftarrow from "@/assets/images/back.png";
 import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
 import Pagination from "@/components/Pagination/pagination";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 
-
-
 export default function MyReminderList() {
+  const router = useRouter();
   const [reminders, setReminders] = useState<IReminder[]>([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalItems, setTotalItems] = useState<number>(0);
   const itemsPerPage = 5;
-
-
-
-
 
   const user: any = useSelector((state: RootState) => state.auth.user);
 
@@ -58,10 +54,14 @@ export default function MyReminderList() {
   return (
     <div className="max-w-6xl mx-auto md:p-6">
       <div className="flex justify-center items-center md:p-[24px] p-2 border-b border-[#31394f14]">
-        <Link href="/">
-          <Image src={leftarrow} alt="Back" width={16} height={16} />
-        </Link>
-        <H3 className="text-center flex-1 text-base sm:text-lg md:text-xl">My Reminders</H3>
+        <div className="cursor-pointer">
+          <span onClick={() => router.back()}>
+            <Image src={leftarrow} alt="Back" width={16} height={16} />
+          </span>
+        </div>
+        <H3 className="text-center flex-1 text-base sm:text-lg md:text-xl">
+          My Reminders
+        </H3>
       </div>
 
       {loading ? (
@@ -77,7 +77,6 @@ export default function MyReminderList() {
         itemsPerPage={itemsPerPage}
         onPageChange={handlePageChange}
       />
-
     </div>
   );
 }

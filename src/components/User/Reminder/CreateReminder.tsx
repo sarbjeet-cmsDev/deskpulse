@@ -57,9 +57,11 @@ export default function CreateReminder() {
   return (
     <div className="max-w-6xl mx-auto">
       <div className="flex justify-center items-center md:p-[24px] p-2 border-b border-[#31394f14]">
-        <Link href="/">
-          <Image src={leftarrow} alt="Back" width={16} height={16} />
-        </Link>
+        <div>
+        <span className="cursor-pointer" onClick={() => router.back()} >
+                  <Image src={leftarrow} alt="Back" width={16} height={16} />
+        </span>
+        </div>
 
         <H3 className="text-center flex-1 text-base sm:text-lg md:text-xl">
           Create Reminder

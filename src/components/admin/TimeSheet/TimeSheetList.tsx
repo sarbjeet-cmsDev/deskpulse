@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Datagrid from "@/components/Datagrid/Datagrid";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
@@ -7,7 +7,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import AdminProjectService from "@/service/adminProject.service";
 import AdminUserService from "@/service/adminUser.service";
 import AvatarList from "@/components/IndexPage/avatarlist";
-import { getLocalTimeZone, today } from "@internationalized/date";
+import { getLocalTimeZone, today, CalendarDate } from "@internationalized/date";
 import { Button } from "@heroui/button";
 import Image from "next/image";
 import ChevronUp from "@/assets/images/chevronup.svg";
@@ -19,9 +19,7 @@ import AdminTimelineService from "@/service/adminTimeline.service";
 import TimelineService from "@/service/timeline.service";
 import ReactSelect from "react-select";
 import { useForm, Controller } from "react-hook-form";
-import { H1 } from "@/components/Heading/H1";
 import { H3 } from "@/components/Heading/H3";
-import { H2 } from "@/components/Heading/H2";
 dayjs.extend(isSameOrBefore);
 
 function useDebounce<T>(value: T, delay: number): T {
@@ -64,15 +62,29 @@ const TimeSheetList = () => {
   const debouncedSearch = useDebounce(search, 300);
   const [users, setUsers] = useState([]);
   const [projectOptions, setProjectOptions] = useState<ProjectOption[]>([]);
-  const [selectedRange, setSelectedRange] = useState<{
-    start: any;
-    end: any;
-  }>({
-    start: today(getLocalTimeZone()).add({ weeks: -1 }),
-    end: today(getLocalTimeZone()).add({ weeks: 1 }),
-  });
+  const calendarRef = useRef<HTMLDivElement | null>(null);
 
-  console.log("tasks",tasks)
+  const jsToday = new Date();
+    jsToday.setHours(0, 0, 0, 0);
+  
+    const startDate = new CalendarDate(
+      jsToday.getFullYear(),
+      jsToday.getMonth() + 1,
+      jsToday.getDate() - 10
+    ); 
+    const tomorrow = new CalendarDate(
+      jsToday.getFullYear(),
+      jsToday.getMonth() + 1,
+      jsToday.getDate() 
+    ); 
+  
+  const [selectedRange, setSelectedRange] = useState<{
+    start: CalendarDate;
+    end: CalendarDate;
+  }>({
+    start: startDate,
+    end: tomorrow,
+  });
 
   const [showCalendar, setShowCalendar] = useState(false);
   const {
@@ -144,7 +156,6 @@ const TimeSheetList = () => {
 
   const fetchProjects = async () => {
     const projects = await AdminProjectService.getAllProjectListing();
-    console.log("projects", projects);
     const options = (projects?.data || []).map((p: any) => ({
       value: p._id,
       label: p.title,
@@ -221,6 +232,29 @@ const TimeSheetList = () => {
     selectedRange.end.toDate(getLocalTimeZone())
   ).format("DD MMM YY")}`;
 
+   const isDateUnavailable = (date: CalendarDate) => {
+      return date.compare(tomorrow) > 0; 
+    };
+
+   useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        calendarRef.current &&
+        !calendarRef.current.contains(event.target as Node)
+      ) {
+        setShowCalendar(false);
+      }
+    }
+    if (showCalendar) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showCalendar]);
+
   const totalTime = totalTimeSpent || 0;
   const hours = Math.floor(totalTime / 60);
   const minutes = totalTime % 60;
@@ -231,12 +265,15 @@ const TimeSheetList = () => {
     <div className="flex flex-col">
       <main className="flex-1 p-4 sm:p-6 md:p-8 w-full">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+          <div className="md:w-3/4 w-full">
+
           <h1 className="text-xl md:text-2xl font-semibold text-gray-800">
             Time Sheet
           </h1>
+          </div>
 
-          <div className="flex flex-row gap-4 ">
-            <div className="md:w-1/3 w-full">
+          <div className="flex flex-col md:flex-row gap-4 w-2/4 w-full">
+            <div ref={calendarRef} className="md:w-1/3 w-full">
               <Button
                 onPress={() => setShowCalendar(!showCalendar)}
                 className="flex justify-between items-center w-full border px-4 py-2 rounded bg-white shadow-sm text-sm font-medium"
@@ -268,8 +305,12 @@ const TimeSheetList = () => {
                 <div className="p-2">
                   <RangeCalendar
                     aria-label="Select Range"
-                    value={selectedRange}
-                    onChange={setSelectedRange}
+                    value={selectedRange as any}
+                     onChange={(range) => {
+                    setSelectedRange(range as any);
+                    setShowCalendar(false);
+                  }}
+                  isDateUnavailable={isDateUnavailable as any}
                   />
                 </div>
               </div>
@@ -298,7 +339,7 @@ const TimeSheetList = () => {
                         }),
                         menu: (base) => ({
                           ...base,
-                          zIndex: 9999,
+                          // zIndex: 9999,
                           maxHeight: 200,
                           overflowY: "auto",
                           position: "absolute",
@@ -307,6 +348,7 @@ const TimeSheetList = () => {
                           ...base,
                           paddingTop: 0,
                           paddingBottom: 0,
+                          overflowX: "auto",
                         }),
                       }}
                     />

@@ -94,11 +94,11 @@ const UpdateAuthProfileForm = ({ id }: Props) => {
   return (
     <div className="min-h-screen mx-auto container max-w-3xl flex-col justify-center items-start md:pt-10">
       <div className="flex justify-center items-center md:p-[24px] p-2 border-b border-[#31394f14]">
-        <div className="w-10">
-          <Link href="/auth/profile">
-            <Image src={leftarrow} alt="Logo" width={16} height={16} />
-          </Link>
-        </div>
+         <div className="w-10 cursor-pointer">
+                <span onClick={() => router.back()} >
+                  <Image src={leftarrow} alt="Back" width={16} height={16} />
+                </span>
+              </div>
         <H3 className="w-[98%] text-center">Update Profile</H3>
       </div>
       <div className="flex justify-center items-center">

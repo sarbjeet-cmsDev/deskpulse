@@ -213,6 +213,10 @@ export class UpdateTaskStatusUpdateDto {
   priority?: PriorityEnum;
 
   @IsOptional()
+  @IsEnum(TaskTypeEnum)
+  type?: TaskTypeEnum;
+
+  @IsOptional()
   isArchived?: Boolean
 }
 

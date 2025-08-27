@@ -7,7 +7,6 @@ import { validateTaskId } from "./task.helpers";
 import { CreateTimelineDto, UpdateTimelineDto } from "./timeline.dto";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { ProjectService } from "src/project/project.service";
-import { log } from "console";
 import { UserService } from "src/user/user.service";
 import { Types } from "mongoose";
 
@@ -251,9 +250,10 @@ export class TimelineService {
     totalPages: number;
     totalTimeSpent:number;
   }> {
+
     let safePage = Math.max(Number(page) || 1, 1);
     let safeLimit = Math.max(Number(limit) || 25, 1);
-    const MAX_LIMIT = 200;
+    const MAX_LIMIT = 1000;
     if (safeLimit > MAX_LIMIT) safeLimit = MAX_LIMIT;
 
     const filter: Record<string, any> = {};
@@ -269,7 +269,7 @@ export class TimelineService {
       };
     }
 
-     const countPipeline: any[] = [
+    const countPipeline: any[] = [
     { $match: filter },
     {
       $lookup: {
@@ -289,18 +289,9 @@ export class TimelineService {
   const totalPages = total === 0 ? 0 : Math.ceil(total / safeLimit);
   if (totalPages > 0 && safePage > totalPages) safePage = totalPages;
 
-    // count total first
-    // const total = await this.timelineModel.countDocuments(filter).exec();
-    // const totalPages = total === 0 ? 0 : Math.ceil(total / safeLimit);
-    // if (totalPages > 0 && safePage > totalPages) safePage = totalPages;
-
     const pipeline: any[] = [
       { $match: filter },
-      { $sort: { createdAt: sortOrder === "desc" ? 1 : -1 } },
-
-      { $skip: (safePage - 1) * safeLimit },
-      { $limit: safeLimit },
-
+      
       {
         $lookup: {
           from: "tasks",
@@ -313,11 +304,16 @@ export class TimelineService {
       ...(projectId
         ? [{ $match: { "task_detail.project": new Types.ObjectId(projectId) } }]
         : []),
+      { $sort: { createdAt: sortOrder === "desc" ? 1 : -1 } },
+
+      { $skip: (safePage - 1) * safeLimit },
+      { $limit: safeLimit },
       {
         $project: {
           _id: 1,
           comment: 1,
           task: 1,
+          project:1,
           date: 1,
           user: 1,
           time_spent: 1,
@@ -355,6 +351,7 @@ export class TimelineService {
           comment: 1,
           user: 1,
           task: 1,
+          project:1,
           date: 1,
           time_spent: 1,
           task_title: 1,
@@ -374,6 +371,12 @@ export class TimelineService {
         },
       },
     ];
+
+     if (projectId) {
+    pipeline.push({
+      $match: { 'project_id': new Types.ObjectId(projectId) },
+    });
+  }
 
     const data = await this.timelineModel.aggregate(pipeline).exec();
 
@@ -396,6 +399,7 @@ export class TimelineService {
       },
     },
   ];
+
 
   const totalTimeResult = await this.timelineModel.aggregate(totalTimePipeline).exec();
   const totalTimeSpent = totalTimeResult.length > 0 ? totalTimeResult[0].totalTimeSpent : 0;
@@ -430,13 +434,13 @@ export class TimelineService {
 
     let safePage = Math.max(Number(page) || 1, 1);
     let safeLimit = Math.max(Number(limit) || 25, 1);
-    const MAX_LIMIT = 200;
+    const MAX_LIMIT = 1000;
     if (safeLimit > MAX_LIMIT) safeLimit = MAX_LIMIT;
-
+    
     const matchFilter: any = {
       user: { $in: userIds.map((id) => new Types.ObjectId(id)) },
     };
-
+     
     if (startDate || endDate) {
       matchFilter.date = {};
       if (startDate) {
@@ -447,16 +451,29 @@ export class TimelineService {
       }
     }
 
-    const total = await this.timelineModel.countDocuments(matchFilter).exec();
+    const countPipeline: any[] = [
+    { $match: matchFilter },
+    {
+      $lookup: {
+        from: "tasks",
+        localField: "task",
+        foreignField: "_id",
+        as: "task_detail",
+      },
+    },
+    { $unwind: { path: "$task_detail", preserveNullAndEmptyArrays: true } },
+    ...(projectId ? [{ $match: { "task_detail.project": new Types.ObjectId(projectId) } }] : []),
+    { $count: "total" },
+  ];
+
+    const countResult = await this.timelineModel.aggregate(countPipeline).exec();
+    const total = countResult.length > 0 ? countResult[0].total : 0;
     const totalPages = total === 0 ? 0 : Math.ceil(total / safeLimit);
     if (totalPages > 0 && safePage > totalPages) safePage = totalPages;
 
     const pipeline: any[] = [
       { $match: matchFilter },
-      { $sort: { createdAt: sortOrder === "desc" ? 1 : -1 } },
-      { $skip: (safePage - 1) * safeLimit },
-      { $limit: safeLimit },
-
+      
       {
         $lookup: {
           from: "tasks",
@@ -469,11 +486,15 @@ export class TimelineService {
       ...(projectId
         ? [{ $match: { "task_detail.project": new Types.ObjectId(projectId) } }]
         : []),
+        { $sort: { createdAt: sortOrder === "desc" ? 1 : -1 } },
+        { $skip: (safePage - 1) * safeLimit },
+        { $limit: safeLimit },
       {
         $project: {
           _id: 1,
           comment: 1,
           task: 1,
+          project:1,
           date: 1,
           user: 1,
           time_spent: 1,
@@ -511,6 +532,7 @@ export class TimelineService {
           comment: 1,
           user: 1,
           task: 1,
+          project:1,
           date: 1,
           time_spent: 1,
           task_title: 1,
@@ -530,6 +552,12 @@ export class TimelineService {
         },
       },
     ];
+
+     if (projectId) {
+    pipeline.push({
+      $match: { 'project_id': new Types.ObjectId(projectId) },
+    });
+  }
 
     const data = await this.timelineModel.aggregate(pipeline).exec();
 

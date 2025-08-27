@@ -64,21 +64,21 @@ export default function AuthProfileView() {
     }
   }, [user, version]);
 
-  const role = user?.roles?.[0] ?? "";
-  let href = "/";
-  if (role === "admin") {
-    href = "/admin";
-  } else {
-    href = "/";
-  }
+  // const role = user?.roles?.[0] ?? "";
+  // let href = "/";
+  // if (role === "admin") {
+  //   href = "/";
+  // } else {
+  //   href = "/";
+  // }
 
   return (
     <div className="max-w-6xl mx-auto">
       <div className="flex justify-center items-center md:p-[24px] p-1 border-b border-[#31394f14]">
-        <div className="w-10">
-          <Link href={href}>
-            <Image src={leftarrow} alt="Logo" width={16} height={16} />
-          </Link>
+        <div className="w-10 cursor-pointer">
+          <span onClick={() => router.back()} >
+                  <Image src={leftarrow} alt="Back" width={16} height={16} />
+          </span>
         </div>
         <H5 className="w-[98%] text-center">Profile</H5>
       </div>

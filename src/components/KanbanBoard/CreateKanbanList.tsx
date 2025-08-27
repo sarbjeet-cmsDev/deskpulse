@@ -2,10 +2,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "../Form/Button";
 import { Input } from "../Form/Input";
-import {
-  CreateKanbanFormData,
-  createKanbanSchema,
-} from "../validation/kanban.schema";
+import {CreateKanbanFormData, createKanbanSchema,} from "../validation/kanban.schema";
 import { useForm } from "react-hook-form";
 import AdminProjectService from "@/service/adminProject.service";
 import { useEffect, useState } from "react";
@@ -14,6 +11,7 @@ import Link from "next/link";
 import Image from "next/image";
 import leftarrow from "@/assets/images/back.png";
 import { H3 } from "@/components/Heading/H3";
+import { useRouter } from "next/navigation";
 
 type Project = {
   _id: string;
@@ -22,6 +20,7 @@ type Project = {
   avatar?: string;
 };
 export const CreateKanbanList = () => {
+  const router = useRouter();
   const [projects, setProjects] = useState<Project[]>([]);
 
   const {
@@ -63,9 +62,9 @@ export const CreateKanbanList = () => {
     <div className="container mx-auto max-w-3xl">
       <div className="flex md:justify-center justify-between items-center md:p-[24px] p-3 border-b border-[#31394f14]">
         <div className="md:w-[2%]" >
-          <Link href={`/admin/project`}>
-            <Image src={leftarrow} alt="Back" width={16} height={16} />
-          </Link>
+          <span onClick={() => router.back()} >
+                  <Image src={leftarrow} alt="Back" width={16} height={16} />
+          </span>
         </div>
         <H3 className="md:w-[98%] text-center">Create Kanban</H3>
       </div>
