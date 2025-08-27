@@ -2,10 +2,10 @@
 import MyChart from "@/components/chart/LineChart";
 import { H3 } from "@/components/Heading/H3";
 import PerformanceService from "@/service/performanceService";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import dayjs from "dayjs";
 import { RangeCalendar } from "@heroui/react";
-import { today, getLocalTimeZone } from "@internationalized/date";
+import { today, getLocalTimeZone, CalendarDate } from "@internationalized/date";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import Link from "next/link";
 import Image from "next/image";
@@ -15,27 +15,35 @@ import ChevronUp from "@/assets/images/chevronup.svg";
 import ChevronDown from "@/assets/images/chevrondown.svg";
 import TaskButton from "@/components/taskButton";
 
-
 dayjs.extend(isSameOrBefore);
 
 export default function PerformancePreview() {
-
-
-
-
+  const calendarRef = useRef<HTMLDivElement | null>(null);
 
   const [data, setData] = useState<{ labels: string[]; datasets: any[] }>({
     labels: [],
     datasets: [],
   });
+  const jsToday = new Date();
+  jsToday.setHours(0, 0, 0, 0);
 
-
+  // CalendarDate objects for min and max
+  const startDate = new CalendarDate(
+    jsToday.getFullYear(),
+    jsToday.getMonth() + 1,
+    jsToday.getDate() - 10
+  ); // 10 days ago
+  const tomorrow = new CalendarDate(
+    jsToday.getFullYear(),
+    jsToday.getMonth() + 1,
+    jsToday.getDate() + 1
+  ); // +1 day from today
   const [selectedRange, setSelectedRange] = useState<{
-    start: any;
-    end: any;
+    start: CalendarDate;
+    end: CalendarDate;
   }>({
-    start: today(getLocalTimeZone()).add({ weeks: -1 }),
-    end: today(getLocalTimeZone()).add({ weeks: 1 }),
+    start: startDate,
+    end: tomorrow,
   });
 
   const [showCalendar, setShowCalendar] = useState(false);
@@ -53,7 +61,7 @@ export default function PerformancePreview() {
           end: endDate.format("YYYY-MM-DD"),
         });
 
-        const daysInRange = [];
+        const daysInRange: string[] = [];
         let current = startDate;
         while (current.isSameOrBefore(endDate)) {
           daysInRange.push(current.format("YYYY-MM-DD"));
@@ -65,8 +73,11 @@ export default function PerformancePreview() {
           const dateKey = dayjs(item.date).format("YYYY-MM-DD");
           performanceMap[dateKey] = item.performance;
         });
+        const datasetData = daysInRange.map((day) => {
+          const value = performanceMap[day] ?? 0;
+          return value === 0 ? null : value;
+        });
 
-        const datasetData = daysInRange.map((day) => performanceMap[day] ?? 0);
         const formattedLabels = daysInRange.map((day) =>
           dayjs(day).format("DD MMM")
         );
@@ -80,6 +91,7 @@ export default function PerformancePreview() {
               fill: false,
               borderColor: "rgb(75, 192, 192)",
               tension: 0.1,
+              spanGaps: true,
             },
           ],
         });
@@ -97,6 +109,27 @@ export default function PerformancePreview() {
     selectedRange.end.toDate(getLocalTimeZone())
   ).format("DD MMM YY")}`;
 
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        calendarRef.current &&
+        !calendarRef.current.contains(event.target as Node)
+      ) {
+        setShowCalendar(false);
+      }
+    }
+    if (showCalendar) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showCalendar]);
+  const isDateUnavailable = (date: CalendarDate) => {
+    return date.compare(tomorrow) > 0;
+  };
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       <div className="flex justify-center items-center pb-6 border-b border-[#31394f14]">
@@ -108,9 +141,8 @@ export default function PerformancePreview() {
           My Performance
         </H3>
       </div>
-
-      <div className="flex flex-col md:flex-row md:justify-between md:items-start py-6 gap-6">
-        <div className="">
+      <div className="flex justify-end mt-5">
+        <div className="md:w-[250px] w-full" ref={calendarRef}>
           <Button
             onPress={() => setShowCalendar(!showCalendar)}
             className="flex items-center gap-9 border px-4 py-2 rounded bg-white shadow text-sm font-medium"
@@ -125,7 +157,7 @@ export default function PerformancePreview() {
           </Button>
 
           <div
-            className={`transition-all duration-300 ease-in-out overflow-hidden bg-white border shadow rounded mt-2 ${showCalendar
+            className={`transition-all absolute duration-300 ease-in-out overflow-hidden bg-white border shadow rounded mt-2 ${showCalendar
               ? "max-h-[500px] opacity-100 scale-100"
               : "max-h-0 opacity-0 scale-95"
               }`}
@@ -141,21 +173,22 @@ export default function PerformancePreview() {
             <div className="p-2">
               <RangeCalendar
                 aria-label="Select Range"
-                value={selectedRange}
-                onChange={setSelectedRange}
+                value={selectedRange as any}
+                onChange={(range) => {
+                  setSelectedRange(range as any);
+                  setShowCalendar(false);
+                }}
+                isDateUnavailable={isDateUnavailable as any}
               />
             </div>
           </div>
         </div>
-
-        <div
-          className="w-full md:w-2/3 lg:w-3/4 md:h-[600px] h-[400px]"
-        // style={{ width: "75%", margin: "auto" }}
-        >
+      </div>
+      <div className="flex flex-col md:flex-row md:justify-between md:items-start py-6 gap-6">
+        <div className="w-full md:h-[600px] h-[400px]">
           <MyChart data={data} />
         </div>
       </div>
-   
     </div>
   );
 }

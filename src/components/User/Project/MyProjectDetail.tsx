@@ -122,12 +122,16 @@ export default function MyProjectDetails({ code }: Props) {
   useEffect(() => {
     if (user?.id && projectId) {
       setSelectedUserIds([]);
-      fetchKanbonList([]);
     }
     if (projectId) {
       fetchUsers();
     }
   }, [user?.id]);
+
+  useEffect(() => {
+    fetchKanbonList([]);
+
+  }, [projectId])
   const fetchTasks = async (projectId: string, page = 1, limit = 100) => {
     try {
       const res = await TaskService.getTasksByProject(projectId, page, limit);

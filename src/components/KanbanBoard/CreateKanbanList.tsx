@@ -35,6 +35,7 @@ export const CreateKanbanList = () => {
       title: "",
       sort_order: 1,
       project: "",
+      color: ""
     },
   });
 
@@ -119,6 +120,10 @@ export const CreateKanbanList = () => {
         {errors.project && (
           <p className="text-red-500 text-sm">{errors.project.message}</p>
         )}
+        <div className="py-2">
+
+          <Input type="color" className="w-[90px]" {...register("color")} />
+        </div>
         <div className="flex justify-center">
           <Button
             type="submit"

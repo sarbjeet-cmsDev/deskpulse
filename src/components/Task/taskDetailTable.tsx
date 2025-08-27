@@ -19,6 +19,7 @@ import { updateEstimateSchema } from "../validation/userValidation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import formatMinutes from "@/utils/formatMinutes";
 import { getSocket } from "@/utils/socket";
+import { isDarkColor } from "@/utils/IsDarkColor";
 
 interface DetailsProps {
   project: {
@@ -52,15 +53,21 @@ export enum PriorityEnum {
   MEDIUM = "medium",
   HIGH = "high",
 }
+const priorityOption: any = [
+  { title: "low", color: "rgb(220, 24, 214)" },
+  { title: "medium", color: "rgb(0, 153, 255)" },
+  { title: "high", color: "rgb(209, 0, 0)" },
+];
 
-export enum ClientAcceptance {
-  PENDING = "pending",
-  AVERAGE = "Average",
-  GOOD = "Good",
-  SATISFIED = "Satisfied",
-  VERY_SATISFIED = "Very Satisfied",
-  EXCELLENT = "Excellent",
-}
+const ClientAcceptance: any = [
+  { title: "Pending", color: "rgb(220, 24, 214)" },
+  { title: "Average", color: "rgb(225, 249, 47)" },
+  { title: "Good", color: "rgb(0, 128, 0)" },
+  { title: "Satisfied", color: "rgb(0, 153, 255)" },
+  { title: "Very Satisfied", color: "rgb(255, 165, 0)" },
+  { title: "Excellent", color: "rgb(0, 200, 0)" },
+];
+
 type EstimateInput = z.infer<typeof updateEstimateSchema>;
 
 export default function DetailsTable({
@@ -84,7 +91,8 @@ export default function DetailsTable({
   const [assignedUser, setAssignedUser] = useState<IUser[]>([]);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const loginUser: any = useSelector((state: RootState) => state.user.data);
-
+  const priortiyactiveColor = localStorage.getItem("priortiyactiveColor")
+  const ClientAcceptanceColor = localStorage.getItem("isCientAcceptanceColor")
   const handleOpenModal = () => {
     setIsModalOpen(true);
   };
@@ -101,7 +109,7 @@ export default function DetailsTable({
       setAssignedUser([user as IUser]);
       fetchKanbanList(task?.project);
       if (onTaskUpdate) onTaskUpdate();
-    } catch (error) {}
+    } catch (error) { }
   };
 
   useEffect(() => {
@@ -139,7 +147,7 @@ export default function DetailsTable({
   const fetchKanbanList = async (projectId: string) => {
     try {
       const res = await ProjectKanbon.getProjectKanbonList(projectId);
-      const titles = res?.data?.map((item: any) => item.title);
+      const titles = res?.data?.map((item: any) => item);
       setKanbanList(titles);
     } catch (error) {
       console.log("failed to fetch kanban list", error);
@@ -189,6 +197,21 @@ export default function DetailsTable({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [editEstimate]);
+
+  const activeColor: any = kanbanList?.find(
+    (item: any) => item?.title === task?.status
+  );
+  const style = activeColor?.color
+    ? {
+      backgroundColor: activeColor.color ? activeColor.color : "#7980ff",
+      color: isDarkColor(activeColor.color) ? "white" : "black",
+    }
+    : {
+      backgroundColor: activeColor?.color ? activeColor?.color : "#7980ff",
+    };
+  const activepriortiyactiveColor: any = priorityOption?.find(
+    (item: any) => item?.title === task?.task?.priority
+  );
   return (
     <div>
       <ul className="mt-[24px]">
@@ -274,7 +297,8 @@ export default function DetailsTable({
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setIsStatusModalOpen(true)}
-                className="bg-theme-primary text-white text-[12px] px-[9px] py-[4px] rounded-[8px] font-500"
+                className={` text-white text-[12px] px-[9px] py-[4px] rounded-[8px] font-500`}
+                style={style}
               >
                 {task?.status?.replace(/_/g, " ").toUpperCase()}
               </button>
@@ -282,11 +306,13 @@ export default function DetailsTable({
                 title="Update Task Status"
                 options={kanbanList}
                 currentValue={task?.status}
+                currentColor={task?.color}
                 isOpen={isStatusModalOpen}
                 onClose={() => setIsStatusModalOpen(false)}
                 taskId={taskId}
                 fieldName="status"
                 onUpdate={onTaskUpdate}
+
               />
             </div>
           </div>
@@ -386,18 +412,20 @@ export default function DetailsTable({
                   user?.role === "admin" && setIsPriorityModalOpen(true)
                 }
                 className="bg-theme-primary text-white text-[12px] px-[9px] py-[4px] rounded-[8px] font-500"
+                style={{ backgroundColor: priortiyactiveColor ? priortiyactiveColor : "rgb(220, 24, 214) " }}
               >
                 {task?.priority?.toUpperCase()}
               </button>
               <TaskPropertyUpdateModal
                 title="Update Task Priority"
-                options={Object.values(PriorityEnum)}
+                options={priorityOption}
                 currentValue={task?.priority}
                 isOpen={isPriorityModalOpen}
                 onClose={() => setIsPriorityModalOpen(false)}
                 taskId={taskId}
                 fieldName="priority"
                 onUpdate={onTaskUpdate}
+                isPriority={true}
               />
             </div>
           </div>
@@ -499,18 +527,20 @@ export default function DetailsTable({
                   user?.role === "admin" && setIsClientAcceptanceModalOpen(true)
                 }
                 className="bg-theme-primary text-white text-[12px] px-[9px] py-[4px] rounded-[8px] font-500"
+                style={{ backgroundColor: ClientAcceptanceColor ? ClientAcceptanceColor : "rgb(220, 24, 214) " }}
               >
                 {task?.client_acceptance?.toUpperCase()}
               </button>
               <TaskPropertyUpdateModal
                 title="Update Client Acceptance"
-                options={Object.values(ClientAcceptance)}
+                options={ClientAcceptance}
                 currentValue={task?.client_acceptance}
                 isOpen={isClientAcceptanceModalOpen}
                 onClose={() => setIsClientAcceptanceModalOpen(false)}
                 taskId={taskId}
                 fieldName="client_acceptance"
                 onUpdate={onTaskUpdate}
+                isCientAcceptance={true}
               />
             </div>
           </div>

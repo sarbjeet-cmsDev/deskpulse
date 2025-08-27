@@ -1,4 +1,3 @@
-"use client";
 import { useEffect, useState } from "react";
 import { Input } from "../Form/Input";
 import { Button } from "../Form/Button";
@@ -7,7 +6,6 @@ import { confirmDelete } from "@/utils/confirmDelete";
 import { useRouter } from "next/navigation";
 import TaskService from "@/service/task.service";
 import { H3 } from "../Heading/H3";
-
 
 import {
   DndContext,
@@ -27,13 +25,13 @@ import { CSS } from "@dnd-kit/utilities";
 type KanbanItem = {
   _id: string;
   title: string;
+  color?: string;
   sort_order: number;
 };
 type UpdateKanbanListProps = {
   projectId: any;
   project: any;
 };
-
 
 const SortableKanbanItem = ({
   item,
@@ -42,13 +40,8 @@ const SortableKanbanItem = ({
   item: KanbanItem;
   children: React.ReactNode;
 }) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-  } = useSortable({ id: item._id });
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: item._id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -62,20 +55,18 @@ const SortableKanbanItem = ({
   );
 };
 
-export const UpdateKanbanList = ({
-  projectId,
-  project,
-}: UpdateKanbanListProps) => {
+export const UpdateKanbanList = ({ projectId, project }: UpdateKanbanListProps) => {
   const [kanbanList, setKanbanList] = useState<KanbanItem[]>([]);
   const [editedTitles, setEditedTitles] = useState<{ [id: string]: string }>({});
+  const [editedColors, setEditedColors] = useState<{ [id: string]: string }>({});
   const [activeEditId, setActiveEditId] = useState<string | null>(null);
   const [errors, setErrors] = useState<{ [id: string]: string }>({});
   const [task, setTask] = useState<any[]>([]);
   const router = useRouter();
 
-  const sensors = useSensors(useSensor(PointerSensor, {
-    activationConstraint: { distance: 5 }
-  }));
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
+  );
 
   useEffect(() => {
     const fetchKanbanList = async () => {
@@ -85,10 +76,16 @@ export const UpdateKanbanList = ({
           (a: KanbanItem, b: KanbanItem) => a.sort_order - b.sort_order
         );
         setKanbanList(sortedKanbans);
+
         const titleMap = Object.fromEntries(
           sortedKanbans.map((item: KanbanItem) => [item._id, item.title])
         );
         setEditedTitles(titleMap);
+
+        const colorMap = Object.fromEntries(
+          sortedKanbans.map((item: KanbanItem) => [item._id, item.color || "#ffffff"])
+        );
+        setEditedColors(colorMap);
 
         const taskRes = await TaskService.getTasksByProject(projectId);
         setTask(taskRes.data);
@@ -97,27 +94,42 @@ export const UpdateKanbanList = ({
       }
     };
     fetchKanbanList();
-  }, []);
+  }, [projectId]);
 
   const handleTitleChange = (id: string, value: string) => {
     setEditedTitles((prev) => ({ ...prev, [id]: value }));
-    if (value.trim()) {
+    if (value.trim()) setErrors((prev) => ({ ...prev, [id]: "" }));
+  };
+
+  const handleColorChange = (id: string, value: string) => {
+    const isValid = /^#[0-9A-Fa-f]{6}$/.test(value);
+    if (!isValid) {
+      setErrors((prev) => ({ ...prev, [id]: "Invalid color format" }));
+    } else {
       setErrors((prev) => ({ ...prev, [id]: "" }));
+      setEditedColors((prev) => ({ ...prev, [id]: value }));
     }
   };
 
   const handleEdit = async (id: string) => {
     const newTitle = editedTitles[id]?.trim();
+    const newColor = editedColors[id];
+
     if (!newTitle) {
       setErrors((prev) => ({ ...prev, [id]: "Title is required" }));
       return;
     }
 
+    if (!/^#[0-9A-Fa-f]{6}$/.test(newColor)) {
+      setErrors((prev) => ({ ...prev, [id]: "Invalid color format" }));
+      return;
+    }
+
     try {
-      await ProjectKanbon.updateKanbanList({ title: newTitle }, id);
+      await ProjectKanbon.updateKanbanList({ title: newTitle, color: newColor }, id);
       setKanbanList((prev) =>
         prev.map((item) =>
-          item._id === id ? { ...item, title: newTitle } : item
+          item._id === id ? { ...item, title: newTitle, color: newColor } : item
         )
       );
     } catch (error) {
@@ -133,9 +145,7 @@ export const UpdateKanbanList = ({
       const deletingKanban = kanbanList.find((item) => item._id === id);
       if (!deletingKanban) return;
 
-      const matchingTasks = task.filter(
-        (t: any) => t.status === deletingKanban.title
-      );
+      const matchingTasks = task.filter((t: any) => t.status === deletingKanban.title);
 
       await Promise.all(
         matchingTasks.map((t: any) =>
@@ -170,8 +180,8 @@ export const UpdateKanbanList = ({
     const payload = {
       data: reordered.map((item, i) => ({
         _id: item._id,
-        sort_order: i
-      }))
+        sort_order: i,
+      })),
     };
 
     try {
@@ -180,8 +190,6 @@ export const UpdateKanbanList = ({
       console.error(error);
     }
   };
-
-
 
   return (
     <div className="container mx-auto max-w-3xl md:p-0 p-1">
@@ -198,11 +206,18 @@ export const UpdateKanbanList = ({
         >
           {kanbanList.map((item) => (
             <SortableKanbanItem key={item._id} item={item}>
-              <div className={`flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-3 py-1 px-3 rounded border ${activeEditId === item._id ? "bg-yellow-100" : "bg-gray-50"}`}>
+              <div
+                className={`flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-3 py-1 px-3 rounded border ${activeEditId === item._id ? "bg-yellow-100" : "bg-gray-50"
+                  }`}
+
+              >
                 <div className="w-full flex-1">
                   <Input
                     value={editedTitles[item._id] || ""}
-                    onChange={(e) => { handleTitleChange(item._id, e.target.value); setActiveEditId(item._id); }}
+                    onChange={(e) => {
+                      handleTitleChange(item._id, e.target.value);
+                      setActiveEditId(item._id);
+                    }}
                     onFocus={() => setActiveEditId(item._id)}
                     onBlur={() => setActiveEditId(null)}
                     className="w-full"
@@ -212,17 +227,19 @@ export const UpdateKanbanList = ({
                     <p className="text-red-500 text-sm mt-1">{errors[item._id]}</p>
                   )}
                 </div>
+
+                <Input
+                  type="color"
+                  className="w-[90px]"
+                  value={editedColors[item._id] || "#ffffff"}
+                  onChange={(e) => handleColorChange(item._id, e.target.value)}
+                />
+
                 <div className="flex gap-2 mt-2 sm:mt-0">
-                  <Button
-                    onPress={() => handleEdit(item._id)}
-                    className="btn-primary"
-                  >
+                  <Button onPress={() => handleEdit(item._id)} className="btn-primary">
                     {activeEditId === item._id ? "Update" : "Edit"}
                   </Button>
-                  <Button
-                    onPress={() => handleDelete(item._id)}
-                    className="text-red-600"
-                  >
+                  <Button onPress={() => handleDelete(item._id)} className="text-red-600">
                     Delete
                   </Button>
                 </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
@@ -41,6 +41,7 @@ const TimeSheetList = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const user: any = useSelector((state: RootState) => state.auth.user);
+  const calendarRef = useRef<HTMLDivElement | null>(null);
 
   const [tasks, setTasks] = useState<Task[]>([]);
   const [search, setSearch] = useState("");
@@ -78,28 +79,28 @@ const TimeSheetList = () => {
     }
   }, [user?.id, debouncedSearch, page, sortOrder, sortField, selectedRange]);
 
- const fetchTasks = async () => {
-  try {
-    const startDate = selectedRange.start.toDate(getLocalTimeZone()).toISOString();
-    const endDate = selectedRange.end.toDate(getLocalTimeZone()).toISOString();
+  const fetchTasks = async () => {
+    try {
+      const startDate = selectedRange.start.toDate(getLocalTimeZone()).toISOString();
+      const endDate = selectedRange.end.toDate(getLocalTimeZone()).toISOString();
 
-    const res = await TimelineService.getTimeLineList(user?.id, page, limit, startDate, endDate);
+      const res = await TimelineService.getTimeLineList(user?.id, page, limit, startDate, endDate);
 
-    const timelineData = res?.data || [];
+      const timelineData = res?.data || [];
 
-    const cleanedTasks: Task[] = timelineData.map((item: any) => ({
-      task_title: item.task_title,
-      comment: item.comment,
-      time_spent: item.time_spent,
-    }));
+      const cleanedTasks: Task[] = timelineData.map((item: any) => ({
+        task_title: item.task_title,
+        comment: item.comment,
+        time_spent: item.time_spent,
+      }));
 
-    setTasks(cleanedTasks);
-    setTotalRecords(res.total || 0);
-    setTotalPages(Math.ceil((res.total || 0) / limit));
-  } catch (err) {
-    console.error("Failed to fetch tasks", err);
-  }
-};
+      setTasks(cleanedTasks);
+      setTotalRecords(res.total || 0);
+      setTotalPages(Math.ceil((res.total || 0) / limit));
+    } catch (err) {
+      console.error("Failed to fetch tasks", err);
+    }
+  };
 
   const headers = [
     { id: "taskNumber", title: "TimeSheet", is_sortable: false },
@@ -131,23 +132,33 @@ const TimeSheetList = () => {
   ).format("DD MMM YY")} - ${dayjs(
     selectedRange.end.toDate(getLocalTimeZone())
   ).format("DD MMM YY")}`;
-
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        calendarRef.current &&
+        !calendarRef.current.contains(event.target as Node)
+      ) {
+        setShowCalendar(false);
+      }
+    }
+    if (showCalendar) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showCalendar]);
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
+    <div className="flex flex-col min-h-screen ">
       <main className="flex-1 p-4 sm:p-6 md:p-8 w-full">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
           <h1 className="text-xl md:text-2xl font-semibold text-gray-800">
             Time Sheet
           </h1>
-          <AvatarList
-            users={users}
-            selectedUserIds={selectedUserIds}
-            setSelectedUserIds={setSelectedUserIds}
-          />
-        </div>
 
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="md:w-1/4 w-full">
+          <div className="md:w-[250px] w-full" ref={calendarRef}>
             <Button
               onPress={() => setShowCalendar(!showCalendar)}
               className="flex justify-between items-center w-full border px-4 py-2 rounded bg-white shadow-sm text-sm font-medium"
@@ -162,11 +173,10 @@ const TimeSheetList = () => {
             </Button>
 
             <div
-              className={`transition-all duration-300 ease-in-out overflow-hidden border bg-white shadow rounded mt-2 ${
-                showCalendar
-                  ? "max-h-[500px] opacity-100 scale-100"
-                  : "max-h-0 opacity-0 scale-95"
-              }`}
+              className={`transition-all absolute duration-300 ease-in-out overflow-hidden border bg-white shadow rounded mt-2 ${showCalendar
+                ? "max-h-[500px] opacity-100 scale-100"
+                : "max-h-0 opacity-0 scale-95"
+                }`}
             >
               <div className="flex justify-end p-2">
                 <Button
@@ -180,13 +190,25 @@ const TimeSheetList = () => {
                 <RangeCalendar
                   aria-label="Select Range"
                   value={selectedRange}
-                  onChange={setSelectedRange}
+                  // onChange={setSelectedRange}
+
+                  onChange={(range) => {
+                    setSelectedRange(range as any);
+                    setShowCalendar(false);
+                  }}
                 />
               </div>
             </div>
           </div>
 
-          <div className="md:w-3/4 w-full">
+
+
+        </div>
+
+        <div className="flex flex-col md:flex-row gap-4">
+
+
+          <div className=" w-full">
             <Datagrid
               headers={headers}
               rows={rows}

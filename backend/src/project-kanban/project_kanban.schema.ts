@@ -11,6 +11,9 @@ export class ProjectKanban extends Document {
 
   @Prop({ type: Types.ObjectId, ref: 'Project', required: true })
   project: Types.ObjectId;
+
+  @Prop({ required: true })
+  color: string;
 }
 
 export const ProjectKanbanSchema = SchemaFactory.createForClass(ProjectKanban);

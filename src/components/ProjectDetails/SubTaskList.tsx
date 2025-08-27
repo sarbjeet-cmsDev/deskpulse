@@ -14,7 +14,7 @@ interface KanbanItem {
 
 interface SubTasksProps {
   tasks: any[];
-  kanbanList?: KanbanItem[];
+  kanbanList?: any;
   isKanban?: any;
 }
 
@@ -34,7 +34,7 @@ export default function SubTasks({
   }
 
   const uniqueStatuses = kanbanList?.length
-    ? Array.from(new Set(kanbanList.map((k) => k.title.toLowerCase())))
+    ? Array.from(new Set(kanbanList.map((k: any) => k.title.toLowerCase())))
     : Array.from(
       new Set(tasks.map((t) => t.status?.toLowerCase()).filter(Boolean))
     );
@@ -71,7 +71,6 @@ export default function SubTasks({
         const totalItems = filteredTasks.length;
         const visibleCount = getVisibleCount(status);
         const visibleTasks = filteredTasks.slice(0, visibleCount);
-
         return (
           <div key={status}>
             {isKanban && (
@@ -85,38 +84,45 @@ export default function SubTasks({
                 <li
                   key={task._id}
                   className="inactive bg-[#f8fafc] w-full py-[15px] px-[20px] rounded-[8px] border-l-[8px] border-l-[#5fd788] mt-[16px]"
+
+                  style={{
+                    borderLeft: "8px solid",
+                    borderLeftColor: kanbanList?.find(
+                      (k: any) => k.title.toLowerCase() === task.status?.toLowerCase()
+                    )?.color || "#5fd788",
+                  }}
                 >
                   <Link
                     href={`/task/${task.code}`}
-                    className="flex justify-between items-center gap-2 max-[768px]:flex-wrap max-[768px]:justify-start max-[768px]:items-start max-[768px]:relative max-[768px]:gap-4"
+                    className="flex justify-between items-center gap-2 flex-wrap max-w-full p-2"
                   >
-                    <span className="text-[#333] font-medium truncate max-[768px]:max-w-[90%]">
+                    <span className="text-[#333] font-medium truncate max-w-[60%]">
                       {task.title}
                     </span>
 
-                    <div className="flex items-center gap-4 shrink-0 max-[768px]:flex-column max-[768px]:items-start max-[768px]:flex-wrap max-[768px]:max-w-[100%]">
+                    <div className="flex items-center gap-3 flex-wrap shrink-0">
                       {task.assigned_to?.firstName && task.assigned_to?.lastName && (
-
-                        <div className="flex item-center gap-2 max-[768px]:min-w-[100%] max-[768px]:w-[100%]">
-                          <span className="text-[#333] font-bold">Assign to:</span>
-                          <span>{`${task.assigned_to?.firstName} ${task.assigned_to?.lastName}`}</span>
-                        </div>
+                        <span className="text-sm text-gray-700 truncate max-w-[100px]">
+                          {task.assigned_to.firstName} {task.assigned_to.lastName}
+                        </span>
                       )}
 
-                      <div className="flex item-center gap-2 max-[768px]:min-w-[100%] max-[768px]:w-[100%]">
-                        <span className="text-[#333] font-bold">Priority:</span>
-                        <span>{task.priority}</span>
-                      </div>
+                      {task.priority && (
+                        <span className="text-sm text-gray-700 truncate max-w-[60px]">
+                          {task.priority}
+                        </span>
+                      )}
 
-                      <div className="flex item-center gap-2 max-[768px]:min-w-[100%] max-[768px]:w-[100%]">
-                        <span className="text-[#333] font-bold">Due Date:</span>
-                        <span>{formatDate(task.due_date)}</span>
-                      </div>
-                      <LuEye size={20} />
+                      {task.due_date && (
+                        <span className="text-sm text-gray-700 truncate max-w-[80px]">
+                          {formatDate(task.due_date)}
+                        </span>
+                      )}
 
-
+                      <LuEye size={18} className="text-gray-500" />
                     </div>
                   </Link>
+
                 </li>
               ))}
             </ul>

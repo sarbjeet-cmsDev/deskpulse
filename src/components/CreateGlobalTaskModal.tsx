@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import ReactSelect from "react-select";
@@ -9,7 +9,7 @@ import { getSocket } from "@/utils/socket";
 import { Button } from "@/components/Form/Button";
 import { Input } from "@/components/Form/Input";
 import { H5 } from "@/components/Heading/H5";
-import TaskService, { ITask } from "@/service/task.service";
+import TaskService from "@/service/task.service";
 import ProjectService from "@/service/project.service";
 import { IUser } from "@/service/adminUser.service";
 import { taskGlobalSchema } from "./validation/taskValidation";
@@ -18,7 +18,7 @@ import { useSelector } from "react-redux";
 import AdminProjectService from "@/service/adminProject.service";
 import DescriptionInputToolbar from "./common/Description/descriptionToolbar";
 import { ProjectKanbon } from "@/service/projectKanbon.service";
-import { useParams, usePathname, useSearchParams } from "next/navigation";
+import { useParams } from "next/navigation";
 
 interface CreateGlobalTaskModalProps {
   isOpen: boolean;
@@ -34,39 +34,24 @@ interface CreateGlobalTaskModalProps {
   ) => Promise<void>;
 }
 
+interface ProjectOption {
+  label: string;
+  value: string;
+}
+
 export default function CreateGlobalTaskModal({
   isOpen,
   onClose,
   onCreate,
 }: CreateGlobalTaskModalProps) {
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
+  const { projectId: code } = useParams(); // route param (if exists)
+
   const [projectOptions, setProjectOptions] = useState<ProjectOption[]>([]);
   const [userOptions, setUserOptions] = useState<ProjectOption[]>([]);
+  const [kanbanList, setKanbanList] = useState<ProjectOption[]>([]);
   const [loading, setLoading] = useState(false);
-  const [kanbanList, setKanbanList] = useState<any>()
+
   const loginUser: any = useSelector((state: RootState) => state.user.data);
-  const [getProjectId, setGetProjectId] = useState()
-  const { projectId: code } = useParams()
-  const { id } = useParams()
-  const fetchProjectByCode = async () => {
-    const result = await ProjectService.getProjectByCode(code as string);
-    setGetProjectId(result?._id);
-  };
-  useEffect(() => {
-    if (code) {
-
-      fetchProjectByCode();
-    }
-  }, [code]);
-
-
-
-
-  interface ProjectOption {
-    label: string;
-    value: string;
-  }
   const socketRef = useRef(getSocket());
 
   const {
@@ -85,7 +70,7 @@ export default function CreateGlobalTaskModal({
         estimated_time: true,
         assigned_to: true,
         projectId: true,
-        status: true
+        status: true,
       })
     ),
     defaultValues: {
@@ -95,12 +80,33 @@ export default function CreateGlobalTaskModal({
       estimated_time: "",
       assigned_to: null,
       projectId: null,
-      status: null
+      status: null,
     },
   });
 
   const projectId = watch("projectId");
-  // Fetch project list
+
+  // 🔹 Auto-select project if code in route
+  useEffect(() => {
+    async function fetchProjectByCode() {
+      if (!code) return;
+      try {
+        const result = await ProjectService.getProjectByCode(code as string);
+        if (result?._id) {
+          // set projectId once from route
+          reset((prev: any) => ({
+            ...prev,
+            projectId: result._id,
+          }));
+        }
+      } catch (err) {
+        console.error("Failed to fetch project by code:", err);
+      }
+    }
+    fetchProjectByCode();
+  }, [code, reset]);
+
+  // 🔹 Fetch project list
   useEffect(() => {
     async function fetchProjects() {
       try {
@@ -110,98 +116,73 @@ export default function CreateGlobalTaskModal({
             .find((row) => row.startsWith(name + "="));
           return match ? decodeURIComponent(match.split("=")[1]) : null;
         };
-
         const role = getCookie("role");
-
         let res;
-
         if (role === "admin") {
           res = await AdminProjectService.getAllProjectListing();
         } else {
           res = await ProjectService.getProjectByUserId();
         }
-
         const options = (res?.data || []).map((p: any) => ({
           value: p._id,
           label: p.title,
         }));
-
         setProjectOptions(options);
       } catch (err) {
         console.error("Error fetching projects:", err);
       }
     }
-
     fetchProjects();
   }, []);
 
-  // Fetch users based on selected project
+  // 🔹 Fetch users & Kanban when project changes
   useEffect(() => {
-    async function fetchUsers() {
+    async function fetchUsersAndKanban() {
       if (!projectId) {
         setUserOptions([]);
+        setKanbanList([]);
         return;
       }
-
       try {
         const res = await ProjectService.getProjectUsers(projectId);
-        const result = await ProjectKanbon.getProjectKanbonList(projectId || getProjectId);
-        const KanbanListoptions = result.data?.map((kanban: any) => ({
-          value: kanban.title,
-          label: kanban.title,
-        }));
-        setKanbanList(KanbanListoptions)
-        const users = res?.users || [];
+        const result = await ProjectKanbon.getProjectKanbonList(projectId);
 
+        const KanbanListoptions =
+          result.data?.map((kanban: any) => ({
+            value: kanban.title,
+            label: kanban.title,
+          })) || [];
+        setKanbanList(KanbanListoptions);
+
+        const users = res?.users || [];
         const options = users.map((user: IUser) => ({
           value: user._id,
           label: `${user.firstName} ${user.lastName} (${user.email})`,
         }));
-
         setUserOptions(options);
       } catch (err) {
         console.error("Failed to fetch users:", err);
         setUserOptions([]);
+        setKanbanList([]);
       }
     }
-
-    fetchUsers();
+    fetchUsersAndKanban();
   }, [projectId]);
 
-
-  useEffect(() => {
-    if (getProjectId || id) {
-      reset((prev: any) => ({
-        ...prev,
-        projectId: getProjectId || id, // auto-select project
-      }));
-    }
-  }, [getProjectId, id, reset]);
-
-
-
+  // 🔹 Handle Create Task
   const handleCreate = async (values: any) => {
     setLoading(true);
-    // Destructure values from the form
-    const {
-      title,
-      description,
-      projectId,
-      due_date,
-      estimated_time,
-      assigned_to,
-      status
-    } = values;
+    const { title, description, projectId, due_date, estimated_time, assigned_to, status } = values;
 
     try {
-      let res = await TaskService.createTask({
+      await TaskService.createTask({
         title,
         description,
         project: projectId || "",
         assigned_to: assigned_to || "",
         due_date,
-        estimated_time: values.estimated_time,
-        status
+        estimated_time,
+        status,
       });
 
       if (title) {
@@ -211,22 +192,18 @@ export default function CreateGlobalTaskModal({
         socketRef.current.on("connect", () => {
           socketRef.current.emit("register-user", loginUser.id);
         });
-
         socketRef.current.emit("task-updated", {
           taskId: "1111",
           sender: assigned_to
-            ? loginUser.firstName + " " + loginUser.lastName
+            ? `${loginUser.firstName} ${loginUser.lastName}`
             : "This",
           receiverId: assigned_to || "",
           description: assigned_to
             ? `Assigned you a task : ${title}`
             : `${title} task is assigned by you.`,
         });
-
-        console.log(
-          "✅ socket event 'task-updated' hit while assigned user in project"
-        );
       }
+
       reset();
       onClose();
     } catch (err) {
@@ -245,16 +222,13 @@ export default function CreateGlobalTaskModal({
           </H5>
 
           <form onSubmit={handleSubmit(handleCreate)} className="p-4 space-y-4">
+            {/* Title */}
             <Input label="Title" type="text" {...register("title")} />
             {errors.title && (
               <p className="text-red-500 text-xs">{errors.title.message}</p>
             )}
 
-            {/* <Input
-              label="Description"
-              type="text"
-              {...register("description")}
-            /> */}
+            {/* Description */}
             <Controller
               name="description"
               control={control}
@@ -270,84 +244,68 @@ export default function CreateGlobalTaskModal({
             {errors.description && (
               <p className="text-sm text-red-500">{errors.description.message}</p>
             )}
-            {/* <textarea
-              {...register("description")}
-              rows={2}
-              className="w-full rounded-lg border border-gray-100 bg-gray-100 p-2 focus:outline-none"
-              placeholder="Write description..."
-            />
-            {errors.description && (
-              <p className="text-red-500 text-xs">
-                {errors.description.message}
-              </p>
-            )} */}
 
+            {/* Due Date */}
             <Input label="Due Date" type="date" {...register("due_date")} />
             {errors.due_date && (
               <p className="text-red-500 text-xs">{errors.due_date.message}</p>
             )}
-            <Input
-              label="Time Estimate"
-              type="text"
-              {...register("estimated_time")}
-            />
+
+            {/* Time Estimate */}
+            <Input label="Time Estimate" type="text" {...register("estimated_time")} />
             {errors.estimated_time && (
-              <p className="text-red-500 text-xs">
-                {errors.estimated_time.message}
-              </p>
+              <p className="text-red-500 text-xs">{errors.estimated_time.message}</p>
             )}
 
-            {/* Project Selector */}
+            {/* Project */}
             <label className="block text-sm font-medium">Select Project</label>
             <Controller
               name="projectId"
               control={control}
               render={({ field }) => {
-                const valueToUse = field.value || getProjectId || id || null;
-
                 const selectedOption =
-                  projectOptions.find((opt) => opt.value === valueToUse) ||
-                  null;
-
+                  projectOptions.find((opt) => opt.value === field.value) || null;
                 return (
                   <ReactSelect
                     options={projectOptions}
                     value={selectedOption}
-                    onChange={(selected) => field.onChange(selected?.value ?? null)}
-
+                    onChange={(selected) =>
+                      field.onChange(selected?.value ?? null)
+                    }
                     isClearable
                   />
                 );
               }}
             />
-
             {errors.projectId && (
               <p className="text-red-500 text-xs">{errors.projectId.message}</p>
             )}
+
+            {/* Kanban */}
             <label className="block text-sm font-medium">Select Kanban</label>
             <Controller
               name="status"
               control={control}
               render={({ field }) => {
                 const selectedOption =
-                  kanbanList?.find((opt: any) => opt.value === field.value) || null;
-
+                  kanbanList.find((opt) => opt.value === field.value) || null;
                 return (
                   <ReactSelect
                     options={kanbanList}
                     value={selectedOption}
-                    onChange={(selected) => field.onChange(selected?.value ?? null)}
+                    onChange={(selected) =>
+                      field.onChange(selected?.value ?? null)
+                    }
                     isClearable
                   />
                 );
               }}
             />
-
-
             {errors.status && (
               <p className="text-red-500 text-xs">{errors.status.message}</p>
             )}
-            {/* Assigned To */}
+
+            {/* Assign User */}
             <label className="block text-sm font-medium">Assign User</label>
             <Controller
               name="assigned_to"
@@ -367,7 +325,6 @@ export default function CreateGlobalTaskModal({
                 );
               }}
             />
-
             {errors.assigned_to && (
               <p className="text-red-500 text-xs">
                 {errors.assigned_to.message}

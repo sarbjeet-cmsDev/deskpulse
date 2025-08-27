@@ -23,6 +23,9 @@ export class CreateKanbanDto {
   @IsMongoId()
   @IsNotEmpty()
   project: string;
+
+  @IsNotEmpty()
+  color: string;
 }
 
 /**
@@ -37,4 +40,7 @@ export class UpdateKanbanDto {
   @IsOptional()
   @IsNumber()
   sort_order?: number;
+
+  @IsOptional()
+  color?: string;
 }
