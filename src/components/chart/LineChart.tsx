@@ -30,6 +30,7 @@ interface Props {
 export default function LineChart({ data }: Props) {
   const options = {
     responsive: true,
+    spanGaps: true,
     maintainAspectRatio: false,
     plugins: {
       legend: { position: "top" as const },

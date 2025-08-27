@@ -126,7 +126,11 @@ export default function PerformancePreview() {
           performanceMap[dateKey] = item.performance;
         });
 
-        const userData = daysInRange.map((day) => performanceMap[day] ?? 0);
+        // 👇 Replace 0 with null (skip point instead of hitting zero)
+        const userData = daysInRange.map((day) =>
+          performanceMap[day] !== undefined ? performanceMap[day] : null
+        );
+
         const color = updatedColors[userResult.userId];
 
         return {
@@ -161,6 +165,7 @@ export default function PerformancePreview() {
   const isDateUnavailable = (date: CalendarDate) => {
     return date.compare(tomorrow) > 0; // disable only after tomorrow
   };
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
@@ -179,6 +184,7 @@ export default function PerformancePreview() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showCalendar]);
+
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       <div>
@@ -187,8 +193,6 @@ export default function PerformancePreview() {
         </H3>
       </div>
       <div className="flex md:justify-end mt-6 gap-3">
-
-
         <div ref={calendarRef}>
           <Button
             onPress={() => setShowCalendar(!showCalendar)}
@@ -205,8 +209,8 @@ export default function PerformancePreview() {
           {showCalendar && (
             <div
               className={`transition-all absolute duration-300 ease-in-out overflow-hidden bg-white border shadow rounded mt-2 ${showCalendar
-                ? "max-h-[500px] opacity-100 scale-100"
-                : "max-h-0 opacity-0 scale-95"
+                  ? "max-h-[500px] opacity-100 scale-100"
+                  : "max-h-0 opacity-0 scale-95"
                 }`}
             >
               <div className="flex justify-end p-2">
@@ -255,7 +259,10 @@ export default function PerformancePreview() {
 
       <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-6 mt-6">
         <div className="w-full md:w-2/3 lg:w-full md:h-[600px] h-[400px]">
-          <MyChart data={data} />
+          <MyChart
+            data={data}
+
+          />
         </div>
       </div>
     </div>

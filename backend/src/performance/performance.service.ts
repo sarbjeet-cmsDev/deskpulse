@@ -47,9 +47,9 @@ export class PerformanceService {
 
   // Revision weights
   private readonly RevisionWeightage = [
-    { RevisionType: 1, weight: 10 },
-    { RevisionType: 2, weight: 5 },
-    { RevisionType: 3, weight: 0 }, // 3 or more revisions = 0 score
+    { RevisionType: 0, weight: 10 },
+    { RevisionType: 1, weight: 5 },
+    { RevisionType: 2, weight: 0 }, // 3 or more revisions = 0 score
   ];
 
   /**
@@ -74,7 +74,7 @@ export class PerformanceService {
 
     const revisionWeight =
       this.RevisionWeightage.find((t) =>
-        revisionType >= 3 ? t.RevisionType === 3 : t.RevisionType === revisionType
+        revisionType >= 2 ? t.RevisionType === 2 : t.RevisionType === revisionType
       )?.weight || 0;
 
 
