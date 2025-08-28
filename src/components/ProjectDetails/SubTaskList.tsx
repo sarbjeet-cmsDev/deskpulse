@@ -6,6 +6,7 @@ import Image from "next/image";
 import info from "@/assets/images/info.png";
 import ShowMoreLess from "../common/ShowMoreLess/ShowMoreLess";
 import { LuEye } from "react-icons/lu";
+import AvatarList from "../IndexPage/avatarlist";
 
 interface KanbanItem {
   title: string;
@@ -36,8 +37,8 @@ export default function SubTasks({
   const uniqueStatuses = kanbanList?.length
     ? Array.from(new Set(kanbanList.map((k: any) => k.title.toLowerCase())))
     : Array.from(
-      new Set(tasks.map((t) => t.status?.toLowerCase()).filter(Boolean))
-    );
+        new Set(tasks.map((t) => t.status?.toLowerCase()).filter(Boolean))
+      );
 
   const getVisibleCount = (status: string) =>
     visibleCounts[status] ?? TASKS_PER_PAGE;
@@ -54,8 +55,9 @@ export default function SubTasks({
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return "Invalid date";
     return new Intl.DateTimeFormat("en-US", {
-      dateStyle: "medium",
-      // timeStyle: "short",
+    day: "numeric",
+    month: "short", 
+    year: "numeric",
     }).format(date);
   };
 
@@ -84,45 +86,39 @@ export default function SubTasks({
                 <li
                   key={task._id}
                   className="inactive bg-[#f8fafc] w-full py-[15px] px-[20px] rounded-[8px] border-l-[8px] border-l-[#5fd788] mt-[16px]"
-
                   style={{
                     borderLeft: "8px solid",
-                    borderLeftColor: kanbanList?.find(
-                      (k: any) => k.title.toLowerCase() === task.status?.toLowerCase()
-                    )?.color || "#5fd788",
+                    borderLeftColor:
+                      kanbanList?.find(
+                        (k: any) =>
+                          k.title.toLowerCase() === task.status?.toLowerCase()
+                      )?.color || "#5fd788",
                   }}
                 >
                   <Link
                     href={`/task/${task.code}`}
                     className="flex justify-between items-center gap-2 flex-wrap max-w-full p-2"
                   >
-                    <span className="text-[#333] font-medium truncate max-w-[60%]">
+                    <span className="text-[#333] font-medium truncate max-w-[60%]" title="Task Title">
                       {task.title}
                     </span>
 
                     <div className="flex items-center gap-3 flex-wrap shrink-0">
-                      {task.assigned_to?.firstName && task.assigned_to?.lastName && (
-                        <span className="text-sm text-gray-700 truncate max-w-[100px]">
-                          {task.assigned_to.firstName} {task.assigned_to.lastName}
+
+                      {task.due_date && (
+                        <span className="text-sm text-gray-700" title="Due Date">
+                          {formatDate(task.due_date)}
                         </span>
                       )}
-
                       {task.priority && (
-                        <span className="text-sm text-gray-700 truncate max-w-[60px]">
+                        <span className="text-sm text-gray-700 truncate max-w-[60px]" title="Priority">
                           {task.priority}
                         </span>
                       )}
 
-                      {task.due_date && (
-                        <span className="text-sm text-gray-700 truncate max-w-[80px]">
-                          {formatDate(task.due_date)}
-                        </span>
-                      )}
-
-                      <LuEye size={18} className="text-gray-500" />
+                      <AvatarList users={[task?.assigned_to]} />
                     </div>
                   </Link>
-
                 </li>
               ))}
             </ul>

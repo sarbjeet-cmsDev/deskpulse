@@ -93,13 +93,13 @@ const TimeSheetList = () => {
     formState: { errors },
   } = useForm({});
 
+  const selectedProjectId = watch("projectId");
+
   const fetchTasks = async (userIds: string[]) => {
     if (!selectedRange.start || !selectedRange.end) return;
 
     const startDate = dayjs(selectedRange.start.toDate(getLocalTimeZone()));
     const endDate = dayjs(selectedRange.end.toDate(getLocalTimeZone()));
-
-    const selectedProjectId = watch("projectId");
 
     try {
       if (userIds.length > 0) {
@@ -153,6 +153,10 @@ const TimeSheetList = () => {
   useEffect(() => {
     fetchTasks(selectedUserIds);
   }, [watch("projectId")]);
+
+  useEffect(()=>{
+    setPage(1)
+  },[selectedProjectId, selectedRange, selectedUserIds])
 
   const fetchProjects = async () => {
     const projects = await AdminProjectService.getAllProjectListing();
@@ -265,14 +269,14 @@ const TimeSheetList = () => {
     <div className="flex flex-col">
       <main className="flex-1 p-4 sm:p-6 md:p-8 w-full">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-          <div className="md:w-3/4 w-full">
+          <div className="md:w-4/4 w-full">
 
           <h1 className="text-xl md:text-2xl font-semibold text-gray-800">
             Time Sheet
           </h1>
           </div>
 
-          <div className="flex flex-col md:flex-row gap-4 w-2/4 w-full">
+          <div className="flex flex-col md:flex-row gap-4 w-3/4 w-full">
             <div ref={calendarRef} className="md:w-1/3 w-full">
               <Button
                 onPress={() => setShowCalendar(!showCalendar)}
