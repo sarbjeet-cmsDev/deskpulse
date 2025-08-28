@@ -313,13 +313,13 @@ export class TaskService {
         },
         { new: true })
       .exec();
-
-    this.eventEmitter.emit("task.status.updated", {
-      taskObj: updatedTask,
-      oldTaskStatus: oldTaskStatus,
-      updatedBy: updateTaskDto.updated_by,
-    });
-
+    if (newTaskStatus == "done") {
+      this.eventEmitter.emit("task.status.updated", {
+        taskObj: updatedTask,
+        oldTaskStatus: oldTaskStatus,
+        updatedBy: updateTaskDto.updated_by,
+      });
+    }
     return updatedTask;
   }
 

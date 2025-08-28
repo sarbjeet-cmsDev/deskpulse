@@ -24,10 +24,10 @@ export class Project {
   @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'User', required: false }] })
   users: MongooseSchema.Types.ObjectId[];
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: false})
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: false })
   project_coordinator: MongooseSchema.Types.ObjectId;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User',required: false })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: false })
   team_leader: MongooseSchema.Types.ObjectId;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User' })
@@ -63,8 +63,8 @@ export class Project {
   @Prop({ default: 0 })
   sort_order: number;
 
-    @Prop({ default: false })
-  isFavorite: boolean;
+  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'User', required: false }] })
+  isFavorite: MongooseSchema.Types.ObjectId[];
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: false })
   created_by: MongooseSchema.Types.ObjectId;

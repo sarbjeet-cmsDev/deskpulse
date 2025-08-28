@@ -58,14 +58,14 @@ export default function LeftMenuDrawer() {
     { label: "My Projects", href: "/project/list" },
     { label: "MY Task", href: "/mytask" },
     { label: "Reminder", href: "/reminder" },
-    {label:"My Timesheet" , href: "/timesheet"},
+    { label: "My Timesheet", href: "/timesheet" },
     { label: "Create Reminder", href: "/reminder/create" },
     { label: "My Performance", href: "/performance" },
     { label: "Logout", href: "#" },
   ];
 
   const adminMenuItems = [
-    { label: "Home", href: "/" }, 
+    { label: "Home", href: "/" },
     { label: "Profile", href: "/auth/profile" },
     { label: "Projects", href: "/admin/project" },
     { label: "Users", href: "/admin/user" },
@@ -90,7 +90,8 @@ export default function LeftMenuDrawer() {
     localStorage.removeItem("token");
     localStorage.removeItem("type");
     localStorage.removeItem("taskView");
-
+    localStorage.removeItem("isCientAcceptanceColor");
+    localStorage.removeItem("priortiyactiveColor");
     Cookies.remove("token");
     Cookies.remove("role");
     router.push("/auth/login");

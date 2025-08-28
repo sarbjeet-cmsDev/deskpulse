@@ -1,5 +1,6 @@
+"use client";
+
 import { RootState } from "@/store/store";
-import { Button } from "@heroui/react";
 import { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 
@@ -23,8 +24,8 @@ export default function AvatarList({
   users = [],
   onClick,
   selectedUserIds = [],
-  setSelectedUserIds = () => {},
-  fetchKanbonList = () => {},
+  setSelectedUserIds = () => { },
+  fetchKanbonList = () => { },
 }: AvatarListProps) {
   const user = useSelector((state: RootState) => state.auth.user);
   const [imgErrors, setImgErrors] = useState<{ [userId: string]: boolean }>({});
@@ -34,6 +35,13 @@ export default function AvatarList({
   const triggerRef = useRef<HTMLDivElement>(null);
   const [dropUp, setDropUp] = useState(false);
 
+  const checkSpace = () => {
+    const rect = triggerRef.current?.getBoundingClientRect();
+    if (rect) {
+      setDropUp(rect.bottom > 500);
+    }
+  };
+
   useEffect(() => {
     const updateMaxVisible = () => {
       setMaxVisible(window.innerWidth < 768 ? 3 : 5);
@@ -42,7 +50,6 @@ export default function AvatarList({
     window.addEventListener("resize", updateMaxVisible);
     return () => window.removeEventListener("resize", updateMaxVisible);
   }, []);
-
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (
@@ -53,32 +60,24 @@ export default function AvatarList({
         setDropdownOpen(false);
       }
     }
-
     if (dropdownOpen) {
       document.addEventListener("mousedown", handleClickOutside);
     }
-
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [dropdownOpen]);
 
   useEffect(() => {
-    const checkSpace = () => {
-      const rect = triggerRef.current?.getBoundingClientRect();
-      console.log("rect", rect);
-      console.log("window.innerHeight", window.innerHeight);
-      if (rect) {
-        const spaceBelow = window.innerHeight - rect.bottom;
-        const spaceAbove = rect.top;
-        setDropUp(spaceBelow < 400 && spaceAbove > spaceBelow);
-      }
-    };
     if (dropdownOpen) {
       checkSpace();
       window.addEventListener("resize", checkSpace);
+      window.addEventListener("scroll", checkSpace, true);
     }
-    return () => window.removeEventListener("resize", checkSpace);
+    return () => {
+      window.removeEventListener("resize", checkSpace);
+      window.removeEventListener("scroll", checkSpace, true);
+    };
   }, [dropdownOpen]);
 
   const toggleUserSelection = (userId: string) => {
@@ -113,9 +112,11 @@ export default function AvatarList({
   const activeUsers = selected.slice(0, maxVisible);
 
   return (
-    <div onClick={onClick} className="relative flex flex-col items-center space-x-2">
+    <div
+      onClick={onClick}
+      className="relative flex flex-col items-center space-x-2"
+    >
       <div className="flex justify-end">
-      {
         <ul className="flex items-end space-x-2">
           {(AllUser.length > maxVisible
             ? selectedUserIds.length > 0
@@ -123,24 +124,23 @@ export default function AvatarList({
               : visibleUsers
             : visibleUsers
           ).map((usr) => {
-            const initials = usr.firstName?.slice(0, 2).toUpperCase() || "NA";
+            const initials =
+              usr.firstName?.slice(0, 2).toUpperCase() || "NA";
             const isActive = selectedUserIds.includes(usr._id);
-
             const hasImgError = imgErrors[usr._id];
-            const profileImageUrl = `${process.env.NEXT_PUBLIC_BACKEND_HOST}${
-              usr?.avatar || usr?.profileImage || ""
-            }`;
-
+            const profileImageUrl = `${process.env.NEXT_PUBLIC_BACKEND_HOST}${usr?.avatar || usr?.profileImage || ""
+              }`;
             return (
               <li key={usr._id}>
                 <div
                   title={`${usr.firstName} ${usr.lastName}`}
-                  onClick={() => toggleUserSelection(usr._id)}
-                  className={`flex items-center justify-center w-8 h-8 rounded-full text-white text-sm font-semibold transition cursor-pointer
-                    ${
-                      isActive
-                        ? "bg-green-600 scale-110 shadow-md"
-                        : "bg-blue-500 hover:bg-blue-600"
+                  onClick={() => {
+                    toggleUserSelection(usr._id);
+                    checkSpace(); // ✅ recalc on avatar click
+                  }}
+                  className={`flex items-center justify-center w-8 h-8 rounded-full text-white text-sm font-semibold transition cursor-pointer ${isActive
+                    ? "bg-green-600 scale-110 shadow-md"
+                    : "bg-blue-500 hover:bg-blue-600"
                     }`}
                 >
                   {!hasImgError && profileImageUrl ? (
@@ -158,28 +158,32 @@ export default function AvatarList({
             );
           })}
         </ul>
-      }
 
-      {users.length > maxVisible && (
-        <div
-          ref={triggerRef}
-          className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-300 text-black cursor-pointer ml-2"
-          onClick={(e) => {
-            e.stopPropagation();
-            setDropdownOpen(!dropdownOpen);
-          }}
-        >
-          •••
-        </div>
-      )}
-</div>
-<div>
+        {users.length > maxVisible && (
+          <div
+            ref={triggerRef}
+            className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-300 text-black cursor-pointer ml-2"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!dropdownOpen) {
+                checkSpace();
+                setDropdownOpen(true);
+              } else {
+                setDropdownOpen(false);
+              }
+            }}
+          >
+            •••
+          </div>
+        )}
+      </div>
+
+      {/* Dropdown */}
       {dropdownOpen && (
         <div
           ref={dropdownRef}
-          className={`absolute right-0 ${
-            dropUp ? "bottom-10" : "top-10"
-          } z-50 w-[300px] max-h-[400px] overflow-auto bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 p-4 my-3`}
+          className={`absolute right-0 z-50 w-[300px] max-h-[400px] overflow-auto bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 p-4
+            ${dropUp ? "bottom-full mb-2" : "top-full mt-2"}`}
         >
           <table className="min-w-full text-sm border-collapse">
             <thead>
@@ -209,22 +213,26 @@ export default function AvatarList({
                 const initials =
                   usr.firstName?.slice(0, 2).toUpperCase() || "NA";
                 const hasImgError = imgErrors[usr._id];
-                const profileImageUrl = `${process.env.NEXT_PUBLIC_BACKEND_HOST}${
-                  usr?.avatar || usr?.profileImage || ""
-                }`;
+                const profileImageUrl = `${process.env.NEXT_PUBLIC_BACKEND_HOST}${usr?.avatar || usr?.profileImage || ""
+                  }`;
                 return (
                   <tr
                     key={usr._id}
-                    className={` transition cursor-pointer ${selectedUserIds.includes(usr._id) ? "border-1 bg-green-500" : ""}`}
-                    onClick={() => toggleUserSelection(usr._id)}
+                    className={`transition cursor-pointer ${selectedUserIds.includes(usr._id)
+                      ? "border-1 bg-green-500"
+                      : ""
+                      }`}
+                    onClick={() => {
+                      toggleUserSelection(usr._id);
+                      checkSpace();
+                    }}
                   >
                     <td className="py-2 px-3">
                       <div
-                        className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold text-xs ${
-                          selectedUserIds.includes(usr._id)
-                            ? "bg-green-600 border-2"
-                            : "bg-blue-500"
-                        }`}
+                        className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold text-xs ${selectedUserIds.includes(usr._id)
+                          ? "bg-green-600 border-2"
+                          : "bg-blue-500"
+                          }`}
                       >
                         {!hasImgError && profileImageUrl ? (
                           <img
@@ -248,7 +256,6 @@ export default function AvatarList({
           </table>
         </div>
       )}
-      </div>
     </div>
   );
 }

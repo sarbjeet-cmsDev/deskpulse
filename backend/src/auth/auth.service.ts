@@ -8,7 +8,7 @@ export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtService
-  ) {}
+  ) { }
 
   async login({ email, password }: Partial<User>): Promise<any> {
     if (!email || !password) {
@@ -23,7 +23,7 @@ export class AuthService {
 
     const isPasswordValid = await this.userService.comparePassword(password, user.id);
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid email or password.');
+      throw new BadRequestException('Invalid email or password.');
     }
 
     if (!user.isActive) {
@@ -35,14 +35,14 @@ export class AuthService {
     return {
       message: 'Login successful.',
       access_token: token,
-      
+
       user: {
-          id: user._id,
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          role:user.roles,
-        },
+        id: user._id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.roles,
+      },
     };
   }
 }

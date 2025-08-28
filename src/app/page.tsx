@@ -29,8 +29,11 @@ export default function Dashboard() {
         const res = await ProjectService.getProjectByUserId();
 
         const favoriteProjects = (res?.data || []).filter(
-          (project: any) => project.isFavorite === true
+          (project: any) =>
+            Array.isArray(project.isFavorite) &&
+            project.isFavorite.includes(user?._id || user?.id)
         );
+
 
         const reminderResult = await ReminderService.getActiveReminderById(
           user?.id

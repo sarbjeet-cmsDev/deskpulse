@@ -13,10 +13,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   const pathname = usePathname();
 
-   const [isModalOpen, setIsModalOpen] = useState(false);
-  
-    const openModal = () => setIsModalOpen(true);
-    const closeModal = () => setIsModalOpen(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   const userData: any = useSelector((state: RootState) => state.auth.user);
   const hideLayout = pathname.startsWith("/auth/login");
@@ -30,7 +30,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <ProtectedRoute>
       <div className="flex flex-col min-h-screen text-sm md:text-base">
-        <div className="sticky top-0 z-50">
+        <div className="sticky top-0 z-[999]">
           {/* <TopHeader notificationCount={notificationCount}/> */}
           <TopHeader />
         </div>
@@ -47,24 +47,24 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </p>
           </Link>
         </footer>
-          <TaskButton onClick={openModal} />
+        <TaskButton onClick={openModal} />
 
-      {isModalOpen && (
-        <CreateGlobalTaskModal
-          isOpen={isModalOpen}
-          onClose={closeModal}
-          onCreate={async (
-            title,
-            description,
-            due_date,
-            estimated_time,
-            assigned_to,
-            projectId
-          ) => {
-            // Your API call or logic
-          }}
-        />
-      )}
+        {isModalOpen && (
+          <CreateGlobalTaskModal
+            isOpen={isModalOpen}
+            onClose={closeModal}
+            onCreate={async (
+              title,
+              description,
+              due_date,
+              estimated_time,
+              assigned_to,
+              projectId
+            ) => {
+              // Your API call or logic
+            }}
+          />
+        )}
       </div>
     </ProtectedRoute>
   );

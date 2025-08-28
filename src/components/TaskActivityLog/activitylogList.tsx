@@ -18,7 +18,7 @@ export default function TaskActivityLogList({ logs }: TaskActivityLogListProps) 
           key={log._id}
           className="bg-[#f8fafc] w-full py-[15px] px-[20px] rounded-[8px] border-l-[8px] border-l-[#5fd788] mt-[16px]"
         >
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center gap-4">
             <span className="text-[#333] font-medium">
               {log.description}
             </span>

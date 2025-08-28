@@ -188,15 +188,15 @@ export default function PerformancePreview() {
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       <div>
-        <H3 className=" text-center flex-1 text-base sm:text-lg md:text-xl md:text-center text-end">
+        <H3 className=" text-center flex-1 text-base sm:text-lg md:text-xl md:text-center">
           Performance
         </H3>
       </div>
-      <div className="flex md:justify-end mt-6 gap-3">
+      <div className="flex md:justify-end mt-6 gap-3 md:flex-row flex-col">
         <div ref={calendarRef}>
           <Button
             onPress={() => setShowCalendar(!showCalendar)}
-            className="flex items-center gap-9 border px-4 py-2 rounded bg-white shadow text-sm font-medium"
+            className="flex items-center gap-9 border w-full px-4 py-2 rounded bg-white shadow text-sm font-medium"
           >
             {formattedRange}
             <Image
@@ -208,9 +208,9 @@ export default function PerformancePreview() {
           </Button>
           {showCalendar && (
             <div
-              className={`transition-all absolute duration-300 ease-in-out overflow-hidden bg-white border shadow rounded mt-2 ${showCalendar
-                  ? "max-h-[500px] opacity-100 scale-100"
-                  : "max-h-0 opacity-0 scale-95"
+              className={`transition-all z-10 absolute duration-300 ease-in-out overflow-hidden bg-white border shadow rounded mt-2 ${showCalendar
+                ? "max-h-[500px] opacity-100 scale-100"
+                : "max-h-0 opacity-0 scale-95"
                 }`}
             >
               <div className="flex justify-end p-2">
@@ -235,30 +235,32 @@ export default function PerformancePreview() {
             </div>
           )}
         </div>
+        <div >
 
-        <AvatarList
-          users={users}
-          selectedUserIds={selectedUserIds}
-          setSelectedUserIds={(ids: string[]) => {
-            setUserColors((prev) => {
-              const updated = { ...prev };
-              ids.forEach((id, idx) => {
-                if (!updated[id])
-                  updated[id] = generateColorForUser(
-                    id,
-                    Object.keys(updated).length + idx
-                  );
+          <AvatarList
+            users={users}
+            selectedUserIds={selectedUserIds}
+            setSelectedUserIds={(ids: string[]) => {
+              setUserColors((prev) => {
+                const updated = { ...prev };
+                ids.forEach((id, idx) => {
+                  if (!updated[id])
+                    updated[id] = generateColorForUser(
+                      id,
+                      Object.keys(updated).length + idx
+                    );
+                });
+                return updated;
               });
-              return updated;
-            });
-            setSelectedUserIds(ids);
-          }}
-          fetchKanbonList={fetchPerformance}
-        />
+              setSelectedUserIds(ids);
+            }}
+            fetchKanbonList={fetchPerformance}
+          />
+        </div>
       </div>
 
       <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-6 mt-6">
-        <div className="w-full md:w-2/3 lg:w-full md:h-[600px] h-[400px]">
+        <div className="w-full  lg:w-full md:h-[600px] h-[400px]">
           <MyChart
             data={data}
 

@@ -102,9 +102,9 @@ export class CreateProjectDto {
 
 
 export class UpdateProjectDto extends CreateProjectDto {
-  @IsOptional()
-  @IsBoolean()
-  isFavorite?: boolean;
+  @IsArray()
+  @IsMongoId({ each: true })
+  isFavorite?: MongooseSchema.Types.ObjectId[];
 }
 
 

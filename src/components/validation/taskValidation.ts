@@ -34,6 +34,10 @@ export const taskCreateSchema = taskSchemaBase.extend({
   title: z.string().min(1, "Title is required"),
   project: z.string().min(1, "Project is required"),
   report_to: z.string().min(1, "Report To is required"),
+  description: z
+    .string()
+    .min(5, "Description must be at least 5 characters")
+    .max(1000, "Description is too long"),
   estimated_time: z
     .union([z.string(), z.number()])
     .transform((val) => {

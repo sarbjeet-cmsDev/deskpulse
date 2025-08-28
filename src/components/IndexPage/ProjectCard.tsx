@@ -3,17 +3,17 @@
 import { Card, CardBody } from "@heroui/react";
 import CardHead from "./CardHeader";
 import { usePathname } from "next/navigation";
-import CardMetaTag from "./CardMetaItem";
 import Image from "next/image";
 import ProjectImage from "@/assets/images/projectimage.png";
 import AvatarList from "./avatarlist";
-import ProgressBar from "./progress";
 import { useState } from "react";
 import { KanbanColumn } from "@/types/projectKanbon.interface";
 import { StarIcon as StarSolid } from "@heroicons/react/24/solid";
 import { StarIcon as StarOutline } from "@heroicons/react/24/outline";
 import ProjectService from "@/service/project.service";
 import Link from "next/link";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 interface ProjectCardProps {
   project: {
@@ -23,10 +23,8 @@ interface ProjectCardProps {
     notes?: string;
     url_live?: string;
     createdAt?: string;
-    isFavorite?: boolean;
+    isFavorite?: string[]; // ✅ now array of user IDs
     _id?: string;
-
-    // add other fields if needed
   };
   kanban: KanbanColumn[];
   taskCounts: Record<string, number>;
@@ -40,10 +38,11 @@ export default function ProjectCard({
   linkTo,
 }: ProjectCardProps) {
   const pathname = usePathname();
+  const user: any = useSelector((state: RootState) => state.auth.user);
 
   const [version, setVersion] = useState<number>(Date.now());
   const [isFavorite, setIsFavorite] = useState<boolean>(
-    project.isFavorite || false
+    project.isFavorite?.includes(user?._id || user?.id) || false
   );
 
   const avatarUrl = project?.avatar
@@ -52,22 +51,29 @@ export default function ProjectCard({
 
   const toggleFavorite = async (projectId: string) => {
     try {
-      const newFavoriteStatus = !isFavorite;
+      const userId = user?._id || user?.id;
+      const currentlyFav = project.isFavorite?.includes(userId);
 
-     
+      let updatedFavorites: string[];
+      if (currentlyFav) {
+        updatedFavorites = project.isFavorite?.filter((id) => id !== userId) || [];
+      } else {
+        updatedFavorites = [...(project.isFavorite || []), userId];
+      }
 
-      const response = await ProjectService.updateFavProject(projectId, {
-        isFavorite: newFavoriteStatus,
+      await ProjectService.updateFavProject(projectId, {
+        isFavorite: updatedFavorites,
       } as any);
 
-      setIsFavorite(newFavoriteStatus);
+      setIsFavorite(!currentlyFav);
+      project.isFavorite = updatedFavorites;
     } catch (err) {
       console.error("Failed to update favorite:", err);
     }
   };
 
   return (
-    <Card className=" !shadow-[0px_2px_36px_rgba(16,21,35,0.07)] py-[16px] px-[10px] rounded-[12px]">
+    <Card className="!shadow-[0px_2px_36px_rgba(16,21,35,0.07)] py-[16px] px-[10px] rounded-[12px]">
       <CardBody className="p-0">
         <div className="flex justify-between items-center">
           {linkTo ? (
@@ -77,12 +83,12 @@ export default function ProjectCard({
           ) : (
             <CardHead title={project.title} />
           )}
+
           {pathname !== "/" && (
             <button
               type="button"
               onClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault(); // ✅ Prevent link navigation
+                e.preventDefault();
                 e.stopPropagation();
                 toggleFavorite(project._id as string);
               }}
@@ -99,6 +105,7 @@ export default function ProjectCard({
             </button>
           )}
         </div>
+
         {linkTo ? (
           <Link href={linkTo}>
             <div className="mt-[14px] h-[200px] overflow-hidden border border-[#e3e3e35c] rounded-[8px] ">

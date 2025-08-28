@@ -65,19 +65,19 @@ const TimeSheetList = () => {
   const calendarRef = useRef<HTMLDivElement | null>(null);
 
   const jsToday = new Date();
-    jsToday.setHours(0, 0, 0, 0);
-  
-    const startDate = new CalendarDate(
-      jsToday.getFullYear(),
-      jsToday.getMonth() + 1,
-      jsToday.getDate() - 10
-    ); 
-    const tomorrow = new CalendarDate(
-      jsToday.getFullYear(),
-      jsToday.getMonth() + 1,
-      jsToday.getDate() 
-    ); 
-  
+  jsToday.setHours(0, 0, 0, 0);
+
+  const startDate = new CalendarDate(
+    jsToday.getFullYear(),
+    jsToday.getMonth() + 1,
+    jsToday.getDate() - 10
+  );
+  const tomorrow = new CalendarDate(
+    jsToday.getFullYear(),
+    jsToday.getMonth() + 1,
+    jsToday.getDate()
+  );
+
   const [selectedRange, setSelectedRange] = useState<{
     start: CalendarDate;
     end: CalendarDate;
@@ -236,11 +236,11 @@ const TimeSheetList = () => {
     selectedRange.end.toDate(getLocalTimeZone())
   ).format("DD MMM YY")}`;
 
-   const isDateUnavailable = (date: CalendarDate) => {
-      return date.compare(tomorrow) > 0; 
-    };
+  const isDateUnavailable = (date: CalendarDate) => {
+    return date.compare(tomorrow) > 0;
+  };
 
-   useEffect(() => {
+  useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
         calendarRef.current &&
@@ -271,9 +271,9 @@ const TimeSheetList = () => {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
           <div className="md:w-4/4 w-full">
 
-          <h1 className="text-xl md:text-2xl font-semibold text-gray-800">
-            Time Sheet
-          </h1>
+            <h1 className="text-xl md:text-2xl font-semibold text-gray-800">
+              Time Sheet
+            </h1>
           </div>
 
           <div className="flex flex-col md:flex-row gap-4 w-3/4 w-full">
@@ -292,16 +292,15 @@ const TimeSheetList = () => {
               </Button>
 
               <div
-                className={`transition-all absolute duration-300 ease-in-out overflow-hidden border bg-white shadow rounded mt-2 ${
-                  showCalendar
-                    ? "max-h-[500px] opacity-100 scale-100"
-                    : "max-h-0 opacity-0 scale-95"
-                }`}
+                className={`transition-all absolute z-10 duration-300 ease-in-out overflow-hidden border bg-white shadow rounded mt-2 ${showCalendar
+                  ? "max-h-[500px] opacity-100 scale-100"
+                  : "max-h-0 opacity-0 scale-95"
+                  }`}
               >
                 <div className="flex justify-end p-2">
                   <Button
                     onPress={() => setShowCalendar(false)}
-                    className="text-sm text-gray-500 hover:text-gray-800"
+                    className="text-sm text-gray-500 hover:text-gray-800 h-auto flex justify-end bg-white w-full"
                   >
                     ✕
                   </Button>
@@ -310,11 +309,11 @@ const TimeSheetList = () => {
                   <RangeCalendar
                     aria-label="Select Range"
                     value={selectedRange as any}
-                     onChange={(range) => {
-                    setSelectedRange(range as any);
-                    setShowCalendar(false);
-                  }}
-                  isDateUnavailable={isDateUnavailable as any}
+                    onChange={(range) => {
+                      setSelectedRange(range as any);
+                      setShowCalendar(false);
+                    }}
+                    isDateUnavailable={isDateUnavailable as any}
                   />
                 </div>
               </div>
@@ -329,6 +328,7 @@ const TimeSheetList = () => {
                     null;
                   return (
                     <ReactSelect
+                      menuShouldScrollIntoView
                       options={projectOptions}
                       value={selectedOption}
                       placeholder="Select Project"
@@ -344,15 +344,15 @@ const TimeSheetList = () => {
                         menu: (base) => ({
                           ...base,
                           // zIndex: 9999,
-                          maxHeight: 200,
-                          overflowY: "auto",
+                          // maxHeight: 200,
+                          // overflowY: "scroll",
                           position: "absolute",
                         }),
                         menuList: (base) => ({
                           ...base,
                           paddingTop: 0,
                           paddingBottom: 0,
-                          overflowX: "auto",
+                          // overflowX: "auto",
                         }),
                       }}
                     />
@@ -430,7 +430,7 @@ const TimeSheetList = () => {
         </div>
 
         <div className="flex items-center justify-between mt-10 p-4 bg-gray-50 rounded-2xl shadow-sm w-fit">
-          <H3 className="text-gray-700">Total Time Spent</H3>
+          <H3 className="text-gray-700 md:text-[28px] text-sm">Total Time Spent</H3>
           <span className="ml-4 px-3 py-1 rounded-xl bg-theme-primary text-white font-semibold">
             {totalUpdatedTime}
           </span>
