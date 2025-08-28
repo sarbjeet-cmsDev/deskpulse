@@ -74,7 +74,7 @@ const ProjectListTable = () => {
 
   const rows = (projects ?? []).map((project) => ({
     ...project,
-    actions: [{ title: "Edit" }, { title: "Delete" }],
+    actions: [{ title: "View" }, { title: "Edit" }, { title: "Delete" }],
   }));
 
   return (
@@ -106,7 +106,10 @@ const ProjectListTable = () => {
             onAction={async (action, row) => {
               if (action === "Edit") {
                 router.push(`/admin/project/update/${row._id}`);
-              } else if (action === "Delete") {
+              } else if (action === "View") {
+                router.push(`/project/${row?.code}`);
+              }
+               else if (action === "Delete") {
                 const result = await Swal.fire({
                   title: "Are you sure?",
                   text: `You are about to delete Project: "${row.code}"`,
