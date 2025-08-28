@@ -163,12 +163,12 @@ const CreateProjectForm = () => {
   };
 
   return (
-    <div className="min-h-screen flex justify-center pt-10">
+    <div className="min-h-screen flex justify-center md:pt-10">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="w-full max-w-2xl bg-white md:p-6 rounded md:border border-gray-300 shadow space-y-4"
+        className="w-full max-w-2xl bg-white md:p-6 p-4 rounded md:border border-gray-300 shadow space-y-4"
       >
-        <div className="flex justify-center items-center p-[20px] border-b border-[#31394f14]">
+        <div className="flex justify-center items-center md:p-[20px] p-2 border-b border-[#31394f14]">
           <div className="w-[5%]">
             <Link href="/admin/project">
               <Image src={leftarrow} alt="Back" width={16} height={16} />
