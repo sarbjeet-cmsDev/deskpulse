@@ -24,7 +24,7 @@ export class CreateKanbanDto {
   @IsNotEmpty()
   project: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   color: string;
 }
 
