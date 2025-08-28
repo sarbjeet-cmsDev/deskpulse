@@ -30,6 +30,8 @@ export default function AvatarList({
   const [maxVisible, setMaxVisible] = useState(10);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const [dropUp, setDropUp] = useState(false);
 
   useEffect(() => {
     const updateMaxVisible = () => {
@@ -42,7 +44,11 @@ export default function AvatarList({
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node) &&
+        !triggerRef.current?.contains(e.target as Node)
+      ) {
         setDropdownOpen(false);
       }
     }
@@ -54,6 +60,22 @@ export default function AvatarList({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
+  }, [dropdownOpen]);
+
+  useEffect(() => {
+    const checkSpace = () => {
+      const rect = triggerRef.current?.getBoundingClientRect();
+      if (rect) {
+        const spaceBelow = window.innerHeight - rect.bottom;
+        const spaceAbove = rect.top;
+        setDropUp(spaceBelow < 400 && spaceAbove > spaceBelow);
+      }
+    };
+    if (dropdownOpen) {
+      checkSpace();
+      window.addEventListener("resize", checkSpace);
+    }
+    return () => window.removeEventListener("resize", checkSpace);
   }, [dropdownOpen]);
 
   const toggleUserSelection = (userId: string) => {
@@ -70,63 +92,65 @@ export default function AvatarList({
   };
 
   const AllUser = (users || []).slice().sort((a, b) =>
-  a.firstName.localeCompare(b.firstName, "en", { sensitivity: "base" })
-);
-  // const AllUser = users || [];
-  console.log("AllUser",AllUser)
+    a.firstName.localeCompare(b.firstName, "en", { sensitivity: "base" })
+  );
+
   const visibleUsers = AllUser.slice(0, maxVisible);
-  const selected = (selectedUserIds.length > 0 ? AllUser.filter(u => selectedUserIds.includes(u._id)) : []);
+  const selected =
+    selectedUserIds.length > 0
+      ? AllUser.filter((u) => selectedUserIds.includes(u._id))
+      : [];
   const activeUsers = selected.slice(0, maxVisible);
-
-
 
   return (
     <div
       onClick={onClick}
-      ref={dropdownRef}
       className="relative flex items-center space-x-2"
     >
       {!dropdownOpen && (
         <ul className="flex items-center space-x-2">
-          {(selectedUserIds.length > 0 ? activeUsers : visibleUsers)
-          .map((usr) => {
-            const initials = usr.firstName?.slice(0, 2).toUpperCase() || "NA";
-            const isActive = selectedUserIds.includes(usr._id);
-            console.log("isActiveId",isActive)
+          {(AllUser.length > maxVisible ? (selectedUserIds.length > 0 ? activeUsers : visibleUsers) : visibleUsers).map(
+            (usr) => {
+              const initials =
+                usr.firstName?.slice(0, 2).toUpperCase() || "NA";
+              const isActive = selectedUserIds.includes(usr._id);
 
-            const hasImgError = imgErrors[usr._id];
-            const profileImageUrl = `${process.env.NEXT_PUBLIC_BACKEND_HOST}${usr?.avatar || usr?.profileImage || ""}`;
+              const hasImgError = imgErrors[usr._id];
+              const profileImageUrl = `${process.env.NEXT_PUBLIC_BACKEND_HOST}${usr?.avatar || usr?.profileImage || ""
+                }`;
 
-            return (
-              <li key={usr._id}>
-                <div
-                  title={`${usr.firstName} ${usr.lastName}`}
-                  onClick={() => toggleUserSelection(usr._id)}
-                  className={`flex items-center justify-center w-8 h-8 rounded-full text-white text-sm font-semibold transition cursor-pointer
+              return (
+                <li key={usr._id}>
+                  <div
+                    title={`${usr.firstName} ${usr.lastName}`}
+                    onClick={() => toggleUserSelection(usr._id)}
+                    className={`flex items-center justify-center w-8 h-8 rounded-full text-white text-sm font-semibold transition cursor-pointer
                     ${isActive
-                      ? "bg-green-600 scale-110 shadow-md"
-                      : "bg-blue-500 hover:bg-blue-600"
-                    }`}
-                >
-                  {!hasImgError && profileImageUrl ? (
-                    <img
-                      src={profileImageUrl}
-                      alt={`${usr.firstName} ${usr.lastName}`}
-                      className="w-[25px] h-[25px] rounded-full object-cover"
-                      onError={() => handleImgError(usr._id)}
-                    />
-                  ) : (
-                    <span>{initials}</span>
-                  )}
-                </div>
-              </li>
-            );
-          })}
+                        ? "bg-green-600 scale-110 shadow-md"
+                        : "bg-blue-500 hover:bg-blue-600"
+                      }`}
+                  >
+                    {!hasImgError && profileImageUrl ? (
+                      <img
+                        src={profileImageUrl}
+                        alt={`${usr.firstName} ${usr.lastName}`}
+                        className="w-[25px] h-[25px] rounded-full object-cover"
+                        onError={() => handleImgError(usr._id)}
+                      />
+                    ) : (
+                      <span>{initials}</span>
+                    )}
+                  </div>
+                </li>
+              );
+            }
+          )}
         </ul>
       )}
 
       {users.length > maxVisible && (
         <div
+          ref={triggerRef}
           className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-300 text-black cursor-pointer"
           onClick={(e) => {
             e.stopPropagation();
@@ -136,8 +160,13 @@ export default function AvatarList({
           •••
         </div>
       )}
+
       {dropdownOpen && (
-        <div className="absolute right-0 top-10 z-50 w-[300px] max-h-[400px] overflow-auto bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 p-4">
+        <div
+          ref={dropdownRef}
+          className={`absolute right-0 ${dropUp ? "bottom-10" : "top-10"
+            } z-50 w-[300px] max-h-[400px] overflow-auto bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 p-4`}
+        >
           <table className="min-w-full text-sm border-collapse">
             <thead>
               <tr className="bg-gray-100 text-gray-600">
@@ -147,19 +176,21 @@ export default function AvatarList({
             </thead>
             <tbody>
               {AllUser.map((usr) => {
-                const initials = usr.firstName?.slice(0, 2).toUpperCase() || "NA";
+                const initials =
+                  usr.firstName?.slice(0, 2).toUpperCase() || "NA";
                 const hasImgError = imgErrors[usr._id];
-                const profileImageUrl = `${process.env.NEXT_PUBLIC_BACKEND_HOST}${usr?.avatar || usr?.profileImage || ""}`;
+                const profileImageUrl = `${process.env.NEXT_PUBLIC_BACKEND_HOST}${usr?.avatar || usr?.profileImage || ""
+                  }`;
                 return (
                   <tr
                     key={usr._id}
-                    className="hover:bg-gray-50 transition cursor-pointer"
+                    className={` transition cursor-pointer ${selectedUserIds.includes(usr._id) ? "border-1 bg-green-500" : ""}`}
                     onClick={() => toggleUserSelection(usr._id)}
                   >
                     <td className="py-2 px-3">
                       <div
                         className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold text-xs ${selectedUserIds.includes(usr._id)
-                          ? "bg-green-600"
+                          ? "bg-green-600 border-2"
                           : "bg-blue-500"
                           }`}
                       >
