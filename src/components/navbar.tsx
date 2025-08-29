@@ -124,7 +124,7 @@ export const Navbar = () => {
           />
         </Button>
       </NavbarContent>
-      <CommonDrawer type="notification">
+      <CommonDrawer type="notification" className="leftmenuDrawer">
         <NotificationDrawer />
       </CommonDrawer>
       <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">

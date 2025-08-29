@@ -125,7 +125,7 @@ export default function TopHeader() {
               )}
             </div>
           </div>
-          <CommonDrawer type="notification">
+          <CommonDrawer type="notification" className="leftmenuDrawer">
             <NotificationDrawer />
           </CommonDrawer>
         </div>
