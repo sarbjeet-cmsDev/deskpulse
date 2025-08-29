@@ -134,7 +134,7 @@ export default function ProjectCard({
 
         <div className="mt-[14px] flex items-center gap-4">
           <AvatarList users={[]} />
-          <div className="flex gap-2 mt-4">
+          {/* <div className="flex gap-2 mt-4">
             {kanban.map((col) => (
               <div
                 key={col._id}
@@ -144,7 +144,7 @@ export default function ProjectCard({
                 <span> : {taskCounts[col.title] || 0}</span>
               </div>
             ))}
-          </div>
+          </div> */}
         </div>
       </CardBody>
     </Card>
