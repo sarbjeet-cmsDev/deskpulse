@@ -6,9 +6,10 @@ import { useDispatch, useSelector } from "react-redux";
 type CommonDrawerProps = {
   type: string;
   children: React.ReactNode;
+  className?: any
 };
 
-export const CommonDrawer = ({ type, children }: CommonDrawerProps) => {
+export const CommonDrawer = ({ type, children, className }: CommonDrawerProps) => {
   const dispatch = useDispatch();
   const {
     isOpen,
@@ -19,7 +20,7 @@ export const CommonDrawer = ({ type, children }: CommonDrawerProps) => {
   if (!isOpen || openType !== type) return null;
 
   return (
-    <Drawer isOpen={isOpen} size={size} onClose={() => dispatch(closeDrawer())}>
+    <Drawer isOpen={isOpen} size={size} onClose={() => dispatch(closeDrawer())} className={className ? className : ""}>
       <DrawerContent>
         {(onClose) => <DrawerBody>{children}</DrawerBody>}
       </DrawerContent>

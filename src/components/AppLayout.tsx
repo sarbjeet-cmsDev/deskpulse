@@ -30,7 +30,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <ProtectedRoute>
       <div className="flex flex-col min-h-screen text-sm md:text-base">
-        <div className="sticky top-0 z-[999]">
+        <div className="sticky top-0 z-[998]">
           {/* <TopHeader notificationCount={notificationCount}/> */}
           <TopHeader />
         </div>

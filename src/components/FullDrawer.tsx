@@ -51,7 +51,7 @@ export default function FullDrawerPage() {
         </Button>
       </div>
 
-      <CommonDrawer type="privacy-policy">
+      <CommonDrawer type="privacy-policy" className="leftmenuDrawer">
         <div className="flex justify-center items-center">
           <div className="max-w-6xl min-w-6xl">
             <div className="flex justify-center items-center p-[24px] border-b border-[#31394f14]">

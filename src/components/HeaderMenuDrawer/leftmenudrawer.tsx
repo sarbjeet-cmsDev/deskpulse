@@ -108,7 +108,7 @@ export default function LeftMenuDrawer() {
 
   return (
     <>
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap gap-3" >
         {["right"].map((placement) => (
           <Button
             key={placement}
@@ -151,11 +151,11 @@ export default function LeftMenuDrawer() {
           </Button>
         ))}
       </div>
-      <Drawer isOpen={isOpen} placement={placement} onOpenChange={onOpenChange}>
+      <Drawer isOpen={isOpen} placement={placement} onOpenChange={onOpenChange} className="leftmenuDrawer">
         <DrawerContent>
           {(onClose) => (
             <>
-              <DrawerHeader className="flex flex-col gap-1 bg-theme-primary text-[#fff]">
+              <DrawerHeader className="flex flex-col gap-1 bg-theme-primary text-[#fff]" >
                 Deskpulse
               </DrawerHeader>
               <DrawerBody>
