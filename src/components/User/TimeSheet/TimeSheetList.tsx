@@ -84,7 +84,7 @@ const TimeSheetList = () => {
       const startDate = selectedRange.start.toDate(getLocalTimeZone()).toISOString();
       const endDate = selectedRange.end.toDate(getLocalTimeZone()).toISOString();
 
-      const res = await TimelineService.getTimeLineList(user?.id, page, limit, startDate, endDate);
+      const res = await TimelineService.getTimeLineList(user?.id, page, limit, startDate, endDate,sortOrder);
 
       const timelineData = res?.data || [];
 

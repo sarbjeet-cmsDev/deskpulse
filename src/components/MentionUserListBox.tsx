@@ -121,17 +121,18 @@ export default function MentionUserListModal({
                   ...base,
                   minHeight: "40px",
                 }),
-                menu: (base) => ({
-                  ...base,
-                  zIndex: 9999,
-                  maxHeight: 200,
-                  overflowY: "auto",
-                  position: "absolute",
-                }),
+                // menu: (base) => ({
+                  // ...base,
+                    // zIndex: 9999,
+                    // maxHeight: 200,
+                    // overflowY: "auto",
+                  // position: "absolute",
+                // }),
                 menuList: (base) => ({
                   ...base,
                   paddingTop: 0,
                   paddingBottom: 0,
+                  maxHeight: 200,
                 }),
               }}
             />

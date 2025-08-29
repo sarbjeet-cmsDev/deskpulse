@@ -26,7 +26,7 @@ const AdminTimelineService = {
         };
       },
 
-       async getTimelineByUserId(userIds: string, params?: { start?: string; end?: string, page?: number, projectId?:string }): Promise<ITimelineResponse> {
+       async getTimelineByUserId(userIds: string, params?: { start?: string; end?: string, page?: number, projectId?:string, limit?: number, sortOrder?: "asc" | "desc", }): Promise<ITimelineResponse> {
           const res = await axiosClient.get(`${API_URL}/admin/timelines/user`, {
             params: { userIds, ...params },
           });

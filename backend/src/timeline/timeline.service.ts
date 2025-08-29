@@ -120,7 +120,8 @@ export class TimelineService {
     page: number,
     limit: number,
     startDate?: string,
-    endDate?: string
+    endDate?: string,
+    sortOrder: "asc" | "desc" = "desc",
   ): Promise<{ data: Timeline[]; total: number; page: number; limit: number }> {
     const skip = (page - 1) * limit;
 
@@ -156,13 +157,18 @@ export class TimelineService {
         $unwind: "$tasks",
       },
       {
+        $sort: { createdAt: sortOrder === "desc" ? 1 : -1 } ,
+      },
+      {
         $project: {
           _id: 1,
           date: 1,
           time_spent: 1,
           comment: 1,
+          createdAt:1,
           taskId: "$task",
           task_title: "$tasks.title",
+
         },
       },
       {

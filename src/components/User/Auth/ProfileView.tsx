@@ -74,7 +74,7 @@ export default function AuthProfileView() {
   // }
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-6xl mx-auto px-2">
       <div className="flex justify-center items-center md:p-[24px] p-1 border-b border-[#31394f14]">
         <div className="w-10 cursor-pointer">
           <span onClick={() => router.back()} >

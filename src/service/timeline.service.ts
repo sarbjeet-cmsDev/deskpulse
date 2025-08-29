@@ -104,7 +104,8 @@ const TimelineService = {
     page: number = 1,
     limit: number = 10,
     startDate?: string,
-    endDate?: string
+    endDate?: string,
+    sortOrder?: "asc" | "desc",
   ): Promise<ITimelineResponse> {
    
     const response = await axiosClient.get(
@@ -115,6 +116,7 @@ const TimelineService = {
           limit,
           startDate,
           endDate,
+          sortOrder,
         },
       }
     );

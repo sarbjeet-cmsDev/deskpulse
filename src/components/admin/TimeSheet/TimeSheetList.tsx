@@ -110,6 +110,8 @@ const TimeSheetList = () => {
             end: endDate.format("YYYY-MM-DD"),
             page,
             projectId: selectedProjectId || undefined,
+            limit,
+            sortOrder,
           }
         );
 

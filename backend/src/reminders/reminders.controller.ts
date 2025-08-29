@@ -41,7 +41,7 @@ export class RemindersController {
     @Query("page") page: string = "1",
     @Query("limit") limit: string = "5"
   ): Promise<{
-    message: string;
+    // message: string;
     reminders: Reminder[];
     total: number;
     page: number;
@@ -59,7 +59,7 @@ export class RemindersController {
     );
 
     return {
-      message: "Reminders fetched successfully",
+      // message: "Reminders fetched successfully",
       reminders: result.data,
       total: result.total,
       page: result.page,
@@ -80,7 +80,7 @@ export class RemindersController {
     @Query("limit") limit: string = "5",
     @Query("sort") sort: string = "createdAt:desc" // default sorting
   ): Promise<{
-    message: string;
+    // message: string;
     reminders: any;
     total: number;
     page: number;
@@ -101,7 +101,7 @@ export class RemindersController {
     );
 
     return {
-      message: "Reminders fetched successfully",
+      // message: "Reminders fetched successfully",
       reminders,
       total,
       page: pageNumber,

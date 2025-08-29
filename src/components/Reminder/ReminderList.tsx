@@ -11,7 +11,7 @@ interface ReminderListProps {
 
 export default function ReminderList({ reminders }: ReminderListProps) {
   if (!reminders?.length) {
-    return <div className="text-gray-500 text-center">No reminders available.</div>;
+    return <div className="text-gray-500 text-left m-2 italic">No reminders available.</div>;
   }
 
   return (

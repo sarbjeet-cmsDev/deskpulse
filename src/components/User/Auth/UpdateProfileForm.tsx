@@ -92,7 +92,7 @@ const UpdateAuthProfileForm = ({ id }: Props) => {
   if (initialLoading) return <div className="p-6">Loading user...</div>;
 
   return (
-    <div className="min-h-screen mx-auto container max-w-3xl flex-col justify-center items-start md:pt-10">
+    <div className="min-h-screen mx-auto container max-w-3xl flex-col justify-center items-start p-2 md:pt-10">
       <div className="flex justify-center items-center md:p-[24px] p-2 border-b border-[#31394f14]">
          <div className="w-10 cursor-pointer">
                 <span onClick={() => router.back()} >

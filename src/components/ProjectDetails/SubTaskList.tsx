@@ -31,7 +31,7 @@ export default function SubTasks({
   );
 
   if (!tasks?.length) {
-    return <div className="text-gray-500 text-center">No tasks available.</div>;
+    return <div className="text-gray-500 text-left italic mt-2">No tasks available.</div>;
   }
 
   const uniqueStatuses = kanbanList?.length
@@ -103,18 +103,21 @@ export default function SubTasks({
                       {task.title}
                     </span>
 
-                    <div className="flex items-center gap-3 flex-wrap shrink-0">
-
+                    <div className="flex flex-col-reverse items-end gap-3 flex-wrap shrink-0 md:flex-row md:items-center ">
+                      <>
                       {task.due_date && (
                         <span className="text-sm text-gray-700" title="Due Date">
                           {formatDate(task.due_date)}
                         </span>
                       )}
+                      </>
+                      <>
                       {task.priority && (
                         <span className="text-sm text-gray-700 truncate max-w-[60px]" title="Priority">
                           {task.priority}
                         </span>
                       )}
+                      </>
 
                       <AvatarList users={[task?.assigned_to]} />
                     </div>
