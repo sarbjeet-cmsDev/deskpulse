@@ -38,7 +38,7 @@ export default function AvatarList({
   const checkSpace = () => {
     const rect = triggerRef.current?.getBoundingClientRect();
     if (rect) {
-      setDropUp(rect.bottom > 500);
+      setDropUp(rect.bottom > 350);
     }
   };
 
