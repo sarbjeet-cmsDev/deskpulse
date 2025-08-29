@@ -156,8 +156,16 @@ const TimeSheetList = () => {
     fetchTasks(selectedUserIds);
   }, [watch("projectId")]);
 
+  const resetPage = () => {
+  setPage(1);
+  const params = new URLSearchParams(searchParams.toString());
+  params.set("page", "1");
+  router.push(`${pathname}?${params.toString()}`, { scroll: false });
+};
+
   useEffect(()=>{
-    setPage(1)
+    resetPage()
+    fetchTasks(selectedUserIds);
   },[selectedProjectId, selectedRange, selectedUserIds])
 
   const fetchProjects = async () => {
