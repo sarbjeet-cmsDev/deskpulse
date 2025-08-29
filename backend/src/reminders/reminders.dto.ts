@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsDateString, IsEnum, IsMongoId, IsBoolean, IsNumber } from 'class-validator';
+import { IsString, IsOptional, IsDateString, IsEnum, IsMongoId, IsBoolean, IsNumber, IsArray } from 'class-validator';
 
 export class CreateReminderDto {
     @IsString()
@@ -30,6 +30,13 @@ export class CreateReminderDto {
     @IsOptional()
     @IsNumber()
     sort_order?: number;
+
+    @IsOptional()
+    repeat?: any;
+
+    @IsOptional()
+    // @IsArray()
+    days?: any;
 }
 
 // Added UpdateReminderDto
@@ -41,7 +48,7 @@ export class UpdateReminderDto {
     @IsOptional()
     @IsBoolean()
     alert?: boolean;
-    
+
     @IsOptional()
     @IsNumber()
     alert_before?: number;

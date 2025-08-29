@@ -23,6 +23,8 @@ export default function Dashboard() {
 
 
   const user: any = useSelector((state: RootState) => state.auth.user);
+
+  const getTaskByStatus = ["backlog", "todo", "progress"]
   useEffect(() => {
     const loadProjects = async () => {
       try {
@@ -39,7 +41,8 @@ export default function Dashboard() {
           user?.id
         );
         const getTask = await TaskService.getMyTasks();
-        setTask(getTask?.data?.slice(0, 5));
+        const taskResult = getTask?.data?.filter((item: any) => getTaskByStatus.includes(item?.status))
+        setTask(taskResult?.slice(0, 5));
         setReminder(reminderResult?.reminders?.slice(0, 5));
         setProjects(favoriteProjects?.slice(0, 4));
       } catch (error) {

@@ -9,4 +9,6 @@ export interface Reminder extends Document {
     alert?: boolean;
     alert_before?: number;
     sort_order?: number;
+    repeat?: any
+    days?: any
 }

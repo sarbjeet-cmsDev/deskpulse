@@ -29,6 +29,12 @@ export class Reminder {
 
   @Prop({ type: Number, default: 0 })
   sort_order: number;
+
+  @Prop({ type: String })
+  repeat: any;
+
+  @Prop({ type: [String], required: false })
+  days: any;
 }
 
 export const ReminderSchema = SchemaFactory.createForClass(Reminder);
