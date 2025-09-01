@@ -62,9 +62,6 @@ export default function TaskActivityLog({ code }: Props) {
     <div className="max-w-6xl mx-auto md:p-6 p-3">
       <div className="flex justify-center items-center md:p-[24px] border-b border-[#31394f14]">
         <div className="md:w-[2%]">
-          {/* <Link href={`/task/${code}`}>
-            <Image src={leftarrow} alt="Back" width={16} height={16} />
-          </Link> */}
            <span className="cursor-pointer" onClick={() => router.back()}>
             <Image src={leftarrow} alt="Back" width={16} height={16} />
           </span>
