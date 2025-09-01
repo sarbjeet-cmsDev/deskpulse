@@ -147,7 +147,7 @@ export class PerformanceService {
     const tasks = await this.taskService.findByAssignedUser(userId, pageNumber, limitNumber);
 
     const taskIds = tasks.data.map((task) => task._id);
-
+    
 
     const matchQuery: any = { task: { $in: taskIds } };
 
@@ -194,6 +194,7 @@ export class PerformanceService {
           values.reduce((sum, val) => sum + val, 0) / values.length,
       }),
     );
+  
     return averagedPerformance;
   }
 

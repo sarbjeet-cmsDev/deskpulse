@@ -313,12 +313,13 @@ export class TaskService {
         },
         { new: true })
       .exec();
-    if (newTaskStatus == "done") {
+    if (newTaskStatus == "done" || (oldTaskStatus == "done" && (updateTaskDto?.client_acceptance ||  updateTaskDto?.priority || updateTaskDto?.type))) {
       this.eventEmitter.emit("task.status.updated", {
         taskObj: updatedTask,
         oldTaskStatus: oldTaskStatus,
         updatedBy: updateTaskDto.updated_by,
       });
+
     }
     return updatedTask;
   }
@@ -361,71 +362,6 @@ export class TaskService {
     }
     return { message: "Tasks reordered successfully" };
   }
-
-
-
-  // async getTaskDetails(
-  //   page: number,
-  //   limit: number,
-  //   keyword?: string,
-  //   sortOrder: "asc" | "desc" = "asc",
-  //   start?: string,
-  //   end?: string
-  // ): Promise<{
-  //   data: Task[];
-  //   total: number;
-  //   page: number;
-  //   limit: number;
-  //   totalPages: number;
-  // }> {
-  //   let safePage = Math.max(Number(page) || 1, 1);
-  //   let safeLimit = Math.max(Number(limit) || 10, 1);
-  //   const MAX_LIMIT = 200;
-  //   if (safeLimit > MAX_LIMIT) safeLimit = MAX_LIMIT;
-
-  //   const filter: Record<string, any> = {};
-  //   filter.isArchived = false;
-
-  //   if (keyword && keyword.trim()) {
-  //     filter.$or = [
-  //       { title: { $regex: keyword.trim(), $options: 'i' } },
-  //       { code: { $regex: keyword.trim(), $options: 'i' } },
-
-  //     ];
-  //   }
-
-  //   // ✅ Date Range Filter
-  //   if (start && end) {
-  //     filter.createdAt = {
-  //       $gte: new Date(start),
-  //       $lte: new Date(end),
-  //     };
-  //   }
-
-  //   const total = await this.taskModel.countDocuments(filter).exec();
-  //   const totalPages = total === 0 ? 0 : Math.ceil(total / safeLimit);
-  //   if (totalPages > 0 && safePage > totalPages) safePage = totalPages;
-
-  //   const skip = (safePage - 1) * safeLimit;
-
-  //   const data = await this.taskModel
-  //     .find(filter)
-  //     .sort({ createdAt: sortOrder === 'desc' ? 1 : -1 })
-  //     // .sort({ sortOrder: -1 })
-  //     .skip(skip)
-  //     .limit(safeLimit)
-  //     .populate('project')
-  //     .populate('assigned_to')
-  //     .exec();
-
-  //   return {
-  //     data,
-  //     total,
-  //     page: safePage,
-  //     limit: safeLimit,
-  //     totalPages,
-  //   };
-  // }
 
   async getTaskDetails(
     page: number,

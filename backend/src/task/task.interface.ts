@@ -12,6 +12,7 @@ export enum TaskTypeEnum {
 }
 
 export enum AcceptanceLevelEnum {
+  PENDING = "pending",
   AVERAGE = "Average",
   GOOD = "Good",
   SATISFIED = "Satisfied",

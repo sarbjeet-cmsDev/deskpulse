@@ -40,7 +40,7 @@ export const CreateKanbanList = () => {
 
   const handlefetchProject = async () => {
     try {
-      const res = await AdminProjectService.getAllProjects();
+      const res = await AdminProjectService.getAllProjects({limit:100});
       setProjects(res.data as Project[]);
     } catch (error) {
       console.log(error);

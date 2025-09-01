@@ -60,7 +60,7 @@ const priorityOption: any = [
 ];
 
 const ClientAcceptance: any = [
-  { title: "Pending", color: "rgb(220, 24, 214)" },
+  { title: "pending", color: "rgb(220, 24, 214)" },
   { title: "Average", color: "rgb(225, 249, 47)" },
   { title: "Good", color: "rgb(0, 128, 0)" },
   { title: "Satisfied", color: "rgb(0, 153, 255)" },
