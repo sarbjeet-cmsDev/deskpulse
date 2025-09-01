@@ -179,7 +179,7 @@ const TimeSheetList = () => {
   };
 
   useEffect(() => {
-    fetchTasks([]);
+    fetchTasks(selectedUserIds);
     fetchUsers();
     fetchProjects();
   }, [debouncedSearch, page, sortOrder, sortField]);
