@@ -11,4 +11,5 @@ export interface Reminder extends Document {
     sort_order?: number;
     repeat?: any
     days?: any
+    monthdays?: any
 }

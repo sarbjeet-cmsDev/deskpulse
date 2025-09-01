@@ -37,6 +37,10 @@ export class CreateReminderDto {
     @IsOptional()
     // @IsArray()
     days?: any;
+
+    @IsOptional()
+    // @IsArray()
+    monthdays?: any;
 }
 
 // Added UpdateReminderDto

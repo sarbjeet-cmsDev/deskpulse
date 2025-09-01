@@ -20,6 +20,17 @@ export const createReminderSchema = z.object({
   days: z.array(z.enum([
     "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"
   ])).optional(),
+  monthdays: z.array(
+    z
+      .string()
+      .refine((val) => {
+        const num = Number(val);
+        return num >= 1 && num <= 31 && Number.isInteger(num);
+      }, {
+        message: "Day must be between 1 and 31",
+      })
+  ).optional(),
+
 
 });
 

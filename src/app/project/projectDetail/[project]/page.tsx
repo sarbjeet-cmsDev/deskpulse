@@ -4,7 +4,7 @@ import type { Metadata, ResolvingMetadata } from 'next'
 
 
 type Props = {
-  params: Promise<{ id: string }>
+  params: Promise<{ project: string }>
 }
 
 export async function generateMetadata(
@@ -12,10 +12,10 @@ export async function generateMetadata(
   parent: ResolvingMetadata
 ): Promise<Metadata> {
 
-  const { id } = await params
+  const { project } = await params
 
 
-  const Projectdata = await AdminProjectService.getProjectById(id);
+  const Projectdata = await AdminProjectService.getProjectById(project);
 
   return {
     title: {

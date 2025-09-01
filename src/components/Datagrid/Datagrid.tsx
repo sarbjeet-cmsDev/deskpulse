@@ -115,7 +115,6 @@ const DataGrid: React.FC<DataGridProps> = ({
 
     return pages;
   };
-
   const pageNumbers = getPageNumbers();
   return (
     <div className="space-y-4">
@@ -191,7 +190,10 @@ const DataGrid: React.FC<DataGridProps> = ({
                 <tr key={idx} className="border-t hover:bg-gray-50">
                   {headers.map((header) => (
                     <td key={header.id} className="px-4 py-2">
-                      {row[header.id]}
+                      {Array.isArray(row[header.id])
+                        ? row[header.id].join(', ')
+                        : row[header.id]}
+
                     </td>
                   ))}
 

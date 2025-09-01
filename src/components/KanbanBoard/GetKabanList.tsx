@@ -18,7 +18,7 @@ export const GetKanbonList = () => {
   const user: any = useSelector((state: RootState) => state.auth.user);
   const params = useParams();
   const router = useRouter();
-  const projectId = params?.id as string;
+  const projectId = params?.project as string;
 
   const [kanbanList, setKanbanList] = useState<KanbanColumn[]>([]);
   const [taskList, setTaskList] = useState<Task[]>([]);

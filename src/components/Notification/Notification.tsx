@@ -65,7 +65,7 @@ export const NotificationDrawer = () => {
     }
   };
   const currentItems = notification.slice(0, visibleCount);
-
+  const router = useRouter()
   return (
     <div className="flex justify-between items-center">
       <div className="w-full">
@@ -89,6 +89,11 @@ export const NotificationDrawer = () => {
               <div
                 key={index}
                 className={`flex items-start gap-4 p-4 mt-6 rounded-xl shadow-sm border transition-all ${bgColor}`}
+                onClick={() => {
+                  router.push(item?.redirect_url);
+                  dispatch(closeDrawer());
+                }}
+
               >
                 {/* <Avatar
                   src={userAvtar?.src}

@@ -10,7 +10,7 @@ import {
   CreateReminderFormData,
 } from "@/components/validation/reminder.schema";
 import ReminderService from "@/service/reminder.service";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/Form/Input";
 import { Button } from "@/components/Form/Button";
@@ -27,6 +27,8 @@ export default function CreateReminder() {
     reset,
     watch,
     control,
+    getValues,
+    setValue,
   } = useForm<CreateReminderFormData>({
     resolver: zodResolver(createReminderSchema),
     defaultValues: {
@@ -36,6 +38,7 @@ export default function CreateReminder() {
       sort_order: 0,
       repeat: "none",
       days: [],
+      monthdays: [],
     },
   });
 
@@ -52,7 +55,7 @@ export default function CreateReminder() {
     }
   };
 
-  const days = [
+  const weekDays = [
     { label: "Monday", value: "monday" },
     { label: "Tuesday", value: "tuesday" },
     { label: "Wednesday", value: "wednesday" },
@@ -62,7 +65,49 @@ export default function CreateReminder() {
     { label: "Sunday", value: "sunday" },
   ];
 
+  const allMonthDays = Array.from({ length: 31 }, (_, i) => ({
+    label: `${i + 1}`,
+    value: `${i + 1}`,
+  }));
+
   const repeat = watch("repeat");
+  const startDate = watch("start");
+  const endDate = watch("end");
+  const selectedDays = watch("days");
+  const selectedMonthDays = watch("monthdays");
+
+  const filteredMonthDays = (() => {
+    if (!endDate) return allMonthDays;
+    const endDay = new Date(endDate).getDate();
+    return allMonthDays.filter((d) => Number(d.value) <= endDay);
+  })();
+
+  useEffect(() => {
+    if (!startDate) return;
+    const start = new Date(startDate);
+
+    if (repeat === "monthly" && (!selectedMonthDays || selectedMonthDays.length === 0)) {
+      const day = start.getDate().toString();
+      setValue("monthdays", [day]);
+    }
+
+    if (repeat === "weekly" && (!selectedDays || selectedDays.length === 0)) {
+      const dayIndex = start.getDay();
+      const weekDay: any = weekDays[dayIndex === 0 ? 6 : dayIndex - 1].value;
+      setValue("days", [weekDay]);
+    }
+  }, [repeat, startDate]);
+
+  useEffect(() => {
+    if (repeat !== "monthly" || !endDate) return;
+    const endDay = new Date(endDate).getDate();
+    if (selectedMonthDays && selectedMonthDays.length > 0) {
+      const valid = selectedMonthDays.filter((d) => Number(d) <= endDay);
+      if (valid.length !== selectedMonthDays.length) {
+        setValue("monthdays", valid);
+      }
+    }
+  }, [endDate, repeat]);
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -136,19 +181,51 @@ export default function CreateReminder() {
               <p className="text-red-500 text-sm">{errors.repeat.message}</p>
             )}
           </div>
+
+          {repeat === "monthly" && (
+            <div>
+              <label className="block mb-1">Choose Day(s) of Month</label>
+              <Controller
+                name="monthdays"
+                control={control}
+                render={({ field }) => (
+                  <ReactSelect
+                    {...field}
+                    options={filteredMonthDays}
+                    isMulti
+                    closeMenuOnSelect={false}
+                    value={filteredMonthDays.filter((d) =>
+                      field.value?.includes(d.value)
+                    )}
+                    onChange={(selected) =>
+                      field.onChange(selected.map((s) => s.value))
+                    }
+                  />
+                )}
+              />
+              {errors.monthdays && (
+                <p className="text-red-500 text-sm">
+                  {errors.monthdays.message}
+                </p>
+              )}
+            </div>
+          )}
+
           {repeat === "weekly" && (
             <div>
-              <label className="block mb-1">Choose Days</label>
+              <label className="block mb-1">Choose Days of Week</label>
               <Controller
                 name="days"
                 control={control}
                 render={({ field }) => (
                   <ReactSelect
                     {...field}
-                    options={days}
+                    options={weekDays}
                     isMulti
                     closeMenuOnSelect={false}
-                    value={days.filter((d: any) => field.value?.includes(d.value))}
+                    value={weekDays.filter((d: any) =>
+                      field.value?.includes(d.value)
+                    )}
                     onChange={(selected) =>
                       field.onChange(selected.map((s) => s.value))
                     }

@@ -66,6 +66,7 @@ const Users = () => {
     { id: "firstName", title: "First Name", is_sortable: true },
     { id: "lastName", title: "Last Name" },
     { id: "email", title: "Email" },
+    { id: "userRoles", title: "userRoles" }
   ];
 
   const rows = users.map((user) => ({

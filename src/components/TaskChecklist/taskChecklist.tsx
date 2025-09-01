@@ -33,8 +33,8 @@ export default function TaskChecklist({ taskchecklist, refreshList }: SubTasksPr
   };
 
   const handleStatusChange = async (checklist: ITaskChecklist, checked: boolean) => {
-     const updatedStatus: 'complete' | 'pending' = checked ? 'complete' : 'pending';
-  
+    const updatedStatus: 'complete' | 'pending' = checked ? 'complete' : 'pending';
+
     const payload = {
       status: updatedStatus,
       completed_by: checked ? user?.id : undefined,

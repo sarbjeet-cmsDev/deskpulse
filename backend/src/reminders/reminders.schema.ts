@@ -35,6 +35,9 @@ export class Reminder {
 
   @Prop({ type: [String], required: false })
   days: any;
+
+  @Prop({ type: [String], required: false })
+  monthdays: any;
 }
 
 export const ReminderSchema = SchemaFactory.createForClass(Reminder);

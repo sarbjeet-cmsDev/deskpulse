@@ -65,42 +65,41 @@ export default function Details({
   const socketRef = useRef(getSocket());
 
   const handleUserUpdate = async (updatedIds: string[]) => {
-    
     try {
       await AdminProjectService.updateProject(projectId, {
         users: updatedIds,
         is_active: true,
       });
+      const newUserIds = updatedIds.filter((id) => !teamUserIds.includes(id));
 
-      //socket
-      if (updatedIds?.length) {
-     
+      if (newUserIds.length) {
         if (!socketRef.current.connected) {
           socketRef.current.connect();
         }
+
         socketRef.current.on("connect", () => {
-          socketRef.current.emit("register-user", loginUser.id); // Send your user ID immediately
+          socketRef.current.emit("register-user", loginUser.id);
         });
 
-        updatedIds.forEach((id) => {
+        newUserIds.forEach((id) => {
           socketRef.current.emit("task-updated", {
             taskId: "1111",
-            sender: loginUser.firstName + " " + loginUser.lastName,
+            sender: `${loginUser.firstName} ${loginUser.lastName}`,
             receiverId: id,
             description: "Assigned You a Project",
           });
         });
 
-        console.log(
-          "✅ socket event 'task-updated' hit while assigned user in project"
-        );
+        console.log("✅ socket event 'task-updated' sent for new users:", newUserIds);
       }
-      setTeamUserIds(updatedIds);
+
+      setTeamUserIds(updatedIds); // update state AFTER handling sockets
       onTaskUpdate?.();
     } catch (err) {
       console.error("Failed to update project users", err);
     }
   };
+
 
   return (
     <div>

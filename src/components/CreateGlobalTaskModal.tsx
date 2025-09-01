@@ -44,7 +44,7 @@ export default function CreateGlobalTaskModal({
   onClose,
   onCreate,
 }: CreateGlobalTaskModalProps) {
-  const { projectId: code } = useParams(); // route param (if exists)
+  const { projectId: code, project: projectCode } = useParams();
 
   const [projectOptions, setProjectOptions] = useState<ProjectOption[]>([]);
   const [userOptions, setUserOptions] = useState<ProjectOption[]>([]);
@@ -60,6 +60,7 @@ export default function CreateGlobalTaskModal({
     control,
     reset,
     watch,
+    setValue,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(
@@ -79,33 +80,18 @@ export default function CreateGlobalTaskModal({
       due_date: "",
       estimated_time: "",
       assigned_to: null,
-      projectId: null,
+      projectId: "",
       status: null,
     },
   });
 
   const projectId = watch("projectId");
 
-  // 🔹 Auto-select project if code in route
   useEffect(() => {
-    async function fetchProjectByCode() {
-      if (!code) return;
-      try {
-        const result = await ProjectService.getProjectByCode(code as string);
-        if (result?._id) {
-          // set projectId once from route
-          reset((prev: any) => ({
-            ...prev,
-            projectId: result._id,
-          }));
-        }
-      } catch (err) {
-        console.error("Failed to fetch project by code:", err);
-      }
+    if (projectCode) {
+      setValue("projectId", projectCode as string);
     }
-    fetchProjectByCode();
-  }, [code, reset]);
-
+  }, [projectCode, setValue]);
   // 🔹 Fetch project list
   useEffect(() => {
     async function fetchProjects() {
@@ -135,17 +121,17 @@ export default function CreateGlobalTaskModal({
     fetchProjects();
   }, []);
 
-  // 🔹 Fetch users & Kanban when project changes
   useEffect(() => {
     async function fetchUsersAndKanban() {
-      if (!projectId) {
+      const selectedProjectId = projectId || (projectCode as string);
+      if (!selectedProjectId) {
         setUserOptions([]);
         setKanbanList([]);
         return;
       }
       try {
-        const res = await ProjectService.getProjectUsers(projectId);
-        const result = await ProjectKanbon.getProjectKanbonList(projectId);
+        const res = await ProjectService.getProjectUsers(selectedProjectId);
+        const result = await ProjectKanbon.getProjectKanbonList(selectedProjectId);
 
         const KanbanListoptions =
           result.data?.map((kanban: any) => ({
@@ -167,9 +153,8 @@ export default function CreateGlobalTaskModal({
       }
     }
     fetchUsersAndKanban();
-  }, [projectId]);
+  }, [projectId, projectCode]);
 
-  // 🔹 Handle Create Task
   const handleCreate = async (values: any) => {
     setLoading(true);
     const { title, description, projectId, due_date, estimated_time, assigned_to, status } = values;

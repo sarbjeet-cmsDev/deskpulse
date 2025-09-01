@@ -20,7 +20,7 @@ import { JwtAuthGuard } from "src/guard/jwt-auth.guard";
 @Controller("api/admin/project")
 
 export class AdminProjectController {
-  constructor(private readonly projectService: ProjectService) {}
+  constructor(private readonly projectService: ProjectService) { }
 
   // ✅ Create Project
   @Post()
@@ -56,10 +56,10 @@ export class AdminProjectController {
   }
 
   @Get("/allProject")
-async findAllProject(): Promise<{ data: Project[]; total: number }> {
- 
-  return this.projectService.findAllProjectDetail();
-}
+  async findAllProject(): Promise<{ data: Project[]; total: number }> {
+
+    return this.projectService.findAllProjectDetail();
+  }
 
 
 
@@ -84,22 +84,22 @@ async findAllProject(): Promise<{ data: Project[]; total: number }> {
 
   // ✅ Update Project by ID
   @Put(":id")
-  @UseInterceptors(FileInterceptor("avatar", multerOptions)) 
+  @UseInterceptors(FileInterceptor("avatar", multerOptions))
   async update(
     @Param("id") id: string,
     @Body() updateProjectDto: UpdateProjectDto,
-    @UploadedFile() file: Express.Multer.File 
+    @UploadedFile() file: Express.Multer.File
   ): Promise<any> {
 
     if (file) {
-    const fileUrl = `/uploads/${file.filename}`;
-    updateProjectDto.avatar = fileUrl;
-  }
+      const fileUrl = `/uploads/${file.filename}`;
+      updateProjectDto.avatar = fileUrl;
+    }
 
     const updatedProject = await this.projectService.update(id, updateProjectDto);
     return {
       message: "Project updated successfully!",
-       project: updatedProject
+      project: updatedProject
     };
   }
 

@@ -125,17 +125,17 @@ export default function AvatarList({
             : visibleUsers
           ).map((usr) => {
             const initials =
-              usr.firstName?.slice(0, 2).toUpperCase() || "NA";
-            const isActive = selectedUserIds.includes(usr._id);
-            const hasImgError = imgErrors[usr._id];
+              usr?.firstName?.slice(0, 2).toUpperCase() || "NA";
+            const isActive = selectedUserIds.includes(usr?._id);
+            const hasImgError = imgErrors[usr?._id];
             const profileImageUrl = `${process.env.NEXT_PUBLIC_BACKEND_HOST}${usr?.avatar || usr?.profileImage || ""
               }`;
             return (
-              <li key={usr._id}>
+              <li key={usr?._id}>
                 <div
-                  title={`${usr.firstName} ${usr.lastName}`}
+                  title={`${usr?.firstName} ${usr?.lastName}`}
                   onClick={() => {
-                    toggleUserSelection(usr._id);
+                    toggleUserSelection(usr?._id);
                     checkSpace(); // ✅ recalc on avatar click
                   }}
                   className={`flex items-center justify-center w-8 h-8 rounded-full text-white text-sm font-semibold transition cursor-pointer ${isActive
@@ -146,9 +146,9 @@ export default function AvatarList({
                   {!hasImgError && profileImageUrl ? (
                     <img
                       src={profileImageUrl}
-                      alt={`${usr.firstName} ${usr.lastName}`}
+                      alt={`${usr?.firstName} ${usr?.lastName}`}
                       className="w-[25px] h-[25px] rounded-full object-cover"
-                      onError={() => handleImgError(usr._id)}
+                      onError={() => handleImgError(usr?._id)}
                     />
                   ) : (
                     <span>{initials}</span>

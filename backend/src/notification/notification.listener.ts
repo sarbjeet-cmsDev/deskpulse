@@ -28,7 +28,7 @@ export class NotificationListener {
       notifications.push({
         user: user._id.toString(),
         content: `The project "${projectObj.title}" was successfully assigned to ${UserData.username} on ${new Date(projectObj.updatedAt).toLocaleString()}.`,
-        redirect_url: `${process.env.FRONTEND_URL}project/${projectObj._id.toString()}`,
+        redirect_url: `${process.env.FRONTEND_URL}project/${projectObj.code.toString()}`,
       })
     }
     try {
@@ -49,7 +49,7 @@ export class NotificationListener {
     const TaskAssignDto: CreateNotificationDto = {
       user: UserData.id.toString(),
       content: `Task "${taskObj.title}" was assigned to ${UserData.username} — Due by ${taskObj.due_date ? new Date(taskObj.due_date).toLocaleString() : 'No due date'}, Priority: ${taskObj.priority}, Status: ${taskObj.status}`,
-      redirect_url: `${process.env.FRONTEND_URL}task/${taskObj._id.toString()}`
+      redirect_url: `${process.env.FRONTEND_URL}task/${taskObj.code.toString()}`
     }
     try {
       await this.notificationService.create(TaskAssignDto);
@@ -155,7 +155,7 @@ export class NotificationListener {
     const CommentObj = payload.CommentObj;
     // const oldTaskStatus = payload.oldTaskStatus;
     const updatedBy = await this.userservices.findOne(CommentObj.created_by.toString());
-    const TaskObj = await this.taskServices.findOne(CommentObj.task.toString())
+    const TaskObj: any = await this.taskServices.findOne(CommentObj.task.toString())
     const commentContent = extractTextFromHtml(CommentObj.content);
     const mentionedUsers = CommentObj.mentioned
     const notificationDtoForComments: CreateNotificationDto[] = [];
@@ -163,8 +163,8 @@ export class NotificationListener {
       const UserData = await this.userservices.findOne(user.toString())
       notificationDtoForComments.push({
         user: user.toString(),
-        content: `${UserData.username} commented "${commentContent}" — ${new Date(CommentObj.createdAt).toLocaleString()} : Created BY ${updatedBy.username}`,
-        redirect_url: `${process.env.FRONTEND_URL}comment/${payload.CommentObj._id.toString()}`,
+        content: `${updatedBy.firstName} ${updatedBy.lastName} commented "${commentContent}" — ${new Date(CommentObj.createdAt).toLocaleString()} : Created BY ${updatedBy.username}`,
+        redirect_url: `${process.env.FRONTEND_URL}task/${TaskObj?.code}?${payload.CommentObj._id.toString()}`,
       })
     }
 

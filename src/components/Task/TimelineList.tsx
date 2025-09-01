@@ -144,11 +144,7 @@ export default function TimelineList({
             className="inactive flex justify-between items-center bg-[#f8fafc] w-full py-[15px] px-[20px] rounded-[8px] border-l-[8px] border-l-[#5fd788] mt-[16px]"
           >
             <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                defaultChecked
-                className="accent-green-500"
-              />
+
               <span className="font-medium text-gray-800">
                 {timeline.comment || "Meeting"}
               </span>
