@@ -232,7 +232,12 @@ export const UpdateKanbanList = ({ projectId, project }: UpdateKanbanListProps) 
                   type="color"
                   className="w-[90px]"
                   value={editedColors[item._id] || "#ffffff"}
-                  onChange={(e) => handleColorChange(item._id, e.target.value)}
+                  onChange={(e) => {
+                    handleColorChange(item._id, e.target.value);
+                    setActiveEditId(item._id);
+                    }}
+                  onFocus={() => setActiveEditId(item._id)}
+                  onBlur={() => setActiveEditId(null)}
                 />
 
                 <div className="flex gap-2 mt-2 sm:mt-0">

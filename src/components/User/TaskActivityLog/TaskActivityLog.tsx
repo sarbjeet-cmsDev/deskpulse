@@ -11,6 +11,7 @@ import Image from "next/image";
 import leftarrow from "@/assets/images/back.png";
 import Link from "next/link";
 import Pagination from "@/components/Pagination/pagination";
+import { useRouter } from "next/navigation";  
 
 interface Props {
   code: string;
@@ -18,7 +19,7 @@ interface Props {
 
 
 export default function TaskActivityLog({ code }: Props) {
-  // const { id: taskId } = useParams();
+  const router = useRouter();
   const [logs, setLogs] = useState<ITaskActivityLog[]>([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -61,9 +62,12 @@ export default function TaskActivityLog({ code }: Props) {
     <div className="max-w-6xl mx-auto md:p-6 p-3">
       <div className="flex justify-center items-center md:p-[24px] border-b border-[#31394f14]">
         <div className="md:w-[2%]">
-          <Link href={`/task/${code}`}>
+          {/* <Link href={`/task/${code}`}>
             <Image src={leftarrow} alt="Back" width={16} height={16} />
-          </Link>
+          </Link> */}
+           <span className="cursor-pointer" onClick={() => router.back()}>
+            <Image src={leftarrow} alt="Back" width={16} height={16} />
+          </span>
         </div>
         <H3 className="w-[98%] text-center md:p-0 p-1">Task Activity Logs</H3>
       </div>
