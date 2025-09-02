@@ -3,7 +3,7 @@ import AdminProjectService from '@/service/adminProject.service'
 import type { Metadata, ResolvingMetadata } from 'next'
 
 type Props = {
-  params: { projectId: string }
+  params: Promise<{ projectId: string }>
 }
 
 export async function generateMetadata(
@@ -11,7 +11,7 @@ export async function generateMetadata(
   parent: ResolvingMetadata
 ): Promise<Metadata> {
 
-  const { projectId } = params
+  const { projectId } = await params
 
 
 
