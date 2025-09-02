@@ -44,7 +44,11 @@ export default function CreateGlobalTaskModal({
   onClose,
   onCreate,
 }: CreateGlobalTaskModalProps) {
-  const { projectId: code, project: projectCode } = useParams();
+  // Params: prefer "code" (project code) → resolve to _id; otherwise "project" (already an _id)
+  const { code, project: projectCode } = useParams() as {
+    code?: string;
+    project?: string;
+  };
 
   const [projectOptions, setProjectOptions] = useState<ProjectOption[]>([]);
   const [userOptions, setUserOptions] = useState<ProjectOption[]>([]);
@@ -88,11 +92,35 @@ export default function CreateGlobalTaskModal({
   const projectId = watch("projectId");
 
   useEffect(() => {
-    if (projectCode) {
-      setValue("projectId", projectCode as string);
+    let cancelled = false;
+    console.log(code, "code++=")
+    async function autoSelectProject() {
+      try {
+        if (code) {
+          const res = await ProjectService.getProjectByCode(code as string);
+          console.log(res, "resres")
+          const resolvedId = res?._id;
+          if (!cancelled && resolvedId) {
+            setValue("projectId", resolvedId);
+            return;
+          }
+        }
+        if (!cancelled && projectCode) {
+          setValue("projectId", projectCode as string);
+        }
+      } catch (err) {
+        console.error("Failed to auto-select project:", err);
+        if (!cancelled && projectCode) {
+          setValue("projectId", projectCode as string);
+        }
+      }
     }
-  }, [projectCode, setValue]);
-  // 🔹 Fetch project list
+
+    autoSelectProject();
+    return () => {
+      cancelled = true;
+    };
+  }, [code, projectCode, setValue]);
   useEffect(() => {
     async function fetchProjects() {
       try {
@@ -103,7 +131,7 @@ export default function CreateGlobalTaskModal({
           return match ? decodeURIComponent(match.split("=")[1]) : null;
         };
         const role = getCookie("role");
-        let res;
+        let res: any;
         if (role === "admin") {
           res = await AdminProjectService.getAllProjectListing();
         } else {
@@ -123,7 +151,7 @@ export default function CreateGlobalTaskModal({
 
   useEffect(() => {
     async function fetchUsersAndKanban() {
-      const selectedProjectId = projectId || (projectCode as string);
+      const selectedProjectId = projectId;
       if (!selectedProjectId) {
         setUserOptions([]);
         setKanbanList([]);
@@ -133,12 +161,12 @@ export default function CreateGlobalTaskModal({
         const res = await ProjectService.getProjectUsers(selectedProjectId);
         const result = await ProjectKanbon.getProjectKanbonList(selectedProjectId);
 
-        const KanbanListoptions =
-          result.data?.map((kanban: any) => ({
+        const kanbanListOptions =
+          result?.data?.map((kanban: any) => ({
             value: kanban.title,
             label: kanban.title,
           })) || [];
-        setKanbanList(KanbanListoptions);
+        setKanbanList(kanbanListOptions);
 
         const users = res?.users || [];
         const options = users.map((user: IUser) => ({
@@ -147,17 +175,25 @@ export default function CreateGlobalTaskModal({
         }));
         setUserOptions(options);
       } catch (err) {
-        console.error("Failed to fetch users:", err);
+        console.error("Failed to fetch users/kanban:", err);
         setUserOptions([]);
         setKanbanList([]);
       }
     }
     fetchUsersAndKanban();
-  }, [projectId, projectCode]);
+  }, [projectId]);
 
   const handleCreate = async (values: any) => {
     setLoading(true);
-    const { title, description, projectId, due_date, estimated_time, assigned_to, status } = values;
+    const {
+      title,
+      description,
+      projectId,
+      due_date,
+      estimated_time,
+      assigned_to,
+      status,
+    } = values;
 
     try {
       await TaskService.createTask({
