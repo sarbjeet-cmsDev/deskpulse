@@ -28,7 +28,7 @@ export class NotificationListener {
       notifications.push({
         user: user._id.toString(),
         content: `The project "${projectObj.title}" was successfully assigned to ${UserData.username} on ${new Date(projectObj.updatedAt).toLocaleString()}.`,
-        redirect_url: `${process.env.FRONTEND_URL}project/${projectObj.code.toString()}`,
+        redirect_url: `${process.env.FRONTEND_URL}/project/${projectObj.code.toString()}`,
       })
     }
     try {
@@ -54,7 +54,7 @@ export class NotificationListener {
     const TaskAssignDto: CreateNotificationDto = {
       user: UserData.id.toString(),
       content: `Task "${taskObj.title}" was assigned to ${UserData.username} — Due by ${taskObj.due_date ? new Date(taskObj.due_date).toLocaleString() : 'No due date'}, Priority: ${taskObj.priority}, Status: ${taskObj.status} assigned by ${assignerData.firstName} ${assignerData.lastName}`,
-      redirect_url: `${process.env.FRONTEND_URL}task/${taskObj.code.toString()}`
+      redirect_url: `${process.env.FRONTEND_URL}/task/${taskObj.code.toString()}`
     }
     try {
       await this.notificationService.create(TaskAssignDto);
