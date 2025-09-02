@@ -169,7 +169,7 @@ export class NotificationListener {
       notificationDtoForComments.push({
         user: user.toString(),
         content: `${updatedBy.firstName} ${updatedBy.lastName} commented "${commentContent}" — ${new Date(CommentObj.createdAt).toLocaleString()} : Created BY ${updatedBy.username}`,
-        redirect_url: `${process.env.FRONTEND_URL}task/${TaskObj?.code}?${payload.CommentObj._id.toString()}`,
+        redirect_url: `${process.env.FRONTEND_URL}/task/${TaskObj?.code}?${payload.CommentObj._id.toString()}`,
       })
     }
 
