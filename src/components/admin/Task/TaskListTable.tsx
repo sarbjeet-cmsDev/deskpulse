@@ -4,7 +4,6 @@ import Datagrid from "@/components/Datagrid/Datagrid";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import AdminProjectService from "@/service/adminProject.service";
 import AdminTaskService from "@/service/adminTask.service";
 import TaskService from "@/service/task.service";
 

@@ -12,7 +12,7 @@ import * as fs from 'fs';
 
 @Controller("api/user")
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
   @Post("create")
   async create(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.userService.create(createUserDto);
@@ -57,7 +57,7 @@ export class UserController {
     @Req() req: any
   ) {
     const fileExtension = path.extname(file.filename);
-   
+
     const now = new Date();
     const year = now.getFullYear().toString();
     const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -69,9 +69,9 @@ export class UserController {
     fs.mkdirSync(uploadSubDir, { recursive: true });
 
     fs.renameSync(file.path, targetPath);
- 
+
     const fileUrl = `/uploads/${year}/${month}/${day}/${file.filename}`.replace(/\\/g, '/');
-   
+
 
     return this.userService.updateUserAvatar(userId, fileUrl);
   }

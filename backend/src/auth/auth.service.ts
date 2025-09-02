@@ -29,8 +29,10 @@ export class AuthService {
     if (!user.isActive) {
       throw new NotFoundException('User account is not active. Please contact support.');
     }
-
-    const payload = { sub: user._id, email: user.email };
+    const payload = {
+      sub: user._id, email: user.email, roles: user.roles,
+      userRoles: user.userRoles
+    };
     const token = await this.jwtService.signAsync(payload);
     return {
       message: 'Login successful.',

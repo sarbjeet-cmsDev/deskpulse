@@ -1,32 +1,32 @@
 import UpdateProjectForm from '@/components/admin/Project/UpdateProjectForm'
 import AdminProjectService from '@/service/adminProject.service'
 import type { Metadata, ResolvingMetadata } from 'next'
- 
+
 type Props = {
   params: Promise<{ id: string }>
 }
- 
+
 export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
 
   const { id } = await params
- 
-  
-  const Userdata = await AdminProjectService.getProjectById(id);
- 
- 
+
+
+  // const Userdata = await AdminProjectService.getProjectById(id);
+
+
   return {
     title: {
-      absolute:`Project | ${Userdata?.code}`
+      absolute: `Project | ${id}`
     },
   }
 }
- 
-export default async function UpdateProjectPage({ params}: Props) {
+
+export default async function UpdateProjectPage({ params }: Props) {
   const { id } = await params
-  return(
-    <UpdateProjectForm id={id}/>
+  return (
+    <UpdateProjectForm id={id} />
   )
 }

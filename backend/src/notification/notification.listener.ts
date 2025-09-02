@@ -45,10 +45,15 @@ export class NotificationListener {
   async handleTaskAsssignEvent(payload: { taskObj: any; }) {
     const { taskObj } = payload;
     const taskUsers = taskObj.assigned_to
+    const assignerId =
+      taskObj.updated_by && taskObj.updated_by !== taskObj.created_by
+        ? taskObj.updated_by
+        : taskObj.created_by;
+    const assignerData = await this.userservices.findOne(assignerId);
     const UserData = await this.userservices.findOne(taskUsers.toString())
     const TaskAssignDto: CreateNotificationDto = {
       user: UserData.id.toString(),
-      content: `Task "${taskObj.title}" was assigned to ${UserData.username} — Due by ${taskObj.due_date ? new Date(taskObj.due_date).toLocaleString() : 'No due date'}, Priority: ${taskObj.priority}, Status: ${taskObj.status}`,
+      content: `Task "${taskObj.title}" was assigned to ${UserData.username} — Due by ${taskObj.due_date ? new Date(taskObj.due_date).toLocaleString() : 'No due date'}, Priority: ${taskObj.priority}, Status: ${taskObj.status} assigned by ${assignerData.firstName} ${assignerData.lastName}`,
       redirect_url: `${process.env.FRONTEND_URL}task/${taskObj.code.toString()}`
     }
     try {

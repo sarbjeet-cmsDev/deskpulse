@@ -4,11 +4,14 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from "@nestjs/common";
 import { CommentService } from "./comment.service";
 import { Comment } from "./comment.interface";
+import { AdminGuard } from "src/guard/admin.guard";
 
 @Controller("api/admin/comment")
+@UseGuards(AdminGuard)
 export class AdminCommentController {
   constructor(private readonly commentService: CommentService) { }
 

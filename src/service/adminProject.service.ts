@@ -1,6 +1,6 @@
 import { createAxiosClient } from "@/utils/createAxiosClient";
 
-const axiosClient = createAxiosClient({ withCreds: false });
+const axiosClient = createAxiosClient({ withCreds: true });
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export interface IProject {
@@ -33,7 +33,7 @@ const AdminProjectService = {
     limit?: number;
     keyword?: string;
     sortOrder?: "asc" | "desc";
-  }): Promise<{ data: IProject[]; total: number; limit:number; totalPages:number }> {
+  }): Promise<{ data: IProject[]; total: number; limit: number; totalPages: number }> {
     const res = await axiosClient.get(`${API_URL}/admin/project`, { params });
     return {
       data: res.data.data,
@@ -43,13 +43,13 @@ const AdminProjectService = {
     };
   },
 
-async getAllProjectListing  (): Promise<{ data: IProject[]; total: number }>  {
-  const res = await axiosClient.get(`${API_URL}/admin/project/allProject`);
-  return {
-    data: res.data.data,
-    total: res.data.total,
-  };
-},
+  async getAllProjectListing(): Promise<{ data: IProject[]; total: number }> {
+    const res = await axiosClient.get(`${API_URL}/admin/project/allProject`);
+    return {
+      data: res.data.data,
+      total: res.data.total,
+    };
+  },
 
 
   //  Get single project by ID
@@ -57,7 +57,7 @@ async getAllProjectListing  (): Promise<{ data: IProject[]; total: number }>  {
     const res = await axiosClient.get(`${API_URL}/admin/project/${id}`);
     return res.data.data;
   },
- async getProjectByCode(code: string): Promise<IProject> {
+  async getProjectByCode(code: string): Promise<IProject> {
     const res = await axiosClient.get(`${API_URL}/admin/project/code/${code}`);
     return res.data.data;
   },

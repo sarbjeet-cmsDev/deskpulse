@@ -14,12 +14,14 @@ import { CreateUserDto, UpdateUserDto } from "./user.dto";
 import { UserService } from "./user.service";
 import { JwtAuthGuard } from "src/guard/jwt-auth.guard";
 import { User } from "./user.schema";
+import { AdminGuard } from "src/guard/admin.guard";
 
 @Controller("api/admin/user")
 export class AdminUserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
   // ✅ Create User
+  @UseGuards(AdminGuard)
   @Post("create")
   async create(@Body() createUserDto: CreateUserDto): Promise<any> {
     const user = await this.userService.create(createUserDto);
@@ -43,6 +45,7 @@ export class AdminUserController {
 
   // ✅ Get User by ID
   @Get("view/:id")
+  @UseGuards(AdminGuard)
   async findOne(@Param("id") id: string): Promise<any> {
     const user = await this.userService.findOne(id);
     return {
@@ -78,7 +81,7 @@ export class AdminUserController {
   }
 
   // ✅ Get Logged-in User Profile
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AdminGuard)
   @Get("me")
   async getMe(@Req() req: any): Promise<any> {
     const profile = await this.userService.getmeDetails(req.user.userId);
@@ -89,7 +92,7 @@ export class AdminUserController {
   }
 
   // ✅ Update Own Profile
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AdminGuard)
   @Put("me")
   async updateMyDetails(
     @Req() req: any,
@@ -106,6 +109,7 @@ export class AdminUserController {
   }
 
   // ✅ Reset Password by Admin
+  @UseGuards(AdminGuard)
   @Put(":id/reset-password")
   async resetPassword(
     @Param("id") id: string,

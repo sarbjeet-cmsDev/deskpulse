@@ -1,7 +1,7 @@
 import { createAxiosClient } from "@/utils/createAxiosClient";
 import { ITask } from "./task.service";
 
-const axiosClient = createAxiosClient({ withCreds: false });
+const axiosClient = createAxiosClient({ withCreds: true });
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 

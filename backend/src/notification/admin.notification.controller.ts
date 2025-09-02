@@ -4,14 +4,17 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from "@nestjs/common";
 import { NotificationService } from "./notification.service";
 import { INotification } from "./notification.interface";
+import { AdminGuard } from "src/guard/admin.guard";
 
 
 @Controller("api/admin/notification")
+@UseGuards(AdminGuard)
 export class AdminNotificationController {
-  constructor(private readonly notificationService: NotificationService) {}
+  constructor(private readonly notificationService: NotificationService) { }
 
 
   @Get()
@@ -30,7 +33,7 @@ export class AdminNotificationController {
   }
 
 
- 
+
   @Delete(":id")
   async remove(@Param("id") id: string): Promise<any> {
     await this.notificationService.remove(id);

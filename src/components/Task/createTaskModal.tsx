@@ -11,7 +11,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { taskCreateSchema } from "../validation/taskValidation";
 import { Controller } from "react-hook-form";
 import ReactSelect from "react-select";
-import AdminUserService from "@/service/adminUser.service";
 import { IUser } from "@/service/adminUser.service";
 import ProjectService from "@/service/project.service";
 import DescriptionInputToolbar from "../common/Description/descriptionToolbar";

@@ -1,10 +1,12 @@
-import { Controller, Get, Query } from "@nestjs/common";
+import { Controller, Get, Query, UseGuards } from "@nestjs/common";
 import { TimelineService } from "./timeline.service";
 import { Timeline } from "./timeline.interface";
+import { AdminGuard } from "src/guard/admin.guard";
 
 @Controller("api/admin/timelines")
+@UseGuards(AdminGuard)
 export class AdminTimelineController {
-  constructor(private readonly timelineService: TimelineService) {}
+  constructor(private readonly timelineService: TimelineService) { }
 
   @Get()
   async getAllTimelines(
@@ -15,7 +17,7 @@ export class AdminTimelineController {
     @Query("start") start?: string,
     @Query("end") end?: string,
     @Query("projectId") projectId?: string
-    ): Promise<{ data: Timeline[]; total: number; page: number; limit: number; totalPages: number;totalTimeSpent:number }> {
+  ): Promise<{ data: Timeline[]; total: number; page: number; limit: number; totalPages: number; totalTimeSpent: number }> {
     return await this.timelineService.getAllTimelines(
       page,
       limit,
@@ -28,25 +30,25 @@ export class AdminTimelineController {
   }
 
   @Get("user")
-    async findTimelineByUser(
-      @Query("userIds") userIds?: string,
-      @Query("page") page: number = 1,
-      @Query("limit") limit: number = 25,
-      @Query("start") start?: string,
-      @Query("end") end?: string,
-      @Query("sortOrder") sortOrder: "asc" | "desc" = "asc",
-      @Query("projectId") projectId?: string
-    ): Promise<{ data: Timeline[]; total: number; page: number; limit: number,totalPages: number, totalTimeSpent:number  }> {
-  
-      const userIdArray = userIds.split(",");
-      return this.timelineService.findUsersTimeLine(
-        userIdArray,
-        page,
-        limit,
-        sortOrder,
-        start,
-        end,
-        projectId
-      );
-    }
+  async findTimelineByUser(
+    @Query("userIds") userIds?: string,
+    @Query("page") page: number = 1,
+    @Query("limit") limit: number = 25,
+    @Query("start") start?: string,
+    @Query("end") end?: string,
+    @Query("sortOrder") sortOrder: "asc" | "desc" = "asc",
+    @Query("projectId") projectId?: string
+  ): Promise<{ data: Timeline[]; total: number; page: number; limit: number, totalPages: number, totalTimeSpent: number }> {
+
+    const userIdArray = userIds.split(",");
+    return this.timelineService.findUsersTimeLine(
+      userIdArray,
+      page,
+      limit,
+      sortOrder,
+      start,
+      end,
+      projectId
+    );
+  }
 }

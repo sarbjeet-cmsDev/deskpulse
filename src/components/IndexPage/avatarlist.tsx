@@ -123,7 +123,7 @@ export default function AvatarList({
               ? activeUsers
               : visibleUsers
             : visibleUsers
-          ).map((usr) => {
+          ).map((usr, index) => {
             const initials =
               usr?.firstName?.slice(0, 2).toUpperCase() || "NA";
             const isActive = selectedUserIds.includes(usr?._id);
@@ -131,7 +131,7 @@ export default function AvatarList({
             const profileImageUrl = `${process.env.NEXT_PUBLIC_BACKEND_HOST}${usr?.avatar || usr?.profileImage || ""
               }`;
             return (
-              <li key={usr?._id}>
+              <li key={usr?._id || index}>
                 <div
                   title={`${usr?.firstName} ${usr?.lastName}`}
                   onClick={() => {

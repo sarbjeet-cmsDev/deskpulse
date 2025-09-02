@@ -1,6 +1,4 @@
 import TaskDetails from '@/components/User/Task/TaskDetail'
-import AdminTaskService from '@/service/adminTask.service'
-import TaskService from '@/service/task.service'
 import type { Metadata, ResolvingMetadata } from 'next'
 
 type Props = {
@@ -14,11 +12,10 @@ export async function generateMetadata(
 
   const { id } = await params
 
-  const TaskData = await AdminTaskService.getTaskByCode(id);
 
   return {
     title: {
-      absolute: `Task | ${TaskData?.code}`
+      absolute: `Task | ${id}`
     },
   }
 }

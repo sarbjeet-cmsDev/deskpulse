@@ -16,9 +16,10 @@ import { UseInterceptors, UploadedFile } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { multerOptions } from "../shared/multer.config";
 import { JwtAuthGuard } from "src/guard/jwt-auth.guard";
+import { AdminGuard } from "src/guard/admin.guard";
 
 @Controller("api/admin/project")
-
+@UseGuards(AdminGuard)
 export class AdminProjectController {
   constructor(private readonly projectService: ProjectService) { }
 

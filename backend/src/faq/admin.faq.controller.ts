@@ -9,11 +9,14 @@ import {
   NotFoundException,
   BadRequestException,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { FaqService } from './faq.service';
 import { IFaq } from './faq.interface';
+import { AdminGuard } from 'src/guard/admin.guard';
 
 @Controller('api/admin/faq')
+@UseGuards(AdminGuard)
 export class AdminFaqController {
   constructor(private readonly faqService: FaqService) { }
 

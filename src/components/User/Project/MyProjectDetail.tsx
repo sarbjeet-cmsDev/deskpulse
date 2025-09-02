@@ -108,6 +108,7 @@ export default function MyProjectDetails({ code }: Props) {
   };
   const fetchUsers = async () => {
     try {
+
       const data: any = await AdminUserService.getAllUsers();
       const result = await ProjectService.getProjectById(projectId);
       const userIds = new Set(result?.users || []);
@@ -230,7 +231,7 @@ export default function MyProjectDetails({ code }: Props) {
                 <span onClick={() => router.back()} >
                   <Image src={leftarrow} alt="Back" width={16} height={16} />
                 </span>
-                </div>
+              </div>
               <H5 className="w-[98%] text-center">{project.title}</H5>
             </div>
             <div className="flex items-center">

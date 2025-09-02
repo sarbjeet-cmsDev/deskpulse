@@ -5,11 +5,14 @@ import {
   Delete,
   Query,
   Patch,
+  UseGuards,
 } from "@nestjs/common";
 import { TaskService } from "./task.service";
 import { Task } from "./task.interface";
+import { AdminGuard } from "src/guard/admin.guard";
 
 @Controller("api/admin/task")
+@UseGuards(AdminGuard)
 export class AdminTaskController {
   constructor(private readonly taskService: TaskService) { }
 
