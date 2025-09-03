@@ -12,7 +12,6 @@ import { useRouter } from "next/navigation";
 import AdminUserService from "@/service/adminUser.service";
 import UserService from "@/service/user.service";
 import { H3 } from "@/components/Heading/H3";
-import Link from "next/link";
 
 interface Props {
   id: string;
@@ -94,11 +93,11 @@ const UpdateAuthProfileForm = ({ id }: Props) => {
   return (
     <div className="min-h-screen mx-auto container max-w-3xl flex-col justify-center items-start p-2 md:pt-10">
       <div className="flex justify-center items-center md:p-[24px] p-2 border-b border-[#31394f14]">
-         <div className="w-10 cursor-pointer">
-                <span onClick={() => router.back()} >
-                  <Image src={leftarrow} alt="Back" width={16} height={16} />
-                </span>
-              </div>
+        <div className="w-10 cursor-pointer">
+          <span onClick={() => router.back()} >
+            <Image src={leftarrow} alt="Back" width={16} height={16} />
+          </span>
+        </div>
         <H3 className="w-[98%] text-center">Update Profile</H3>
       </div>
       <div className="flex justify-center items-center">
@@ -216,7 +215,7 @@ const UpdateAuthProfileForm = ({ id }: Props) => {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Date of Birth
             </label>
-            <input
+            <Input
               type="date"
               {...register("dateOfBirth")}
               className="w-full border border-gray-300 rounded px-3 py-2"

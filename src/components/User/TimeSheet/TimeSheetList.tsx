@@ -8,7 +8,6 @@ import { RootState } from "@/store/store";
 import TimelineService from "@/service/timeline.service";
 
 import Datagrid from "@/components/Datagrid/Datagrid";
-import AvatarList from "@/components/IndexPage/avatarlist";
 import { Button } from "@heroui/button";
 import { RangeCalendar } from "@heroui/react";
 
@@ -55,9 +54,6 @@ const TimeSheetList = () => {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [sortField, setSortField] = useState("task_title");
 
-  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
-  const [users, setUsers] = useState([]);
-
   const [selectedRange, setSelectedRange] = useState<{
     start: any;
     end: any;
@@ -84,7 +80,7 @@ const TimeSheetList = () => {
       const startDate = selectedRange.start.toDate(getLocalTimeZone()).toISOString();
       const endDate = selectedRange.end.toDate(getLocalTimeZone()).toISOString();
 
-      const res = await TimelineService.getTimeLineList(user?.id, page, limit, startDate, endDate,sortOrder);
+      const res = await TimelineService.getTimeLineList(user?.id, page, limit, startDate, endDate, sortOrder);
 
       const timelineData = res?.data || [];
 
@@ -190,8 +186,6 @@ const TimeSheetList = () => {
                 <RangeCalendar
                   aria-label="Select Range"
                   value={selectedRange}
-                  // onChange={setSelectedRange}
-
                   onChange={(range) => {
                     setSelectedRange(range as any);
                     setShowCalendar(false);
@@ -200,14 +194,9 @@ const TimeSheetList = () => {
               </div>
             </div>
           </div>
-
-
-
         </div>
 
         <div className="flex flex-col md:flex-row gap-4">
-
-
           <div className=" w-full">
             <Datagrid
               headers={headers}

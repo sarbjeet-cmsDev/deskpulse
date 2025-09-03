@@ -5,13 +5,12 @@ import { useCallback, useEffect, useState, useRef } from "react";
 import { debounce } from "lodash";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { MultiValue, Props as SelectProps } from "react-select";
 import ProjectAvtar from "@/assets/images/projectimage.png";
 import { Input } from "@/components/Form/Input";
 import { Button } from "@/components/Form/Button";
-import { H1 } from "@/components/Heading/H1";
 import AdminUserService, { IUser } from "@/service/adminUser.service";
 import AdminProjectService from "@/service/adminProject.service";
 import { projectUpdateSchema } from "@/components/validation/projectValidation";
@@ -36,13 +35,8 @@ const ReactSelect = dynamic(() => import("react-select") as any, {
   ssr: false,
 }) as React.ComponentType<SelectProps<UserOption, true>>;
 
-// function stripHtml(html: string): string {
-//   return html.replace(/<[^>]*>/g, "").trim();
-// }
-
 const UpdateProjectForm = ({ id }: Props) => {
   const router = useRouter();
-  // const { id } = useParams<{ id: string }>();
   const [loading, setLoading] = useState(true);
   const [userOptions, setUserOptions] = useState<UserOption[]>([]);
   const [inputValue, setInputValue] = useState("");
@@ -86,7 +80,6 @@ const UpdateProjectForm = ({ id }: Props) => {
     const fetchData = async () => {
       try {
         const project = await AdminProjectService.getProjectById(id);
-        // project.description = stripHtml(project.description || "");
         setProject(project);
         const users = await AdminUserService.searchUsers("");
         const options = users.map((user: IUser) => ({
@@ -134,7 +127,7 @@ const UpdateProjectForm = ({ id }: Props) => {
           socketRef.current.connect();
         }
         socketRef.current.on("connect", () => {
-          socketRef.current.emit("register-user", user.id); // Send your user ID immediately
+          socketRef.current.emit("register-user", user.id);
         });
         data.users.forEach((id) => {
           socketRef.current.emit("task-updated", {
@@ -318,12 +311,6 @@ const UpdateProjectForm = ({ id }: Props) => {
             />
           </div>
         </div>
-        {/* 
-        <Input type="number" placeholder="Sort Order" {...register('sort_order')} />
-        {errors.sort_order && (
-          <p className="text-sm text-red-500">{errors.sort_order.message}</p>
-        )} */}
-
         <div>
           <label className="flex items-center gap-2">
             <input type="checkbox" {...register("is_active")} />

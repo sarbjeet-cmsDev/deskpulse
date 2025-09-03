@@ -157,16 +157,16 @@ const TimeSheetList = () => {
   }, [watch("projectId")]);
 
   const resetPage = () => {
-  setPage(1);
-  const params = new URLSearchParams(searchParams.toString());
-  params.set("page", "1");
-  router.push(`${pathname}?${params.toString()}`, { scroll: false });
-};
+    setPage(1);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", "1");
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+  };
 
-  useEffect(()=>{
+  useEffect(() => {
     resetPage()
     fetchTasks(selectedUserIds);
-  },[selectedProjectId, selectedRange, selectedUserIds])
+  }, [selectedProjectId, selectedRange, selectedUserIds])
 
   const fetchProjects = async () => {
     const projects = await AdminProjectService.getAllProjectListing();
@@ -353,16 +353,12 @@ const TimeSheetList = () => {
                         }),
                         menu: (base) => ({
                           ...base,
-                          // zIndex: 9999,
-                          // maxHeight: 200,
-                          // overflowY: "scroll",
                           position: "absolute",
                         }),
                         menuList: (base) => ({
                           ...base,
                           paddingTop: 0,
                           paddingBottom: 0,
-                          // overflowX: "auto",
                         }),
                       }}
                     />

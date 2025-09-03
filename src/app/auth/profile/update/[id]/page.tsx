@@ -1,5 +1,4 @@
 import UpdateAuthProfileForm from '@/components/User/Auth/UpdateProfileForm'
-import AdminUserService from '@/service/adminUser.service'
 import type { Metadata, ResolvingMetadata } from 'next'
 
 type Props = {

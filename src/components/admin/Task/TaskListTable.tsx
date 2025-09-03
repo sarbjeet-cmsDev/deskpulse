@@ -66,7 +66,6 @@ const TaskListTable = () => {
   const headers = [
     { id: "code", title: "Code", is_sortable: true },
     { id: "title", title: "Title" },
-    // { id: "description", title: "Description" },
   ];
   const rows = (tasks ?? []).map((task: any) => {
 

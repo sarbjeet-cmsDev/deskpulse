@@ -104,7 +104,6 @@ const NotificationListTable = () => {
             setSearch(query);
             setPage(1);
           }}
-          // onPageChange={handlePageChange}
           onAction={async (action, row) => {
             if (action === "Edit") {
               router.push(`/admin/project/update/${row._id}`);

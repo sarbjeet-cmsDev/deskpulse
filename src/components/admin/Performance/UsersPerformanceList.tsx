@@ -1,15 +1,12 @@
 "use client";
 import MyChart from "@/components/chart/LineChart";
 import { H3 } from "@/components/Heading/H3";
-import PerformanceService from "@/service/performanceService";
 import { useEffect, useRef, useState } from "react";
 import dayjs from "dayjs";
 import { RangeCalendar } from "@heroui/react";
-import { today, getLocalTimeZone, CalendarDate } from "@internationalized/date";
+import { getLocalTimeZone, CalendarDate } from "@internationalized/date";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
-import Link from "next/link";
 import Image from "next/image";
-import leftarrow from "@/assets/images/back.png";
 import { Button } from "@heroui/button";
 import ChevronUp from "@/assets/images/chevronup.svg";
 import ChevronDown from "@/assets/images/chevrondown.svg";
@@ -27,22 +24,18 @@ export default function PerformancePreview() {
   });
   const [userColors, setUserColors] = useState<Record<string, string>>({});
   const calendarRef = useRef<HTMLDivElement | null>(null);
-
-  // Today
   const jsToday = new Date();
   jsToday.setHours(0, 0, 0, 0);
-
-  // CalendarDate objects for min and max
   const startDate = new CalendarDate(
     jsToday.getFullYear(),
     jsToday.getMonth() + 1,
     jsToday.getDate() - 10
-  ); // 10 days ago
+  );
   const tomorrow = new CalendarDate(
     jsToday.getFullYear(),
     jsToday.getMonth() + 1,
     jsToday.getDate() + 1
-  ); // +1 day from today
+  );
 
   const [selectedRange, setSelectedRange] = useState<{
     start: CalendarDate;
@@ -54,9 +47,8 @@ export default function PerformancePreview() {
 
   const [showCalendar, setShowCalendar] = useState(false);
 
-  // Generate a distinct color for a new user
   const generateColorForUser = (userId: string, index: number) => {
-    const hue = (index * 137.508) % 360; // spread colors using golden angle
+    const hue = (index * 137.508) % 360;
     return `hsl(${hue}, 70%, 50%)`;
   };
 
@@ -125,8 +117,6 @@ export default function PerformancePreview() {
           const dateKey = dayjs(item.date).format("YYYY-MM-DD");
           performanceMap[dateKey] = item.performance;
         });
-
-        // 👇 Replace 0 with null (skip point instead of hitting zero)
         const userData = daysInRange.map((day) =>
           performanceMap[day] !== undefined ? performanceMap[day] : null
         );
@@ -161,9 +151,8 @@ export default function PerformancePreview() {
     "DD MMM YY"
   )} - ${dayjs(selectedRange.end.toDate(getLocalTimeZone())).format("DD MMM YY")}`;
 
-  // Disable dates outside the 10 days ago → tomorrow range
   const isDateUnavailable = (date: CalendarDate) => {
-    return date.compare(tomorrow) > 0; // disable only after tomorrow
+    return date.compare(tomorrow) > 0;
   };
 
   useEffect(() => {

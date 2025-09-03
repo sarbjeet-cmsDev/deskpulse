@@ -5,7 +5,6 @@ import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import AdminProjectService from "@/service/adminProject.service";
-import { H1 } from "@/components/Heading/H1";
 import { Button } from "@heroui/button";
 import { H3 } from "@/components/Heading/H3";
 
@@ -109,7 +108,7 @@ const ProjectListTable = () => {
               } else if (action === "View") {
                 router.push(`/project/${row?.code}`);
               }
-               else if (action === "Delete") {
+              else if (action === "Delete") {
                 const result = await Swal.fire({
                   title: "Are you sure?",
                   text: `You are about to delete Project: "${row.code}"`,

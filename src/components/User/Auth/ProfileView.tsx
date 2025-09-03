@@ -15,7 +15,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { RootState, AppDispatch } from "@/store/store";
 import { fetchUserProfile, updateUserAvatar } from "@/store/slices/userSlice";
-import Link from "next/link";
 import Cookies from "js-cookie";
 import { getSocket } from "@/utils/socket";
 
@@ -64,14 +63,6 @@ export default function AuthProfileView() {
       setImageSrc(defaultAvatar.src);
     }
   }, [user, version]);
-
-  // const role = user?.roles?.[0] ?? "";
-  // let href = "/";
-  // if (role === "admin") {
-  //   href = "/";
-  // } else {
-  //   href = "/";
-  // }
 
   return (
     <div className="max-w-6xl mx-auto px-2">

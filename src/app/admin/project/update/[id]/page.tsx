@@ -12,11 +12,7 @@ export async function generateMetadata(
 ): Promise<Metadata> {
 
   const { id } = await params
-
-
   // const Userdata = await AdminProjectService.getProjectById(id);
-
-
   return {
     title: {
       absolute: `Project | ${id}`

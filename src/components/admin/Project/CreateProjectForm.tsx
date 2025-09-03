@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState, useRef } from "react";
 import { debounce } from "lodash";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { MultiValue, ActionMeta, Props as SelectProps } from "react-select";
+import { MultiValue, Props as SelectProps } from "react-select";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 import Link from "next/link";
@@ -16,9 +16,7 @@ import AdminUserService, { IUser } from "@/service/adminUser.service";
 import AdminProjectService from "@/service/adminProject.service";
 import { Input } from "@/components/Form/Input";
 import { Button } from "@/components/Form/Button";
-import { H1 } from "@/components/Heading/H1";
 import { projectCreateSchema } from "@/components/validation/projectValidation";
-import CommentInputSection from "@/components/Comment/commentSection";
 import DescriptionInputToolbar from "@/components/common/Description/descriptionToolbar";
 import { getSocket } from "@/utils/socket";
 import { useSelector } from "react-redux";
@@ -113,7 +111,7 @@ const CreateProjectForm = () => {
   const socketRef = useRef(getSocket());
 
   const onSubmit = async (data: CreateProjectInput) => {
-  
+
     try {
       const formData: any = new FormData();
 
@@ -132,7 +130,7 @@ const CreateProjectForm = () => {
       }
 
       await AdminProjectService.createProject(formData);
-     
+
       if (data?.users?.length) {
         if (!socketRef.current.connected) {
           socketRef.current.connect();
