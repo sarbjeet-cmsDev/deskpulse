@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import AdminCommentService from "@/service/adminComment.service";
+import { SweetAlert } from "@/components/common/SweetAlert/SweetAlert";
 
 function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState(value);
@@ -109,28 +110,17 @@ const CommentListTable = () => {
           }}
 
           onAction={async (action, row) => {
-
             if (action === "Edit") {
               router.push(`/admin/project/update/${row._id}`);
             } else if (action === "Delete") {
-              const result = await Swal.fire({
+              const result: any = await SweetAlert({
                 title: "Are you sure?",
                 text: `You are about to delete this comment`,
-                icon: "warning",
-                showCancelButton: true,
                 confirmButtonText: "Yes, delete it!",
                 cancelButtonText: "No, cancel!",
-                reverseButtons: true,
-                customClass: {
-                  confirmButton:
-                    "bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 focus:outline-none cursor-pointer mr-2",
-                  cancelButton:
-                    "bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 focus:outline-none cursor-pointer mr-2",
-                },
-                buttonsStyling: false,
-              });
-
-              if (result.isConfirmed) {
+              })
+              console.log(result, "result+++")
+              if (result) {
                 try {
                   await AdminCommentService.deleteComment(row._id);
                   setComments((prev) => prev.filter((p) => p._id !== row._id));

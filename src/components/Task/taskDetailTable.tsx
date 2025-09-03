@@ -1,25 +1,19 @@
 "use client";
 import AvatarList from "@/components/IndexPage/avatarlist";
 import DatePickerInput from "@/components/ProjectDetails/Datepicker";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import MentionUserListModal from "@/components/MentionUserListBox";
-import TaskService, { ITask } from "@/service/task.service";
+import TaskService from "@/service/task.service";
 import UserService from "@/service/user.service";
 import { IUser } from "@/service/user.service";
 import { ProjectKanbon } from "@/service/projectKanbon.service";
 import TaskPropertyUpdateModal from "./TaskStatusUpdateModal";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
-import { CiEdit } from "react-icons/ci";
-import { Input } from "../Form/Input";
-import { Button } from "../Form/Button";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { updateEstimateSchema } from "../validation/userValidation";
-import { zodResolver } from "@hookform/resolvers/zod";
 import formatMinutes from "@/utils/formatMinutes";
-import { getSocket } from "@/utils/socket";
 import { isDarkColor } from "@/utils/IsDarkColor";
+import { EstimateTime } from "./estimateTime";
+import { ClientAcceptance } from "./clientAcceptance";
+import { UpdateType } from "./updateType";
+import { UpdatePriority } from "./updatePriority";
 
 interface DetailsProps {
   project: {
@@ -32,7 +26,6 @@ interface DetailsProps {
     status?: string;
     dueDate?: string;
     attachments?: string[];
-    // Add more fields as needed
   };
   taskId: string;
   task: any;
@@ -53,36 +46,6 @@ export enum PriorityEnum {
   MEDIUM = "medium",
   HIGH = "high",
 }
-const priorityOption: any = [
-  { title: "low", color: "rgb(220, 24, 214)" },
-  { title: "medium", color: "rgb(0, 153, 255)" },
-  { title: "high", color: "rgb(209, 0, 0)" },
-];
-
-const ClientAcceptance: any = [
-  { title: "pending", color: "rgb(220, 24, 214)" },
-  { title: "Average", color: "rgb(225, 249, 47)" },
-  { title: "Good", color: "rgb(0, 128, 0)" },
-  { title: "Satisfied", color: "rgb(0, 153, 255)" },
-  { title: "Very Satisfied", color: "rgb(255, 165, 0)" },
-  { title: "Excellent", color: "rgb(0, 200, 0)" },
-];
-
-export enum TaskTypeEnum {
-  UI_UX = "ui/ux",
-  BACKEND = "backend",
-  UI_UX_BUG = "ui/ux bug",
-  BACKEND_BUG = "backend bug",
-  DEVOPS = "DevOps",
-  QA = "QA",
-  RND = "R&D",
-}
-
-
-
-
-type EstimateInput = z.infer<typeof updateEstimateSchema>;
-
 export default function DetailsTable({
   project,
   taskId,
@@ -90,23 +53,10 @@ export default function DetailsTable({
   onTaskUpdate,
   fetchTask,
 }: DetailsProps) {
-  const [email, setEmail] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
-  const [isPriorityModalOpen, setIsPriorityModalOpen] = useState(false);
-  const [isTaskTypeModalOpen, setIsTaskTypeModalOpen] = useState(false);
-  const [isClientAcceptanceModalOpen, setIsClientAcceptanceModalOpen] =
-    useState(false);
   const [kanbanList, setKanbanList] = useState([]);
-  const [users, setUsers] = useState([]);
-  const user: any = useSelector((state: RootState) => state.auth.user);
-  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
-  const [editEstimate, setEditEstimate] = useState(false);
   const [assignedUser, setAssignedUser] = useState<IUser[]>([]);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const loginUser: any = useSelector((state: RootState) => state.user.data);
-  const priortiyactiveColor = localStorage.getItem("priortiyactiveColor")
-  const ClientAcceptanceColor = localStorage.getItem("isCientAcceptanceColor")
   const handleOpenModal = () => {
     setIsModalOpen(true);
   };
@@ -114,8 +64,6 @@ export default function DetailsTable({
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
-
-  const socketRef = useRef(getSocket());
 
   const fetchAssignedUser = async (id: string) => {
     try {
@@ -178,39 +126,6 @@ export default function DetailsTable({
   const safeUsers: User[] = assignedUser
     .filter((user) => !!user.firstName && !!user.lastName)
     .map(mapIUserToUser);
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<EstimateInput>({
-    resolver: zodResolver(updateEstimateSchema),
-    defaultValues: {
-      estimated_time: task?.estimated_time,
-    },
-  });
-
-  const onSubmit = async (data: any) => {
-    await TaskService.updateTask(taskId, data);
-    setEditEstimate(false);
-    fetchTask(taskId);
-  };
-
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(e.target as Node)
-      ) {
-        setEditEstimate(false);
-      }
-    }
-    if (editEstimate) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [editEstimate]);
 
   const activeColor: any = kanbanList?.find(
     (item: any) => item?.title === task?.status
@@ -223,9 +138,7 @@ export default function DetailsTable({
     : {
       backgroundColor: activeColor?.color ? activeColor?.color : "#7980ff",
     };
-  const activepriortiyactiveColor: any = priorityOption?.find(
-    (item: any) => item?.title === task?.task?.priority
-  );
+
   return (
     <div>
       <ul className="mt-[24px]">
@@ -326,7 +239,6 @@ export default function DetailsTable({
                 taskId={taskId}
                 fieldName="status"
                 onUpdate={onTaskUpdate}
-
               />
             </div>
           </div>
@@ -350,7 +262,6 @@ export default function DetailsTable({
                   />
                 </g>
               </svg>
-
               <span className="text-[#31394f] text-[14px] leading-[16px]">
                 Due Date
               </span>
@@ -397,212 +308,14 @@ export default function DetailsTable({
             </div>
           </div>
         </li>
-        <li className="mt-[15px]">
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-4 w-[35%]">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <g opacity="0.9">
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M13.257 1.66675C15.877 1.66675 17.637 3.46091 17.637 6.13091V13.7942C17.637 16.4876 15.9312 18.2392 13.2912 18.2559L6.88034 18.2584C4.26034 18.2584 2.49951 16.4642 2.49951 13.7942V6.13091C2.49951 3.43675 4.20535 1.68591 6.84535 1.67008L13.2562 1.66675H13.257ZM13.257 2.91675L6.84951 2.92008C4.90951 2.93175 3.74951 4.13175 3.74951 6.13091V13.7942C3.74951 15.8067 4.92035 17.0084 6.87951 17.0084L13.287 17.0059C15.227 16.9942 16.387 15.7926 16.387 13.7942V6.13091C16.387 4.11841 15.217 2.91675 13.257 2.91675ZM13.0963 12.8948C13.4413 12.8948 13.7213 13.1748 13.7213 13.5198C13.7213 13.8648 13.4413 14.1448 13.0963 14.1448H7.0796C6.73459 14.1448 6.45459 13.8648 6.45459 13.5198C6.45459 13.1748 6.73459 12.8948 7.0796 12.8948H13.0963ZM13.0963 9.40608C13.4413 9.40608 13.7213 9.68608 13.7213 10.0311C13.7213 10.3761 13.4413 10.6561 13.0963 10.6561H7.0796C6.73459 10.6561 6.45459 10.3761 6.45459 10.0311C6.45459 9.68608 6.73459 9.40608 7.0796 9.40608H13.0963ZM9.37518 5.92542C9.72018 5.92542 10.0002 6.20542 10.0002 6.55042C10.0002 6.89542 9.72018 7.17542 9.37518 7.17542H7.07934C6.73434 7.17542 6.45434 6.89542 6.45434 6.55042C6.45434 6.20542 6.73434 5.92542 7.07934 5.92542H9.37518Z"
-                    fill="#31394F"
-                  />
-                </g>
-              </svg>
-              <span className="text-[#31394f] text-[14px] leading-[16px]">
-                Priority
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() =>
-                  user?.role === "admin" && setIsPriorityModalOpen(true)
-                }
-                className="bg-theme-primary text-white text-[12px] px-[9px] py-[4px] rounded-[8px] font-500"
-                style={{ backgroundColor: priortiyactiveColor ? priortiyactiveColor : "rgb(220, 24, 214) " }}
-              >
-                {task?.priority?.toUpperCase()}
-              </button>
-              <TaskPropertyUpdateModal
-                title="Update Task Priority"
-                options={priorityOption}
-                currentValue={task?.priority}
-                isOpen={isPriorityModalOpen}
-                onClose={() => setIsPriorityModalOpen(false)}
-                taskId={taskId}
-                fieldName="priority"
-                onUpdate={onTaskUpdate}
-                isPriority={true}
-              />
-            </div>
-          </div>
-        </li>
-
-         <li className="mt-[10px]">
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-4 w-[35%]">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <g opacity="0.9">
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M13.6115 1.66675C16.4357 1.66675 18.3332 3.64841 18.3332 6.59675V13.4034C18.3332 16.3517 16.4357 18.3334 13.6107 18.3334H6.38734C3.56317 18.3334 1.6665 16.3517 1.6665 13.4034V6.59675C1.6665 3.64841 3.56317 1.66675 6.38734 1.66675H13.6115ZM13.6115 2.91675H6.38734C4.279 2.91675 2.9165 4.36091 2.9165 6.59675V13.4034C2.9165 15.6392 4.279 17.0834 6.38734 17.0834H13.6107C15.7198 17.0834 17.0832 15.6392 17.0832 13.4034V6.59675C17.0832 4.36091 15.7198 2.91675 13.6115 2.91675ZM13.4078 7.58091C13.6519 7.82508 13.6519 8.22008 13.4078 8.46425L9.45275 12.4192C9.33109 12.5417 9.17109 12.6026 9.01109 12.6026C8.85192 12.6026 8.69109 12.5417 8.56942 12.4192L6.59109 10.4417C6.34692 10.1976 6.34692 9.80258 6.59109 9.55841C6.83525 9.31425 7.23025 9.31425 7.47442 9.55841L9.01109 11.0934L12.5244 7.58091C12.7686 7.33675 13.1636 7.33675 13.4078 7.58091Z"
-                    fill="#31394F"
-                  />
-                </g>
-              </svg>
-              <span className="text-[#31394f] text-[14px] leading-[16px]">
-                Task Type
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setIsTaskTypeModalOpen(true)}
-                className="bg-theme-primary text-white text-[12px] px-[9px] py-[4px] rounded-[8px] font-500"
-              >
-                {task?.type?.toUpperCase()}
-              </button>
-              <TaskPropertyUpdateModal
-                title="Update Task Type"
-                options={Object.values(TaskTypeEnum)}
-                currentValue={task?.type}
-                isOpen={isTaskTypeModalOpen}
-                onClose={() => setIsTaskTypeModalOpen(false)}
-                taskId={taskId}
-                fieldName="type"
-                onUpdate={onTaskUpdate}
-              />
-            </div>
-          </div>
-        </li>
-
-        <li className="mt-[13px]">
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-4 w-[35%]">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <g opacity="0.9">
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M13.257 1.66675C15.877 1.66675 17.637 3.46091 17.637 6.13091V13.7942C17.637 16.4876 15.9312 18.2392 13.2912 18.2559L6.88034 18.2584C4.26034 18.2584 2.49951 16.4642 2.49951 13.7942V6.13091C2.49951 3.43675 4.20535 1.68591 6.84535 1.67008L13.2562 1.66675H13.257ZM13.257 2.91675L6.84951 2.92008C4.90951 2.93175 3.74951 4.13175 3.74951 6.13091V13.7942C3.74951 15.8067 4.92035 17.0084 6.87951 17.0084L13.287 17.0059C15.227 16.9942 16.387 15.7926 16.387 13.7942V6.13091C16.387 4.11841 15.217 2.91675 13.257 2.91675ZM13.0963 12.8948C13.4413 12.8948 13.7213 13.1748 13.7213 13.5198C13.7213 13.8648 13.4413 14.1448 13.0963 14.1448H7.0796C6.73459 14.1448 6.45459 13.8648 6.45459 13.5198C6.45459 13.1748 6.73459 12.8948 7.0796 12.8948H13.0963ZM13.0963 9.40608C13.4413 9.40608 13.7213 9.68608 13.7213 10.0311C13.7213 10.3761 13.4413 10.6561 13.0963 10.6561H7.0796C6.73459 10.6561 6.45459 10.3761 6.45459 10.0311C6.45459 9.68608 6.73459 9.40608 7.0796 9.40608H13.0963ZM9.37518 5.92542C9.72018 5.92542 10.0002 6.20542 10.0002 6.55042C10.0002 6.89542 9.72018 7.17542 9.37518 7.17542H7.07934C6.73434 7.17542 6.45434 6.89542 6.45434 6.55042C6.45434 6.20542 6.73434 5.92542 7.07934 5.92542H9.37518Z"
-                    fill="#31394F"
-                  />
-                </g>
-              </svg>
-              <span className="text-[#31394f] text-[14px] leading-[16px]">
-                Estimated Time
-              </span>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <div
-                className="py-[2px] px-[8px]  rounded-[8px] text-[15px] leading-[16px] flex gap-4"
-                ref={dropdownRef}
-              >
-                {editEstimate ? (
-                  <form onSubmit={handleSubmit(onSubmit)}>
-                    <div className="flex gap-2">
-                      <Input
-                        {...register("estimated_time")}
-                        type="text"
-                        className="w-[100px] cursor-pointer"
-                        defaultValue={task?.estimated_time}
-                      />
-                      <Button
-                        type="submit"
-                        className="bg-theme-primary text-white"
-                      >
-                        Update
-                      </Button>
-                    </div>
-
-                    {errors.estimated_time && (
-                      <p className="text-xs text-red-500 mt-2 ml-1">
-                        {errors.estimated_time.message}
-                      </p>
-                    )}
-                  </form>
-                ) : (
-                  <div>{formatMinutes(Number(task?.estimated_time) * 60)}</div>
-                )}
-                {!editEstimate && user?.role === "admin" && (
-                  <CiEdit
-                    size={20}
-                    className="cursor-pointer"
-                    onClick={() => setEditEstimate(true)}
-                  />
-                )}
-              </div>
-            </div>
-          </div>
-        </li>
-
-        <li className="mt-[15px]">
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-4 w-[35%]">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <g opacity="0.9">
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M13.257 1.66675C15.877 1.66675 17.637 3.46091 17.637 6.13091V13.7942C17.637 16.4876 15.9312 18.2392 13.2912 18.2559L6.88034 18.2584C4.26034 18.2584 2.49951 16.4642 2.49951 13.7942V6.13091C2.49951 3.43675 4.20535 1.68591 6.84535 1.67008L13.2562 1.66675H13.257ZM13.257 2.91675L6.84951 2.92008C4.90951 2.93175 3.74951 4.13175 3.74951 6.13091V13.7942C3.74951 15.8067 4.92035 17.0084 6.87951 17.0084L13.287 17.0059C15.227 16.9942 16.387 15.7926 16.387 13.7942V6.13091C16.387 4.11841 15.217 2.91675 13.257 2.91675ZM13.0963 12.8948C13.4413 12.8948 13.7213 13.1748 13.7213 13.5198C13.7213 13.8648 13.4413 14.1448 13.0963 14.1448H7.0796C6.73459 14.1448 6.45459 13.8648 6.45459 13.5198C6.45459 13.1748 6.73459 12.8948 7.0796 12.8948H13.0963ZM13.0963 9.40608C13.4413 9.40608 13.7213 9.68608 13.7213 10.0311C13.7213 10.3761 13.4413 10.6561 13.0963 10.6561H7.0796C6.73459 10.6561 6.45459 10.3761 6.45459 10.0311C6.45459 9.68608 6.73459 9.40608 7.0796 9.40608H13.0963ZM9.37518 5.92542C9.72018 5.92542 10.0002 6.20542 10.0002 6.55042C10.0002 6.89542 9.72018 7.17542 9.37518 7.17542H7.07934C6.73434 7.17542 6.45434 6.89542 6.45434 6.55042C6.45434 6.20542 6.73434 5.92542 7.07934 5.92542H9.37518Z"
-                    fill="#31394F"
-                  />
-                </g>
-              </svg>
-              <span className="text-[#31394f] text-[14px] leading-[16px]">
-                Client Acceptance
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() =>
-                  user?.role === "admin" && setIsClientAcceptanceModalOpen(true)
-                }
-                className="bg-theme-primary text-white text-[12px] px-[9px] py-[4px] rounded-[8px] font-500"
-                style={{ backgroundColor: ClientAcceptanceColor ? ClientAcceptanceColor : "rgb(220, 24, 214) " }}
-              >
-                {task?.client_acceptance?.toUpperCase()}
-              </button>
-              <TaskPropertyUpdateModal
-                title="Update Client Acceptance"
-                options={ClientAcceptance}
-                currentValue={task?.client_acceptance}
-                isOpen={isClientAcceptanceModalOpen}
-                onClose={() => setIsClientAcceptanceModalOpen(false)}
-                taskId={taskId}
-                fieldName="client_acceptance"
-                onUpdate={onTaskUpdate}
-                isCientAcceptance={true}
-              />
-            </div>
-          </div>
-        </li>
+        <UpdatePriority task={task} taskId={taskId} onTaskUpdate={onTaskUpdate} />
+        <UpdateType task={task} taskId={taskId} onTaskUpdate={onTaskUpdate} />
+        <EstimateTime task={task} taskId={taskId} fetchTask={fetchTask} />
+        <ClientAcceptance
+          task={task}
+          taskId={taskId}
+          onTaskUpdate={onTaskUpdate}
+        />
       </ul>
     </div>
   );

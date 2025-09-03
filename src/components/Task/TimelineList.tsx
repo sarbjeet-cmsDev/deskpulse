@@ -31,7 +31,6 @@ export default function TimelineList({
   refreshTimelines,
   refreshTask,
 }: TimelineListProps) {
-  // Rolling 7-day range (today and 6 days before)
   const today = new Date();
   const initialTo = new Date(today);
   const initialFrom = new Date(today);
@@ -61,8 +60,6 @@ export default function TimelineList({
       console.error("Failed to create timeline:", error);
     }
   };
-
-  // Shift the 7-day window
   const shiftDateRange = (direction: number) => {
     const from = new Date(fromDate);
     const to = new Date(toDate);

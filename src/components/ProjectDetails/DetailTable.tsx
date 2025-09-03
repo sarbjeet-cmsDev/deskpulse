@@ -1,14 +1,6 @@
 "use client";
 import AvatarList from "@/components/IndexPage/avatarlist";
-import avatar from "@/assets/images/avt1.jpg";
-import Image from "next/image";
-import DatePickerInput from "@/components/ProjectDetails/Datepicker";
-import { Input } from "../Form/Input";
 import { useRef, useState } from "react";
-import MentionUserListModal from "@/components/MentionUserListBox";
-import TaskService, { ITask } from "@/service/task.service";
-import Swal from "sweetalert2";
-import NotificationService from "@/service/notification.service";
 import MultiSelectUserModal from "../Form/MultiSelectUserModal";
 import AdminProjectService from "@/service/adminProject.service";
 import { getSocket } from "@/utils/socket";

@@ -44,7 +44,6 @@ export default function CreateGlobalTaskModal({
   onClose,
   onCreate,
 }: CreateGlobalTaskModalProps) {
-  // Params: prefer "code" (project code) → resolve to _id; otherwise "project" (already an _id)
   const { code, project: projectCode } = useParams() as {
     code?: string;
     project?: string;
@@ -265,20 +264,14 @@ export default function CreateGlobalTaskModal({
             {errors.description && (
               <p className="text-sm text-red-500">{errors.description.message}</p>
             )}
-
-            {/* Due Date */}
             <Input label="Due Date" type="date" {...register("due_date")} />
             {errors.due_date && (
               <p className="text-red-500 text-xs">{errors.due_date.message}</p>
             )}
-
-            {/* Time Estimate */}
             <Input label="Time Estimate" type="text" {...register("estimated_time")} />
             {errors.estimated_time && (
               <p className="text-red-500 text-xs">{errors.estimated_time.message}</p>
             )}
-
-            {/* Project */}
             <label className="block text-sm font-medium">Select Project</label>
             <Controller
               name="projectId"
@@ -301,8 +294,6 @@ export default function CreateGlobalTaskModal({
             {errors.projectId && (
               <p className="text-red-500 text-xs">{errors.projectId.message}</p>
             )}
-
-            {/* Kanban */}
             <label className="block text-sm font-medium">Select Kanban</label>
             <Controller
               name="status"
@@ -325,8 +316,6 @@ export default function CreateGlobalTaskModal({
             {errors.status && (
               <p className="text-red-500 text-xs">{errors.status.message}</p>
             )}
-
-            {/* Assign User */}
             <label className="block text-sm font-medium">Assign User</label>
             <Controller
               name="assigned_to"

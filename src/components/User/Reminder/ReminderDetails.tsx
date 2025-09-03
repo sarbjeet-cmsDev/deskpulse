@@ -3,9 +3,7 @@
 import { H3 } from "@/components/Heading/H3";
 import Image from "next/image";
 import leftarrow from "@/assets/images/back.png";
-import Link from "next/link";
 import { P } from "@/components/ptag";
-import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import ReminderService from "@/service/reminder.service";
 import { IReminder } from "@/types/reminder.interface";
@@ -15,10 +13,8 @@ interface Props {
   reminderId: string;
 }
 
-export default function ReminderDetailPage({reminderId}:Props) {
-  const params = useParams();
+export default function ReminderDetailPage({ reminderId }: Props) {
   const router = useRouter();
-//   const reminderId = params?.reminderId as string;
   const [reminder, setReminder] = useState<IReminder | null>(null);
   const [loading, setLoading] = useState(true);
 

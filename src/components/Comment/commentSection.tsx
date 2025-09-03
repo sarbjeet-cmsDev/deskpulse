@@ -30,21 +30,6 @@ if (
   Quill.register("modules/mention", Mention);
 }
 
-interface CommentInputProps {
-  taskId: string;
-  createdBy?: string;
-  onCommentCreated: () => void;
-  onCancel?: () => void;
-  inline: boolean;
-  isEditing?: boolean;
-  defaultValue?: string;
-  parent_comment?: string;
-  commentId?: string;
-  title?: any;
-  isButton?: any;
-  code: string;
-}
-
 export default function CommentInputSection({
   taskId,
   onCommentCreated,
@@ -116,7 +101,7 @@ export default function CommentInputSection({
 
   const socketRef = useRef(getSocket());
 
- 
+
 
   const mentionSource = useCallback(
     async (
@@ -333,26 +318,6 @@ export default function CommentInputSection({
     };
   }, []);
 
-
-  const handleExternalSubmit = async () => {
-    const editor = quillRef.current?.getEditor();
-    const html = editor?.root.innerHTML || "";
-
-    // if (!html || stripHtml(html) === "") {
-    //   setError("Description is required");
-    //   return;
-    // }
-
-    try {
-      setLoading(true);
-      await onClick(html);
-    } catch (err: any) {
-      console.error("Failed to update description:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
     if (content) {
       setTimeout(() => {
@@ -382,10 +347,6 @@ export default function CommentInputSection({
       <label className="block text-sm font-medium text-gray-700 mb-2">
         {title ? title : "Comment"} <span className="text-red-500">*</span>
       </label>
-
-      {/* {defaultValue && !isEditing ? (
-      <DescriptionView html={defaultValue} maxLines={4} />
-    ) : ( */}
 
       <div
         ref={wrapperRef}

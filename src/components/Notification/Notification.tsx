@@ -9,11 +9,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import NotficationService from "@/service/notification.service";
 import { AppDispatch, RootState } from "@/store/store";
-import { Avatar } from "@heroui/react";
-import userAvtar from "@/assets/images/avt1.jpg";
 import { useRouter } from "next/navigation";
 import ShowMoreLess from "../common/ShowMoreLess/ShowMoreLess";
-import { fetchUserProfile } from "@/store/slices/userSlice";
 import { fetchNotificationCount } from "@/store/slices/NotificationSlice";
 
 export const NotificationDrawer = () => {
@@ -95,12 +92,6 @@ export const NotificationDrawer = () => {
                 }}
 
               >
-                {/* <Avatar
-                  src={userAvtar?.src}
-                  alt="User Avatar"
-                  className="w-10 h-10 rounded-full"
-                /> */}
-
                 <div className="flex-1 text-sm text-gray-700">
                   <p className="mb-1">
                     <span className="font-medium text-indigo-600 cursor-pointer">

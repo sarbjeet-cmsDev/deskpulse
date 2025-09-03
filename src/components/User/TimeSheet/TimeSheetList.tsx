@@ -19,6 +19,7 @@ dayjs.extend(isSameOrBefore);
 import Image from "next/image";
 import ChevronUp from "@/assets/images/chevronup.svg";
 import ChevronDown from "@/assets/images/chevrondown.svg";
+import { useOutsideClick } from "@/utils/useOutsideClickHandler";
 
 function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState(value);
@@ -128,24 +129,9 @@ const TimeSheetList = () => {
   ).format("DD MMM YY")} - ${dayjs(
     selectedRange.end.toDate(getLocalTimeZone())
   ).format("DD MMM YY")}`;
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        calendarRef.current &&
-        !calendarRef.current.contains(event.target as Node)
-      ) {
-        setShowCalendar(false);
-      }
-    }
-    if (showCalendar) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [showCalendar]);
+
+  useOutsideClick(calendarRef, showCalendar, () => setShowCalendar(false));
+
   return (
     <div className="flex flex-col min-h-screen ">
       <main className="flex-1 p-4 sm:p-6 md:p-8 w-full">

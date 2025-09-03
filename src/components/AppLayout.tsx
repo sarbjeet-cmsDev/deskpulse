@@ -26,7 +26,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     if (!userData?.id) return;
     async function fetchReminders() {
       try {
-        const res: any = await ReminderService.getReminderByUserId(userData?.id);
+        const res: any = await ReminderService.getReminderByUserId(userData?.id, 1, 100);
         remindersRef.current = res?.reminders?.map((r: any) => ({ ...r, triggered: false }));
       } catch (err) {
         console.error("❌ Failed to fetch reminders", err);
@@ -48,7 +48,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   if (hideLayout) {
     return <main>{children}</main>;
   }
-
   return (
     <ProtectedRoute>
       <div className="flex flex-col min-h-screen text-sm md:text-base">

@@ -3,9 +3,9 @@ import MyProjectList from '@/components/User/Project/MyProjectList';
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title : {
+  title: {
     absolute: 'Project',
-   }
+  }
 }
 
 export default function Project() {

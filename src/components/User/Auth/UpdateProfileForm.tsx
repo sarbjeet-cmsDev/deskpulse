@@ -21,7 +21,6 @@ type UpdateUserInput = z.infer<typeof userSchemaBaseUpdate>;
 
 const UpdateAuthProfileForm = ({ id }: Props) => {
   const router = useRouter();
-  // const { id } = useParams<{ id: string }>();
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
 
@@ -51,7 +50,6 @@ const UpdateAuthProfileForm = ({ id }: Props) => {
           gender: ["male", "female", "other"].includes(user.gender || "")
             ? (user.gender as "male" | "female" | "other")
             : undefined,
-          // roles: user.userRoles?.[0] ?? "",
           isActive: user.isActive ?? false,
           aboutUs: user.aboutUs ?? "",
           jobTitle: user.jobTitle ?? "",
@@ -227,8 +225,6 @@ const UpdateAuthProfileForm = ({ id }: Props) => {
               </p>
             )}
           </div>
-
-          {/* isActive Checkbox */}
           <div className="flex items-center space-x-2">
             <input
               type="checkbox"

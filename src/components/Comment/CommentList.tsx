@@ -2,11 +2,7 @@
 
 import { useState } from "react";
 import { IComment } from "@/types/comment.interface";
-import Link from "next/link";
-import Image from "next/image";
-import info from "@/assets/images/info.png";
 import { formatDistanceToNow } from "date-fns";
-import { Button } from "@/components/Form/Button";
 import CommentInputSection from "@/components/Comment/commentSection";
 import { deleteComment } from "@/utils/deleteComment";
 import ShowMoreLess from "../common/ShowMoreLess/ShowMoreLess";
@@ -72,7 +68,6 @@ export default function CommentList({
       >
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1">
-            {/* Header */}
             <div className="flex items-start justify-between flex-wrap gap-2">
               <div>
                 <p className="text-sm font-semibold text-gray-900 break-words">
@@ -84,7 +79,6 @@ export default function CommentList({
               </div>
             </div>
 
-            {/* Content or Editor */}
             {isEditing ? (
               <div className="mt-3">
                 <CommentInputSection
@@ -110,8 +104,6 @@ export default function CommentList({
                 {renderMentions(comment)}
               </p>
             )}
-
-            {/* Actions */}
             <div className="flex flex-wrap gap-3 mt-4 text-sm text-gray-500">
               <button
                 onClick={() =>
@@ -119,7 +111,7 @@ export default function CommentList({
                     prev === comment._id ? null : comment._id
                   )
                 }
-                className="hover:text-indigo-600 focus:outline-none"
+                className="hover:text-indigo-600 focus:!outline-none hover:bg-transparent"
               >
                 {isReplying ? "Cancel" : "Reply"}
               </button>
@@ -145,8 +137,6 @@ export default function CommentList({
                 </>
               )}
             </div>
-
-            {/* Reply Input */}
             {isReplying && (
               <div className="mt-4">
                 <CommentInputSection
@@ -168,8 +158,6 @@ export default function CommentList({
                 />
               </div>
             )}
-
-            {/* Nested Replies */}
             <div className="mt-4">
               {comments
                 .filter((child) =>
@@ -184,8 +172,6 @@ export default function CommentList({
       </div>
     );
   };
-
-  // Get top-level comments (no parent or empty parent_comment array)
   const topLevelComments = comments.filter(
     (comment) =>
       !comment.parent_comment ||

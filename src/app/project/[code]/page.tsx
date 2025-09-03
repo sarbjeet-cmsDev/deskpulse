@@ -5,16 +5,12 @@ import type { Metadata, ResolvingMetadata } from 'next'
 type Props = {
   params: Promise<{ code: string }>
 }
-
 export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
 
   const { code } = await params
-
-
-
   return {
     title: {
       absolute: `Project | ${code}`

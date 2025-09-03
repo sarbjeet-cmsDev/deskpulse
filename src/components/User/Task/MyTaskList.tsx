@@ -6,23 +6,14 @@ import { H3 } from "@/components/Heading/H3";
 import { useEffect, useState } from "react";
 import TaskService, { ITask } from "@/service/task.service";
 import SubTasks from "@/components/ProjectDetails/SubTaskList";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 
 
 export default function MyTaskList() {
-  const pathname = usePathname();
   const router = useRouter();
   const [tasks, setTasks] = useState<ITask[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState<number>(1);
-
-
-
-
-
-
 
   const fetchTasks = async (page: number) => {
     setLoading(true);

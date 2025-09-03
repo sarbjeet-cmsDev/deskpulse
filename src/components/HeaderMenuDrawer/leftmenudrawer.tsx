@@ -23,7 +23,6 @@ import { signOut } from "@/store/slices/authSlice";
 import { usePathname, useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { getSocket } from "@/utils/socket";
-// import Cookies from "js-cookie";
 
 export default function LeftMenuDrawer() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();

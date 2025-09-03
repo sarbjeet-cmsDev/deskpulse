@@ -42,7 +42,6 @@ export default function CreateTaskModal({
   const [loading, setLoading] = useState(false);
   const [userOptions, setUserOptions] = useState<UserOption[]>([]);
   const [inputValue, setInputValue] = useState("");
-  const [selectedUser, setSelectedUser] = useState<any>(null);
 
   const {
     register,
@@ -154,12 +153,6 @@ export default function CreateTaskModal({
                     )}
                   </div>
                   <div className="px-4">
-                    {/* <Input
-                      label="Description"
-                      type="text"
-                      placeholder="Enter task description"
-                      {...register("description")}
-                    /> */}
                     <Controller
                       {...register("description")}
                       control={control}
@@ -233,15 +226,11 @@ export default function CreateTaskModal({
                             }}
                             isClearable
                             classNamePrefix="react-select"
-                            // menuPortalTarget={document.body}
-                            // menuPlacement="auto"
-                            // menuShouldScrollIntoView
                             styles={{
                               menu: (provided) => ({
                                 ...provided,
                                 maxHeight: 100,
                                 overflowY: "auto",
-                                // zIndex: 9999,
                                 scrollBehavior: "smooth",
                               }),
                               menuPortal: (base) => ({ ...base, zIndex: 9999 }),

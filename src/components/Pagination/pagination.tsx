@@ -14,8 +14,6 @@ export default function Pagination({
   itemsPerPage,
   onPageChange,
 }: PaginationProps) {
-  // const totalPages = Math.ceil(totalItems / itemsPerPage);
-
   if (itemsPerPage <= 1) return null;
   const handlePrev = () => {
     if (currentPage > 1) onPageChange(currentPage - 1);

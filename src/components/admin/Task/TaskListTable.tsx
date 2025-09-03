@@ -6,6 +6,7 @@ import "sweetalert2/dist/sweetalert2.min.css";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import AdminTaskService from "@/service/adminTask.service";
 import TaskService from "@/service/task.service";
+import { SweetAlert } from "@/components/common/SweetAlert/SweetAlert";
 
 function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState(value);
@@ -19,7 +20,6 @@ function useDebounce<T>(value: T, delay: number): T {
 type Task = {
   _id: string;
   title: string;
-
 };
 
 const TaskListTable = () => {
@@ -48,7 +48,7 @@ const TaskListTable = () => {
       setTasks(res.data as Task[]);
       setTotalRecords(res.total);
       setTotalPages(res.totalPages);
-      setLimit(res.limit)
+      setLimit(res.limit);
     } catch (err) {
       console.error("Failed to fetch projects", err);
     }
@@ -68,11 +68,7 @@ const TaskListTable = () => {
     { id: "title", title: "Title" },
   ];
   const rows = (tasks ?? []).map((task: any) => {
-
-    const actions = [
-      { title: "Delete" },
-      { title: "View" },
-    ];
+    const actions = [{ title: "Delete" }, { title: "View" }];
 
     if (task?.isArchived === true) {
       actions.push({ title: "UnArchive" });
@@ -84,30 +80,20 @@ const TaskListTable = () => {
     };
   });
 
-
-
-  const handleAction = (async (action: any, row: any) => {
+  const handleAction = async (action: any, row: any) => {
     if (action === "View") {
       router.push(`/task/${row.code}`);
     } else if (action === "Delete") {
-      const result = await Swal.fire({
+      console.log(row, "row++++++");
+
+      const result = await SweetAlert({
         title: "Are you sure?",
         text: `You are about to delete Task: "${row.code}"`,
-        icon: "warning",
-        showCancelButton: true,
         confirmButtonText: "Yes, delete it!",
         cancelButtonText: "No, cancel!",
-        reverseButtons: true,
-        customClass: {
-          confirmButton:
-            "bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 focus:outline-none mr-2",
-          cancelButton:
-            "bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 focus:outline-none mr-2",
-        },
-        buttonsStyling: false,
       });
 
-      if (result.isConfirmed) {
+      if (result) {
         try {
           await AdminTaskService.deleteTask(row._id);
           setTasks((prev) => prev.filter((p) => p._id !== row._id));
@@ -119,26 +105,14 @@ const TaskListTable = () => {
         }
       }
     } else if (action === "UnArchive") {
-
-
-      const result = await Swal.fire({
+      const result = await SweetAlert({
         title: "Are you sure?",
         text: `You are about to unArchieve Task: "${row.code}"`,
-        icon: "warning",
-        showCancelButton: true,
         confirmButtonText: "Yes, UnArchieve it!",
         cancelButtonText: "No, cancel!",
-        reverseButtons: true,
-        customClass: {
-          confirmButton:
-            "bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 focus:outline-none mr-2",
-          cancelButton:
-            "bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 focus:outline-none mr-2",
-        },
-        buttonsStyling: false,
       });
-
-      if (result.isConfirmed) {
+      console.log(result, "result")
+      if (result) {
         try {
           await TaskService.unArchiveTask(row._id);
 
@@ -148,8 +122,7 @@ const TaskListTable = () => {
         }
       }
     }
-  })
-
+  };
 
   return (
     <div className="flex">
@@ -171,7 +144,6 @@ const TaskListTable = () => {
             setSearch(query);
             setPage(1);
           }}
-
           onAction={(action, row) => handleAction(action, row)}
           sort={{ field: sortField, order: sortOrder }}
           onSort={(field) => {

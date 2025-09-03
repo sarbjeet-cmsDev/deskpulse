@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import { ReadonlyURLSearchParams } from "next/navigation";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import Pagination from "../Pagination/pagination";
-import { Action } from "@dnd-kit/core/dist/store";
 
 type Header = {
   id: string;
@@ -29,7 +28,6 @@ type DataGridProps = {
   rows: Row[];
   pagination: Pagination;
   onSearch?: (query: string) => void;
-  // onPageChange?: (page: number) => void;
   onAction?: (action: string, row: Row) => void;
   sort?: { field: string; order: "asc" | "desc" };
   onSort?: (field: string) => void;
@@ -44,7 +42,6 @@ const DataGrid: React.FC<DataGridProps> = ({
   rows,
   pagination,
   onSearch,
-  // onPageChange,
   onAction,
   sort,
   onSort,
@@ -54,8 +51,6 @@ const DataGrid: React.FC<DataGridProps> = ({
   searchParams,
 }) => {
   const [searchInput, setSearchInput] = useState("");
-
-  //  const searchParams = useSearchParams();
   useEffect(() => {
     if (onSearch) {
       const delay = setTimeout(() => onSearch(searchInput), 300);
@@ -78,44 +73,6 @@ const DataGrid: React.FC<DataGridProps> = ({
     router.push(`${pathname}?${params.toString()}`);
   };
 
-  // const pageNumbers = Array.from(
-  //   { length: pagination.total_page },
-  //   (_, i) => i + 1
-  // );
-
-  const getPageNumbers = () => {
-    const { current_page, total_page } = pagination;
-    const pages = [];
-    const range = 1;
-
-    if (total_page <= 7) {
-      for (let i = 1; i <= total_page; i++) {
-        pages.push(i);
-      }
-    } else {
-      pages.push(1);
-
-      const start = Math.max(2, current_page - range);
-      const end = Math.min(total_page - 1, current_page + range);
-
-      if (start > 2) {
-        pages.push("left-ellipsis");
-      }
-
-      for (let i = start; i <= end; i++) {
-        pages.push(i);
-      }
-
-      if (end < total_page - 1) {
-        pages.push("right-ellipsis");
-      }
-
-      pages.push(total_page);
-    }
-
-    return pages;
-  };
-  const pageNumbers = getPageNumbers();
   return (
     <div className="space-y-4">
       {onSearch && (
@@ -144,8 +101,6 @@ const DataGrid: React.FC<DataGridProps> = ({
           </button>
         </div>
       )}
-
-      {/* Table */}
       <div className="overflow-x-auto border rounded-md">
         <table className="min-w-full text-sm text-left text-gray-700">
           <thead className="bg-gray-100">
@@ -157,10 +112,6 @@ const DataGrid: React.FC<DataGridProps> = ({
                   onClick={() => header.is_sortable && onSort?.(header.id)}
                 >
                   {header.title}
-                  {/* Optional: Sorting icons
-            {sort?.field === header.id && (
-              <span>{sort.order === 'asc' ? ' 🔼' : ' 🔽'}</span>
-            )} */}
                 </th>
               ))}
               {onAction && <th className="px-4 py-2 min-w-[120px]">Actions</th>}
@@ -196,8 +147,6 @@ const DataGrid: React.FC<DataGridProps> = ({
 
                     </td>
                   ))}
-
-                  {/* Conditionally render actions column */}
                   {onAction && (
                     <td className="px-4 py-2 md:block flex flex-wrap">
                       {row.actions && row.actions.length > 0 ? (

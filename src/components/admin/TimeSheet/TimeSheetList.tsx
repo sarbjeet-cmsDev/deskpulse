@@ -7,7 +7,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import AdminProjectService from "@/service/adminProject.service";
 import AdminUserService from "@/service/adminUser.service";
 import AvatarList from "@/components/IndexPage/avatarlist";
-import { getLocalTimeZone, today, CalendarDate } from "@internationalized/date";
+import { getLocalTimeZone, CalendarDate } from "@internationalized/date";
 import { Button } from "@heroui/button";
 import Image from "next/image";
 import ChevronUp from "@/assets/images/chevronup.svg";
@@ -20,6 +20,8 @@ import TimelineService from "@/service/timeline.service";
 import ReactSelect from "react-select";
 import { useForm, Controller } from "react-hook-form";
 import { H3 } from "@/components/Heading/H3";
+import { SweetAlert } from "@/components/common/SweetAlert/SweetAlert";
+import { useOutsideClick } from "@/utils/useOutsideClickHandler";
 dayjs.extend(isSameOrBefore);
 
 function useDebounce<T>(value: T, delay: number): T {
@@ -249,25 +251,7 @@ const TimeSheetList = () => {
   const isDateUnavailable = (date: CalendarDate) => {
     return date.compare(tomorrow) > 0;
   };
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        calendarRef.current &&
-        !calendarRef.current.contains(event.target as Node)
-      ) {
-        setShowCalendar(false);
-      }
-    }
-    if (showCalendar) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [showCalendar]);
+  useOutsideClick(calendarRef, showCalendar, () => setShowCalendar(false));
 
   const totalTime = totalTimeSpent || 0;
   const hours = Math.floor(totalTime / 60);
@@ -392,24 +376,16 @@ const TimeSheetList = () => {
                 if (action === "View") {
                   router.push(`/task/${row.task_code}`);
                 } else if (action === "Delete") {
-                  const result = await Swal.fire({
+
+
+                  const result = await SweetAlert({
                     title: "Are you sure?",
                     text: `You are about to delete Timeline: "${row.comment}"`,
-                    icon: "warning",
-                    showCancelButton: true,
                     confirmButtonText: "Yes, delete it!",
                     cancelButtonText: "No, cancel!",
-                    reverseButtons: true,
-                    customClass: {
-                      confirmButton:
-                        "bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 focus:outline-none mr-2",
-                      cancelButton:
-                        "bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 focus:outline-none mr-2",
-                    },
-                    buttonsStyling: false,
-                  });
+                  })
 
-                  if (result.isConfirmed) {
+                  if (result) {
                     try {
                       await TimelineService.deleteTimeline(row._id);
                       setTasks((prev) => prev.filter((p) => p._id !== row._id));

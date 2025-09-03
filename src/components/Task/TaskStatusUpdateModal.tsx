@@ -3,6 +3,7 @@ import { Modal, ModalBody, ModalContent } from "@heroui/react";
 import TaskService from "@/service/task.service";
 import { FaCheck } from "react-icons/fa";
 import { isDarkColor } from "@/utils/IsDarkColor";
+import { Button } from "../Form/Button";
 
 interface TaskPropertyUpdateModalProps {
   title: string;
@@ -11,7 +12,7 @@ interface TaskPropertyUpdateModalProps {
   isOpen: boolean;
   onClose: () => void;
   taskId: string;
-  fieldName: "status" | "priority" | "client_acceptance" | "type"; 
+  fieldName: "status" | "priority" | "client_acceptance" | "type";
   onUpdate: () => void;
   currentColor?: string
   setPriorityActiveColor?: any
@@ -71,8 +72,6 @@ export default function TaskPropertyUpdateModal({
               const value = option?.title || option;
               const color = option?.color
               const isSelected = selectedValue === value;
-
-
               const style = option?.color
                 ? {
                   backgroundColor: option.color,
@@ -105,13 +104,13 @@ export default function TaskPropertyUpdateModal({
             })}
           </div>
 
-          <button
+          <Button
             onClick={handleConfirm}
             disabled={selectedValue === currentValue}
             className="mt-5 btn-primary px-4 py-2 rounded disabled:opacity-50"
           >
             Confirm Update
-          </button>
+          </Button>
 
         </ModalBody>
       </ModalContent>

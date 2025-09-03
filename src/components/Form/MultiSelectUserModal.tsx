@@ -87,7 +87,6 @@ export default function MultiSelectUserModal({
               inputValue={inputValue}
               onInputChange={(value) => {
                 setInputValue(value);
-                // fetchUsers(value);
               }}
               onChange={(selected: MultiValue<IUserOption>) => {
                 setSelectedUsers(selected as IUserOption[]);
@@ -104,7 +103,6 @@ export default function MultiSelectUserModal({
                 }),
                 menu: (base) => ({
                   ...base,
-                  // zIndex: 9999,
                   maxHeight: "200px",
                   overflowY: "auto",
                   position: "absolute",

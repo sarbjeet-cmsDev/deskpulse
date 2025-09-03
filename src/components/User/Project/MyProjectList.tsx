@@ -6,19 +6,15 @@ import { useRouter } from "next/navigation";
 import leftarrow from "@/assets/images/back.png";
 import ProjectService from "@/service/project.service";
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import Pagination from "@/components/Pagination/pagination";
 import { ProjectKanbon } from "@/service/projectKanbon.service";
 import TaskService from "@/service/task.service";
 import { KanbanColumn } from "@/types/projectKanbon.interface";
 import { ITask } from "@/service/task.service";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
 
 
 export default function MyProjects() {
   const router = useRouter();
-  const user: any = useSelector((state: RootState) => state.auth.user);
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -101,8 +97,8 @@ export default function MyProjects() {
           <div className="flex justify-center items-center md:p-[24px] p-2 border-b border-[#31394f14]">
             <div className="w-10 cursor-pointer">
               <span onClick={() => router.back()} >
-                  <Image src={leftarrow} alt="Back" width={16} height={16} />
-                </span>
+                <Image src={leftarrow} alt="Back" width={16} height={16} />
+              </span>
             </div>
             <H5 className="w-[98%] text-center">My Projects</H5>
           </div>
@@ -119,7 +115,7 @@ export default function MyProjects() {
                     project={project}
                     kanban={projectKanbanMap[project._id]?.kanbans || []}
                     taskCounts={projectKanbanMap[project._id]?.counts || {}}
-                    linkTo={`/project/${project.code}`} // pass link prop
+                    linkTo={`/project/${project.code}`}
                   />
                 ))
               )}
@@ -134,7 +130,7 @@ export default function MyProjects() {
           </div>
         </div>
       </div>
-   
+
     </div>
   );
 }

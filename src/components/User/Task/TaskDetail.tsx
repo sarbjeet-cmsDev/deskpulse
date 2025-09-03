@@ -2,10 +2,9 @@
 import { H5 } from "@/components/Heading/H5";
 import Image from "next/image";
 import leftarrow from "@/assets/images/back.png";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import TaskService, { ITask } from "@/service/task.service";
-import Link from "next/link";
 import TimelineList from "@/components/Task/TimelineList";
 import TimelineService, { ITimeline } from "@/service/timeline.service";
 import ProjectService from "@/service/project.service";
@@ -24,6 +23,7 @@ import DropdownOptions from "@/components/DropdownOptions";
 import DetailsTable from "@/components/Task/taskDetailTable";
 import { EstimateTime } from "./EstimateTime";
 import Swal from "sweetalert2";
+import { SweetAlert } from "@/components/common/SweetAlert/SweetAlert";
 
 interface Props {
   id: string;
@@ -157,28 +157,18 @@ export default function TaskDetails({ id }: Props) {
   };
 
   const handleArchiveTask = (async () => {
-    const result = await Swal.fire({
+
+    const result = await SweetAlert({
       title: "Are you sure?",
       text: `You are about to archieve Task: "${task?.code}"`,
-      icon: "warning",
-      showCancelButton: true,
       confirmButtonText: "Yes, Archieve it!",
       cancelButtonText: "No, cancel!",
-      reverseButtons: true,
-      customClass: {
-        confirmButton:
-          "bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 focus:outline-none mr-2",
-        cancelButton:
-          "bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 focus:outline-none mr-2",
-      },
-      buttonsStyling: false,
-    });
+    })
 
-    if (result.isConfirmed) {
+    if (result) {
       try {
         await TaskService.archiveTask(task?._id as string);
         router.push(`/project/${task?.code?.split("-")[0]}`)
-        // await fetchTasks();
       } catch (err) {
         Swal.fire("Error", "Failed to delete project.", "error");
       }
@@ -248,7 +238,6 @@ export default function TaskDetails({ id }: Props) {
               project={project}
               taskId={taskId}
               task={task}
-              // projectId={task?.project}
               fetchTask={fetchTask}
               onTaskUpdate={() => fetchTask(taskId)}
             />

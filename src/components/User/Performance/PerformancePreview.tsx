@@ -5,16 +5,15 @@ import PerformanceService from "@/service/performanceService";
 import { useEffect, useRef, useState } from "react";
 import dayjs from "dayjs";
 import { RangeCalendar } from "@heroui/react";
-import { today, getLocalTimeZone, CalendarDate } from "@internationalized/date";
+import { getLocalTimeZone, CalendarDate } from "@internationalized/date";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
-import Link from "next/link";
 import Image from "next/image";
 import leftarrow from "@/assets/images/back.png";
 import { Button } from "@heroui/button";
 import ChevronUp from "@/assets/images/chevronup.svg";
 import ChevronDown from "@/assets/images/chevrondown.svg";
-import TaskButton from "@/components/taskButton";
 import { useRouter } from "next/navigation";
+import { useOutsideClick } from "@/utils/useOutsideClickHandler";
 
 
 dayjs.extend(isSameOrBefore);
@@ -22,25 +21,23 @@ dayjs.extend(isSameOrBefore);
 export default function PerformancePreview() {
   const calendarRef = useRef<HTMLDivElement | null>(null);
 
-const router = useRouter();
+  const router = useRouter();
   const [data, setData] = useState<{ labels: string[]; datasets: any[] }>({
     labels: [],
     datasets: [],
   });
   const jsToday = new Date();
   jsToday.setHours(0, 0, 0, 0);
-
-  // CalendarDate objects for min and max
   const startDate = new CalendarDate(
     jsToday.getFullYear(),
     jsToday.getMonth() + 1,
     jsToday.getDate() - 10
-  ); // 10 days ago
+  );
   const tomorrow = new CalendarDate(
     jsToday.getFullYear(),
     jsToday.getMonth() + 1,
     jsToday.getDate() + 1
-  ); // +1 day from today
+  );
   const [selectedRange, setSelectedRange] = useState<{
     start: CalendarDate;
     end: CalendarDate;
@@ -112,35 +109,19 @@ const router = useRouter();
     selectedRange.end.toDate(getLocalTimeZone())
   ).format("DD MMM YY")}`;
 
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        calendarRef.current &&
-        !calendarRef.current.contains(event.target as Node)
-      ) {
-        setShowCalendar(false);
-      }
-    }
-    if (showCalendar) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [showCalendar]);
+  useOutsideClick(calendarRef, showCalendar, () => setShowCalendar(false));
+
   const isDateUnavailable = (date: CalendarDate) => {
     return date.compare(tomorrow) > 0;
   };
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       <div className="flex justify-center items-center pb-6 border-b border-[#31394f14]">
-         <div className="w-10 cursor-pointer">
-                <span onClick={() => router.back()} >
-                  <Image src={leftarrow} alt="Back" width={16} height={16} />
-                </span>
-              </div>
+        <div className="w-10 cursor-pointer">
+          <span onClick={() => router.back()} >
+            <Image src={leftarrow} alt="Back" width={16} height={16} />
+          </span>
+        </div>
 
         <H3 className=" text-center flex-1 text-base sm:text-lg md:text-xl">
           My Performance

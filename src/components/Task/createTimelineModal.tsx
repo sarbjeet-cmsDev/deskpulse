@@ -5,7 +5,6 @@ import { Button } from "@/components/Form/Button";
 import { Input } from "@/components/Form/Input";
 import { H5 } from "@/components/Heading/H5";
 import { useEffect, useState } from "react";
-import { z } from "zod";
 import { createTimelineSchema } from "@/components/validation/timelineValidaion";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -35,7 +34,6 @@ export default function CreateTimelineModal({
     setToday(now.toISOString().split("T")[0]);
     setWeekStart(pastWeek.toISOString().split("T")[0]);
   }, []);
-  // const today = new Date().toISOString().split("T")[0];
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedDate(e.target.value);
@@ -105,7 +103,7 @@ export default function CreateTimelineModal({
                       onChange={handleDateChange}
                       min={weekStart}
                       max={today}
-                      // className="w-64"
+                    // className="w-64"
                     />
                     {errors.date && (
                       <p className="text-red-500 text-xs mt-1">

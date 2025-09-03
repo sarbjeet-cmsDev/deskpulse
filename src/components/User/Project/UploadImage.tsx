@@ -1,20 +1,10 @@
-import DropdownOptions from "@/components/DropdownOptions"
+import DropdownOptions from "@/components/DropdownOptions";
 import ProjectService from "@/service/project.service";
-import { useEffect, useRef, useState } from "react";
-import ProjectAvtar from "@/assets/images/projectimage.png";
+import { useRef } from "react";
 
 export const UploadImage = ({ project, projectId, fetchProject }: any) => {
-    const [version, setVersion] = useState<number>(Date.now());
-
-    const [projectImage, setProjectImage] = useState<string>(ProjectAvtar.src);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
-    useEffect(() => {
-        if (project?.avatar) {
-            setProjectImage(
-                `${process.env.NEXT_PUBLIC_BACKEND_HOST}${project.avatar}?v=${version}`
-            );
-        }
-    }, [project, version]);
+
     const handleProjectAvatar = () => {
         fileInputRef.current?.click();
     };
@@ -27,13 +17,7 @@ export const UploadImage = ({ project, projectId, fetchProject }: any) => {
                 projectId as string,
                 file
             );
-
             if (res) {
-                const avatarUrl = res?.avatar
-                    ? `${process.env.NEXT_PUBLIC_BACKEND_HOST}${res?.avatar}?v=${version}`
-                    : ProjectAvtar.src;
-                setProjectImage(avatarUrl);
-                setVersion(Date.now());
                 fetchProject();
             } else {
                 console.error("Upload failed");
@@ -62,5 +46,5 @@ export const UploadImage = ({ project, projectId, fetchProject }: any) => {
                 ]}
             />
         </div>
-    )
-}
+    );
+};

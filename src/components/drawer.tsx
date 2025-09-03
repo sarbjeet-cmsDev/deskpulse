@@ -22,7 +22,6 @@ export default function DrawerFunction({ onImageSelect }: DrawerFunctionProps) {
 
   return (
     <>
-      {/* SVG icon that opens file picker */}
       <div onClick={handleIconClick} className="cursor-pointer p-[5px] bg-[#7980ff] rounded-full">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -37,8 +36,6 @@ export default function DrawerFunction({ onImageSelect }: DrawerFunctionProps) {
           />
         </svg>
       </div>
-
-      {/* Hidden file input */}
       <input
         type="file"
         accept="image/*"

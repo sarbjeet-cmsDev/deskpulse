@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import AdminNotificationService from "@/service/adminNotification.service";
+import { SweetAlert } from "@/components/common/SweetAlert/SweetAlert";
 
 function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState(value);
@@ -108,24 +109,14 @@ const NotificationListTable = () => {
             if (action === "Edit") {
               router.push(`/admin/project/update/${row._id}`);
             } else if (action === "Delete") {
-              const result = await Swal.fire({
+
+              const result = await SweetAlert({
                 title: "Are you sure?",
                 text: `You are about to delete this notification`,
-                icon: "warning",
-                showCancelButton: true,
                 confirmButtonText: "Yes, delete it!",
                 cancelButtonText: "No, cancel!",
-                reverseButtons: true,
-                customClass: {
-                  confirmButton:
-                    "bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 focus:outline-none mr-2",
-                  cancelButton:
-                    "bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 focus:outline-none mr-2",
-                },
-                buttonsStyling: false,
-              });
-
-              if (result.isConfirmed) {
+              })
+              if (result) {
                 try {
                   await AdminNotificationService.deleteNotification(row._id);
                   setNotifications((prev) =>

@@ -13,6 +13,7 @@ import ChevronDown from "@/assets/images/chevrondown.svg";
 import AvatarList from "@/components/IndexPage/avatarlist";
 import AdminUserService from "@/service/adminUser.service";
 import AdminPerformanceService from "@/service/adminPerformance.service";
+import { useOutsideClick } from "@/utils/useOutsideClickHandler";
 dayjs.extend(isSameOrBefore);
 
 export default function PerformancePreview() {
@@ -154,25 +155,7 @@ export default function PerformancePreview() {
   const isDateUnavailable = (date: CalendarDate) => {
     return date.compare(tomorrow) > 0;
   };
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        calendarRef.current &&
-        !calendarRef.current.contains(event.target as Node)
-      ) {
-        setShowCalendar(false);
-      }
-    }
-    if (showCalendar) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [showCalendar]);
+  useOutsideClick(calendarRef, showCalendar, () => setShowCalendar(false));
 
   return (
     <div className="px-4 sm:px-6 lg:px-8">

@@ -8,3 +8,15 @@ export default function formatMinutes(min: string | number | null | undefined): 
 
     return `${hours}h${minutes > 0 ? ` ${minutes}m` : ""}`;
 }
+
+
+export const formatDate = (dateString: string) => {
+    if (!dateString) return "No due date";
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return "Invalid date";
+    return new Intl.DateTimeFormat("en-US", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+    }).format(date);
+};

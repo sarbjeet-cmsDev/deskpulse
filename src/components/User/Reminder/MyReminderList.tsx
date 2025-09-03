@@ -8,8 +8,7 @@ import { P } from "@/components/ptag";
 import { IReminder } from "@/types/reminder.interface";
 import Image from "next/image";
 import leftarrow from "@/assets/images/back.png";
-import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Pagination from "@/components/Pagination/pagination";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
@@ -69,8 +68,6 @@ export default function MyReminderList() {
       ) : (
         <ReminderList reminders={reminders} />
       )}
-      {/* {totalItems > 5 && ( */}
-
       <Pagination
         currentPage={currentPage}
         totalItems={totalItems}

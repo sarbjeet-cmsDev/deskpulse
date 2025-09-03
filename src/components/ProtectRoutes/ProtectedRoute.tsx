@@ -1,7 +1,6 @@
 'use client';
 
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '@/store/store';
+import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { signOut } from '@/store/slices/authSlice';
@@ -9,7 +8,6 @@ import AuthService from '@/service/auth.service';
 import Cookies from 'js-cookie';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const user = useSelector((state: RootState) => state.auth.user);
 
   const dispatch = useDispatch();
   const router = useRouter();
@@ -18,13 +16,13 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const checkToken = async () => {
 
-      
+
 
       try {
         const res = await AuthService.validateToken();
-  
-        if (!res.valid || !res.user ) {
-          }
+
+        if (!res.valid || !res.user) {
+        }
       } catch (err) {
         localStorage.removeItem('token');
         localStorage.removeItem('type');

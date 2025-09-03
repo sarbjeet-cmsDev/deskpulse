@@ -8,6 +8,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import AdminUserService, { IUser } from "@/service/adminUser.service";
 import { H3 } from "@/components/Heading/H3";
 import { Button } from "@heroui/button";
+import { SweetAlert } from "@/components/common/SweetAlert/SweetAlert";
 
 function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState(value);
@@ -110,24 +111,13 @@ const Users = () => {
               if (action === "Edit") {
                 router.push(`/admin/user/update/${row._id}`);
               } else if (action === "Delete") {
-                const result = await Swal.fire({
+                const result = await SweetAlert({
                   title: "Are you sure?",
                   text: `You are about to delete ${row.firstName} ${row.lastName}.`,
-                  icon: "warning",
-                  showCancelButton: true,
                   confirmButtonText: "Yes, delete it!",
                   cancelButtonText: "No, cancel!",
-                  reverseButtons: true,
-                  customClass: {
-                    confirmButton:
-                      "bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 focus:outline-none mr-2",
-                    cancelButton:
-                      "bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 focus:outline-none mr-2",
-                  },
-                  buttonsStyling: false,
-                });
-
-                if (result.isConfirmed) {
+                })
+                if (result) {
                   try {
                     await AdminUserService.deleteUser(row._id);
                     setUsers((prev) => prev.filter((u) => u._id !== row._id));

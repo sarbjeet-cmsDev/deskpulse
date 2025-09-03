@@ -1,6 +1,7 @@
 "use client";
 
 import { RootState } from "@/store/store";
+import { useOutsideClick } from "@/utils/useOutsideClickHandler";
 import { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 
@@ -50,23 +51,7 @@ export default function AvatarList({
     window.addEventListener("resize", updateMaxVisible);
     return () => window.removeEventListener("resize", updateMaxVisible);
   }, []);
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(e.target as Node) &&
-        !triggerRef.current?.contains(e.target as Node)
-      ) {
-        setDropdownOpen(false);
-      }
-    }
-    if (dropdownOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [dropdownOpen]);
+  useOutsideClick(dropdownRef, dropdownOpen, () => setDropdownOpen(false));
 
   useEffect(() => {
     if (dropdownOpen) {
@@ -136,7 +121,7 @@ export default function AvatarList({
                   title={`${usr?.firstName} ${usr?.lastName}`}
                   onClick={() => {
                     toggleUserSelection(usr?._id);
-                    checkSpace(); // ✅ recalc on avatar click
+                    checkSpace();
                   }}
                   className={`flex items-center justify-center w-8 h-8 rounded-full text-white text-sm font-semibold transition cursor-pointer ${isActive
                     ? "bg-green-600 scale-110 shadow-md"
@@ -177,8 +162,6 @@ export default function AvatarList({
           </div>
         )}
       </div>
-
-      {/* Dropdown */}
       {dropdownOpen && (
         <div
           ref={dropdownRef}

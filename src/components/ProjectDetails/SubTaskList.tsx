@@ -2,16 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
-import info from "@/assets/images/info.png";
 import ShowMoreLess from "../common/ShowMoreLess/ShowMoreLess";
-import { LuEye } from "react-icons/lu";
 import AvatarList from "../IndexPage/avatarlist";
-
-interface KanbanItem {
-  title: string;
-  _id?: string;
-}
+import { formatDate } from "@/utils/formatMinutes";
 
 interface SubTasksProps {
   tasks: any[];
@@ -37,8 +30,8 @@ export default function SubTasks({
   const uniqueStatuses = kanbanList?.length
     ? Array.from(new Set(kanbanList.map((k: any) => k.title.toLowerCase())))
     : Array.from(
-        new Set(tasks.map((t) => t.status?.toLowerCase()).filter(Boolean))
-      );
+      new Set(tasks.map((t) => t.status?.toLowerCase()).filter(Boolean))
+    );
 
   const getVisibleCount = (status: string) =>
     visibleCounts[status] ?? TASKS_PER_PAGE;
@@ -48,17 +41,6 @@ export default function SubTasks({
       ...prev,
       [status]: newCount,
     }));
-  };
-
-  const formatDate = (dateString: string) => {
-    if (!dateString) return "No due date";
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return "Invalid date";
-    return new Intl.DateTimeFormat("en-US", {
-    day: "numeric",
-    month: "short", 
-    year: "numeric",
-    }).format(date);
   };
 
   return (
@@ -105,18 +87,18 @@ export default function SubTasks({
 
                     <div className="flex flex-col-reverse items-end gap-3 flex-wrap shrink-0 md:flex-row md:items-center ">
                       <>
-                      {task.due_date && (
-                        <span className="text-sm text-gray-700" title="Due Date">
-                          {formatDate(task.due_date)}
-                        </span>
-                      )}
+                        {task.due_date && (
+                          <span className="text-sm text-gray-700" title="Due Date">
+                            {formatDate(task.due_date)}
+                          </span>
+                        )}
                       </>
                       <>
-                      {task.priority && (
-                        <span className="text-sm text-gray-700 truncate max-w-[60px]" title="Priority">
-                          {task.priority}
-                        </span>
-                      )}
+                        {task.priority && (
+                          <span className="text-sm text-gray-700 truncate max-w-[60px]" title="Priority">
+                            {task.priority}
+                          </span>
+                        )}
                       </>
 
                       <AvatarList users={[task?.assigned_to]} />

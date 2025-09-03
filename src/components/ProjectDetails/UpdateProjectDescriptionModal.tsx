@@ -7,7 +7,6 @@ import { H5 } from "@/components/Heading/H5";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { taskCreateSchema } from "../validation/taskValidation";
 import { projectDescriptionUpdateSchema } from "../validation/projectValidation";
 
 interface UpdateProjectDescriptionModalProps {
