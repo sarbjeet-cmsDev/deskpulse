@@ -9,8 +9,6 @@ export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  const { id } = await params;
-  // const Userdata = await AdminUserService.getUserById(id);
   return {
     title: {
       absolute: `Reset Password`,

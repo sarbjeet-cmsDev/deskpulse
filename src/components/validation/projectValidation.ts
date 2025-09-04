@@ -1,7 +1,6 @@
 import { z } from "zod";
 
 export const projectCreateSchema = z.object({
-  // code: z.string().min(1, "Project code is required"),
   users: z.array(z.string(), {
     required_error: "Users are required",
     invalid_type_error: "Users must be an array of strings",
@@ -16,18 +15,18 @@ export const projectCreateSchema = z.object({
   project_manager: z.string().optional(),
   avatar: z.string().optional(),
   notes: z.string().optional(),
-description: z
-  .string()
-  .refine(
-    (val) => {
-      const hasText = val.replace(/<[^>]*>/g, "").trim() !== "";
-      const hasImage = /<img\s+[^>]*src=["'][^"']+["']/i.test(val);
-      return hasText || hasImage;
-    },
-    { message: "Description is required" }
-  ),
+  description: z
+    .string()
+    .refine(
+      (val) => {
+        const hasText = val.replace(/<[^>]*>/g, "").trim() !== "";
+        const hasImage = /<img\s+[^>]*src=["'][^"']+["']/i.test(val);
+        return hasText || hasImage;
+      },
+      { message: "Description is required" }
+    ),
 
-    deploy_instruction: z.string().optional(),
+  deploy_instruction: z.string().optional(),
   critical_notes: z.string().optional(),
   creds: z.string().optional(),
   additional_information: z.string().optional(),

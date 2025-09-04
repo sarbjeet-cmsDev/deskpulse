@@ -5,8 +5,6 @@ import "react-quill/dist/quill.snow.css";
 import "quill-mention/dist/quill.mention.css";
 import "./commentSection.css";
 import "highlight.js/styles/atom-one-dark.css";
-
-// import "@/utils/quill-config";
 import hljs from "highlight.js";
 
 import { Quill } from "react-quill-new";
@@ -19,7 +17,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import UploadService from "@/service/upload.service";
 import ImageLightbox from "../common/ImagePopUp/ImageLightbox";
-import { getSocket } from "@/utils/socket"; // Adjust path as needed
+import { getSocket } from "@/utils/socket";
 
 if (
   typeof window !== "undefined" &&
@@ -224,11 +222,11 @@ export default function CommentInputSection({
         socketRef.current.connect();
       }
       socketRef.current.on("connect", () => {
-        socketRef.current.emit("register-user", user.id); // Send your user ID immediately
+        socketRef.current.emit("register-user", user.id);
       });
 
       socketRef.current.emit("task-updated", {
-        taskId: taskId, // You need to replace this with the actual task ID
+        taskId: taskId,
         sender: user.firstName + " " + user.lastName,
         receiverId: `${mentionedUserIds}`,
         description: "mentioned you in a comment",
@@ -252,9 +250,6 @@ export default function CommentInputSection({
 
     const editor = quillRef.current?.getEditor();
     const html = editor?.root.innerHTML || "";
-
-    // html = cleanQuillHtml(html);
-
     if (!html || stripHtml(html) === "") {
       setError("Comment is required");
       return;
@@ -288,7 +283,7 @@ export default function CommentInputSection({
       saveBtnRef.current === e.relatedTarget ||
       cancelBtnRef.current === e.relatedTarget
     ) {
-      return; // still inside → don't hide
+      return;
     }
 
     wrapperRef.current?.classList.remove("show-toolbar");

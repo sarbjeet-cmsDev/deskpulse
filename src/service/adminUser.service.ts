@@ -30,7 +30,6 @@ export interface IUser {
 }
 
 const AdminUserService = {
-  //  Get all users with pagination, search, and sort
   async getAllUsers(params?: {
     page?: number;
     limit?: number;
@@ -46,7 +45,6 @@ const AdminUserService = {
     };
   },
 
-  //  Get user by ID
   async getUserById(id: string): Promise<IUser> {
     const res = await axiosClient.get(`${API_URL}/admin/user/view/${id}`);
     return res.data.data;
@@ -57,7 +55,6 @@ const AdminUserService = {
     });
     return res.data ?? [];
   },
-  //  Create user
   async createUser(data: {
     username: string;
     email: string;
@@ -67,18 +64,15 @@ const AdminUserService = {
     return res.data;
   },
 
-  //  Update user by ID
   async updateUser(id: string, data: Partial<IUser>): Promise<IUser> {
     const res = await axiosClient.put(`${API_URL}/admin/user/${id}`, data);
     return res.data;
   },
 
-  //  Delete user by ID
   async deleteUser(id: string): Promise<void> {
     await axiosClient.delete(`${API_URL}/admin/user/${id}`);
   },
 
-  //  Reset password by admin
   async resetPassword(id: string, newPassword: string): Promise<IUser> {
     const res = await axiosClient.put(
       `${API_URL}/admin/user/${id}/reset-password`,
@@ -89,13 +83,11 @@ const AdminUserService = {
     return res.data;
   },
 
-  //  Get logged-in user profile
   async getCurrentUser(): Promise<IUser> {
     const res = await axiosClient.get(`${API_URL}/admin/user/me`);
     return res.data;
   },
 
-  //  Update logged-in user's own profile
   async updateCurrentUser(data: Partial<IUser>): Promise<IUser> {
     const res = await axiosClient.put(`${API_URL}/admin/user/me`, data);
     return res.data;

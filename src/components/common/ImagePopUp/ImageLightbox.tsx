@@ -8,7 +8,6 @@ interface Props {
 }
 
 export default function ImageLightbox({ open, imageUrl, onClose }: Props) {
-  // if (!imageUrl) return null;
   return (
     <Lightbox
       open={open}

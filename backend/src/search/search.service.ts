@@ -2,8 +2,6 @@ import { Injectable } from "@nestjs/common";
 import { ProjectService } from "../project/project.service";
 import { TaskService } from "../task/task.service";
 import { CommentService } from "../comment/comment.service";
-import { UserService } from "src/user/user.service";
-import { log } from "console";
 
 @Injectable()
 export class SearchService {

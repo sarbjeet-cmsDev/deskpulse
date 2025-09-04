@@ -1,5 +1,4 @@
 import UpdateProjectForm from '@/components/admin/Project/UpdateProjectForm'
-import AdminProjectService from '@/service/adminProject.service'
 import type { Metadata, ResolvingMetadata } from 'next'
 
 type Props = {
@@ -12,7 +11,6 @@ export async function generateMetadata(
 ): Promise<Metadata> {
 
   const { id } = await params
-  // const Userdata = await AdminProjectService.getProjectById(id);
   return {
     title: {
       absolute: `Project | ${id}`

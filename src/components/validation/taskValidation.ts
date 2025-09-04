@@ -1,9 +1,7 @@
 import { z } from "zod";
 
-// Priority Enum
 export const taskPriorityEnum = z.enum(["low", "medium", "high"]);
 
-// ✅ Base Schema for Task (common for create and update)
 export const taskSchemaBase = z.object({
   title: z.string().min(1, "Title is required"),
 
@@ -29,7 +27,6 @@ export const taskSchemaBase = z.object({
   estimated_time: z.number().optional(),
 });
 
-// ✅ Task Create Schema
 export const taskCreateSchema = taskSchemaBase.extend({
   title: z.string().min(1, "Title is required"),
   project: z.string().min(1, "Project is required"),
@@ -84,5 +81,4 @@ export const taskGlobalSchema = z.object({
 });
 
 
-// ✅ Task Update Schema
 export const taskUpdateSchema = taskSchemaBase.partial();

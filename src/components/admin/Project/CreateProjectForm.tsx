@@ -136,11 +136,11 @@ const CreateProjectForm = () => {
           socketRef.current.connect();
         }
         socketRef.current.on("connect", () => {
-          socketRef.current.emit("register-user", user.id); // Send your user ID immediately
+          socketRef.current.emit("register-user", user.id);
         });
         data.users.forEach((id) => {
           socketRef.current.emit("task-updated", {
-            taskId: "1111", // You need to replace this with the actual task ID
+            taskId: "1111",
             sender: user.firstName + " " + user.lastName,
             receiverId: id,
             description: "Assigned You a Project",

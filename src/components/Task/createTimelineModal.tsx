@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { createTimelineSchema } from "@/components/validation/timelineValidaion";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { TextArea } from "../Form/TextArea";
 
 interface CreateTimelineModalProps {
   onCreate: (data: {
@@ -22,7 +23,6 @@ export default function CreateTimelineModal({
 }: CreateTimelineModalProps) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [loading, setLoading] = useState(false);
-  const [selectedDate, setSelectedDate] = useState("");
   const [weekStart, setWeekStart] = useState("");
   const [today, setToday] = useState("");
 
@@ -34,10 +34,6 @@ export default function CreateTimelineModal({
     setToday(now.toISOString().split("T")[0]);
     setWeekStart(pastWeek.toISOString().split("T")[0]);
   }, []);
-
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedDate(e.target.value);
-  };
   const {
     register,
     handleSubmit,
@@ -100,10 +96,8 @@ export default function CreateTimelineModal({
                       label="Date"
                       {...register("date")}
                       required={false}
-                      onChange={handleDateChange}
                       min={weekStart}
                       max={today}
-                    // className="w-64"
                     />
                     {errors.date && (
                       <p className="text-red-500 text-xs mt-1">
@@ -126,11 +120,11 @@ export default function CreateTimelineModal({
                   </div>
 
                   <div>
-                    <textarea
-                      {...register("comment")}
-                      rows={3}
+                    <TextArea
                       className="w-full rounded-lg border border-gray-100 bg-gray-100 p-3 focus:outline-none"
                       placeholder="Write your comment..."
+                      {...register("comment")}
+                      rows={3}
                     />
                     {errors.comment && (
                       <p className="text-red-500 text-xs mt-1">

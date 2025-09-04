@@ -56,7 +56,7 @@ export const ProjectKanbon = {
     }
   },
 
-async updateKanbanSortOrder(data: any, id?: any) {
+  async updateKanbanSortOrder(data: any, id?: any) {
     try {
       const response = await axiosClient.put(
         `${API_URL}/admin/project/${id}/kanban/order`,
@@ -70,8 +70,4 @@ async updateKanbanSortOrder(data: any, id?: any) {
       );
     }
   }
-  // async UpdateKanbanList(data: any, id: string) {
-  //   const res = await axiosClient.patch(`/api/project-kanban/${id}`, data);
-  //   return res.data;
-  // },
 };

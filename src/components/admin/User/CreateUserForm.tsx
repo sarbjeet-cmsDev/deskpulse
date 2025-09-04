@@ -6,11 +6,9 @@ import { userCreateSchema } from "@/components/validation/userValidation";
 import { z } from "zod";
 import { Input } from "@/components/Form/Input";
 import { Button } from "@/components/Form/Button";
-import { H1 } from "@/components/Heading/H1";
 import AdminUserService from "@/service/adminUser.service";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import Swal from "sweetalert2";
 import Link from "next/link";
 import Image from "next/image";
 import leftarrow from "@/assets/images/back.png";
@@ -46,7 +44,7 @@ const CreateUserComponent = () => {
     setLoading(true);
     try {
       const { confirmPassword, ...payload } = data;
-     
+
       await AdminUserService.createUser(payload);
 
       router.push("/admin/user");

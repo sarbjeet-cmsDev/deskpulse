@@ -1,13 +1,4 @@
 import { z } from "zod";
-const days = [
-  { name: "Monday", value: "monday" },
-  { name: "Tuesday", value: "tuesday" },
-  { name: "Wednesday", value: "wednesday" },
-  { name: "Thursday", value: "thursday" },
-  { name: "Friday", value: "friday" },
-  { name: "Saturday", value: "saturday" },
-  { name: "Sunday", value: "sunday" },
-];
 export const createReminderSchema = z.object({
   title: z.string().min(1, "Title is required"),
   start: z.string().min(1, "Start date is required"),

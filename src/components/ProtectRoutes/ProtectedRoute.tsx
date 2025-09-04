@@ -43,10 +43,6 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     return <div className="text-center mt-20">Checking token...</div>;
   }
 
-  // if (!user || user.role !== 'user') {
-  //   return <div className="text-center mt-20">Redirecting...</div>;
-  // }
-
   return <>{children}</>;
 };
 

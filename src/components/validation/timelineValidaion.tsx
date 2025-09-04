@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-// Create Timeline Zod Schema
 export const createTimelineSchema = z.object({
   task: z.string().min(1, { message: "Task is required." }),
 
@@ -33,7 +32,6 @@ export const createTimelineSchema = z.object({
   is_active: z.boolean().optional(),
 });
 
-// Update Timeline Zod Schema
 export const updateTimelineSchema = z.object({
   task: z.string().min(1, { message: "Task is required." }),
 

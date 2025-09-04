@@ -29,10 +29,6 @@ export function middleware(req: NextRequest) {
     if (type === "user" && req.nextUrl.pathname.startsWith("/admin")) {
       return NextResponse.redirect(new URL("/", req.url));
     }
-
-    // if (type === "admin" && req.nextUrl.pathname.startsWith("/user")) {
-    //   return NextResponse.redirect(new URL("/admin", req.url));
-    // }
   }
 
   return NextResponse.next();

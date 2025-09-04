@@ -27,7 +27,7 @@ export function initSocketIO(server: HttpServer) {
     socket.on("register-user", (userId: string) => {
       userSockets.set(userId, socket.id);
       console.log(`✅ Registered user: ${userId} → ${socket.id}`);
-      
+
       for (const [uid, sid] of userSockets.entries()) {
         console.log(`- ${uid}: ${sid}`);
       }
@@ -51,7 +51,7 @@ export function initSocketIO(server: HttpServer) {
 
         const receiverSocketId = userSockets.get(receiverId);
         if (receiverSocketId) {
-          console.log("receiver id",receiverSocketId)
+          console.log("receiver id", receiverSocketId)
           io.to(receiverSocketId).emit("receive-notification", {
             message: `${sender} ${description}`,
             taskId,

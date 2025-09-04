@@ -1,7 +1,6 @@
 import {
   CreateReminderDto,
   IReminder,
-  IReminderResponse,
   UpdateReminderDto,
 } from "@/types/reminder.interface";
 import { createAxiosClient } from "@/utils/createAxiosClient";

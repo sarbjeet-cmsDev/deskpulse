@@ -1,8 +1,7 @@
 import { createAxiosClient } from '@/utils/createAxiosClient';
-// import axios from 'axios';
 
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
-const axiosClient = createAxiosClient({withCreds:false});
+const axiosClient = createAxiosClient({ withCreds: false });
 const axiosPrivate = createAxiosClient({ withCreds: true });
 
 const AuthService = {
@@ -15,7 +14,7 @@ const AuthService = {
       const res = await axiosPrivate.get(`${API_URL}/user/validate-token`);
       return res.data;
     } catch (error) {
-        throw new Error("Failed to validate Token");
+      throw new Error("Failed to validate Token");
     }
   },
 };

@@ -5,7 +5,6 @@ export function checkReminders(remindersRef: React.MutableRefObject<any[]>) {
         if (reminder.repeat === "daily" || reminder.repeat === "weekly") {
 
             const endTime = reminder.end ? new Date(reminder.end) : null;
-            // console.log(endTime, "endTime")
             if (endTime && now > endTime) return;
             if (reminder.triggered) return;
         }
@@ -27,13 +26,11 @@ export function checkReminders(remindersRef: React.MutableRefObject<any[]>) {
 
                 const endTime = reminder.end ? new Date(reminder.end) : null;
                 const cutoffDay = endTime ? endTime.getDate() : 31;
-                // console.log(cutoffDay, "cutoffDay")
                 const reminderDays = reminder.monthdays
                     .map((d: string) => parseInt(d, 10))
                     .filter((d: number) => d <= cutoffDay)
                     .sort((a: any, b: any) => a - b);
                 if (reminderDays.length === 0) return;
-                // console.log(reminderDays, "reminderDays")
                 const today = now.getDate();
                 let nextDay = reminderDays.find((d: any) => d >= today);
                 if (!nextDay) {

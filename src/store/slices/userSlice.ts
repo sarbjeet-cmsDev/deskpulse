@@ -1,4 +1,3 @@
-// store/slices/userSlice.ts
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import UserService from "@/service/user.service";
 import { IUser } from "@/service/adminUser.service";
@@ -46,7 +45,7 @@ export const updateUserAvatar = createAsyncThunk<IUser, File>(
   async (file, { dispatch, rejectWithValue }) => {
     try {
       await UserService.uploadAvatar(file);
-      const refreshed = await dispatch(fetchUserProfile()).unwrap(); // re-fetch
+      const refreshed = await dispatch(fetchUserProfile()).unwrap();
       return refreshed;
     } catch (err: any) {
       return rejectWithValue(

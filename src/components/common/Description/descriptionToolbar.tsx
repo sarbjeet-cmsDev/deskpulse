@@ -6,7 +6,6 @@ import {
   useRef,
   useMemo,
   useCallback,
-  forwardRef,
 } from "react";
 import "react-quill/dist/quill.snow.css";
 import "quill-mention/dist/quill.mention.css";
@@ -86,7 +85,6 @@ const DescriptionInputToolbar = ({
         editor?.setSelection(range.index + 1);
       } catch (error) {
         console.error("Image upload failed:", error);
-        // setError("Failed to upload image");
       } finally {
         setLoading(false);
       }
@@ -131,7 +129,6 @@ const DescriptionInputToolbar = ({
 
   const handleFocus = () => setIsFocused(true);
   const handleBlur = (e: React.FocusEvent) => {
-    // Close toolbar if focus is outside wrapper
     if (!wrapperRef.current?.contains(e.relatedTarget as Node)) {
       setIsFocused(false);
     }
@@ -211,16 +208,13 @@ const DescriptionInputToolbar = ({
 
 
   useEffect(() => {
-    // if (isEditing && defaultValue) {
     const sanitized = cleanQuillHtml(content);
     setContent(sanitized);
-    // }
   }, []);
   return (
     <div className="md:p-4 bg-white md:border rounded">
       <label className="block text-sm font-medium text-gray-700 mb-2">
         {title}
-        {/* <span className="text-red-500">*</span> */}
       </label>
       <div
         ref={wrapperRef}

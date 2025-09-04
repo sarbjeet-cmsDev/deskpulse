@@ -1,4 +1,3 @@
-// store/notificationSlice.ts
 import NotificationService from "@/service/notification.service";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
@@ -14,13 +13,12 @@ const initialState: NotificationState = {
   error: null
 };
 
-// Async thunk to fetch notification count by user ID
 export const fetchNotificationCount = createAsyncThunk(
   "notifications/fetchCount",
   async (userId: string, { rejectWithValue }) => {
     try {
       const res: any = await NotificationService.getNotificationByUserId(userId);
-     
+
       return res?.notifications?.count || 0;
     } catch (err: any) {
       return rejectWithValue(err.message || "Failed to fetch notifications");

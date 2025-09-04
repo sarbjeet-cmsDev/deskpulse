@@ -22,8 +22,6 @@ export default function AuthLoginPage() {
     const searchParams = useSearchParams();
     const redirect = searchParams.get("redirect");
     const emailRef = useRef<HTMLInputElement>(null);
-
-    const [apiError, setApiError] = useState("");
     const [loading, setLoading] = useState(false);
 
     const {
@@ -39,7 +37,6 @@ export default function AuthLoginPage() {
     });
 
     const onSubmit = async (formData: LoginInput) => {
-        setApiError("");
         setLoading(true);
 
         try {
@@ -68,9 +65,6 @@ export default function AuthLoginPage() {
                 router.push("/");
             }
         } catch (error: any) {
-            setApiError(
-                error?.response?.data?.message || error.message || "Login failed"
-            );
         } finally {
             setLoading(false);
         }

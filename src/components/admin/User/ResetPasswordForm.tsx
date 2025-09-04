@@ -3,7 +3,7 @@
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { userResetPasswordSchema } from '@/components/validation/userValidation';
 import { Input } from '@/components/Form/Input';
 import { Button } from '@/components/Form/Button';

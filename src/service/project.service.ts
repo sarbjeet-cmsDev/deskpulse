@@ -1,7 +1,5 @@
 import { IProject, IProjectResponse } from "@/types/project.interface";
 import { createAxiosClient } from "@/utils/createAxiosClient";
-import axios from "axios";
-import { log } from "console";
 
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 const axiosClient = createAxiosClient({ withCreds: true });
@@ -18,15 +16,13 @@ const ProjectService = {
     }
   },
 
-  //aggregation for getting all user Project list
-
   async getProjectsDetail(page = 1, limit = 4, title?: string) {
     const params = new URLSearchParams();
     params.set("page", String(page));
     params.set("limit", String(limit));
 
     if (title) {
-      params.set("title", title); // Add title if provided
+      params.set("title", title);
     }
 
     const response = await axiosClient.get(
@@ -86,13 +82,13 @@ const ProjectService = {
     return response.data;
   },
 
-   async getAllProject(): Promise<{ data: IProject[]; total: number }> {
-      const res = await axiosClient.get(`${API_URL}/projects/allProject`);
-      return {
-        data: res.data.data,
-        total: res.data.total,
-      };
-    },
+  async getAllProject(): Promise<{ data: IProject[]; total: number }> {
+    const res = await axiosClient.get(`${API_URL}/projects/allProject`);
+    return {
+      data: res.data.data,
+      total: res.data.total,
+    };
+  },
 };
 
 export default ProjectService;

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
 import TaskActivityLogService from "@/service/taskActivityLogService";
 import TaskActivityLogList from "@/components/TaskActivityLog/activitylogList";
 import { H3 } from "@/components/Heading/H3";

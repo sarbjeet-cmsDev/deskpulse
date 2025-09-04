@@ -7,8 +7,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { userUpdateSchema } from "@/components/validation/userValidation";
 import { Input } from "@/components/Form/Input";
 import { Button } from "@/components/Form/Button";
-import { useParams, useRouter } from "next/navigation";
-import AdminUserService, { IUser } from "@/service/adminUser.service";
+import { useRouter } from "next/navigation";
+import AdminUserService from "@/service/adminUser.service";
 import Link from "next/link";
 import Image from "next/image";
 import leftarrow from "@/assets/images/back.png";
@@ -23,7 +23,6 @@ type UpdateUserInput = z.infer<typeof userUpdateSchema>;
 
 const UpdateUserForm = ({ id }: Props) => {
   const router = useRouter();
-  // const { id } = useParams<{ id: string }>();
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
 

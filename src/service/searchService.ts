@@ -1,4 +1,3 @@
-import axios from "axios";
 import { SearchResponse } from "@/components/global-search/types";
 import { createAxiosClient } from "@/utils/createAxiosClient";
 const axiosClient = createAxiosClient({ withCreds: true });

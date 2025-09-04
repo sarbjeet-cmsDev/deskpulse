@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { ReadonlyURLSearchParams } from "next/navigation";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import Pagination from "../Pagination/pagination";
+import { Button } from "../Form/Button";
 
 type Header = {
   id: string;
@@ -58,14 +59,7 @@ const DataGrid: React.FC<DataGridProps> = ({
     }
   }, [searchInput]);
   const currentPageFromRoute = parseInt(searchParams.get("page") || "1", 10);
-  const startRecord =
-    pagination.total_records === 0
-      ? 0
-      : (pagination.current_page - 1) * pagination.limit + 1;
-  const endRecord = Math.min(
-    startRecord + pagination.limit - 1,
-    pagination.total_records
-  );
+
 
   const handlePageChange = (newPage: number) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -90,7 +84,7 @@ const DataGrid: React.FC<DataGridProps> = ({
             }}
             className="p-2 border rounded-md md:w-full md:max-w-md"
           />
-          <button
+          <Button
             onClick={() => {
               setSearchInput("");
               onSearch?.("");
@@ -98,7 +92,7 @@ const DataGrid: React.FC<DataGridProps> = ({
             className="px-3 py-1 border rounded-md text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 h-[42px]"
           >
             Clear
-          </button>
+          </Button>
         </div>
       )}
       <div className="overflow-x-auto border rounded-md">
