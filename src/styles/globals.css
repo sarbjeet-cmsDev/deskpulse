@@ -80,15 +80,19 @@ input[type="range"].range-primary {
   .fc-header-toolbar {
     flex-direction: column;
     align-items: start !important;
-
   }
-
+  .fc-daygrid-dot-event .fc-event-title {
+    overflow: unset !important;
+  }
+  .fc-daygrid-day-frame.fc-scrollgrid-sync-inner {
+    overflow: auto !important;
+  }
   .fc-toolbar-chunk {
     margin: 2px 0;
   }
 
   .fc-event-title {
-  white-space: normal;
-  font-size: 12px; 
-}
+    white-space: normal;
+    font-size: 12px;
+  }
 }
