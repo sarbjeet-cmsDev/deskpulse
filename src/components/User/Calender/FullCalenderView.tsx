@@ -15,6 +15,7 @@ import { useForm, Controller } from "react-hook-form";
 import ProjectService from "@/service/project.service";
 import UserService from "@/service/user.service";
 import { H3 } from "@/components/Heading/H3";
+import listPlugin from "@fullcalendar/list";
 
 export default function FullCalendarView() {
   interface ProjectOption {
@@ -24,15 +25,11 @@ export default function FullCalendarView() {
 
   const router = useRouter();
   const user: any = useSelector((state: RootState) => state.auth.user) || {};
-  console.log("user", user);
   const [tasks, setTasks] = useState<any[]>([]);
   const [users, setUsers] = useState([]);
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const [projectOptions, setProjectOptions] = useState<ProjectOption[]>([]);
-
-  console.log("selectedUserIds", selectedUserIds);
-
-  console.log("tasks", tasks);
+  const [calendarView, setCalendarView] = useState("dayGridMonth");
 
   const {
     control,
@@ -77,21 +74,45 @@ export default function FullCalendarView() {
     setProjectOptions(options);
   };
 
-  const fetchUsers = async () => {
-    try {
-      const response: any = await UserService.findAllUser();
-      console.log("response", response);
-      setUsers(response || []);
-    } catch (err) {
-      console.error("Failed to fetch users", err);
-    }
-  };
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response: any = await UserService.findAllUser();
+        const userData = response.filter(
+          (item: any) => item?.roles[0] === "user"
+        );
+        setUsers(userData || []);
+        if (userData.length > 0) {
+          const firstUserId = userData[0]._id;
+          setSelectedUserIds([firstUserId]);
+          fetchTasks([firstUserId]);
+        }
+      } catch (err) {
+        console.error("Failed to fetch users", err);
+      }
+    };
+    fetchUsers();
+  }, []);
 
   useEffect(() => {
     fetchTasks(selectedUserIds);
     fetchProjects();
-    fetchUsers();
   }, [selectedUserIds, selectedProjectId]);
+
+   useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setCalendarView("dayGridWeek"); 
+      } else {
+        setCalendarView("dayGridMonth"); 
+      }
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const formatTime = (time: any) => {
     const totalTime = time || 0;
@@ -134,87 +155,114 @@ export default function FullCalendarView() {
               Calender
             </H3>
           </div>
-          <div className="md:w-1/3 w-full">
-            <Controller
-              name="projectId"
-              control={control}
-              render={({ field }) => {
-                const selectedOption =
-                  projectOptions.find((opt) => opt.value === field.value) ||
-                  null;
+          <div className="md:w-1/3 w-full md:flex justify-between">
+            <div className="w-full">
+              <Controller
+                name="projectId"
+                control={control}
+                render={({ field }) => {
+                  const selectedOption =
+                    projectOptions.find((opt) => opt.value === field.value) ||
+                    null;
 
-                const isDisabled =
-                  user?.role === "admin" && selectedUserIds.length === 0;
-                return (
-                  <ReactSelect
-                    menuShouldScrollIntoView
-                    options={isDisabled ? [] : projectOptions}
-                    value={selectedOption}
-                    placeholder={
-                      isDisabled
-                        ? "Please select a user first"
-                        : "Select Project"
-                    }
-                    onChange={(selected) =>
-                      field.onChange(selected?.value || null)
-                    }
-                    isClearable
-                    isDisabled={isDisabled}
-                    styles={{
-                      control: (base) => ({
-                        ...base,
-                        minHeight: "40px",
-                      }),
-                      menu: (base) => ({
-                        ...base,
-                        position: "absolute",
-                        zIndex: 15,
-                      }),
-                      menuList: (base) => ({
-                        ...base,
-                        paddingTop: 0,
-                        paddingBottom: 0,
-                      }),
-                    }}
-                  />
-                );
-              }}
-            />
-          </div>
-          {user?.role === "admin" && (
-            <div className="md:w-1/3 w-full">
-              <AvatarList
-                users={users}
-                selectedUserIds={selectedUserIds}
-                setSelectedUserIds={setSelectedUserIds}
-                fetchKanbonList={fetchTasks}
+                  const isDisabled =
+                    user?.role === "admin" && selectedUserIds.length === 0;
+                  return (
+                    <ReactSelect
+                      menuShouldScrollIntoView
+                      options={isDisabled ? [] : projectOptions}
+                      value={selectedOption}
+                      placeholder={
+                        isDisabled
+                          ? "Please select a user first"
+                          : "Select Project"
+                      }
+                      onChange={(selected) =>
+                        field.onChange(selected?.value || null)
+                      }
+                      isClearable
+                      isDisabled={isDisabled}
+                      styles={{
+                        control: (base) => ({
+                          ...base,
+                          minHeight: "40px",
+                        }),
+                        menu: (base) => ({
+                          ...base,
+                          position: "absolute",
+                          zIndex: 15,
+                        }),
+                        menuList: (base) => ({
+                          ...base,
+                          paddingTop: 0,
+                          paddingBottom: 0,
+                        }),
+                      }}
+                    />
+                  );
+                }}
               />
             </div>
-          )}
+            {user?.role === "admin" && (
+              <div className="w-full">
+                <AvatarList
+                  users={users}
+                  selectedUserIds={selectedUserIds}
+                  setSelectedUserIds={setSelectedUserIds}
+                  fetchKanbonList={fetchTasks}
+                />
+              </div>
+            )}
+          </div>
         </div>
 
-        <div className="md:w-6/6 w-full z-1">
+        <div className="z-1 md:w-6/6 w-full z-1">
           <FullCalendar
-            plugins={[dayGridPlugin, interactionPlugin]}
-            initialView="dayGridMonth"
-            events={tasks
-              .filter((t) =>
-                ["done", "progress", "code_review"].includes(t.task_status)
-              )
-              .flatMap((item, index) =>
-                item.calenderBars.map((bars: any, barIndex: number) => ({
-                  title: `${item?.task_code} (${formatTime(item?.task_totaltimespent)}) (${item?.task_status})`,
-                  // date: bars.start,
-                  id: `${item?.task_code}-${barIndex}`,
-                  backgroundColor: getColor(index),
-                  textColor: "#fff",
-                  start: bars?.start,
-                  end:
-                    item.task_status === "progress"
-                      ? new Date()
-                      : bars.end || bars.start,
-                }))
-              )}
+            plugins={[dayGridPlugin, listPlugin, interactionPlugin]}
+            initialView={calendarView}
+            events={(() => {
+              const allEvents = tasks
+                .filter((t) =>
+                  ["done", "progress", "code_review"].includes(t.task_status)
+                )
+                .flatMap((item, index) =>
+                  item.calenderBars.map((bars: any, barIndex: number) => {
+                    const totalTime = item.timeline_data
+                      .filter(
+                        (d: any) =>
+                          new Date(d.date) >= new Date(bars.start) &&
+                          new Date(d.date) <= new Date(bars.end)
+                      )
+                      .reduce((sum: number, d: any) => sum + d.time_spent, 0);
+
+                    return {
+                      title: `${item?.task_code} (${formatTime(
+                        item?.task_totaltimespent
+                      )}) (${item?.task_status})`,
+                      id: `${item?.task_code}-${barIndex}`,
+                      backgroundColor: getColor(index),
+                      textColor: "#fff",
+                      start: bars?.start,
+                      end:
+                        item.task_status === "progress"
+                          ? new Date()
+                          : bars.end || bars.start,
+                      extendedProps: {
+                        taskId: item.task_id,
+                        totalTime,
+                      },
+                    };
+                  })
+                );
+
+              const seen = new Set<string>();
+              return allEvents.filter((ev) => {
+                const key = `${ev.extendedProps.taskId}-${new Date(ev.start).toDateString()}`;
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return true;
+              });
+            })()}
             eventClick={(info) => {
               info.jsEvent.preventDefault();
               router.push(
@@ -224,6 +272,15 @@ export default function FullCalendarView() {
             eventClassNames={() =>
               "font-semibold text-sm tracking-wide cursor-pointer"
             }
+            eventDidMount={(info) => {
+              const time = info.event.extendedProps.totalTime;
+              if (time && time > 0) {
+                info.el.setAttribute(
+                  "title",
+                  `Log time : ${formatTime(time)}`
+                );
+              }
+            }}
             dayMaxEventRows={6}
             moreLinkClick="popover"
             fixedWeekCount={true}

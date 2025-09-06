@@ -9,11 +9,13 @@ import { EventEmitter2 } from "@nestjs/event-emitter";
 import { ProjectService } from "src/project/project.service";
 import { UserService } from "src/user/user.service";
 import { Types } from "mongoose";
+import { Task } from "src/task/task.schema";
 
 @Injectable()
 export class TimelineService {
   constructor(
     @InjectModel("Timeline") private readonly timelineModel: Model<Timeline>,
+    @InjectModel("Task") private readonly taskModel: Model<Task>,
     private readonly taskService: TaskService,
     private readonly projectService: ProjectService,
     private readonly userService: UserService,
@@ -310,7 +312,7 @@ export class TimelineService {
       ...(projectId
         ? [{ $match: { "task_detail.project": new Types.ObjectId(projectId) } }]
         : []),
-      { $sort: { createdAt: sortOrder === "desc" ? 1 : -1 } },
+      { $sort: { date :sortOrder === "desc" ? 1 : -1 } },
 
       { $skip: (safePage - 1) * safeLimit },
       { $limit: safeLimit },
@@ -492,7 +494,7 @@ export class TimelineService {
       ...(projectId
         ? [{ $match: { "task_detail.project": new Types.ObjectId(projectId) } }]
         : []),
-        { $sort: { createdAt: sortOrder === "desc" ? 1 : -1 } },
+        { $sort: { date: sortOrder === "desc" ? 1 : -1 } },
         { $skip: (safePage - 1) * safeLimit },
         { $limit: safeLimit },
       {
@@ -628,7 +630,6 @@ export class TimelineService {
     }
   }
 
- 
   ranges.push({ start, end: prev });
 
   return ranges;
@@ -690,7 +691,13 @@ export class TimelineService {
             ],
           },
         },
-        timeline_dates: { $addToSet: "$date" }, 
+        // timeline_dates: { $addToSet: "$date" }, 
+        timeline_data: {
+          $push: {
+            date: "$date",
+            time_spent: "$time_spent",
+          },
+        }
       },
     },
     {
@@ -706,19 +713,91 @@ export class TimelineService {
         assigned_id: 1,
         project_name: 1,
         username: 1,
-        timeline_dates: {
-          $sortArray: { input: "$timeline_dates", sortBy: 1 }, 
+        // timeline_dates: {
+        //   $sortArray: { input: "$timeline_dates", sortBy: 1 }, 
+        // },
+        timeline_data: {
+          $sortArray: { input: "$timeline_data", sortBy: { date: 1 } },
         },
       },
     },
+    {
+    $unionWith: {
+      coll: "tasks",
+      pipeline: [
+        {
+          $match: {
+            assigned_to: { $in: userIds.map((id) => new Types.ObjectId(id)) },
+            status: "progress",
+            // isArchived: false,
+            ...(projectId ? { project: new Types.ObjectId(projectId) } : {}),
+          },
+        },
+        {
+          $lookup: {
+            from: "timelines",
+            localField: "_id",
+            foreignField: "task",
+            as: "tl",
+          },
+        },
+        { $match: { tl: { $eq: [] } } }, 
+        {
+          $lookup: {
+            from: "projects",
+            localField: "project",
+            foreignField: "_id",
+            as: "project_detail",
+          },
+        },
+        { $unwind: { path: "$project_detail", preserveNullAndEmptyArrays: true } },
+        {
+          $lookup: {
+            from: "users",
+            localField: "assigned_to",
+            foreignField: "_id",
+            as: "user_detail",
+          },
+        },
+        { $unwind: { path: "$user_detail", preserveNullAndEmptyArrays: true } },
+        {
+          $project: {
+            task_id: "$_id",
+            task_title: "$title",
+            task_code: "$code",
+            task_status: "$status",
+            task_totaltimespent: "$totaltaskminutes",
+            task_createdAt: "$createdAt",
+            project_id: "$project",
+            assigned_id: "$assigned_to",
+            project_name: "$project_detail.title",
+            username: {
+              $concat: [
+                { $ifNull: ["$user_detail.firstName", ""] },
+                " ",
+                { $ifNull: ["$user_detail.lastName", ""] },
+              ],
+            },
+           
+            timeline_data: [{ date: new Date(), time_spent: 0 }],
+          },
+        },
+      ],
+    },
+  },
+
     { $sort: { task_code: sortOrder === "asc" ? 1 : -1 } },
   ];
   
   const tasks = await this.timelineModel.aggregate(pipeline).exec();
-  return tasks.map(task=>({
+
+  const allTasks = 
+    tasks.map(task=>({
     ...task,
-    calenderBars:buildDateRanges(task.timeline_dates)
+    calenderBars:buildDateRanges(task.timeline_data.map((item:any)=>item.date)),
   }))
+ 
+  return allTasks;
 }
 
 }

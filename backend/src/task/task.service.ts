@@ -114,8 +114,6 @@ export class TaskService {
     };
   }
 
-
-
   async FetchDueTask(user_id: string): Promise<Task[]> {
     const endOfDay = new Date().setHours(23, 59, 59, 999);
     return this.taskModel
@@ -142,7 +140,7 @@ export class TaskService {
     return this.taskModel
       .find(filter)
       .populate('assigned_to')
-      .sort({ sort_order: 1 }); // ascending order for kanban
+      .sort({ sort_order: 1 }); 
   }
 
 
@@ -157,7 +155,6 @@ export class TaskService {
 
     const filter: Record<string, any> = { assigned_to: { $in: userIds }, isArchived: false };
 
-    // ✅ Date Range Filter
     if (start && end) {
       filter.createdAt = {
         $gte: new Date(start),
@@ -172,7 +169,6 @@ export class TaskService {
         .limit(limit)
         .populate('project')
         .populate('assigned_to')
-        // .sort({ sort_order: -1 })
         .sort({ createdAt: -1 })
 
         .exec(),
@@ -280,6 +276,10 @@ export class TaskService {
     }
     return task;
   }
+
+  async findAllTask(): Promise<Task[]> {
+      return this.taskModel.find().exec();
+    }
 
   async remove(id: string): Promise<Task> {
     const task = await this.taskModel.findByIdAndDelete(id).exec();

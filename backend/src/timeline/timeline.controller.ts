@@ -14,7 +14,6 @@ import { Timeline } from "./timeline.interface";
 import { TimelineService } from "./timeline.service";
 import { CurrentUser } from "src/shared/current-user.decorator";
 import { JwtAuthGuard } from "src/guard/jwt-auth.guard";
-import { log } from "console";
 
 @Controller("api/timelines")
 @UseGuards(JwtAuthGuard)

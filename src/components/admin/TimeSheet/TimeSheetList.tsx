@@ -22,6 +22,7 @@ import { useForm, Controller } from "react-hook-form";
 import { H3 } from "@/components/Heading/H3";
 import { SweetAlert } from "@/components/common/SweetAlert/SweetAlert";
 import { useOutsideClick } from "@/utils/useOutsideClickHandler";
+import { format } from "date-fns";
 dayjs.extend(isSameOrBefore);
 
 function useDebounce<T>(value: T, delay: number): T {
@@ -40,6 +41,7 @@ type Task = {
   assigned_to: any;
   totaltaskminutes: any;
   time_spent: any;
+  date:any;
 };
 
 const TimeSheetList = () => {
@@ -217,11 +219,13 @@ const TimeSheetList = () => {
     { id: "project_name", title: "Project" },
     { id: "task_title", title: "Task" },
     { id: "task_status", title: "Task Status" },
+    { id: "timelineDate", title: "Date" },
     { id: "totaltaskminutes", title: "Spent Time" },
     { id: "username", title: "User" },
   ];
 
   const rows = (tasks ?? []).map((task, index) => {
+    const logDate = format(new Date(task.date), "d MMM");
     const totalMinutes = task.time_spent || 0;
     const hours = Math.floor(totalMinutes / 60);
     const minutes = totalMinutes % 60;
@@ -233,6 +237,7 @@ const TimeSheetList = () => {
     return {
       ...task,
       taskNumber: globalIndex,
+      timelineDate:logDate,
       projectTitle: task.project?.title || "—",
       assignedUserName:
         `${task.assigned_to?.firstName || ""} ${task.assigned_to?.lastName || ""}`.trim() ||
