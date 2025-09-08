@@ -1,16 +1,16 @@
-import AuthLoginPage from "@/components/auth/Login";
+import ResendVerifyForm from "@/components/auth/ResendVerifyForm";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: {
-    absolute: "Login",
+    absolute: "Resend Verify",
   },
 };
 export default function index() {
   return (
     <Suspense fallback={<div className="p-6">Loading...</div>}>
-      <AuthLoginPage />
+      <ResendVerifyForm />
     </Suspense>
   );
 }

@@ -40,7 +40,7 @@ export class EmailListener {
     }
     this.logger.log(`All project assignment emails processed.`);
   }
-
+  
   // On Task Assign 
   @OnEvent('task.assigned', { async: true })
   async handleTaskAsssignEvent(payload: { taskObj: any; }) {
@@ -229,6 +229,102 @@ export class EmailListener {
       );
     }
   }
+ 
+  // Auth verify account
+  @OnEvent('user.account.verification', { async: true })
+  async handleUserRegisterEvent({ userObj ,token }: { userObj: any, token:any }) {
+    console.log("userObj",userObj)
+      console.log("token1",token)
+      try {
+        const user = await this.userservices.findOne(userObj?._id.toString());
+        await this.emailservice.sendEmail({
+          to: user.email,
+          subject: 'Verify your account',
+          template: 'templates/auth/auth-verifyAccount.mjml',
+          variables: {
+            name: userObj.firstName,
+            verifyLink: `${process.env.FRONTEND_URL}auth/verify-account/${token}`
+          },
+        });
+        this.logger.log(`Verify account Email Notification sent.`);
+      } catch (err) {
+        this.logger.error(`Failed to send email to ${userObj?._id}: ${err.message}`);
+      }
+    
+    this.logger.log(`All Verify account emails processed.`);
+  }
+
+   // Auth verify account
+  @OnEvent('user.verified-notification', { async: true })
+  async handleUserVerfiedEvent({ userObj ,token }: { userObj: any, token:any }) {
+    console.log("userObj",userObj)
+      console.log("token1",token)
+      try {
+        const user = await this.userservices.findOne(userObj?._id.toString());
+        await this.emailservice.sendEmail({
+          to: user.email,
+          subject: 'Your Account verified Successfully.',
+          template: 'templates/auth/auth-verified.mjml',
+          variables: {
+            name: userObj.firstName,
+          },
+        });
+        this.logger.log(`Account Verified Email Notification sent.`);
+      } catch (err) {
+        this.logger.error(`Failed to send email to ${userObj?._id}: ${err.message}`);
+      }
+
+    this.logger.log(`All Account Verified emails processed.`);
+  }
+
+   // Password reset
+  @OnEvent('request.resetPassword.notification', { async: true })
+  async handleRequestResetPasswordEvent({ userObj ,token }: { userObj: any, token:any }) {
+    console.log("userObj",userObj)
+      console.log("token1",token)
+      try {
+        const user = await this.userservices.findOne(userObj?._id.toString());
+        await this.emailservice.sendEmail({
+          to: user.email,
+          subject: 'Reset your password.',
+          template: 'templates/auth/reset.password.email.mjml',
+          variables: {
+            name: user.firstName,
+            token,
+            resetLink: `${process.env.FRONTEND_URL}auth/reset-password/${user._id}/${token}`,
+          },
+        });
+        this.logger.log(`Password Reset Email Notification sent.`);
+      } catch (err) {
+        this.logger.error(`Failed to send email to ${userObj?._id}: ${err.message}`);
+      }
+
+    this.logger.log(`All Password Reset emails processed.`);
+  }
+
+   // Reset password done
+  @OnEvent('user.verified-notification', { async: true })
+  async handlerPasswordRessetedEvent({ userObj ,token }: { userObj: any, token:any }) {
+    console.log("userObj",userObj)
+      console.log("token1",token)
+      try {
+        const user = await this.userservices.findOne(userObj?._id.toString());
+        await this.emailservice.sendEmail({
+          to: user.email,
+          subject: 'Your password has been reset.',
+          template: 'templates/auth/reset.pass.done.mjml',
+          variables: {
+            name: userObj.firstName,
+          },
+        });
+        this.logger.log(`Password Reset Done Email Notification sent.`);
+      } catch (err) {
+        this.logger.error(`Failed to send email to ${userObj?._id}: ${err.message}`);
+      }
+
+    this.logger.log(`All Password Reset Done emails processed.`);
+  }
+
 }
 
 

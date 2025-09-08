@@ -97,3 +97,14 @@ input[type="range"].range-primary {
     font-size: 12px;
   }
 }
+
+.react-tel-input .form-control {
+   border: none !important;
+   border-radius: 10px !important;
+   padding:20px 48px;
+   outline: none;
+}
+
+.react-tel-input .form-control:hover {
+   background-color: "#e4e4e7";
+}

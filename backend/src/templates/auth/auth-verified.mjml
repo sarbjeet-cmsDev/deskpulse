@@ -1,0 +1,18 @@
+<mjml>
+  <mj-body background-color="#f4f4f4" >
+    <mj-section background-color="#ffffff" border-radius="8px" padding="24px" css-class="card">
+      <mj-column>
+        <mj-text font-size="20px" font-weight="bold" color="#4CAF50" align="center" padding-bottom="8px">
+          ✅ Account Verified Successfully
+        </mj-text>
+        <mj-divider border-color="#4CAF50" border-width="2px" width="60px" />
+        <mj-text font-size="16px" color="#555555" align="center">
+          Your account has been successfully verified. You can now log in and enjoy full access to our platform.
+        </mj-text>
+        <mj-text font-size="14px" color="#888888" align="center" padding-top="20px">
+          Thank you for being with us. <br/> — The Team
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

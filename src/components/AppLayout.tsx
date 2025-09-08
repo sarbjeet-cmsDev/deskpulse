@@ -15,7 +15,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const userData: any = useSelector((state: RootState) => state.auth.user);
-  const hideLayout = pathname.startsWith("/auth/login");
+  const hideLayout = pathname.startsWith("/auth");
 
   const remindersRef = useRef<any[]>([]);
 

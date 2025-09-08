@@ -9,7 +9,9 @@ export function middleware(req: NextRequest) {
     "/auth/login",
     "/auth/signup",
     "/auth/forgotpassword",
+    "/auth/verify-account/[token]",
     "/reset-password",
+    "/auth/login/request-reset-password"
   ];
 
   const isPublicRoute = publicPaths.includes(req.nextUrl.pathname);
