@@ -236,8 +236,6 @@ export class EmailListener {
   // Auth verify account
   @OnEvent('user.account.verification', { async: true })
   async handleUserRegisterEvent({ userObj, token }: { userObj: any, token: any }) {
-    console.log("userObj", userObj)
-    console.log("token1", token)
     try {
       const user = await this.userservices.findOne(userObj?._id.toString());
       await this.emailservice.sendEmail({
@@ -260,8 +258,6 @@ export class EmailListener {
   // Auth verify account
   @OnEvent('user.verified-notification', { async: true })
   async handleUserVerfiedEvent({ userObj, token }: { userObj: any, token: any }) {
-    console.log("userObj", userObj)
-    console.log("token1", token)
     try {
       const user = await this.userservices.findOne(userObj?._id.toString());
       await this.emailservice.sendEmail({
@@ -283,8 +279,6 @@ export class EmailListener {
   // Password reset
   @OnEvent('request.resetPassword.notification', { async: true })
   async handleRequestResetPasswordEvent({ userObj, token }: { userObj: any, token: any }) {
-    console.log("userObj", userObj)
-    console.log("token1", token)
     try {
       const user = await this.userservices.findOne(userObj?._id.toString());
       await this.emailservice.sendEmail({
@@ -308,8 +302,6 @@ export class EmailListener {
   // Reset password done
   @OnEvent('user.verified-notification', { async: true })
   async handlerPasswordRessetedEvent({ userObj, token }: { userObj: any, token: any }) {
-    console.log("userObj", userObj)
-    console.log("token1", token)
     try {
       const user = await this.userservices.findOne(userObj?._id.toString());
       await this.emailservice.sendEmail({
@@ -331,9 +323,9 @@ export class EmailListener {
 
 
   @OnEvent('workspace.invite', { async: true })
-  async handleWorkSpaceInviteEvent(payload: { id: string; email: string; dto: InviteMemberDto }) {
+  async handleWorkSpaceInviteEvent(payload: { id: string; email: string; userType: string; dto: InviteMemberDto }) {
     const workSpace = await this.workSpaceServices.findOne(payload.id);
-    const workSpaceLink = `${process.env.FRONTEND_URL}/workSpace/invite?workspaceId=${payload.id}&email=${payload.email}`;
+    const workSpaceLink = `${process.env.FRONTEND_URL}/workSpace/invite?workspaceId=${payload.id}&email=${payload.email}&role=${payload?.userType}`;
     try {
       const email = [];
       if (workSpace) {

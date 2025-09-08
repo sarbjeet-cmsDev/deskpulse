@@ -12,9 +12,11 @@ import { Button } from "@/components/Form/Button";
 import { Input } from "@/components/Form/Input";
 import { H3 } from "@/components/Heading/H3";
 import AuthService from "@/service/auth.service";
+import { WorkSpaceService } from "@/service/workSpace.service";
 import { signIn } from "@/store/slices/authSlice";
 import Cookies from "js-cookie";
 import Link from "next/link";
+
 type LoginInput = z.infer<typeof userLoginSchema>;
 
 export default function AuthLoginPage() {
@@ -22,6 +24,9 @@ export default function AuthLoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect");
+  const workspaceId = searchParams.get("workspaceId");
+  const invitedEmail: any = searchParams.get("email");
+  const role: any = searchParams.get("role");
   const emailRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
 
@@ -32,7 +37,7 @@ export default function AuthLoginPage() {
   } = useForm<LoginInput>({
     resolver: zodResolver(userLoginSchema),
     defaultValues: {
-      email: "",
+      email: invitedEmail,
       password: "",
     },
   });
@@ -44,20 +49,25 @@ export default function AuthLoginPage() {
       const data = await AuthService.login(formData);
       const { access_token, user } = data;
       const role = user.role[0];
-
       localStorage.setItem("token", access_token);
-      Cookies.set("token", access_token, {
-        expires: 1,
-        path: "/",
-      });
-      Cookies.set("role", role, {
-        expires: 1,
-        path: "/",
-      });
+      Cookies.set("token", access_token, { expires: 1, path: "/" });
+      Cookies.set("role", role, { expires: 1, path: "/" });
       localStorage.setItem("type", role);
-
       dispatch(signIn({ id: user.id, email: user.email, role }));
-
+      if (workspaceId && invitedEmail) {
+        try {
+          await WorkSpaceService.acceptInvite(workspaceId, {
+            email: invitedEmail,
+            workspaceId: workspaceId,
+            role: role
+          });
+          router.push(`/workSpace/${workspaceId}`);
+          return;
+        } catch (err) {
+          console.error("Error accepting invite:", err);
+          return;
+        }
+      }
       if (role === "admin") {
         router.push("/");
       } else if (redirect) {
@@ -66,6 +76,7 @@ export default function AuthLoginPage() {
         router.push("/");
       }
     } catch (error: any) {
+      console.error("Login error:", error);
     } finally {
       setLoading(false);
     }
@@ -90,6 +101,8 @@ export default function AuthLoginPage() {
             {...register("email")}
             type="text"
             placeholder="Type your email"
+            disabled={invitedEmail}
+          // ref={emailRef}
           />
           {errors.email && (
             <p className="text-xs text-red-500">{errors.email.message}</p>

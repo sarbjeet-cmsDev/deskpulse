@@ -12,7 +12,7 @@ export class RemindersService {
   constructor(
     @InjectModel(Reminder.name)
     private readonly reminderModel: Model<ReminderDocument>
-  ) {}
+  ) { }
 
   async create(
     createReminderDto: CreateReminderDto
@@ -81,7 +81,7 @@ export class RemindersService {
   }
 
   async findOne(id: string): Promise<Reminder> {
-     return await this.reminderModel.findById(id).lean<Reminder>().exec();
+    return await this.reminderModel.findById(id).lean<Reminder>().exec();
   }
 
   async findActiveReminder(
@@ -96,7 +96,7 @@ export class RemindersService {
       user: new Types.ObjectId(id),
     });
 
-  
+
     if (options?.sort) {
       remindersQuery.sort(options.sort);
     }
@@ -109,7 +109,7 @@ export class RemindersService {
     const filteredReminders = reminders.filter((reminder) => {
       const currentTime = new Date();
       const startTime = new Date(reminder.start);
-      const alertBeforeTime = new Date(startTime.getTime() - reminder.alert_before * 60000); 
+      const alertBeforeTime = new Date(startTime.getTime() - reminder.alert_before * 60000);
       return currentTime >= alertBeforeTime && currentTime <= startTime;
     });
 

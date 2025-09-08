@@ -1,12 +1,12 @@
 "use client";
 
-import { useForm,Controller } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { authCreateSchema, userCreateSchema } from "@/components/validation/userValidation";
 import { z } from "zod";
 import { Input } from "@/components/Form/Input";
 import { Button } from "@/components/Form/Button";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -22,6 +22,11 @@ const AuthRegisterPage = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
+  const searchParams = useSearchParams();
+  const workspaceId = searchParams.get("workspaceId");
+  const invitedEmail: any = searchParams.get("email");
+  const role: any = searchParams.get("role");
+
   const {
     register,
     handleSubmit,
@@ -31,25 +36,34 @@ const AuthRegisterPage = () => {
     resolver: zodResolver(authCreateSchema),
     defaultValues: {
       username: "",
-      email: "",
+      email: invitedEmail,
       password: "",
       confirmPassword: "",
       firstName: "",
       lastName: "",
       phone: "",
       gender: undefined,
-      roles: "user",
+      roles: role ? role : "user",
     },
   });
 
   const onSubmit = async (data: CreateUserInput) => {
     setLoading(true);
+
+
+
+
     try {
       const { confirmPassword, ...payload } = data;
 
       await AuthService.create(payload);
 
-      router.push("/auth/login");
+      if (workspaceId && invitedEmail && role) {
+        window.location.href = `/auth/login?workspaceId=${workspaceId}&email=${invitedEmail}&role=${role}`
+
+      } else {
+        router.push("/auth/login");
+      }
     } catch (error) {
       console.error(error);
     } finally {
@@ -81,7 +95,7 @@ const AuthRegisterPage = () => {
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Email
         </label>
-        <Input type="email" placeholder="Email" {...register("email")} />
+        <Input type="email" placeholder="Email" {...register("email")} disabled={invitedEmail} />
         {errors.email && (
           <p className="text-sm text-red-500">{errors.email.message}</p>
         )}
@@ -90,14 +104,14 @@ const AuthRegisterPage = () => {
         </label>
         <Input placeholder="First Name" {...register("firstName")} />
         {errors.firstName && (
-            <p className="text-sm text-red-500">{errors.firstName.message}</p>
+          <p className="text-sm text-red-500">{errors.firstName.message}</p>
         )}
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Last Name
         </label>
         <Input placeholder="Last Name" {...register("lastName")} />
         {errors.lastName && (
-            <p className="text-sm text-red-500">{errors.lastName.message}</p>
+          <p className="text-sm text-red-500">{errors.lastName.message}</p>
         )}
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Phone
@@ -108,27 +122,27 @@ const AuthRegisterPage = () => {
         )} */}
 
         <Controller
-        name="phone"
-        control={control}
-        rules={{ required: "Phone is required" }}
-        render={({ field, fieldState }) => (
-          <div>
-            <PhoneInput
-              country="in"
-              value={field.value}
-              onChange={field.onChange}
-              inputProps={{
-                name: "phone",
-                required: true,
-              }}
-              inputStyle={{ width: "100%", backgroundColor:"#f7f7f7", }}
-            />
-            {fieldState.error && (
-              <p className="text-sm text-red-500">{fieldState.error.message}</p>
-            )}
-          </div>
-        )}
-      />
+          name="phone"
+          control={control}
+          rules={{ required: "Phone is required" }}
+          render={({ field, fieldState }) => (
+            <div>
+              <PhoneInput
+                country="in"
+                value={field.value}
+                onChange={field.onChange}
+                inputProps={{
+                  name: "phone",
+                  required: true,
+                }}
+                inputStyle={{ width: "100%", backgroundColor: "#f7f7f7", }}
+              />
+              {fieldState.error && (
+                <p className="text-sm text-red-500">{fieldState.error.message}</p>
+              )}
+            </div>
+          )}
+        />
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Password
         </label>
@@ -163,11 +177,11 @@ const AuthRegisterPage = () => {
         </Button>
 
         <div className="text-sm text-gray-600">
-            If you already have an account?{' '}
-            <Link href="/auth/login" className="link-primary">
-              SignIn Here
-            </Link>
-          </div>
+          If you already have an account?{' '}
+          <Link href="/auth/login" className="link-primary">
+            SignIn Here
+          </Link>
+        </div>
       </form>
     </div>
   );
