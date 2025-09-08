@@ -91,10 +91,8 @@ npm install highlight.js
 npm install @dnd-kit/core @dnd-kit/sortable @dnd-kit/utilities
 ```
 
-### Install react-phone-input-2
 
-```bash
-npm install react-phone-input-2
-```
+
+
 
 

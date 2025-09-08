@@ -13,6 +13,7 @@ import Link from "next/link";
 import Image from "next/image";
 import leftarrow from "@/assets/images/back.png";
 import { H3 } from "@/components/Heading/H3";
+import { PhoneInputField } from "@/components/Form/PhoneInputField";
 
 type CreateUserInput = z.infer<typeof userCreateSchema>;
 
@@ -23,6 +24,7 @@ const CreateUserComponent = () => {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm<CreateUserInput>({
     resolver: zodResolver(userCreateSchema),
@@ -83,6 +85,26 @@ const CreateUserComponent = () => {
         {errors.email && (
           <p className="text-sm text-red-500">{errors.email.message}</p>
         )}
+        
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          First Name
+        </label>
+        <Input placeholder="First Name" {...register("firstName")} />
+        {errors.firstName && (
+          <p className="text-sm text-red-500">{errors.firstName.message}</p>
+        )}
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Last Name
+        </label>
+        <Input placeholder="Last Name" {...register("lastName")} />
+        {errors.lastName && (
+          <p className="text-sm text-red-500">{errors.lastName.message}</p>
+        )}
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Phone
+        </label>
+        <PhoneInputField name="phone" control={control} />
+
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Password
         </label>
@@ -106,27 +128,6 @@ const CreateUserComponent = () => {
           <p className="text-sm text-red-500">
             {errors.confirmPassword.message}
           </p>
-        )}
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          First Name
-        </label>
-        <Input placeholder="First Name" {...register("firstName")} />
-        {errors.firstName && (
-          <p className="text-sm text-red-500">{errors.firstName.message}</p>
-        )}
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Last Name
-        </label>
-        <Input placeholder="Last Name" {...register("lastName")} />
-        {errors.lastName && (
-          <p className="text-sm text-red-500">{errors.lastName.message}</p>
-        )}
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Phone
-        </label>
-        <Input placeholder="Phone" {...register("phone")} />
-        {errors.phone && (
-          <p className="text-sm text-red-500">{errors.phone.message}</p>
         )}
 
         <div>

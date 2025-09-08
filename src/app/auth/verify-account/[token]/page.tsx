@@ -28,21 +28,6 @@ export default function VerifyAccountPage({ params }: any) {
         } catch (err:any) {
           console.error(err);
           setStatus('error')
-          Swal.fire({
-                    icon: 'error',
-                    title: 'Oops!',
-                    text: err.response?.data?.message || err.message || 'Something went wrong. Please try again later.',
-                    confirmButtonText: 'Okay',
-                    width: '350px',
-                    padding: '1em',
-                    iconColor: '#ef4444', 
-                    confirmButtonColor: '#0d9488',
-                    customClass: {
-                      popup: 'rounded-xl shadow-md',
-                      title: 'text-lg font-semibold',
-                      confirmButton: 'px-8 py-1 text-sm',
-                    },
-                  });
         }
       };
 
@@ -84,7 +69,7 @@ export default function VerifyAccountPage({ params }: any) {
         )}
 
         {(status === 'verified' || status === 'error') && (
-        <div className="bg-white border border-gray-200 rounded-xl shadow-md w-[390px] h-[300px] flex flex-col items-center justify-center text-center p-4">
+        <div className="mt-[130px] bg-white border border-gray-200 rounded-xl shadow-md w-[390px] h-[300px] flex flex-col items-center justify-center text-center p-4">
           {renderMessage()}
         </div>
         )}

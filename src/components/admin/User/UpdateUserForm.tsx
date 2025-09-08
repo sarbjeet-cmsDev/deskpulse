@@ -13,6 +13,7 @@ import Link from "next/link";
 import Image from "next/image";
 import leftarrow from "@/assets/images/back.png";
 import { H3 } from "@/components/Heading/H3";
+import { PhoneInputField } from "@/components/Form/PhoneInputField";
 
 interface Props {
   id: string;
@@ -29,6 +30,7 @@ const UpdateUserForm = ({ id }: Props) => {
   const {
     register,
     handleSubmit,
+    control,
     reset,
     formState: { errors },
   } = useForm<UpdateUserInput>({
@@ -95,29 +97,43 @@ const UpdateUserForm = ({ id }: Props) => {
           <H3 className="w-[98%] text-center">Update User</H3>
         </div>
 
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+            Username
+        </label>
         <Input placeholder="Username" {...register("username")} />
         {errors.username && (
           <p className="text-sm text-red-500">{errors.username.message}</p>
         )}
 
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+            Email
+        </label>
         <Input type="email" placeholder="Email" {...register("email")} readOnly />
         {errors.email && (
           <p className="text-sm text-red-500">{errors.email.message}</p>
         )}
 
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+            First Name
+        </label>
         <Input placeholder="First Name" {...register("firstName")} />
         {errors.firstName && (
           <p className="text-sm text-red-500">{errors.firstName.message}</p>
         )}
+
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+            Last Name
+        </label>
         <Input placeholder="Last Name" {...register("lastName")} />
         {errors.lastName && (
           <p className="text-sm text-red-500">{errors.lastName.message}</p>
         )}
-        <Input placeholder="Phone" {...register("phone")} />
-        {errors.phone && (
-          <p className="text-sm text-red-500">{errors.phone.message}</p>
-        )}
-        {/* Gender Select */}
+
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+            Phone
+        </label>
+        <PhoneInputField name="phone" control={control}/>
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Gender

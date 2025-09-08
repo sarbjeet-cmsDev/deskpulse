@@ -11,7 +11,7 @@ const numbersOnlyRegex = /^[0-9]+$/;
 export const userSchemaBase = z.object({
   username: z.string().nonempty("Username is required"),
 
-  email: z.string().email("Invalid email address"),
+  email: z.string().nonempty("Email is required").email("Invalid email address"),
 
   firstName: z
     .string()
@@ -32,8 +32,10 @@ export const userSchemaBase = z.object({
   phone: z
     .string()
     .nonempty("Phone number is required")
-    .regex(numbersOnlyRegex, "Phone number must contain only digits")
-    .length(10, "Phone number must be 10 digits"),
+    .regex(/^\d+$/, "Phone number must contain only digits")
+    .refine((val) => val.length >= 10 && val.length <= 15, {
+      message: "Phone number must be at least 10 digit",
+    }),
 
   gender: z
     .string()
@@ -76,7 +78,7 @@ export const userSchemaBase = z.object({
 export const userSchemaBaseUpdate = z.object({
   username: z.string().nonempty("Username is required"),
 
-  email: z.string().email("Invalid email address"),
+  email: z.string().nonempty("Email is required").email("Invalid email address"),
 
   firstName: z
     .string()
@@ -225,11 +227,15 @@ export const updateTaskTitleSchema = z.object({
   title: z.string().nonempty("Title is required")
 });
 
+export const MailValidationSchema = z.object({
+    email: z.string().nonempty("Email is required").email("Invalid email address"),
+})
+
 
 export const authCreateSchema = z.object({
   username: z.string().nonempty("Username is required"),
 
-  email: z.string().email("Invalid email address"),
+  email: z.string().nonempty("Email is required").email("Invalid email address"),
 
   firstName: z
     .string()

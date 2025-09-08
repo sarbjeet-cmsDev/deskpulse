@@ -13,8 +13,7 @@ import Image from "next/image";
 import leftarrow from "@/assets/images/back.png";
 import { H3 } from "@/components/Heading/H3";
 import AuthService from "@/service/auth.service";
-import PhoneInput from "react-phone-input-2";
-import "react-phone-input-2/lib/style.css";
+import { PhoneInputField } from "../Form/PhoneInputField";
 
 type CreateUserInput = z.infer<typeof authCreateSchema>;
 
@@ -116,33 +115,8 @@ const AuthRegisterPage = () => {
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Phone
         </label>
-        {/* <Input placeholder="Phone" {...register("phone")} />
-        {errors.phone && (
-            <p className="text-sm text-red-500">{errors.phone.message}</p>
-        )} */}
+       <PhoneInputField name="phone" control={control} />
 
-        <Controller
-          name="phone"
-          control={control}
-          rules={{ required: "Phone is required" }}
-          render={({ field, fieldState }) => (
-            <div>
-              <PhoneInput
-                country="in"
-                value={field.value}
-                onChange={field.onChange}
-                inputProps={{
-                  name: "phone",
-                  required: true,
-                }}
-                inputStyle={{ width: "100%", backgroundColor: "#f7f7f7", }}
-              />
-              {fieldState.error && (
-                <p className="text-sm text-red-500">{fieldState.error.message}</p>
-              )}
-            </div>
-          )}
-        />
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Password
         </label>

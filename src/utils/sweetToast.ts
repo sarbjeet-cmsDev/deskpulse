@@ -56,7 +56,7 @@ export class SweetToast {
   private static _toast(message: string, icon: SweetAlertIcon) {
     Swal.fire({
       toast: true,
-      position: "top-end",
+      position: "bottom-end",
       icon,
       title: message,
       showConfirmButton: false,

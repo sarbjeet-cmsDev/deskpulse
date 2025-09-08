@@ -15,7 +15,7 @@ export async function generateMetadata(
 
   return {
     title: {
-      absolute: `Profile | ${id}`
+      absolute: `Update Profile`
     },
   }
 }
