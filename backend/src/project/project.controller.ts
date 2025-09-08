@@ -166,6 +166,12 @@ export class ProjectController {
     };
   }
 
+  @Get("/allProject")
+  async findAllProject(): Promise<{ data: Project[]; total: number }> {
+
+    return this.projectService.findAllProjectDetail();
+  }
+
   // @Put("isFavorite")
   // async addFavProject(
   //    @Param("projectId") projectId: string,

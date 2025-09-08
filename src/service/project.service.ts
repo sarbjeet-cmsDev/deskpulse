@@ -85,6 +85,14 @@ const ProjectService = {
     );
     return response.data;
   },
+
+   async getAllProject(): Promise<{ data: IProject[]; total: number }> {
+      const res = await axiosClient.get(`${API_URL}/projects/allProject`);
+      return {
+        data: res.data.data,
+        total: res.data.total,
+      };
+    },
 };
 
 export default ProjectService;

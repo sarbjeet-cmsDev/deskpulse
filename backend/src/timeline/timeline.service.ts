@@ -599,4 +599,126 @@ export class TimelineService {
       totalTimeSpent,
     };
   }
+
+  async getTasksByTimelineDate(
+  userIds: string[],
+  sortOrder: "asc" | "desc" = "desc",
+  projectId?: string,
+): Promise<any[]> {
+
+  function buildDateRanges(dates: Date[]): { start: Date; end: Date }[] {
+  if (!dates.length) return [];
+
+  const ranges: { start: Date; end: Date }[] = [];
+  let start = new Date(dates[0]);
+  let prev = new Date(dates[0]);
+
+  for (let i = 1; i < dates.length; i++) {
+    const curr = new Date(dates[i]);
+
+    const diff =
+      (curr.getTime() - prev.getTime()) / (1000 * 60 * 60 * 24);
+
+    if (diff === 1) {
+      prev = curr;
+    } else {
+      ranges.push({ start, end: prev });
+      start = curr;
+      prev = curr;
+    }
+  }
+
+ 
+  ranges.push({ start, end: prev });
+
+  return ranges;
+}
+
+  const matchFilter: any = {
+    user: { $in: userIds.map((id) => new Types.ObjectId(id)) },
+  };
+
+  const pipeline: any[] = [
+    { $match: matchFilter },
+    {
+      $lookup: {
+        from: "tasks",
+        localField: "task",
+        foreignField: "_id",
+        as: "task_detail",
+      },
+    },
+    { $unwind: { path: "$task_detail", preserveNullAndEmptyArrays: true } },
+    ...(projectId
+      ? [{ $match: { "task_detail.project": new Types.ObjectId(projectId) } }]
+      : []),
+    {
+      $lookup: {
+        from: "projects",
+        localField: "task_detail.project",
+        foreignField: "_id",
+        as: "project_detail",
+      },
+    },
+    { $unwind: { path: "$project_detail", preserveNullAndEmptyArrays: true } },
+    {
+      $lookup: {
+        from: "users",
+        localField: "task_detail.assigned_to",
+        foreignField: "_id",
+        as: "user_detail",
+      },
+    },
+    { $unwind: { path: "$user_detail", preserveNullAndEmptyArrays: true } },
+    {
+      $group: {
+        _id: "$task_detail._id",
+        task_title:{ $first: "$task_detail.title" },
+        task_code: { $first: "$task_detail.code" },
+        task_status: { $first: "$task_detail.status" },
+        task_totaltimespent: { $first: "$task_detail.totaltaskminutes" },
+        task_createdAt:{$first: "$task_detail.createdAt"},
+        project_id: { $first: "$task_detail.project" },
+        assigned_id: { $first: "$task_detail.assigned_to" },
+        project_name: { $first: "$project_detail.title" },
+        username: {
+          $first: {
+            $concat: [
+              { $ifNull: ["$user_detail.firstName", ""] },
+              " ",
+              { $ifNull: ["$user_detail.lastName", ""] },
+            ],
+          },
+        },
+        timeline_dates: { $addToSet: "$date" }, 
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        task_id: "$_id",
+        task_title:1,
+        task_code: 1,
+        task_status: 1,
+        task_totaltimespent: 1,
+        task_createdAt:1,
+        project_id: 1,
+        assigned_id: 1,
+        project_name: 1,
+        username: 1,
+        timeline_dates: {
+          $sortArray: { input: "$timeline_dates", sortBy: 1 }, 
+        },
+      },
+    },
+    { $sort: { task_code: sortOrder === "asc" ? 1 : -1 } },
+  ];
+  
+  const tasks = await this.timelineModel.aggregate(pipeline).exec();
+  return tasks.map(task=>({
+    ...task,
+    calenderBars:buildDateRanges(task.timeline_dates)
+  }))
+}
+
 }

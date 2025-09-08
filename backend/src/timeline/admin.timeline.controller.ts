@@ -39,7 +39,6 @@ export class AdminTimelineController {
     @Query("sortOrder") sortOrder: "asc" | "desc" = "asc",
     @Query("projectId") projectId?: string
   ): Promise<{ data: Timeline[]; total: number; page: number; limit: number, totalPages: number, totalTimeSpent: number }> {
-
     const userIdArray = userIds.split(",");
     return this.timelineService.findUsersTimeLine(
       userIdArray,

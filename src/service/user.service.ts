@@ -54,6 +54,11 @@ const UserService = {
     return res.data;
   },
 
+  async findAllUser(): Promise<IUser> {
+    const res = await axiosClient.get(`${API_URL}/user`);
+    return res.data;
+  },
+
 
   async updateUser(data: Partial<IUser>): Promise<IUser> {
     const res = await axiosClient.put(`${API_URL}/user/me`, data);

@@ -139,24 +139,28 @@ const TimelineService = {
     return response.data;
   },
 
-  async getAllTimelineDetails(params?: {
-      page?: number,
-      limit?: number,
-      keyword?: string,
-      sortOrder?: "asc" | "desc",
-      start?: string,
-      end?: string,
-      projectId?: string;
-    }): Promise<{ data: ITask[]; total: number; limit: number; totalPages: number, totalTimeSpent: number }> {
-      const res = await axiosClient.get(`${API_URL}/timelines/getAll`, { params });
-      return {
-        data: res.data.data,
-        total: res.data.total,
-        limit: res.data.limit,
-        totalPages: res.data.totalPages,
-        totalTimeSpent: res.data.totalTimeSpent,
-      };
+   async getAllTimelineWithTaskDetails(
+  userIds: string,
+  params?: {
+    sortOrder?: "asc" | "desc";
+    projectId?: string;
+  }
+): Promise<{ data: ITask[] }> {
+  const res = await axiosClient.get(`${API_URL}/timelines/users/tasks-by-timeline`, {
+    params: {
+      userIds,
+      ...params,
     },
+  });
+
+  return {
+    data: res.data,
+  };
+}
+
+  
+
+
 };
 
 export default TimelineService;

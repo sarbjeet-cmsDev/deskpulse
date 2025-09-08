@@ -119,8 +119,8 @@ export class TimelineController {
     });
   }
 
-  @Get('getAll')
-  async getAllTimeline(
+  @Get("getAll/user")
+  async getAllTimelineWithTaskAndProject(
     @Query("page") page: number = 1,
     @Query("limit") limit: number = 25,
     @Query("keyword") keyword?: string,
@@ -137,6 +137,21 @@ export class TimelineController {
       start,
       end,
       projectId
+    );
+  }
+
+
+ @Get('users/tasks-by-timeline')
+  async getTasksByTimelineDate(
+    @Query('userIds') userIds: string,
+    @Query('sortOrder') sortOrder: 'asc' | 'desc' = 'desc',
+    @Query('projectId') projectId?: string,
+  ): Promise<any[]> {
+    const userIdArray = userIds.split(',').map((id) => id.trim());
+    return this.timelineService.getTasksByTimelineDate(
+      userIdArray,
+      sortOrder,
+      projectId,
     );
   }
 
