@@ -8,6 +8,7 @@ import { workSpaceCreateSchema } from "../validation/workSpace.schema";
 import { WorkSpaceService } from "@/service/workSpace.service";
 import { Button } from "../Form/Button";
 import { Card, CardBody, CardFooter, CardHeader } from "@heroui/react";
+import { useRouter } from "next/navigation";
 
 type CreateWorkSpaceInput = z.infer<typeof workSpaceCreateSchema>;
 
@@ -23,11 +24,12 @@ export const CreateWorkSpace = () => {
             title: "",
         },
     });
-
+    const router = useRouter()
     const onSubmit = async (data: CreateWorkSpaceInput) => {
         try {
             await WorkSpaceService.createWorkSpace({ title: data?.title });
             reset()
+            router.push('/workSpace/view')
         } catch (error) {
             console.log(error);
         }

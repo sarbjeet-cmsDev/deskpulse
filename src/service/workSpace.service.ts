@@ -1,5 +1,4 @@
 import { createAxiosClient } from "@/utils/createAxiosClient";
-import axios from "axios";
 
 const axiosClient = createAxiosClient({ withCreds: true });
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
