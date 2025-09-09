@@ -1,40 +1,53 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import React from "react";
 import { useRouter } from 'next/navigation';
-import Swal from 'sweetalert2';
 import AuthService from '@/service/auth.service';
 
-interface VerifyAccountPageProps {
-  params: {
-    token: string;
-  };
-}
 
-export default function VerifyAccountPage({ params }: any) {
+export default function VerifyAccountPage({ params }: { params: Promise<{ token: string }> }) {
   const router = useRouter();
-  const { token } = params;
-  const [status, setStatus] = useState<'pending' | 'verified' | 'error'>('pending');
+  const { token } = React.use(params);
+  const [status, setStatus] = useState<'pending' | 'verified' | 'alreadyVerified' | 'error'>('pending');
 
    React.useEffect(() => {
     const verify = async () => {
       try {
         const res:any = await AuthService.verifyAccount(token);
-        console.log("res",res)
         if (res.status === 200) {
-          setStatus('verified');
+          if(res.data === 'already verified'){
+            setStatus('alreadyVerified')
+          }else{
+            setStatus('verified');
+
+          }
         }
         } catch (err:any) {
           console.error(err);
-          setStatus('error')
+          setStatus("error");
         }
       };
 
       verify();
     }, [token, router]);
-
+    
+    console.log("status",status)
+    
     const renderMessage = () => {
+      if (status == 'alreadyVerified') {
+      return (
+        <>
+          <h1 className="text-2xl font-bold text-black mb-4">Your account is already verified! Please Login.</h1>
+          <button
+            onClick={() => router.push('/auth/login')}
+            className="btn-primary mt-10 px-6 py-2 rounded-md text-white transition "
+          >
+            Go to Login
+          </button>
+        </>
+      );
+    }
       if (status === 'verified') {
         return (
           <>
@@ -49,7 +62,7 @@ export default function VerifyAccountPage({ params }: any) {
         );
       }
 
-      if (status === 'error') {
+     if (status === 'error') {
         return (
           <h1 className="text-xl text-gray-700">
             Something went wrong. Please try again.
@@ -68,7 +81,7 @@ export default function VerifyAccountPage({ params }: any) {
         <p className="text-gray-600 text-lg animate-pulse">Verifying your account...</p>
         )}
 
-        {(status === 'verified' || status === 'error') && (
+        {(status === 'verified' || status === 'alreadyVerified' || status === 'error') && (
         <div className="mt-[130px] bg-white border border-gray-200 rounded-xl shadow-md w-[390px] h-[300px] flex flex-col items-center justify-center text-center p-4">
           {renderMessage()}
         </div>

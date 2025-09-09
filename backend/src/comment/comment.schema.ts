@@ -22,7 +22,7 @@ export class Comment {
   
   mentioned: MongooseSchema.Types.ObjectId[];
 
-  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Comment' }] }) // Changed to an array of ObjectIds
+  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Comment' }] }) 
   parent_comment: MongooseSchema.Types.ObjectId[];
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User'})

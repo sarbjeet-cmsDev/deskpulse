@@ -125,7 +125,7 @@ const DataGrid: React.FC<DataGridProps> = ({
               <tr>
                 <td
                   colSpan={headers.length + (onAction ? 1 : 0)}
-                  className="p-4 text-center"
+                  className="p-4 text-center italic"
                 >
                   No data available.
                 </td>

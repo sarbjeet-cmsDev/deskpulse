@@ -45,7 +45,7 @@ export default function MyTaskList() {
         {loading ? (
           <p className="text-center">Loading tasks...</p>
         ) : tasks.length === 0 ? (
-          <p className="text-center">No tasks found.</p>
+          <p className="text-left italic text-gray-500">No tasks found.</p>
         ) : (
           <>
             <SubTasks tasks={tasks} />

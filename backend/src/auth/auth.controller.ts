@@ -2,10 +2,10 @@ import {
   Body,
   Controller,
   Post,
-  Res,
   Get,
   Param,
-  BadRequestException
+  BadRequestException,
+  HttpException
 } from '@nestjs/common';
 import { CreateDto, LoginDto } from './auth.dto';
 import { User } from 'src/user/user.schema';
@@ -19,17 +19,31 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
   @Post('login')
   async LoginUser(@Body() loginDto: LoginDto): Promise<User> {
-    const result = await this.authService.login(loginDto);
-    return result;
+    try {
+      const result = await this.authService.login(loginDto);
+      return result;
+    } catch (err) {
+      if (err instanceof HttpException) {
+      throw err;
+    }
+      throw new BadRequestException((err as Error).message);
+    }
   }
 
    @Post("create")
     async create(@Body() createDto: CreateDto): Promise<any> {
-      const user = await this.authService.create(createDto);
-      return {
-        message: "A verification link has been sent to your email. Please check your inbox and verify your account.",
-        data: user,
-      };
+      try {
+        const user = await this.authService.create(createDto);
+        return {
+          message: "A verification link has been sent to your email. Please check your inbox and verify your account.",
+          data: user,
+        };
+      } catch (err) {
+        if (err instanceof HttpException) {
+      throw err;
+    }
+        throw new BadRequestException((err as Error).message);
+      }
     }
 
   @Get('verify-account/:token')
@@ -39,6 +53,9 @@ export class AuthController {
     try {
       return await this.authService.verifyAccount(token);
     } catch (err) {
+      if (err instanceof HttpException) {
+      throw err;
+    }
       throw new BadRequestException((err as Error).message);
     }
   }
@@ -49,6 +66,9 @@ export class AuthController {
       const message = await this.authService.requestPasswordReset(email);
       return { message };
     } catch (err) {
+      if (err instanceof HttpException) {
+      throw err;
+    }
       throw new BadRequestException((err as Error).message);
     }
   }
@@ -63,6 +83,9 @@ export class AuthController {
       const message = await this.authService.resetPassword(id, token, newPassword);
       return { message };
     } catch (err) {
+      if (err instanceof HttpException) {
+      throw err;
+    }
       throw new BadRequestException((err as Error).message);
     }
   }
@@ -74,6 +97,9 @@ export class AuthController {
       return { message };
 
     } catch (err) {
+        if (err instanceof HttpException) {
+      throw err;
+    }
       throw new BadRequestException((err as Error).message);
     }
   }

@@ -12,8 +12,9 @@ import { InviteMemberDto } from 'src/workspace/workSpace.dto';
 export class EmailListener {
   private readonly logger = new Logger(EmailListener.name);
 
-  constructor(private readonly emailservice: EmailService
-    , private readonly userservices: UserService,
+  constructor(
+    private readonly emailservice: EmailService,
+    private readonly userservices: UserService,
     private readonly projectService: ProjectService,
     private readonly taskServices: TaskService,
     private readonly workSpaceServices: WorkSpaceService
@@ -300,7 +301,7 @@ export class EmailListener {
   }
 
   // Reset password done
-  @OnEvent('user.verified-notification', { async: true })
+  @OnEvent('passwordReset.done.notifiction', { async: true })
   async handlerPasswordRessetedEvent({ userObj, token }: { userObj: any, token: any }) {
     try {
       const user = await this.userservices.findOne(userObj?._id.toString());

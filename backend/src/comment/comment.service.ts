@@ -69,7 +69,6 @@ export class CommentService {
     if (keyword && keyword.trim()) {
       filter.$or = [
         { content: { $regex: keyword.trim(), $options: 'i' } },
-        // { code: { $regex: keyword.trim(), $options: 'i' } },
       ];
     }
 
@@ -143,8 +142,6 @@ export class CommentService {
   async update(id: string, updateCommentDto: Partial<Comment>): Promise<Comment> {
     if (updateCommentDto.task) {
       const TaskData = await validateTaskId(this.taskService, updateCommentDto.task.toString());
-      // Ensure project field is consistent with task's project
-      // updateCommentDto.project = TaskData.project;
     }
     return this.commentModel
       .findByIdAndUpdate(id, updateCommentDto, { new: true })
@@ -159,7 +156,7 @@ export class CommentService {
     return this.commentModel.find({ created_by: userId }).exec();
   }
 
-  async search(keyword: string, projectIds: string[]) { // Ensure projectIds is an array of strings
+  async search(keyword: string, projectIds: string[]) {
     const regex = new RegExp(keyword, "i");
     const filters: any = {
       $and: [
@@ -168,15 +165,15 @@ export class CommentService {
         },
         {
           $or: [
-            { content: { $regex: regex } }, // Use regex for content search
+            { content: { $regex: regex } }, 
           ],
         },
       ],
     };
     return this.commentModel
       .find(filters)
-      .sort({ createdAt: -1, updatedAt: -1 }) // Sort by createdAt and updatedAt in descending order
-      .limit(10) // Limit results to 10
+      .sort({ createdAt: -1, updatedAt: -1 }) 
+      .limit(10)
       .exec();
   }
 }

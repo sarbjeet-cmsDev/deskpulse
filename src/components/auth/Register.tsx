@@ -94,7 +94,7 @@ const AuthRegisterPage = () => {
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Email
         </label>
-        <Input type="email" placeholder="Email" {...register("email")} disabled={invitedEmail} />
+        <Input type="text" placeholder="Email" {...register("email")} disabled={invitedEmail} />
         {errors.email && (
           <p className="text-sm text-red-500">{errors.email.message}</p>
         )}

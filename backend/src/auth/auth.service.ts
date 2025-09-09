@@ -3,6 +3,7 @@ import {
   Injectable,
   NotFoundException,
   UnauthorizedException,
+  ConflictException,
 } from "@nestjs/common";
 import { User, UserDocument } from "src/user/user.schema";
 import { UserService } from "src/user/user.service";
@@ -30,7 +31,6 @@ export class AuthService {
       throw new BadRequestException("Email and password are required.");
     }
 
-    // Check if user exists
     const user = await this.userService.findByEmail(email);
     if (!user) {
       throw new NotFoundException("Invalid email.");
@@ -95,7 +95,7 @@ export class AuthService {
     return userData;
   }
 
-  async verifyAccount(token: string): Promise<boolean> {
+  async verifyAccount(token: string): Promise<any> {
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET) as {
         id: string;
@@ -104,9 +104,9 @@ export class AuthService {
       if (!user) {
         throw new NotFoundException("User not found");
       }
-      // if (user?.isActive) {
-      //     throw new ConflictException('User Already Verified');
-      //   }
+      if (user?.isActive) {
+          return 'already verified'
+        }
       user.isActive = true;
       await user.save();
       if (user) {
@@ -174,7 +174,7 @@ export class AuthService {
   async resendVerifyUser(email: string): Promise<string> {
     const user = await this.userModel.findOne({ email });
     if (!user) throw new NotFoundException("User not found");
-    if (user.isActive) throw new NotFoundException("User Already Verified");
+    if (user.isActive) throw new ConflictException("Your Account is Already Verified");
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "1d",

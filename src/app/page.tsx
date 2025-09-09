@@ -108,7 +108,7 @@ export default function Dashboard() {
                 <p>Loading projects...</p>
               ) : projects.length === 0 ? (
                 <div className="w-full">
-                  <p className="text-gray-500 text-left flex items-left justify-left">
+                  <p className="text-gray-500 text-left flex items-left justify-left italic">
                     No favourite Project available.
                   </p>
                 </div>
