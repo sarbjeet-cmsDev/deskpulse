@@ -27,6 +27,13 @@ export const WorkSpaceService = {
         };
     },
 
+    async getAllWorkSpace(): Promise<{ data: IWorkSpace[]; }> {
+        const res = await axiosClient.get(`${API_URL}/workspace`);
+        return {
+            data: res.data?.workSpaces,
+        };
+    },
+
     async deleteWorkSpace(id: string): Promise<{ data: IWorkSpace[]; }> {
         const res = await axiosClient.delete(`${API_URL}/workspace/${id}`);
         return {

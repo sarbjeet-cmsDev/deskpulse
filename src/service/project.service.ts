@@ -89,6 +89,22 @@ const ProjectService = {
       total: res.data.total,
     };
   },
+
+  async getWorkSpaceByWorkSpaceId(id: string): Promise<{ data: IProject[]; }> {
+    const res = await axiosClient.get(`${API_URL}/projects/workSpace/${id}`);
+    return {
+      data: res.data.data,
+    };
+  },
+
+
+  async getProjectByUser(userid: string, workSpaceId: string): Promise<{ data: IProject[]; }> {
+    const res = await axiosClient.get(`${API_URL}/projects/users/user/${userid}/workspace/${workSpaceId}`);
+    console.log(res, "09090")
+    return {
+      data: res.data.data,
+    };
+  },
 };
 
 export default ProjectService;

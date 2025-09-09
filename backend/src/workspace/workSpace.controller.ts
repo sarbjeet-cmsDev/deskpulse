@@ -37,7 +37,6 @@ export class WorkSpaceController {
     }
 
     @Get()
-
     async findAll(
         @Query("page") page: string = "1",
         @Query("limit") limit: string = "5"

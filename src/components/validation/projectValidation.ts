@@ -35,6 +35,7 @@ export const projectCreateSchema = z.object({
   url_staging: z.string().optional(),
   url_uat: z.string().optional(),
   title: z.string().nonempty("Title is required"),
+  workSpace: z.string().nonempty("WorkSpace is required")
 });
 
 export const projectUpdateSchema = projectCreateSchema.partial();
