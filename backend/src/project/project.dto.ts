@@ -40,6 +40,7 @@ export class CreateProjectDto {
   @IsMongoId({ each: true })
   users?: MongooseSchema.Types.ObjectId[];
 
+  @IsOptional()
   @IsString()
   @IsMongoId()
   workSpace?: MongooseSchema.Types.ObjectId;
