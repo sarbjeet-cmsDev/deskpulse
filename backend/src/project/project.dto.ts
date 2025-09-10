@@ -42,6 +42,11 @@ export class CreateProjectDto {
 
   @IsOptional()
   @IsString()
+  @IsMongoId()
+  workSpace?: MongooseSchema.Types.ObjectId;
+
+  @IsOptional()
+  @IsString()
   project_coordinator?: MongooseSchema.Types.ObjectId;
 
   @IsOptional()
