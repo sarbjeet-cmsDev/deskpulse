@@ -218,6 +218,13 @@ export class UpdateTaskStatusUpdateDto {
 
   @IsOptional()
   isArchived?: Boolean
+
+  @IsOptional()
+  startDate?:Date
+
+   @IsOptional()
+  endDate?:Date
+
 }
 
 // DTO

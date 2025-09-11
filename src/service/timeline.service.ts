@@ -1,4 +1,5 @@
 import { createAxiosClient } from "@/utils/createAxiosClient";
+import { ITask } from "./task.service";
 
 const axiosClient = createAxiosClient({ withCreds: true });
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -137,6 +138,25 @@ const TimelineService = {
     );
     return response.data;
   },
+
+  async getAllTimelineDetails(params?: {
+      page?: number,
+      limit?: number,
+      keyword?: string,
+      sortOrder?: "asc" | "desc",
+      start?: string,
+      end?: string,
+      projectId?: string;
+    }): Promise<{ data: ITask[]; total: number; limit: number; totalPages: number, totalTimeSpent: number }> {
+      const res = await axiosClient.get(`${API_URL}/timelines/getAll`, { params });
+      return {
+        data: res.data.data,
+        total: res.data.total,
+        limit: res.data.limit,
+        totalPages: res.data.totalPages,
+        totalTimeSpent: res.data.totalTimeSpent,
+      };
+    },
 };
 
 export default TimelineService;

@@ -84,6 +84,12 @@ export class Task {
   @Prop({ type: Number, default: 0 })
   rivision: { type: Number, default: 0 }
 
+  @Prop({ type: Date, default: null })
+  startDate: Date | null; 
+  
+  @Prop({ type: Date, default: null })
+  endDate: Date | null; 
+
 
   @Prop({ type: Number, default: 0 })
   totaltaskminutes: { type: Number, default: 0 }

@@ -18,6 +18,8 @@ export interface ITask {
   estimated_time?: number
   totaltaskminutes?: number
   code: string;
+  startDate?:any;
+  endDate?:any;
 
   // Add more fields as needed
 }

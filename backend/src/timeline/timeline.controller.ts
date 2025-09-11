@@ -89,9 +89,6 @@ export class TimelineController {
     @Query("endDate") endDate?: string,
     @Query("sortOrder") sortOrder: "asc" | "desc" = "asc",
   ): Promise<{ data: Timeline[]; total: number; page: number; limit: number }> {
-  
-    // const pageNumber = Math.max(parseInt(page, 10) || 1, 1);
-    // const limitNumber = Math.max(parseInt(limit, 10) || 4, 1);
 
     return this.timelineService.findTimeLineByUserId(
       userId,
@@ -120,6 +117,27 @@ export class TimelineController {
       page: pageNumber,
       limit: limitNumber,
     });
+  }
+
+  @Get('getAll')
+  async getAllTimeline(
+    @Query("page") page: number = 1,
+    @Query("limit") limit: number = 25,
+    @Query("keyword") keyword?: string,
+    @Query("sortOrder") sortOrder: "asc" | "desc" = "asc",
+    @Query("start") start?: string,
+    @Query("end") end?: string,
+    @Query("projectId") projectId?: string
+  ): Promise<{ data: Timeline[]; total: number; page: number; limit: number; totalPages: number; totalTimeSpent: number }> {
+    return await this.timelineService.getAllTimelines(
+      page,
+      limit,
+      keyword,
+      sortOrder,
+      start,
+      end,
+      projectId
+    );
   }
 
   

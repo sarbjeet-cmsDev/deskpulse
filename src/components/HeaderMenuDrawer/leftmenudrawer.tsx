@@ -59,6 +59,7 @@ export default function LeftMenuDrawer() {
     { label: "MY Task", href: "/mytask" },
     { label: "Reminder", href: "/reminder" },
     { label: "My Timesheet", href: "/timesheet" },
+    { label: "Calender", href: "/calender" },
     { label: "Create Reminder", href: "/reminder/create" },
     { label: "My Performance", href: "/performance" },
     { label: "Logout", href: "#" },

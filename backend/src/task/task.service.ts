@@ -305,11 +305,32 @@ export class TaskService {
       revisionIncrement = 1;
     }
 
+    let taskStartdate:any;
+    let taskEndDate:any;
+
+   if (updateTaskDto.status === 'progress' && !task.startDate) {
+      taskStartdate = new Date();
+    }
+
+    if (updateTaskDto.status === 'done') {
+      const today = new Date();
+      if (
+        task.startDate &&
+        task.startDate.toDateString() === today.toDateString()
+      ) {
+        taskEndDate = null;
+      } else {
+        taskEndDate = today;
+      }
+    }
+
     const updatedTask = await this.taskModel
       .findByIdAndUpdate(id,
         {
           ...updateTaskDto,
-          ...(revisionIncrement > 0 && { rivision: task.rivision + revisionIncrement })
+          ...(revisionIncrement > 0 && { rivision: task.rivision + revisionIncrement }),
+          ...({startDate:taskStartdate}),
+          ...({endDate:taskEndDate })
         },
         { new: true })
       .exec();
@@ -466,6 +487,19 @@ export class TaskService {
       throw new NotFoundException(`Kanban column with ID ${id} not found`);
     }
     return column;
+  }
+
+  async findUsersTasks(userIds?:string[], projectId?:string){
+
+    const filter: Record<string, any> = {};
+    if (userIds) {
+      filter?.userIds
+     
+    
+    }
+
+    
+
   }
 
 
