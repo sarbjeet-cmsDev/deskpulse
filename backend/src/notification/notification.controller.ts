@@ -1,6 +1,5 @@
-import { Controller, Post, Body, UseGuards, Req, Get, Param, Put, NotFoundException } from '@nestjs/common';
+import { Controller, UseGuards, Get, Param, Put} from '@nestjs/common';
 import { NotificationService } from './notification.service';
-import { CreateNotificationDto } from './notification.dto';
 import { JwtAuthGuard } from 'src/guard/jwt-auth.guard';
 
 @Controller('api/notifications')

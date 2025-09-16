@@ -2,7 +2,7 @@ import { Document, Types } from 'mongoose';
 
 export interface INotification {
   content: string;
-  user: Types.ObjectId;          // Correct way to type ObjectId
+  user: Types.ObjectId;          
   is_read: boolean;
   redirect_url: string;
   createdAt: Date;

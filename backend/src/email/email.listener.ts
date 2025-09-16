@@ -110,6 +110,7 @@ export class EmailListener {
     }
   }
 
+  // Timeline Create
   @OnEvent('timeline.created', { async: true })
   async handleTimelineCreatedEvent(payload: { timeLineObj: any }) {
 
@@ -150,6 +151,8 @@ export class EmailListener {
       );
     }
   }
+
+  // Mention in comment
   @OnEvent('comments.mention', { async: true })
   async handleCommentsMentionEvent(payload: { CommentObj: any }) {
     try {
@@ -189,7 +192,7 @@ export class EmailListener {
     }
   }
 
-
+  // checklist create
   @OnEvent('taskchecklist.created', { async: true })
   async handleTaskCheckListCreatedEvent(payload: { taskChecklistObj: any }) {
     const taskChecklistObj = payload.taskChecklistObj;

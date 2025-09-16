@@ -14,7 +14,6 @@ import { CreateCommentDto, UpdateCommentDto } from './comment.dto';
 import { JwtAuthGuard } from 'src/guard/jwt-auth.guard';
 import { Comment } from './comment.interface';
 import { CurrentUser } from 'src/shared/current-user.decorator';
-import { log } from 'console';
 
 @Controller('api/comments')
 @UseGuards(JwtAuthGuard)
