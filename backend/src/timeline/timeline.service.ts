@@ -131,14 +131,16 @@ export class TimelineService {
       user: new Types.ObjectId(userId),
     };
 
-    if (startDate || endDate) {
-      matchFilter.date = {};
-      if (startDate) {
-        matchFilter.date.$gte = new Date(startDate);
-      }
-      if (endDate) {
-        matchFilter.date.$lte = new Date(endDate);
-      }
+    if (startDate && endDate) {
+       const start = new Date(startDate);
+       const end = new Date(endDate);
+
+    end.setHours(23, 59, 59, 999);
+
+    matchFilter.date = {
+      $gte: start,
+      $lte: end,
+    };
     }
 
     const total = await this.timelineModel.countDocuments(matchFilter);
@@ -159,7 +161,7 @@ export class TimelineService {
         $unwind: "$tasks",
       },
       {
-        $sort: { createdAt: sortOrder === "desc" ? 1 : -1 } ,
+        $sort: { date: sortOrder === "desc" ? 1 : -1 } ,
       },
       {
         $project: {

@@ -4,15 +4,13 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-
 import TimelineService from "@/service/timeline.service";
-
 import Datagrid from "@/components/Datagrid/Datagrid";
 import { Button } from "@heroui/button";
 import { RangeCalendar } from "@heroui/react";
-
 import { today, getLocalTimeZone,CalendarDate } from "@internationalized/date";
 import dayjs from "dayjs";
+import { format } from "date-fns";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 dayjs.extend(isSameOrBefore);
 
@@ -34,6 +32,7 @@ type Task = {
   task_title: string;
   comment: string;
   time_spent: number;
+  date:any;
 };
 
 const TimeSheetList = () => {
@@ -42,16 +41,13 @@ const TimeSheetList = () => {
   const searchParams = useSearchParams();
   const user: any = useSelector((state: RootState) => state.auth.user);
   const calendarRef = useRef<HTMLDivElement | null>(null);
-
   const [tasks, setTasks] = useState<Task[]>([]);
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 300);
-
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
-
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [sortField, setSortField] = useState("task_title");
   
@@ -94,15 +90,13 @@ const TimeSheetList = () => {
     try {
       const startDate = selectedRange.start.toDate(getLocalTimeZone()).toISOString();
       const endDate = selectedRange.end.toDate(getLocalTimeZone()).toISOString();
-
       const res = await TimelineService.getTimeLineList(user?.id, page, limit, startDate, endDate, sortOrder);
-
       const timelineData = res?.data || [];
-
       const cleanedTasks: Task[] = timelineData.map((item: any) => ({
         task_title: item.task_title,
         comment: item.comment,
         time_spent: item.time_spent,
+        date:item.date,
       }));
 
       setTasks(cleanedTasks);
@@ -115,12 +109,14 @@ const TimeSheetList = () => {
 
   const headers = [
     { id: "taskNumber", title: "TimeSheet", is_sortable: false },
+    { id: "comment", title: "Timeline" },
     { id: "task_title", title: "Task Title" },
-    { id: "comment", title: "Log" },
+    { id: "timelineDate", title: "Date" },
     { id: "time_spent", title: "Spent Time" },
   ];
 
   const rows = tasks.map((task, index) => {
+     const logDate = format(new Date(task.date), "d MMM");
     const totalMinutes = task.time_spent || 0;
     const hours = Math.floor(totalMinutes / 60);
     const minutes = totalMinutes % 60;
@@ -132,6 +128,7 @@ const TimeSheetList = () => {
     return {
       ...task,
       taskNumber: globalIndex,
+      timelineDate:logDate,
       time_spent: formattedTime,
       task_title: task.task_title || "—",
       comment: task.comment,
