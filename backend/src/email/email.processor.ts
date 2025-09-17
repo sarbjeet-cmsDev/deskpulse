@@ -8,7 +8,6 @@ import { IEmailSender } from './email.interface';
 import { readFile } from 'fs/promises';
 import * as path from 'path';
 import 'dotenv/config';
-import { log } from 'console';
 
 @Processor('email')
 export class EmailProcessor {

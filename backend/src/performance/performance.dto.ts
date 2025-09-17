@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsMongoId, IsOptional, IsBoolean, IsUrl } from 'class-validator';
+import { IsString, IsNotEmpty, IsMongoId } from 'class-validator';
 import { Schema as MongooseSchema } from 'mongoose';
 
 export class CreatePerformanceDto {

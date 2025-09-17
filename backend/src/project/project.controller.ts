@@ -172,6 +172,23 @@ export class ProjectController {
     return this.projectService.findAllProjectDetail();
   }
 
+  @Get("workSpace/:id")
+  async findByWorkSpaceId(@Param("id") id: string): Promise<any> {
+    const project = await this.projectService.findByWorkSpaceId(id);
+    return {
+      data: project,
+    };
+  }
+
+  @Get("users/user/:userId/workspace/:workSpaceId")
+  async findProjectByUserIdAndWorkspace(
+    @Param("userId") userId: string,
+    @Param("workSpaceId") workSpaceId: string
+  ): Promise<any> {
+    const projects = await this.projectService.getProjectByUserId(userId, workSpaceId);
+    return { data: projects };
+  }
+
   // @Put("isFavorite")
   // async addFavProject(
   //    @Param("projectId") projectId: string,

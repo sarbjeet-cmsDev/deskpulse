@@ -1,4 +1,3 @@
-// taskactivitylog.dto.ts
 import { IsMongoId, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateTaskActivityLogDto {

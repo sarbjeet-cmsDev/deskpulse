@@ -1,7 +1,7 @@
 import { Document, Schema as MongooseSchema } from 'mongoose';
 
 export interface TaskChecklist extends Document {
-    task?: MongooseSchema.Types.ObjectId;  // single task ID
+    task?: MongooseSchema.Types.ObjectId; 
     description: string;
 }
 

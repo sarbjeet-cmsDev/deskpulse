@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 };
 export default function index() {
   return (
-    <Suspense fallback={<div className="p-6">Loading Comments...</div>}>
+    <Suspense fallback={<div className="p-6">Loading...</div>}>
       <AuthLoginPage />
     </Suspense>
   );

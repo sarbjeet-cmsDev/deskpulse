@@ -1,4 +1,4 @@
-import { Document, Schema as MongooseSchema, Types } from 'mongoose';
+import { Document, Schema as MongooseSchema } from 'mongoose';
 
 export interface Reminder extends Document {
     title: string;

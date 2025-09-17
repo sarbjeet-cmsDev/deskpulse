@@ -49,7 +49,7 @@ export class AdminUserController {
   async findOne(@Param("id") id: string): Promise<any> {
     const user = await this.userService.findOne(id);
     return {
-      message: "User fetched successfully!",
+      // message: "User fetched successfully!",
       data: user,
     };
   }

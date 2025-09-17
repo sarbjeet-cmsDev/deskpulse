@@ -11,7 +11,7 @@ const numbersOnlyRegex = /^[0-9]+$/;
 export const userSchemaBase = z.object({
   username: z.string().nonempty("Username is required"),
 
-  email: z.string().email("Invalid email address"),
+  email: z.string().nonempty("Email is required").email("Invalid email address"),
 
   firstName: z
     .string()
@@ -32,21 +32,14 @@ export const userSchemaBase = z.object({
   phone: z
     .string()
     .nonempty("Phone number is required")
-    .regex(numbersOnlyRegex, "Phone number must contain only digits")
-    .length(10, "Phone number must be 10 digits"),
+    .regex(/^\d+$/, "Phone number must contain only digits")
+    .refine((val) => val.length >= 10 && val.length <= 15, {
+      message: "Phone number must be at least 10 digit",
+    }),
 
-  // gender: genderEnum.optional(),
   gender: z
     .string()
     .nonempty("Please select gender")
-  // .transform((val) => (val === "" ? undefined : val))
-  // .refine(
-  //   (val) => val === undefined || genderEnum.options.includes(val as any),
-  //   {
-  //     message: "Please select gender",
-  //   }
-  // )
-  // .optional()
   ,
 
   roles: z
@@ -60,9 +53,6 @@ export const userSchemaBase = z.object({
     .optional(),
 
   profileImage: z.string().url("Invalid image URL").optional(),
-
-  // roles: z.array(z.string()).optional(),
-  // roles: z.array(userRoleEnum).nonempty("At least one user role is required"),
 
   hobbies: z.array(z.string()).optional(),
   aboutUs: z.string().optional(),
@@ -88,7 +78,7 @@ export const userSchemaBase = z.object({
 export const userSchemaBaseUpdate = z.object({
   username: z.string().nonempty("Username is required"),
 
-  email: z.string().email("Invalid email address"),
+  email: z.string().nonempty("Email is required").email("Invalid email address"),
 
   firstName: z
     .string()
@@ -114,7 +104,6 @@ export const userSchemaBaseUpdate = z.object({
 
   gender: genderEnum.optional(),
 
-  // roles: z.array(userRoleEnum).nonempty("At least one user role is required"),
   roles: z
     .string().optional(),
 
@@ -149,14 +138,12 @@ export const userSchemaBaseUpdate = z.object({
     .transform(
       (val) =>
         val instanceof Date
-          ? val.toISOString().split("T")[0] // convert Date to "YYYY-MM-DD"
-          : val // assume string already in "YYYY-MM-DD"
+          ? val.toISOString().split("T")[0]
+          : val 
     )
     .optional(),
 
   profileImage: z.string().url("Invalid image URL").optional(),
-
-  // roles: z.array(z.string()).optional(),
 
   hobbies: z.array(z.string()).optional(),
   aboutUs: z.string().optional(),
@@ -224,7 +211,6 @@ export const userLoginSchema = z.object({
   password: z
     .string({ required_error: "Password is required" })
     .nonempty("Password is required"),
-  // .min(6, 'Password must be at least 6 characters'),
 });
 
 
@@ -235,9 +221,62 @@ export const updateEstimateSchema = z.object({
     .refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
       message: "Estimate must be a number it's value is greater than 0.",
     }),
-  // .min(1, { message: "EstimateTime must be greater than 0" })
 });
 
 export const updateTaskTitleSchema = z.object({
   title: z.string().nonempty("Title is required")
 });
+
+export const MailValidationSchema = z.object({
+    email: z.string().nonempty("Email is required").email("Invalid email address"),
+})
+
+
+export const authCreateSchema = z.object({
+  username: z.string().nonempty("Username is required"),
+
+  email: z.string().nonempty("Email is required").email("Invalid email address"),
+
+  firstName: z
+    .string()
+    .nonempty("First name is required")
+    .regex(
+      lettersAndSpacesRegex,
+      "First name must contain only letters and spaces"
+    ),
+
+  lastName: z
+    .string()
+    .nonempty("Last name is required")
+    .regex(
+      lettersAndSpacesRegex,
+      "Last name must contain only letters and spaces"
+    ),
+
+  phone: z
+    .string()
+    .nonempty("Phone number is required")
+    .regex(numbersOnlyRegex, "Phone number must contain only digits")
+    .min(10, "Phone number must be at least 10 digit"),
+
+  gender: genderEnum.optional(),
+
+  roles: z
+    .string().optional(),
+
+  isActive: z.boolean().optional(),
+
+  password: z
+      .string()
+      .nonempty("Password is required")
+      .min(6, "Password must be at least 6 characters"),
+  confirmPassword: z
+      .string()
+      .nonempty("Confirm password is required")
+      .min(6, "Confirm Password must be at least 6 characters"),
+
+  
+}).refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"], 
+  });

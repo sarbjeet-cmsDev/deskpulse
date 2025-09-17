@@ -107,7 +107,7 @@ export default function MyProjects() {
               {loading ? (
                 <p>Loading projects...</p>
               ) : projects.length === 0 ? (
-                <p>No projects found.</p>
+                <p className="text-gray-500 text-left italic">No projects found.</p>
               ) : (
                 projects.map((project) => (
                   <ProjectCard

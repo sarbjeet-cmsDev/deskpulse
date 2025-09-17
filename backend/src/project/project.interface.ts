@@ -7,6 +7,7 @@ export interface Project {
   deploy_instruction?: string;
   critical_notes?: string;
   users: MongooseSchema.Types.ObjectId[];
+  workSpace?: MongooseSchema.Types.ObjectId;
   project_coordinator?: MongooseSchema.Types.ObjectId;
   team_leader?: MongooseSchema.Types.ObjectId;
   project_manager?: MongooseSchema.Types.ObjectId;

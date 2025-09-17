@@ -1,8 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PerformanceService } from './performance.service';
 import { OnEvent } from '@nestjs/event-emitter';
-import { log } from 'console';
-import { CreatePerformanceDto } from './performance.dto';
 
 @Injectable()
 export class PerformanceListener {

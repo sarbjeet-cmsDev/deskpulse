@@ -49,7 +49,7 @@ export class PerformanceService {
   private readonly RevisionWeightage = [
     { RevisionType: 0, weight: 10 },
     { RevisionType: 1, weight: 5 },
-    { RevisionType: 2, weight: 0 }, // 3 or more revisions = 0 score
+    { RevisionType: 2, weight: 0 }, 
   ];
 
   /**

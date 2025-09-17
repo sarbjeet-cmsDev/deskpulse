@@ -4,7 +4,6 @@ import {
   Param,
   Delete,
   Query,
-  Patch,
   UseGuards,
 } from "@nestjs/common";
 import { TaskService } from "./task.service";

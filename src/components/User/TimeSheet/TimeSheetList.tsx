@@ -8,12 +8,7 @@ import TimelineService from "@/service/timeline.service";
 import Datagrid from "@/components/Datagrid/Datagrid";
 import { Button } from "@heroui/button";
 import { RangeCalendar } from "@heroui/react";
-<<<<<<< HEAD
-
-import { today, getLocalTimeZone } from "@internationalized/date";
-=======
 import { today, getLocalTimeZone,CalendarDate } from "@internationalized/date";
->>>>>>> 0bafd98 (fix date issue in calender)
 import dayjs from "dayjs";
 import { format } from "date-fns";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
@@ -55,13 +50,27 @@ const TimeSheetList = () => {
   const [totalRecords, setTotalRecords] = useState(0);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [sortField, setSortField] = useState("task_title");
+  
+    const jsToday = new Date();
+    jsToday.setHours(0, 0, 0, 0);
+  
+    const startDate = new CalendarDate(
+      jsToday.getFullYear(),
+      jsToday.getMonth() + 1,
+      jsToday.getDate() - 10
+    );
+    const tomorrow = new CalendarDate(
+      jsToday.getFullYear(),
+      jsToday.getMonth() + 1,
+      jsToday.getDate()
+    );
 
   const [selectedRange, setSelectedRange] = useState<{
-    start: any;
-    end: any;
+    start: CalendarDate;
+    end: CalendarDate;
   }>({
-    start: today(getLocalTimeZone()).add({ weeks: -1 }),
-    end: today(getLocalTimeZone()).add({ weeks: 1 }),
+    start: startDate,
+    end: tomorrow,
   });
 
   const [showCalendar, setShowCalendar] = useState(false);
@@ -132,6 +141,10 @@ const TimeSheetList = () => {
     selectedRange.end.toDate(getLocalTimeZone())
   ).format("DD MMM YY")}`;
 
+   const isDateUnavailable = (date: CalendarDate) => {
+    return date.compare(tomorrow) > 0;
+  };
+
   useOutsideClick(calendarRef, showCalendar, () => setShowCalendar(false));
 
   return (
@@ -173,11 +186,12 @@ const TimeSheetList = () => {
               <div className="p-2">
                 <RangeCalendar
                   aria-label="Select Range"
-                  value={selectedRange}
+                  value={selectedRange as any}
                   onChange={(range) => {
                     setSelectedRange(range as any);
                     setShowCalendar(false);
                   }}
+                  isDateUnavailable={isDateUnavailable as any}
                 />
               </div>
             </div>

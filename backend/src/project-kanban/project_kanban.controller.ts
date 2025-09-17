@@ -30,14 +30,10 @@ export class ProjectKanbanController {
   @UseGuards(JwtAuthGuard)
   @Get(":projectId")
   async getAll(@Param("projectId") projectId: string): Promise<{
-    // message: string;
     data: ProjectKanbanDocument[];
   }> {
     const data = await this.kanbanService.findByProject(projectId);
-    return {
-      // message: "Kanban columns fetched successfully",
-      data,
-    };
+    return { data };
   }
   @UseGuards(JwtAuthGuard)
   @Put(":id")

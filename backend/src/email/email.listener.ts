@@ -5,15 +5,19 @@ import { UserService } from 'src/user/user.service';
 import { ProjectService } from 'src/project/project.service';
 import { TaskService } from 'src/task/task.service';
 import { extractTextFromHtml, formatMinutes } from 'src/shared/commonhelper';
+import { WorkSpaceService } from 'src/workspace/workSpace.service';
+import { InviteMemberDto } from 'src/workspace/workSpace.dto';
 
 @Injectable()
 export class EmailListener {
   private readonly logger = new Logger(EmailListener.name);
 
-  constructor(private readonly emailservice: EmailService
-    , private readonly userservices: UserService,
+  constructor(
+    private readonly emailservice: EmailService,
+    private readonly userservices: UserService,
     private readonly projectService: ProjectService,
     private readonly taskServices: TaskService,
+    private readonly workSpaceServices: WorkSpaceService
   ) { }
 
   // When the Project Assign event is triggered
@@ -119,7 +123,7 @@ export class EmailListener {
     const TaskObj = await this.taskServices.findOne(timeLineObj.task.toString())
     const ProjectObj = await this.projectService.findOne(TaskObj.project.toString())
     const rolesToNotify = ['project_coordinator', 'team_leader', 'project_manager'];
-    const content = `Worked ${formatMinutes(timeLineObj.time_spent) } on task "${TaskObj.title}" — general updates and review. Comment: ${timeLineObj.comment}. On ${new Date(timeLineObj.date).toLocaleString()} by "${timeLineCreatedBy.username}"`;
+    const content = `Worked ${formatMinutes(timeLineObj.time_spent)} on task "${TaskObj.title}" — general updates and review. Comment: ${timeLineObj.comment}. On ${new Date(timeLineObj.date).toLocaleString()} by "${timeLineCreatedBy.username}"`;
     const timelineLInk = `${process.env.FRONTEND_URL}/task/${timeLineObj._id.toString()}`;
     const email = [];
     for (const role of rolesToNotify) {
@@ -178,13 +182,13 @@ export class EmailListener {
               commentLink: `${process.env.FRONTEND_URL}comment/${comment._id.toString()}`,
             },
           });
-          
+
           this.logger.log(`Notification sent to ${mentionedUser.email}`);
         } catch (innerError) {
           this.logger.error(`Failed to notify mentioned user ID ${userId}:`, innerError);
         }
       }
-      
+
 
       this.logger.log('All notifications for mentioned users have been processed.');
     } catch (error) {
@@ -230,6 +234,132 @@ export class EmailListener {
         'Failed to create notifications or send emails',
         error.stack || error,
       );
+    }
+  }
+
+  // Auth verify account
+  @OnEvent('user.account.verification', { async: true })
+  async handleUserRegisterEvent({ userObj, token }: { userObj: any, token: any }) {
+    try {
+      const user = await this.userservices.findOne(userObj?._id.toString());
+      await this.emailservice.sendEmail({
+        to: user.email,
+        subject: 'Verify your account',
+        template: 'templates/auth/auth-verifyAccount.mjml',
+        variables: {
+          name: userObj.firstName,
+          verifyLink: `${process.env.FRONTEND_URL}auth/verify-account/${token}`
+        },
+      });
+      this.logger.log(`Verify account Email Notification sent.`);
+    } catch (err) {
+      this.logger.error(`Failed to send email to ${userObj?._id}: ${err.message}`);
+    }
+
+    this.logger.log(`All Verify account emails processed.`);
+  }
+
+  // Auth verify account
+  @OnEvent('user.verified-notification', { async: true })
+  async handleUserVerfiedEvent({ userObj, token }: { userObj: any, token: any }) {
+    try {
+      const user = await this.userservices.findOne(userObj?._id.toString());
+      await this.emailservice.sendEmail({
+        to: user.email,
+        subject: 'Your Account verified Successfully.',
+        template: 'templates/auth/auth-verified.mjml',
+        variables: {
+          name: userObj.firstName,
+        },
+      });
+      this.logger.log(`Account Verified Email Notification sent.`);
+    } catch (err) {
+      this.logger.error(`Failed to send email to ${userObj?._id}: ${err.message}`);
+    }
+
+    this.logger.log(`All Account Verified emails processed.`);
+  }
+
+  // Password reset
+  @OnEvent('request.resetPassword.notification', { async: true })
+  async handleRequestResetPasswordEvent({ userObj, token }: { userObj: any, token: any }) {
+    try {
+      const user = await this.userservices.findOne(userObj?._id.toString());
+      await this.emailservice.sendEmail({
+        to: user.email,
+        subject: 'Reset your password.',
+        template: 'templates/auth/reset.password.email.mjml',
+        variables: {
+          name: user.firstName,
+          token,
+          resetLink: `${process.env.FRONTEND_URL}auth/reset-password/${user._id}/${token}`,
+        },
+      });
+      this.logger.log(`Password Reset Email Notification sent.`);
+    } catch (err) {
+      this.logger.error(`Failed to send email to ${userObj?._id}: ${err.message}`);
+    }
+
+    this.logger.log(`All Password Reset emails processed.`);
+  }
+
+  // Reset password done
+  @OnEvent('passwordReset.done.notifiction', { async: true })
+  async handlerPasswordRessetedEvent({ userObj, token }: { userObj: any, token: any }) {
+    try {
+      const user = await this.userservices.findOne(userObj?._id.toString());
+      await this.emailservice.sendEmail({
+        to: user.email,
+        subject: 'Your password has been reset.',
+        template: 'templates/auth/reset.pass.done.mjml',
+        variables: {
+          name: userObj.firstName,
+        },
+      });
+      this.logger.log(`Password Reset Done Email Notification sent.`);
+    } catch (err) {
+      this.logger.error(`Failed to send email to ${userObj?._id}: ${err.message}`);
+    }
+
+    this.logger.log(`All Password Reset Done emails processed.`);
+  }
+
+
+
+  @OnEvent('workspace.invite', { async: true })
+  async handleWorkSpaceInviteEvent(payload: { id: string; email: string; userType: string; dto: InviteMemberDto }) {
+    const workSpace = await this.workSpaceServices.findOne(payload.id);
+    const workSpaceLink = `${process.env.FRONTEND_URL}/workSpace/invite?workspaceId=${payload.id}&email=${payload.email}&role=${payload?.userType}`;
+    try {
+      const email = [];
+      if (workSpace) {
+        const userData = await this.userservices.findOne(workSpace?.user.toString());
+        email.push({
+          to: payload.email,
+          subject: `${userData?.firstName ?? ""} ${userData?.lastName ?? ""} invited to the workspace ${workSpace?.title ?? ""}`,
+          template: 'templates/workspace/workspace.create.email-template.mjml',
+          variables: {
+            InviterName: userData?.username,
+            inviteLink: workSpaceLink,
+          },
+        });
+      }
+
+      try {
+        await Promise.all(
+          email.map((email) =>
+            this.emailservice.sendEmail(email),
+          ),
+        );
+        this.logger.log('All notification emails sent for workspace share.');
+      } catch (error) {
+        this.logger.error(
+          'Failed to create notifications or send emails',
+          error.stack || error,
+        );
+      }
+    } catch (error) {
+      this.logger.error('Error handling workspace invite event:', error);
     }
   }
 }

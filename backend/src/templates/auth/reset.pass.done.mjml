@@ -1,0 +1,14 @@
+<mjml>
+  <mj-body background-color="#f9f9f9">
+    <mj-section>
+      <mj-column>
+        <mj-text font-size="20px" color="#333" align="left">Hello {{name}},</mj-text>
+        <mj-text font-size="16px" color="black" align="left">Your password has been reset successfully.</mj-text>
+        <!-- <mj-button background-color="#50C878" color="#ffffff" align="left">Click Here to Login</mj-button> -->
+        <!-- <mj-text font-size="12px" color="blue" align="left"><a>{{verificationLink}}</a></mj-text> -->
+        <mj-text font-size="14px" color="#888" align="left">Now you can log in with your new password.</mj-text>
+        <mj-text font-size="12px" color="#aaa" align="left">- By Team</mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

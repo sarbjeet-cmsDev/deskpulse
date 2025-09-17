@@ -23,7 +23,7 @@ interface ProjectCardProps {
     notes?: string;
     url_live?: string;
     createdAt?: string;
-    isFavorite?: string[]; // ✅ now array of user IDs
+    isFavorite?: string[];
     _id?: string;
   };
   kanban: KanbanColumn[];
@@ -41,9 +41,11 @@ export default function ProjectCard({
   const user: any = useSelector((state: RootState) => state.auth.user);
 
   const [version, setVersion] = useState<number>(Date.now());
-  const [isFavorite, setIsFavorite] = useState<boolean>(
-    project.isFavorite?.includes(user?._id || user?.id) || false
-  );
+  const [isFavorite, setIsFavorite] = useState<boolean>(() => {
+    const favorites = Array.isArray(project?.isFavorite) ? project.isFavorite : [];
+    return favorites.includes(user?._id || user?.id);
+  });
+
 
   const avatarUrl = project?.avatar
     ? `${process.env.NEXT_PUBLIC_BACKEND_HOST}${project?.avatar}?v=${version}`
@@ -92,7 +94,7 @@ export default function ProjectCard({
                 e.stopPropagation();
                 toggleFavorite(project._id as string);
               }}
-              className="text-yellow-400 hover:scale-105 transition-transform"
+              className="text-yellow-400 transition-transform"
               aria-label={
                 isFavorite ? "Remove from favorites" : "Add to favorites"
               }

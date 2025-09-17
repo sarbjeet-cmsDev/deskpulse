@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Put, Query } from "@nestjs/common";
 import { CreateUserDto, UpdateUserDto } from "./user.dto";
 import { User } from "./user.schema";
 import { UserService } from "./user.service";
@@ -75,4 +75,12 @@ export class UserController {
 
     return this.userService.updateUserAvatar(userId, fileUrl);
   }
+
+  @Get("check")
+  async checkUser(@Query("email") email: string) {
+    const user = await this.userService.findByEmail(email);
+    return { exists: user ? true : false };
+  }
+
+
 }

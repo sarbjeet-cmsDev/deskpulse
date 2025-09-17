@@ -6,15 +6,16 @@ import { EmailListener } from './email.listener';
 import { UserModule } from 'src/user/user.module';
 import { ProjectModule } from 'src/project/project.module';
 import { TaskModule } from 'src/task/task.module';
+import { WorkSpaceModule } from 'src/workspace/workSpace.module';
 
 @Module({
   imports: [
     BullModule.registerQueue({
       name: 'email',
     }),
-    UserModule,ProjectModule,TaskModule
+    UserModule, ProjectModule, TaskModule, WorkSpaceModule
   ],
   providers: [EmailService, EmailProcessor, EmailListener],
   exports: [EmailService],
 })
-export class EmailModule {}
+export class EmailModule { }

@@ -7,10 +7,6 @@ import {
   IsNumber,
 } from 'class-validator';
 
-/**
- * ✅ CreateKanbanDto
- * All fields required when creating a kanban column
- */
 export class CreateKanbanDto {
   @IsString()
   @IsNotEmpty()
@@ -28,10 +24,6 @@ export class CreateKanbanDto {
   color: string;
 }
 
-/**
- * ✅ UpdateKanbanDto
- * All fields optional when updating a column
- */
 export class UpdateKanbanDto {
   @IsOptional()
   @IsString()

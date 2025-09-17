@@ -11,7 +11,7 @@ export const multerOptions = {
     },
   }),
   limits: {
-    fileSize: 5 * 1024 * 1024,
+    fileSize: 10 * 1024 * 1024,
   },
   fileFilter: (req: any, file: Express.Multer.File, callback: any) => {
     const allowedMimeTypes = [
@@ -19,10 +19,10 @@ export const multerOptions = {
       'image/jpeg', 'image/jpg', 'image/png', 'image/webp',
 
       // Audio
-      'audio/mpeg', // .mp3
-      'audio/wav',  // .wav
+      'audio/mpeg', 
+      'audio/wav',  
       'audio/x-wav',
-      'audio/mp4',  // .m4a
+      'audio/mp4',  
       'audio/x-aac',
       'audio/ogg',
       'audio/aiff',
@@ -30,10 +30,10 @@ export const multerOptions = {
 
       // Video
       'video/mp4',
-      'video/x-matroska', // .mkv
+      'video/x-matroska', 
       'video/webm',
       'video/ogg',
-      'video/quicktime',  // .mov
+      'video/quicktime',  
     ];
 
     if (!allowedMimeTypes.includes(file.mimetype)) {

@@ -36,7 +36,6 @@ export class NotificationService {
      if (keyword && keyword.trim()) {
        filter.$or = [
          { content: { $regex: keyword.trim(), $options: 'i' } },
-        //  { code: { $regex: keyword.trim(), $options: 'i' } },
        ];
      }
  

@@ -1,4 +1,5 @@
 import { createAxiosClient } from "@/utils/createAxiosClient";
+import axios from "axios";
 
 const axiosClient = createAxiosClient({ withCreds: true });
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -49,7 +50,7 @@ const UserService = {
     return res.data;
   },
 
-   async getAssignedUser(id:string): Promise<IUser> {
+  async getAssignedUser(id: string): Promise<IUser> {
     const res = await axiosClient.get(`${API_URL}/user/view/${id}`);
     return res.data;
   },
@@ -81,6 +82,15 @@ const UserService = {
     UserService.getUserById();
     return res.data;
   },
+
+  async checkUser(email: string): Promise<true | null> {
+    const res = await axios.get(`${API_URL}/user/check`, {
+      params: { email },
+    });
+    return res.data;
+  }
+
+
 };
 
 export default UserService;

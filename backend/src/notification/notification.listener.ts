@@ -108,7 +108,7 @@ export class NotificationListener {
   }
 
 
-
+  // When the Timeline created event is triggered
   @OnEvent('timeline.created', { async: true })
   async handleTimelineCreatedEvent(payload: { timeLineObj: any }) {
 
@@ -154,7 +154,8 @@ export class NotificationListener {
       this.logger.error('Failed to create notifications', error.stack);
     }
   }
-
+ 
+  // When the mentioned a user in comment event is triggered
   @OnEvent('comments.mention', { async: true })
   async handleCommentsMentionEvent(payload: { CommentObj: any; }) {
     const CommentObj = payload.CommentObj;
@@ -180,7 +181,8 @@ export class NotificationListener {
       this.logger.error('Failed to create notifications', error.stack);
     }
   }
-
+  
+  // When the Task checklist created event is triggered
   @OnEvent('taskchecklist.created', { async: true })
   async handleTaskCheckListCreatedEvent(payload: { taskChecklistObj: any }) {
     const taskChecklistObj = payload.taskChecklistObj;

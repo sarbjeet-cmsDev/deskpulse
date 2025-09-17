@@ -20,6 +20,7 @@ import { FaqModule } from './faq/faq.module';
 import { SearchModule } from './search/search.module';
 import { UploadModule } from './upload/upload.module';
 import { ImageModule } from './image/image.module';
+import { WorkSpaceModule } from './workspace/workSpace.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -63,6 +64,7 @@ import { ImageModule } from './image/image.module';
     SearchModule,
     UploadModule,
     ImageModule,
+    WorkSpaceModule
   ],
   controllers: [],
   providers: [],

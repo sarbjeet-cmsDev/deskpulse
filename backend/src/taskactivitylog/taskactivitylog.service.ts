@@ -6,7 +6,6 @@ import {
   TaskactivitylogDocument,
 } from "./taskactivitylog.schema";
 import { CreateTaskActivityLogDto } from "./taskactivitylog.dto";
-import { log } from "console";
 
 @Injectable()
 export class TaskactivitylogService {

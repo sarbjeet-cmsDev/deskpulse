@@ -32,7 +32,7 @@ export class ProjectService {
     @Inject(forwardRef(() => TaskService))
     @Inject(forwardRef(() => TaskService))
     private readonly taskservices: TaskService
-  ) {}
+  ) { }
   private sanitizeObjectIds(payload: any) {
     const keysToSanitize = [
       "team_leader",
@@ -94,14 +94,14 @@ export class ProjectService {
   }
 
   async findAllProjectDetail(): Promise<{ data: Project[]; total: number }> {
-   
-  const data = await this.projectModel.find().lean().exec();
- 
-  return {
-    data,
-    total: data.length,
-  };
-}
+
+    const data = await this.projectModel.find().lean().exec();
+
+    return {
+      data,
+      total: data.length,
+    };
+  }
   async findOne(id: string): Promise<Project> {
     const project = await this.projectModel.findById(id).lean();
     if (!project) {
@@ -109,6 +109,36 @@ export class ProjectService {
     }
     return project;
   }
+
+  async findByWorkSpaceId(id: string): Promise<Project[]> {
+    const projects = await this.projectModel.find({ workSpace: id }).lean();
+    if (!projects.length) {
+      throw new NotFoundException(`No projects found for workSpace ID ${id}.`);
+    }
+    return projects;
+  }
+
+  async getProjectByUserId(userId: string, workSpaceId: string): Promise<Project[]> {
+    console.log(workSpaceId, "98988")
+    const projects = await this.projectModel
+      .find({
+        users: userId,
+        workSpace: workSpaceId,
+      })
+      .lean();
+
+    if (!projects.length) {
+      throw new NotFoundException(
+        `No projects found for user ID ${userId} in workspace ${workSpaceId}.`,
+      );
+    }
+
+    return projects;
+  }
+
+
+
+
 
   async findByCode(code: string): Promise<Project> {
     const project = await this.projectModel.findOne({ code }).exec();
@@ -125,7 +155,7 @@ export class ProjectService {
     if (!updateProjectDto.users) {
       updateProjectDto.users = [];
     }
-   
+
     const sanitized = this.sanitizeObjectIds(updateProjectDto);
     const updatedProject = await this.projectModel
       .findByIdAndUpdate(id, sanitized, { new: true })
@@ -148,8 +178,8 @@ export class ProjectService {
     id: string,
     updateProjectDto: UpdateProjectDto
   ): Promise<Project> {
-    
- 
+
+
     const sanitized = this.sanitizeObjectIds(updateProjectDto);
     const updatedProject = await this.projectModel
       .findByIdAndUpdate(id, sanitized, { new: true })
@@ -229,7 +259,7 @@ export class ProjectService {
         .exec(),
       this.projectModel.countDocuments({ users: userId }),
     ]);
-   
+
     return {
       data,
       page,
@@ -330,12 +360,12 @@ export class ProjectService {
         select: "firstName lastName email",
         match: keyword
           ? {
-              $or: [
-                { firstName: { $regex: keyword, $options: "i" } },
-                { lastName: { $regex: keyword, $options: "i" } },
-                { email: { $regex: keyword, $options: "i" } },
-              ],
-            }
+            $or: [
+              { firstName: { $regex: keyword, $options: "i" } },
+              { lastName: { $regex: keyword, $options: "i" } },
+              { email: { $regex: keyword, $options: "i" } },
+            ],
+          }
           : undefined,
       })
       .exec();
@@ -398,110 +428,110 @@ export class ProjectService {
     };
   }
 
-async findUserProjectDetail(
-  userId: string,
-  page: number,
-  limit: number,
-  title?: string // add optional title filter
-): Promise<{ data: any[]; total: number; page: number; limit: number }> {
- 
-  const skip = (page - 1) * limit;
-  const objectUserId = new Types.ObjectId(userId);
+  async findUserProjectDetail(
+    userId: string,
+    page: number,
+    limit: number,
+    title?: string // add optional title filter
+  ): Promise<{ data: any[]; total: number; page: number; limit: number }> {
 
-  // If title filter is provided, add a match stage for projects matching the title (case-insensitive)
-  const titleMatchStage = title
-    ? [
+    const skip = (page - 1) * limit;
+    const objectUserId = new Types.ObjectId(userId);
+
+    // If title filter is provided, add a match stage for projects matching the title (case-insensitive)
+    const titleMatchStage = title
+      ? [
         {
           $match: {
             "project.title": { $regex: new RegExp(title, "i") },
           },
         },
       ]
-    : [];
+      : [];
 
-  const aggregationPipeline = [
-    { $match: { _id: objectUserId } },
-    {
-      $lookup: {
-        from: "projects",
-        localField: "_id",
-        foreignField: "users",
-        as: "project",
+    const aggregationPipeline = [
+      { $match: { _id: objectUserId } },
+      {
+        $lookup: {
+          from: "projects",
+          localField: "_id",
+          foreignField: "users",
+          as: "project",
+        },
       },
-    },
-    { $unwind: "$project" },
-    ...titleMatchStage, // <-- Insert filter here if needed
-    {
-      $lookup: {
-        from: "tasks",
-        let: { projectId: "$project._id", userId: "$_id" },
-        pipeline: [
-          {
-            $match: {
-              $expr: {
-                $and: [
-                  { $eq: ["$project", "$$projectId"] },
-                  { $eq: ["$assigned_to", "$$userId"] },
-                ],
+      { $unwind: "$project" },
+      ...titleMatchStage, // <-- Insert filter here if needed
+      {
+        $lookup: {
+          from: "tasks",
+          let: { projectId: "$project._id", userId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$project", "$$projectId"] },
+                    { $eq: ["$assigned_to", "$$userId"] },
+                  ],
+                },
               },
             },
-          },
-        ],
-        as: "project.tasks",
+          ],
+          as: "project.tasks",
+        },
       },
-    },
-    { $skip: skip }, // Pagination
-    { $limit: limit },
-    {
-      $group: {
-        _id: "$_id",
-        username: { $first: "$username" },
-        email: { $first: "$email" },
-        firstName: { $first: "$firstName" },
-        lastName: { $first: "$lastName" },
-        phone: { $first: "$phone" },
-        gender: { $first: "$gender" },
-        isActive: { $first: "$isActive" },
-        roles: { $first: "$roles" },
-        userRoles: { $first: "$userRoles" },
-        hobbies: { $first: "$hobbies" },
-        receiveEmailNotifications: { $first: "$receiveEmailNotifications" },
-        createdAt: { $first: "$createdAt" },
-        updatedAt: { $first: "$updatedAt" },
-        project: { $push: "$project" },
+      { $skip: skip }, // Pagination
+      { $limit: limit },
+      {
+        $group: {
+          _id: "$_id",
+          username: { $first: "$username" },
+          email: { $first: "$email" },
+          firstName: { $first: "$firstName" },
+          lastName: { $first: "$lastName" },
+          phone: { $first: "$phone" },
+          gender: { $first: "$gender" },
+          isActive: { $first: "$isActive" },
+          roles: { $first: "$roles" },
+          userRoles: { $first: "$userRoles" },
+          hobbies: { $first: "$hobbies" },
+          receiveEmailNotifications: { $first: "$receiveEmailNotifications" },
+          createdAt: { $first: "$createdAt" },
+          updatedAt: { $first: "$updatedAt" },
+          project: { $push: "$project" },
+        },
       },
-    },
-  ];
+    ];
 
-  // Count pipeline to count total filtered projects
-  const countPipeline = [
-    { $match: { _id: objectUserId } },
-    {
-      $lookup: {
-        from: "projects",
-        localField: "_id",
-        foreignField: "users",
-        as: "project",
+    // Count pipeline to count total filtered projects
+    const countPipeline = [
+      { $match: { _id: objectUserId } },
+      {
+        $lookup: {
+          from: "projects",
+          localField: "_id",
+          foreignField: "users",
+          as: "project",
+        },
       },
-    },
-    { $unwind: "$project" },
-    ...titleMatchStage, // <-- Filter here too
-    { $count: "total" },
-  ];
+      { $unwind: "$project" },
+      ...titleMatchStage, // <-- Filter here too
+      { $count: "total" },
+    ];
 
-  const [result, countResult] = await Promise.all([
-    this.userModel.aggregate(aggregationPipeline),
-    this.userModel.aggregate(countPipeline),
-  ]);
+    const [result, countResult] = await Promise.all([
+      this.userModel.aggregate(aggregationPipeline),
+      this.userModel.aggregate(countPipeline),
+    ]);
 
-  const total = countResult[0]?.total || 0;
+    const total = countResult[0]?.total || 0;
 
-  return {
-    data: result,
-    total,
-    page,
-    limit,
-  };
-}
+    return {
+      data: result,
+      total,
+      page,
+      limit,
+    };
+  }
 
 }

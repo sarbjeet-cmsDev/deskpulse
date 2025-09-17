@@ -19,7 +19,7 @@ import { ReminderDocument } from "./reminders.schema";
 @Controller("api/reminders")
 @UseGuards(JwtAuthGuard)
 export class RemindersController {
-  constructor(private readonly remindersService: RemindersService) {}
+  constructor(private readonly remindersService: RemindersService) { }
 
   @Post()
   async create(
@@ -67,11 +67,11 @@ export class RemindersController {
     };
   }
 
-    @Get(':id')
-    async findOne(@Param("id") id: string): Promise<any> {
+  @Get(':id')
+  async findOne(@Param("id") id: string): Promise<any> {
     return await this.remindersService.findOne(id);
-    
-    }
+
+  }
 
   @Get("user/:id")
   async findReminderByUserId(
@@ -114,7 +114,7 @@ export class RemindersController {
     @Param("id") id: string,
     @Query("page") page: string = "1",
     @Query("limit") limit: string = "5",
-    @Query("sort") sort: string = "createdAt:desc" 
+    @Query("sort") sort: string = "createdAt:desc"
   ): Promise<{
     // message: string;
     reminders: any;

@@ -12,8 +12,8 @@ import { TaskModule } from 'src/task/task.module';
   imports: [
     MongooseModule.forFeature([{ name: 'Project', schema: ProjectSchema }]),
     ProjectKanbanModule,
-     forwardRef(() => UserModule),   // <-- fixed
-    forwardRef(() => TaskModule),   // <-- fixed
+     forwardRef(() => UserModule),   
+    forwardRef(() => TaskModule),   
   ],
   controllers: [ProjectController, AdminProjectController],
   providers: [ProjectService],

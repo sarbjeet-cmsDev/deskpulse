@@ -2,7 +2,7 @@
 import Image from "next/image";
 import leftarrow from "@/assets/images/back.png";
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { userSchemaBaseUpdate } from "@/components/validation/userValidation";
@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import AdminUserService from "@/service/adminUser.service";
 import UserService from "@/service/user.service";
 import { H3 } from "@/components/Heading/H3";
+import { PhoneInputField } from "@/components/Form/PhoneInputField";
 
 interface Props {
   id: string;
@@ -28,6 +29,7 @@ const UpdateAuthProfileForm = ({ id }: Props) => {
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors },
   } = useForm<UpdateUserInput>({
     resolver: zodResolver(userSchemaBaseUpdate),
@@ -90,19 +92,19 @@ const UpdateAuthProfileForm = ({ id }: Props) => {
 
   return (
     <div className="min-h-screen mx-auto container max-w-3xl flex-col justify-center items-start p-2 md:pt-10">
-      <div className="flex justify-center items-center md:p-[24px] p-2 border-b border-[#31394f14]">
-        <div className="w-10 cursor-pointer">
-          <span onClick={() => router.back()} >
-            <Image src={leftarrow} alt="Back" width={16} height={16} />
-          </span>
-        </div>
-        <H3 className="w-[98%] text-center">Update Profile</H3>
-      </div>
       <div className="flex justify-center items-center">
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="w-full bg-white p-6 rounded shadow space-y-4"
         >
+          <div className="flex justify-center items-center md:p-[24px] p-2 border-b border-[#31394f14]">
+            <div className="w-10 cursor-pointer">
+              <span onClick={() => router.back()}>
+                <Image src={leftarrow} alt="Back" width={16} height={16} />
+              </span>
+            </div>
+            <H3 className="w-[98%] text-center">Update Profile</H3>
+          </div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Username
           </label>
@@ -143,12 +145,9 @@ const UpdateAuthProfileForm = ({ id }: Props) => {
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Phone
           </label>
-          <Input placeholder="Phone" {...register("phone")} />
-          {errors.phone && (
-            <p className="text-sm text-red-500">{errors.phone.message}</p>
-          )}
 
-          {/* Gender Select */}
+          <PhoneInputField name="phone" control={control} />
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Gender
@@ -231,7 +230,6 @@ const UpdateAuthProfileForm = ({ id }: Props) => {
               {...register("isActive")}
               className="h-4 w-4 text-blue-600 border-gray-300 rounded"
               onClick={(e) => e.preventDefault()}
-
             />
             <label className="text-sm text-gray-700">Is Active</label>
           </div>

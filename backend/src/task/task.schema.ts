@@ -9,6 +9,7 @@ export type TaskDocument = Task & Document;
 export class Task {
   @Prop({ unique: true, immutable: true })
   code: string;
+  
   @Prop({ required: true })
   title: string;
 
@@ -17,8 +18,6 @@ export class Task {
     default: false,
   })
   isArchived: Boolean;
-
-
 
   @Prop()
   description: string;
