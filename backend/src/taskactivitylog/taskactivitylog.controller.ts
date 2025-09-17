@@ -1,7 +1,5 @@
 import {
-  Body,
   Controller,
-  Post,
   UseGuards,
   Get,
   Param,
@@ -10,7 +8,6 @@ import {
 import { JwtAuthGuard } from "src/guard/jwt-auth.guard";
 import { TaskactivitylogService } from "./taskactivitylog.service";
 import { Taskactivitylog } from "./taskactivitylog.schema";
-import { log } from "console";
 @Controller("api/taskactivitylog")
 @UseGuards(JwtAuthGuard)
 export class TaskactivitylogController {

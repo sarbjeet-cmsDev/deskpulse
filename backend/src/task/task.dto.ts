@@ -106,9 +106,6 @@ export class CreateTaskDto {
 
 export class UpdateTaskDto {
 
-
-
-
   @IsOptional()
   @IsString()
   title?: string;

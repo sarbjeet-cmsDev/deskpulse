@@ -9,9 +9,7 @@ import {
   Query,
   UseGuards,
   Req,
-  ValidationPipe,
   Logger,
-  Put,
 } from "@nestjs/common";
 import { TaskService } from "./task.service";
 import {
@@ -21,7 +19,6 @@ import {
 } from "./task.dto";
 import { Task } from "./task.interface";
 import { JwtAuthGuard } from "src/guard/jwt-auth.guard";
-import { log } from "console";
 import { CurrentUser } from "src/shared/current-user.decorator";
 
 @Controller("api/tasks")

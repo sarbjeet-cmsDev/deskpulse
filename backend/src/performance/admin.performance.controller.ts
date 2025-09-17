@@ -1,6 +1,5 @@
-import { Controller, UseGuards, Get, Param, Req, Query } from "@nestjs/common";
+import { Controller, UseGuards, Get, Query } from "@nestjs/common";
 import { PerformanceService } from "./performance.service";
-import { JwtAuthGuard } from "src/guard/jwt-auth.guard";
 import { AdminGuard } from "src/guard/admin.guard";
 
 @Controller("api/admin/performance")

@@ -7,8 +7,7 @@ import { User, UserDocument } from "./user.schema";
 import { Model } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
 import { checkUserExists, comparePassword, hashPassword } from "./user.helper";
-import { Types } from "mongoose";
-import { log } from "console";
+
 @Injectable()
 export class UserService {
   static create(adminData: any) {
@@ -159,6 +158,6 @@ export class UserService {
   return this.userModel
     .find({ roles: role }, { _id: 1, firstName: 1, lastName: 1, email: 1 })
     .sort({ createdAt: -1 })
-    // .lean();
+
 }
 }

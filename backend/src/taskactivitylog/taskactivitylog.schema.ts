@@ -1,4 +1,3 @@
-// taskactivitylog.schema.ts
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 import { IsNotEmpty, IsString } from 'class-validator';

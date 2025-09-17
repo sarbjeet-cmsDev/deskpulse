@@ -13,7 +13,7 @@ import { TaskModule } from 'src/task/task.module';
       { name: Taskactivitylog.name, schema: TaskChecklistSchema },
     ]),
     UserModule,
-    forwardRef(() => TaskModule), // ✅ Use forwardRef here
+    forwardRef(() => TaskModule), 
   ],
   controllers: [TaskactivitylogController],
   providers: [TaskactivitylogService, TaskActivityLogListener],

@@ -7,7 +7,6 @@ import {
   IsArray,
   IsDate,
   IsEnum,
-  IsNumber,
 } from "class-validator";
 
 export enum Gender {

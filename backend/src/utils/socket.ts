@@ -1,16 +1,12 @@
-// src/utils/socket.ts
-
 import { Server } from "socket.io";
 import { Server as HttpServer } from "http";
+import { Logger } from '@nestjs/common';
 
-// Map userId -> socketId
 export const userSockets = new Map<string, string>();
 
 let io: Server;
+const SocketLogger = new Logger('SocketLogger');
 
-/**
- * Initialize Socket.IO server on the provided HTTP server instance
- */
 export function initSocketIO(server: HttpServer) {
   io = new Server(server, {
     cors: {
@@ -21,15 +17,15 @@ export function initSocketIO(server: HttpServer) {
   });
 
   io.on("connection", (socket) => {
-    console.log("✅ Socket connected with ID:", socket.id);
+    SocketLogger.log(`Socket connected with ID: ${socket.id}`);
 
     // Register user by userId and map to socket.id
     socket.on("register-user", (userId: string) => {
       userSockets.set(userId, socket.id);
-      console.log(`✅ Registered user: ${userId} → ${socket.id}`);
+      SocketLogger.log(`Registered user: ${userId} → ${socket.id}`);
 
       for (const [uid, sid] of userSockets.entries()) {
-        console.log(`- ${uid}: ${sid}`);
+        SocketLogger.log(`${uid}: ${sid}`);
       }
     });
 
@@ -47,23 +43,21 @@ export function initSocketIO(server: HttpServer) {
         receiverId: string;
         description: string;
       }) => {
-        console.log("📨 Task updated:", { taskId, sender, receiverId });
+        console.log("Task updated:", { taskId, sender, receiverId });
 
         const receiverSocketId = userSockets.get(receiverId);
         if (receiverSocketId) {
-          console.log("receiver id", receiverSocketId)
+          SocketLogger.log(`receiver id: ${receiverSocketId}`);
           io.to(receiverSocketId).emit("receive-notification", {
             message: `${sender} ${description}`,
             taskId,
           });
 
-          console.log(
-            `🔔 Notification sent to user ${receiverId} on socket ${receiverSocketId}`
-          );
+          SocketLogger.log(`Notification sent to user ${receiverId} on socket ${receiverSocketId}`);
+
         } else {
-          console.log(
-            `⚠️ User ${receiverId} not connected — cannot send notification`
-          );
+          SocketLogger.log(`User ${receiverId} not connected — cannot send notification`);
+
         }
       }
     );
@@ -73,7 +67,7 @@ export function initSocketIO(server: HttpServer) {
       for (const [userId, sid] of userSockets.entries()) {
         if (sid === socket.id) {
           userSockets.delete(userId);
-          console.log(`❌ User disconnected: ${userId}`);
+          SocketLogger.log(`User disconnected: ${userId}`);
           break;
         }
       }
@@ -81,9 +75,6 @@ export function initSocketIO(server: HttpServer) {
   });
 }
 
-/**
- * Get Socket.IO server instance
- */
 export function getIO(): Server {
   if (!io) throw new Error("Socket.IO not initialized!");
   return io;

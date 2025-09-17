@@ -2,7 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { TaskactivitylogService } from './taskactivitylog.service';
 import { CreateTaskActivityLogDto } from './taskactivitylog.dto';
-import { log } from 'console';
 import { UserService } from 'src/user/user.service';
 import { TaskService } from 'src/task/task.service';
 import { extractTextFromHtml, formatMinutes } from 'src/shared/commonhelper';
@@ -127,7 +126,6 @@ export class TaskActivityLogListener {
   @OnEvent('comments.mention', { async: true })
   async handleCommentsMentionEvent(payload: { CommentObj: any; }) {
     const CommentObj = payload.CommentObj;
-    // const oldTaskStatus = payload.oldTaskStatus;
     const updatedBy = await this.userservices.findOne(CommentObj.created_by.toString());
     const TaskObj = await this.taskServices.findOne(CommentObj.task.toString())
     const commentContent = extractTextFromHtml(CommentObj.content);

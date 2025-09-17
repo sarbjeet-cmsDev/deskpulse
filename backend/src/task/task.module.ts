@@ -12,12 +12,12 @@ import { AdminTaskController } from './admin.task.controller';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: 'Task', schema: TaskSchema }]),
-    forwardRef(() => ProjectModule),   // <-- fixed
+    forwardRef(() => ProjectModule),   
     UserModule,
     TaskactivitylogModule,
   ],
   controllers: [TaskController, AdminTaskController],
-  providers: [TaskService, TaskListener], // removed module from providers
+  providers: [TaskService, TaskListener], 
   exports: [TaskService],
 })
 export class TaskModule { }

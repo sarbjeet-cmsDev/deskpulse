@@ -1,6 +1,6 @@
 import { Document, Schema as MongooseSchema } from "mongoose";
 
-// --- Reusable Enums ---
+// --- Enums ---
 export enum TaskTypeEnum {
   UI_UX = "ui/ux",
   BACKEND = "backend",
@@ -77,7 +77,7 @@ export interface Task extends Document {
 }
 
 interface TaskDetails {
-  team_leader: any; // or a specific user type
+  team_leader: any; 
   project_manager: any;
   project_coordinator: any;
 }

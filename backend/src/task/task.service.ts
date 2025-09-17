@@ -11,10 +11,6 @@ import { ProjectService } from "../project/project.service";
 import { validateProjectId } from "./task.helpers";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { UserService } from "src/user/user.service";
-import { log } from "node:console";
-// import { Task } from 'src/task/task.schema';
-// import { Project } from 'src/project/project.schema';
-// import { User } from 'src/user/user.schema';
 
 @Injectable()
 export class TaskService {
@@ -22,7 +18,7 @@ export class TaskService {
     @InjectModel("Task") private readonly taskModel: Model<Task>,
     @Inject(forwardRef(() => ProjectService))
 
-    private readonly projectService: ProjectService,   // <-- index [1]
+    private readonly projectService: ProjectService,   
     private readonly userservices: UserService,
     private eventEmitter: EventEmitter2
   ) { }
@@ -32,9 +28,7 @@ export class TaskService {
     const { code: projectCode } = await this.projectService.findOne(
       createTaskDto.project.toString()
     );
-    // if (createTaskDto.estimated_time) {
-    //   createTaskDto.estimated_time = Number(createTaskDto.estimated_time) * 60;
-    // }
+   
     const tasks = await this.taskModel.find({
       code: new RegExp(`^${projectCode}-\\d{2,}$`),
     });
@@ -419,18 +413,15 @@ export class TaskService {
       };
     }
 
-    // Build aggregation pipeline
+    
     const pipeline: any[] = [
       { $match: filter },
 
-      // sort
       { $sort: { createdAt: sortOrder === "desc" ? -1 : 1 } },
 
-      // pagination
       { $skip: (safePage - 1) * safeLimit },
       { $limit: safeLimit },
 
-      // join project
       {
         $lookup: {
           from: "projects",
@@ -441,7 +432,6 @@ export class TaskService {
       },
       { $unwind: { path: "$project", preserveNullAndEmptyArrays: true } },
 
-      // join assigned_to user
       {
         $lookup: {
           from: "users",
@@ -452,7 +442,6 @@ export class TaskService {
       },
       { $unwind: { path: "$assigned_to", preserveNullAndEmptyArrays: true } },
 
-      // join timelines
       {
         $lookup: {
           from: "timelines",
@@ -463,7 +452,6 @@ export class TaskService {
       },
     ];
 
-    // Run pipeline
     const data = await this.taskModel.aggregate(pipeline).exec();
 
     // Total count (for pagination)

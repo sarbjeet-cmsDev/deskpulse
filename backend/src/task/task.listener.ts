@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { TaskService } from './task.service';
-import { log } from 'console';
 import { UpdateTaskDto } from './task.dto';
 
 @Injectable()
