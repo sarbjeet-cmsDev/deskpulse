@@ -1,11 +1,9 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 import { Reminder, ReminderDocument } from "./reminders.schema";
 import { CreateReminderDto, UpdateReminderDto } from "./reminders.dto";
-import { Reminder as ReminderInterface } from "./reminders.interface";
 
-import { log } from "console";
 
 @Injectable()
 export class RemindersService {
@@ -64,7 +62,6 @@ export class RemindersService {
       user: new Types.ObjectId(id),
     });
 
-    // ✅ Apply sort if provided
     if (options?.sort) {
       remindersQuery.sort(options.sort);
     }

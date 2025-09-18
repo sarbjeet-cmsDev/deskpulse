@@ -1,5 +1,4 @@
 import { IsString, IsOptional, IsNumber, IsEmail, IsEnum, IsNotEmpty } from 'class-validator';
-import { isBoolean } from 'lodash';
 
 export class CreateWorkSpaceDto {
     @IsString()

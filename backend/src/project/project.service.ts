@@ -8,16 +8,14 @@ import {
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { Project, ProjectDocument } from "./project.schema";
-import { User, UserDocument } from "../user/user.schema";
+import { UserDocument } from "../user/user.schema";
 import { ProjectKanbanService } from "../project-kanban/project_kanban.service";
-import { UserService } from "src/user/user.service";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import {
   CreateProjectDto,
   UpdateProjectDto,
   UpdateProjectKanbanOrderDto,
 } from "./project.dto";
-import { log } from "console";
 import { TaskService } from "src/task/task.service";
 import { Types } from "mongoose";
 
@@ -28,7 +26,6 @@ export class ProjectService {
     @InjectModel("User") private readonly userModel: Model<UserDocument>,
     private readonly kanbanService: ProjectKanbanService,
     private eventEmitter: EventEmitter2,
-    private readonly userservices: UserService,
     @Inject(forwardRef(() => TaskService))
     @Inject(forwardRef(() => TaskService))
     private readonly taskservices: TaskService
@@ -74,7 +71,6 @@ export class ProjectService {
       sanitized.code = uniqueCode;
       const createdProject = new this.projectModel(sanitized);
       const savedProject = await createdProject.save();
-      // const savedProject = await createdProject.save();
       if (createProjectDto.users && createProjectDto.users.length > 0) {
         this.eventEmitter.emit("project.assigned", {
           projectObj: savedProject,
@@ -119,7 +115,6 @@ export class ProjectService {
   }
 
   async getProjectByUserId(userId: string, workSpaceId: string): Promise<Project[]> {
-    console.log(workSpaceId, "98988")
     const projects = await this.projectModel
       .find({
         users: userId,
@@ -432,7 +427,7 @@ export class ProjectService {
     userId: string,
     page: number,
     limit: number,
-    title?: string // add optional title filter
+    title?: string 
   ): Promise<{ data: any[]; total: number; page: number; limit: number }> {
 
     const skip = (page - 1) * limit;
@@ -460,7 +455,7 @@ export class ProjectService {
         },
       },
       { $unwind: "$project" },
-      ...titleMatchStage, // <-- Insert filter here if needed
+      ...titleMatchStage, 
       {
         $lookup: {
           from: "tasks",
@@ -480,7 +475,7 @@ export class ProjectService {
           as: "project.tasks",
         },
       },
-      { $skip: skip }, // Pagination
+      { $skip: skip }, 
       { $limit: limit },
       {
         $group: {
@@ -515,7 +510,7 @@ export class ProjectService {
         },
       },
       { $unwind: "$project" },
-      ...titleMatchStage, // <-- Filter here too
+      ...titleMatchStage, 
       { $count: "total" },
     ];
 

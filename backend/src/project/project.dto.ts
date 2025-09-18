@@ -1,5 +1,5 @@
 import { Prop } from "@nestjs/mongoose";
-import { Transform, Type } from "class-transformer";
+import { Type } from "class-transformer";
 import {
   IsString,
   IsOptional,

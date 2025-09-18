@@ -12,7 +12,6 @@ import {
 } from "@nestjs/common";
 import { CreateUserDto, UpdateUserDto } from "./user.dto";
 import { UserService } from "./user.service";
-import { JwtAuthGuard } from "src/guard/jwt-auth.guard";
 import { User } from "./user.schema";
 import { AdminGuard } from "src/guard/admin.guard";
 
@@ -20,7 +19,7 @@ import { AdminGuard } from "src/guard/admin.guard";
 export class AdminUserController {
   constructor(private readonly userService: UserService) { }
 
-  // ✅ Create User
+  // Create User
   @UseGuards(AdminGuard)
   @Post("create")
   async create(@Body() createUserDto: CreateUserDto): Promise<any> {
@@ -31,7 +30,7 @@ export class AdminUserController {
     };
   }
 
-  // ✅ Get All Users with Pagination, Search, Sort
+  // Get All Users with Pagination, Search, Sort
   @Get()
   async findAll(
     @Query("page") page: number = 1,
@@ -43,18 +42,17 @@ export class AdminUserController {
     return this.userService.findAllPaginated(page, limit, keyword, sortOrder);
   }
 
-  // ✅ Get User by ID
+  // Get User by ID
   @Get("view/:id")
   @UseGuards(AdminGuard)
   async findOne(@Param("id") id: string): Promise<any> {
     const user = await this.userService.findOne(id);
     return {
-      // message: "User fetched successfully!",
       data: user,
     };
   }
 
-  // ✅ Update User by ID
+  // Update User by ID
   @Put(":id")
   async updateUser(
     @Param("id") id: string,
@@ -70,7 +68,7 @@ export class AdminUserController {
     };
   }
 
-  // ✅ Delete User by ID
+  // Delete User by ID
   @Delete(":id")
   async deleteUser(@Param("id") id: string): Promise<any> {
     const deletedUser = await this.userService.remove(id);
@@ -80,7 +78,7 @@ export class AdminUserController {
     };
   }
 
-  // ✅ Get Logged-in User Profile
+  // Get Logged-in User Profile
   @UseGuards(AdminGuard)
   @Get("me")
   async getMe(@Req() req: any): Promise<any> {
@@ -91,7 +89,7 @@ export class AdminUserController {
     };
   }
 
-  // ✅ Update Own Profile
+  // Update Own Profile
   @UseGuards(AdminGuard)
   @Put("me")
   async updateMyDetails(
@@ -108,7 +106,7 @@ export class AdminUserController {
     };
   }
 
-  // ✅ Reset Password by Admin
+  // Reset Password by Admin
   @UseGuards(AdminGuard)
   @Put(":id/reset-password")
   async resetPassword(
@@ -121,12 +119,14 @@ export class AdminUserController {
       data: user,
     };
   }
-
+  
+  // user search
   @Get("search")
   async search(@Query("q") query: string, @Query("role") roles?: string) {
     return this.userService.searchUsers(query, roles);
   }
-
+  
+  // get only users
   @Get("only-users")
   async findOnlyUsers(): Promise<User[]> {
     return this.userService.findUsersByRole("user");

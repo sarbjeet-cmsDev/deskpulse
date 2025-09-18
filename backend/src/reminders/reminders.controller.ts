@@ -13,8 +13,6 @@ import { JwtAuthGuard } from "src/guard/jwt-auth.guard";
 import { Reminder } from "./reminders.interface";
 import { CreateReminderDto, UpdateReminderDto } from "./reminders.dto";
 import { RemindersService } from "./reminders.service";
-import { log } from "node:console";
-import { ReminderDocument } from "./reminders.schema";
 
 @Controller("api/reminders")
 @UseGuards(JwtAuthGuard)
@@ -41,7 +39,6 @@ export class RemindersController {
     @Query("page") page: string = "1",
     @Query("limit") limit: string = "5"
   ): Promise<{
-    // message: string;
     reminders: Reminder[];
     total: number;
     page: number;
@@ -59,7 +56,6 @@ export class RemindersController {
     );
 
     return {
-      // message: "Reminders fetched successfully",
       reminders: result.data,
       total: result.total,
       page: result.page,
@@ -78,9 +74,8 @@ export class RemindersController {
     @Param("id") id: string,
     @Query("page") page: string = "1",
     @Query("limit") limit: string = "5",
-    @Query("sort") sort: string = "createdAt:desc" // default sorting
+    @Query("sort") sort: string = "createdAt:desc" 
   ): Promise<{
-    // message: string;
     reminders: any;
     total: number;
     page: number;
@@ -101,7 +96,6 @@ export class RemindersController {
     );
 
     return {
-      // message: "Reminders fetched successfully",
       reminders,
       total,
       page: pageNumber,
@@ -116,7 +110,6 @@ export class RemindersController {
     @Query("limit") limit: string = "5",
     @Query("sort") sort: string = "createdAt:desc"
   ): Promise<{
-    // message: string;
     reminders: any;
     total: number;
     page: number;
@@ -137,7 +130,6 @@ export class RemindersController {
     );
 
     return {
-      // message: "Reminders fetched successfully",
       reminders,
       total,
       page: pageNumber,

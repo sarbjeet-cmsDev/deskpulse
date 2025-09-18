@@ -325,7 +325,7 @@ export class EmailListener {
   }
 
 
-
+  // Workspace Invite
   @OnEvent('workspace.invite', { async: true })
   async handleWorkSpaceInviteEvent(payload: { id: string; email: string; userType: string; dto: InviteMemberDto }) {
     const workSpace = await this.workSpaceServices.findOne(payload.id);

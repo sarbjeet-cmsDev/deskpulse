@@ -6,19 +6,14 @@ import { TaskService } from "src/task/task.service";
 import { validateTaskId } from "./task.helpers";
 import { CreateTimelineDto, UpdateTimelineDto } from "./timeline.dto";
 import { EventEmitter2 } from "@nestjs/event-emitter";
-import { ProjectService } from "src/project/project.service";
-import { UserService } from "src/user/user.service";
 import { Types } from "mongoose";
-import { Task } from "src/task/task.schema";
+
 
 @Injectable()
 export class TimelineService {
   constructor(
     @InjectModel("Timeline") private readonly timelineModel: Model<Timeline>,
-    @InjectModel("Task") private readonly taskModel: Model<Task>,
     private readonly taskService: TaskService,
-    private readonly projectService: ProjectService,
-    private readonly userService: UserService,
     private eventEmitter: EventEmitter2
   ) {}
 
@@ -693,7 +688,6 @@ export class TimelineService {
             ],
           },
         },
-        // timeline_dates: { $addToSet: "$date" }, 
         timeline_data: {
           $push: {
             date: "$date",
@@ -715,9 +709,6 @@ export class TimelineService {
         assigned_id: 1,
         project_name: 1,
         username: 1,
-        // timeline_dates: {
-        //   $sortArray: { input: "$timeline_dates", sortBy: 1 }, 
-        // },
         timeline_data: {
           $sortArray: { input: "$timeline_data", sortBy: { date: 1 } },
         },
@@ -731,7 +722,6 @@ export class TimelineService {
           $match: {
             assigned_to: { $in: userIds.map((id) => new Types.ObjectId(id)) },
             status: "progress",
-            // isArchived: false,
             ...(projectId ? { project: new Types.ObjectId(projectId) } : {}),
           },
         },

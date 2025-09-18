@@ -56,7 +56,6 @@ export class UserController {
     @UploadedFile() file: Express.Multer.File,
     @Req() req: any
   ) {
-    const fileExtension = path.extname(file.filename);
 
     const now = new Date();
     const year = now.getFullYear().toString();

@@ -15,7 +15,6 @@ import { Project } from "./project.interface";
 import { UseInterceptors, UploadedFile } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { multerOptions } from "../shared/multer.config";
-import { JwtAuthGuard } from "src/guard/jwt-auth.guard";
 import { AdminGuard } from "src/guard/admin.guard";
 
 @Controller("api/admin/project")
@@ -69,7 +68,6 @@ export class AdminProjectController {
   async findOne(@Param("id") id: string): Promise<any> {
     const project = await this.projectService.findOne(id);
     return {
-      // message: "Project fetched successfully!",
       data: project,
     };
   }
@@ -78,7 +76,6 @@ export class AdminProjectController {
   async findByCode(@Param("code") code: string): Promise<any> {
     const project = await this.projectService.findByCode(code);
     return {
-      // message: "Project fetched successfully!",
       data: project,
     };
   }

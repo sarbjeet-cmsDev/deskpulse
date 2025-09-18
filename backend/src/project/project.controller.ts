@@ -3,16 +3,14 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   UseGuards,
-  Req,
   Put,
   Query,
 } from "@nestjs/common";
 import { ProjectService } from "./project.service";
-import { CreateProjectDto, UpdateProjectDto } from "./project.dto";
+import { UpdateProjectDto } from "./project.dto";
 import { Project } from "./project.interface";
 import { JwtAuthGuard } from "src/guard/jwt-auth.guard";
 import { CurrentUser } from "src/shared/current-user.decorator";
@@ -189,10 +187,4 @@ export class ProjectController {
     return { data: projects };
   }
 
-  // @Put("isFavorite")
-  // async addFavProject(
-  //    @Param("projectId") projectId: string,
-  // ):Promise<any>{
-  //   await this.projectService.
-  // }
 }
