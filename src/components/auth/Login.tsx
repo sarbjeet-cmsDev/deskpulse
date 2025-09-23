@@ -119,7 +119,7 @@ export default function AuthLoginPage() {
             <p className="text-xs text-red-500">{errors.password.message}</p>
           )}
 
-          <div className="text-sm text-gray-600">
+          {/* <div className="text-sm text-gray-600">
             <Link href="/auth/login/resend-verify" className="link-primary">
               Click to resend the verification email
             </Link>
@@ -132,7 +132,7 @@ export default function AuthLoginPage() {
             >
               Reset Password
             </Link>
-          </div>
+          </div> */}
 
           <Button
             type="submit"
@@ -142,12 +142,12 @@ export default function AuthLoginPage() {
             {loading ? "Signing in..." : "Sign In"}
           </Button>
 
-          <div className="text-sm text-gray-600">
+          {/* <div className="text-sm text-gray-600">
             If you don't have an account?{" "}
             <Link href="/auth/signup" className="link-primary">
               SignUp Here
             </Link>
-          </div>
+          </div> */}
         </form>
       </div>
     </div>
