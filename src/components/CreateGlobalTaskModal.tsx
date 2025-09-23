@@ -91,6 +91,17 @@ export default function CreateGlobalTaskModal({
   const projectId = watch("projectId");
 
   useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden"; 
+    } else {
+      document.body.style.overflow = "auto";
+    }
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [isOpen]);
+
+  useEffect(() => {
     let cancelled = false;
     console.log(code, "code++=")
     async function autoSelectProject() {
@@ -235,7 +246,7 @@ export default function CreateGlobalTaskModal({
 
   return (
     <Modal isOpen={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <ModalContent>
+      <ModalContent className="max-h-[85vh] overflow-y-auto pb-[env(safe-area-inset-bottom)] scrollbar-hide">
         <ModalBody className="p-0">
           <H5 className="text-center p-4 border-b border-[#31394f1a]">
             Create New Task

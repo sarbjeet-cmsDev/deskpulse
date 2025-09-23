@@ -4,7 +4,7 @@ import { Modal, ModalContent, ModalBody, useDisclosure } from "@heroui/react";
 import { Button } from "@/components/Form/Button";
 import { Input } from "@/components/Form/Input";
 import { H5 } from "@/components/Heading/H5";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { debounce } from "lodash";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -117,6 +117,17 @@ export default function CreateTaskModal({
     }
   };
 
+  useEffect(() => {
+      if (isOpen) {
+        document.body.style.overflow = "hidden"; 
+      } else {
+        document.body.style.overflow = "auto";
+      }
+      return () => {
+        document.body.style.overflow = "auto";
+      };
+    }, [isOpen]);
+
   return (
     <>
       <Button
@@ -127,7 +138,7 @@ export default function CreateTaskModal({
       </Button>
 
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-        <ModalContent>
+        <ModalContent className="max-h-[85vh] overflow-y-auto pb-[env(safe-area-inset-bottom)] scrollbar-hide">
           {(onClose) => (
             <>
               <ModalBody className="p-0">
