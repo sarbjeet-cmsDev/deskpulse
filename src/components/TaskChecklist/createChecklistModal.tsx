@@ -9,7 +9,7 @@ import {
 import { Button } from '@/components/Form/Button';
 import { Input } from '@/components/Form/Input';
 import { H5 } from '@/components/Heading/H5';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createChecklistSchema } from '../validation/taskChecklistValidation';
@@ -50,6 +50,18 @@ export default function CreateChecklistModal({ onCreate }: CreateTaskChecklistMo
     }
   };
 
+  useEffect(() => {
+        if (isOpen) {
+          document.body.style.overflow = "hidden"; 
+        } else {
+          document.body.style.overflow = "auto";
+        }
+        return () => {
+          document.body.style.overflow = "auto";
+        };
+      }, [isOpen]);
+  
+
   return (
     <>
       <Button
@@ -59,7 +71,7 @@ export default function CreateChecklistModal({ onCreate }: CreateTaskChecklistMo
         Create Taskchecklist
       </Button>
 
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} shouldBlockScroll={false} classNames={{ wrapper: "items-start h-auto", base: "my-auto" }}>
         <ModalContent>
           {(onClose) => (
             <>

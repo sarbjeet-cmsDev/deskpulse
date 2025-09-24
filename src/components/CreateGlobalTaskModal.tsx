@@ -108,7 +108,6 @@ export default function CreateGlobalTaskModal({
       try {
         if (code) {
           const res = await ProjectService.getProjectByCode(code as string);
-          console.log(res, "resres")
           const resolvedId = res?._id;
           if (!cancelled && resolvedId) {
             setValue("projectId", resolvedId);
@@ -245,8 +244,8 @@ export default function CreateGlobalTaskModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <ModalContent className="max-h-[85vh] overflow-y-auto pb-[env(safe-area-inset-bottom)] scrollbar-hide">
+    <Modal shouldBlockScroll={false} isOpen={isOpen} onOpenChange={(open) => !open && onClose()} classNames={{ wrapper: "items-start h-auto", base: "my-auto" }}>
+      <ModalContent className="max-h-[75vh] overflow-y-auto pb-[env(safe-area-inset-bottom)] scrollbar-hide">
         <ModalBody className="p-0">
           <H5 className="text-center p-4 border-b border-[#31394f1a]">
             Create New Task

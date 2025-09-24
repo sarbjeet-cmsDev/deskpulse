@@ -67,6 +67,17 @@ export default function CreateTimelineModal({
     }
   };
 
+  useEffect(() => {
+      if (isOpen) {
+        document.body.style.overflow = "hidden"; 
+      } else {
+        document.body.style.overflow = "auto";
+      }
+      return () => {
+        document.body.style.overflow = "auto";
+      };
+    }, [isOpen]);
+
   return (
     <>
       <Button
@@ -76,7 +87,7 @@ export default function CreateTimelineModal({
         + Log Time
       </Button>
 
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal shouldBlockScroll={false} isOpen={isOpen} onOpenChange={onOpenChange} classNames={{ wrapper: "items-start h-auto", base: "my-auto" }}>
         <ModalContent>
           {(onClose) => (
             <>

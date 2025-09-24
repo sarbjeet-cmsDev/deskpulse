@@ -34,7 +34,7 @@ export const taskCreateSchema = taskSchemaBase.extend({
   description: z
     .string()
     .min(5, "Description must be at least 5 characters")
-    .max(5000, "Description is too long"),
+    .max(10000, "Description is too long"),
   estimated_time: z
     .union([z.string(), z.number()])
     .transform((val) => {

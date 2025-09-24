@@ -137,8 +137,8 @@ export default function CreateTaskModal({
         Create Task
       </Button>
 
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-        <ModalContent className="max-h-[85vh] overflow-y-auto pb-[env(safe-area-inset-bottom)] scrollbar-hide">
+      <Modal shouldBlockScroll={false} isOpen={isOpen} onOpenChange={onOpenChange} classNames={{ wrapper: "items-start h-auto", base: "my-auto" }}>
+        <ModalContent className="max-h-[75vh] overflow-y-auto pb-[env(safe-area-inset-bottom)] scrollbar-hide">
           {(onClose) => (
             <>
               <ModalBody className="p-0">
@@ -240,7 +240,7 @@ export default function CreateTaskModal({
                             styles={{
                               menu: (provided) => ({
                                 ...provided,
-                                maxHeight: 100,
+                                maxHeight: 300,
                                 overflowY: "auto",
                                 scrollBehavior: "smooth",
                               }),
