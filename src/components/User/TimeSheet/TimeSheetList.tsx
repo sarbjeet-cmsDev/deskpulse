@@ -18,6 +18,7 @@ import Image from "next/image";
 import ChevronUp from "@/assets/images/chevronup.svg";
 import ChevronDown from "@/assets/images/chevrondown.svg";
 import { useOutsideClick } from "@/utils/useOutsideClickHandler";
+import formatMinutes from "@/utils/formatMinutes";
 
 function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState(value);
@@ -110,19 +111,14 @@ const TimeSheetList = () => {
   const headers = [
     { id: "taskNumber", title: "TimeSheet", is_sortable: false },
     { id: "comment", title: "Timeline" },
-    { id: "task_title", title: "Task Title" },
+    { id: "task_title", title: "Task" },
     { id: "timelineDate", title: "Date" },
     { id: "time_spent", title: "Spent Time" },
   ];
 
   const rows = tasks.map((task, index) => {
-     const logDate = format(new Date(task.date), "d MMM");
-    const totalMinutes = task.time_spent || 0;
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = totalMinutes % 60;
-    const formattedTime =
-      hours > 0 ? `${hours}h ${minutes}min` : `${minutes}min`;
-
+    const logDate = format(new Date(task.date), "d MMM");
+    const formattedTime = formatMinutes(task.time_spent);
     const globalIndex = (page - 1) * limit + index + 1;
 
     return {

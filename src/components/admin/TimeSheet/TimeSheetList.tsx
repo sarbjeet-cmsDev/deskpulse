@@ -23,6 +23,7 @@ import { H3 } from "@/components/Heading/H3";
 import { SweetAlert } from "@/components/common/SweetAlert/SweetAlert";
 import { useOutsideClick } from "@/utils/useOutsideClickHandler";
 import { format } from "date-fns";
+import formatMinutes from "@/utils/formatMinutes";
 dayjs.extend(isSameOrBefore);
 
 function useDebounce<T>(value: T, delay: number): T {
@@ -226,12 +227,7 @@ const TimeSheetList = () => {
 
   const rows = (tasks ?? []).map((task, index) => {
     const logDate = format(new Date(task.date), "d MMM");
-    const totalMinutes = task.time_spent || 0;
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = totalMinutes % 60;
-    const formattedTime =
-      hours > 0 ? `${hours}h ${minutes}min` : `${minutes}min`;
-
+    const formattedTime = formatMinutes(task.time_spent);
     const globalIndex = (page - 1) * limit + index + 1;
 
     return {
@@ -257,12 +253,6 @@ const TimeSheetList = () => {
     return date.compare(tomorrow) > 0;
   };
   useOutsideClick(calendarRef, showCalendar, () => setShowCalendar(false));
-
-  const totalTime = totalTimeSpent || 0;
-  const hours = Math.floor(totalTime / 60);
-  const minutes = totalTime % 60;
-  const totalUpdatedTime =
-    hours > 0 ? `${hours}h ${minutes}min` : `${minutes}min`;
 
   return (
     <div className="flex flex-col">
@@ -419,7 +409,7 @@ const TimeSheetList = () => {
         <div className="flex items-center justify-between mt-10 p-4 bg-gray-50 rounded-2xl shadow-sm w-fit">
           <H3 className="text-gray-700 md:text-[28px] text-sm">Total Time Spent</H3>
           <span className="ml-4 px-3 py-1 rounded-xl bg-theme-primary text-white font-semibold">
-            {totalUpdatedTime}
+            {formatMinutes(totalTimeSpent)}
           </span>
         </div>
       </main>

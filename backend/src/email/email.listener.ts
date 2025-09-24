@@ -29,7 +29,7 @@ export class EmailListener {
         await this.emailservice.sendEmail({
           to: user.email,
           subject: 'Project Assigned',
-          template: 'templates/project-template.mjml',
+          template: 'templates/project/project-template.mjml',
           variables: {
             project_template: `Project "${projectObj.title}" was assigned to ${user.username} on ${new Date(projectObj.updatedAt).toLocaleString()}.`,
             projectName: projectObj.title,
@@ -87,7 +87,7 @@ export class EmailListener {
         email.push({
           to: userData.email,
           subject: 'Task Status Updated',
-          template: 'templates/task-status-updated.mjml',
+          template: 'templates/task/task-status-updated.mjml',
           variables: {
             userName: userData.username,
             taskTitle: taskObj.title,

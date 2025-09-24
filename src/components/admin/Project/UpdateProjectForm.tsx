@@ -49,6 +49,7 @@ const UpdateProjectForm = ({ id }: Props) => {
   const user: any = useSelector((state: RootState) => state.user.data);
 
 
+
   const {
     register,
     handleSubmit,
@@ -104,6 +105,10 @@ const UpdateProjectForm = ({ id }: Props) => {
 
   const onSubmit = async (data: UpdateProjectInput) => {
     try {
+
+      const project = await AdminProjectService.getProjectById(id);
+      const oldUsers = project?.users;
+
       const formData: any = new FormData();
 
       Object.entries(data).forEach(([key, value]) => {
@@ -121,15 +126,17 @@ const UpdateProjectForm = ({ id }: Props) => {
       }
       await AdminProjectService.updateProject(id, formData);
 
-      if (data?.users?.length) {
-        console.log("hit socket while update project");
+     const FilteredUser = (data?.users ?? []).filter((id)=> !(oldUsers ?? []).includes(id));
+
+      if (FilteredUser.length) {
         if (!socketRef.current.connected) {
           socketRef.current.connect();
         }
         socketRef.current.on("connect", () => {
           socketRef.current.emit("register-user", user.id);
         });
-        data.users.forEach((id) => {
+
+        FilteredUser.forEach((id) => {
           socketRef.current.emit("task-updated", {
             taskId: "1111",
             sender: user.firstName + " " + user.lastName,
@@ -139,11 +146,11 @@ const UpdateProjectForm = ({ id }: Props) => {
         });
 
         console.log(
-          "✅ socket event 'task-updated' hit while assigned user in Project"
+          `✅ socket event 'task-updated' hit while assigned user in Project - ${FilteredUser}`
         );
       }
 
-      router.push("/admin/project");
+      // router.push("/admin/project");
     } catch (error) {
       console.error(error);
     }

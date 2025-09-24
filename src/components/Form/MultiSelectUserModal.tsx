@@ -118,7 +118,7 @@ export default function MultiSelectUserModal({
             />
 
             <Button
-              onClick={handleConfirm}
+              onPress={handleConfirm}
               disabled={selectedUsers.length === 0}
               className={`btn-primary text-white px-4 py-2 rounded mt-2 mx-auto block ${selectedUsers.length === 0 ? "cursor-not-allowed" : ""}`}
             >

@@ -108,3 +108,11 @@ input[type="range"].range-primary {
 .react-tel-input .form-control:hover {
    background-color: "#e4e4e7";
 }
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;  
+}

@@ -4,7 +4,7 @@ import { Schema as MongooseSchema } from 'mongoose';
 export class CreateNotificationDto {
   @IsMongoId({ message: 'User must be a valid Mongo ID' })
   @IsNotEmpty({ message: 'User is required' })
-  user: MongooseSchema.Types.ObjectId;
+  user: MongooseSchema.Types.ObjectId | string;
 
   @IsString({ message: 'Content must be a string' })
   @IsNotEmpty({ message: 'Content is required' })

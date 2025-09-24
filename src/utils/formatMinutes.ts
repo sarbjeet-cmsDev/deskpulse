@@ -4,7 +4,7 @@ export default function formatMinutes(min: string | number | null | undefined): 
         return "0h";
     }
     const hours = Math.floor(totalMinutes / 60);
-    const minutes = totalMinutes % 60;
+    const minutes = Math.floor(totalMinutes % 60);
 
     return `${hours}h${minutes > 0 ? ` ${minutes}m` : ""}`;
 }

@@ -21,7 +21,7 @@ export const ClientAcceptance = ({ task, taskId, onTaskUpdate }: ClientAcceptanc
     const user: any = useSelector((state: RootState) => state.auth.user);
     const ClientAcceptance: any = [
         { title: "pending", color: "rgb(220, 24, 214)" },
-        { title: "Average", color: "rgb(225, 249, 47)" },
+        { title: "Average", color: "rgb(255, 255, 0)" },
         { title: "Good", color: "rgb(0, 128, 0)" },
         { title: "Satisfied", color: "rgb(0, 153, 255)" },
         { title: "Very Satisfied", color: "rgb(255, 165, 0)" },
@@ -42,7 +42,7 @@ export const ClientAcceptance = ({ task, taskId, onTaskUpdate }: ClientAcceptanc
                         onClick={() =>
                             user?.role === "admin" && setIsClientAcceptanceModalOpen(true)
                         }
-                        className="bg-theme-primary text-white text-[12px] px-[9px] py-[4px] rounded-[8px] font-500"
+                        className="bg-theme-primary text-gray-900 text-[12px] px-[9px] py-[4px] rounded-[8px] font-500"
                         style={{ backgroundColor: ClientAcceptanceColor ? ClientAcceptanceColor : "rgb(220, 24, 214) " }}
                     >
                         {task?.client_acceptance?.toUpperCase()}

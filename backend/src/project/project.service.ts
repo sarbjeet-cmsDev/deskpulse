@@ -151,6 +151,9 @@ export class ProjectService {
       updateProjectDto.users = [];
     }
 
+    const project = await this.projectModel.findById(id).lean();
+    const oldUsers = project?.users;
+
     const sanitized = this.sanitizeObjectIds(updateProjectDto);
     const updatedProject = await this.projectModel
       .findByIdAndUpdate(id, sanitized, { new: true })
@@ -158,9 +161,15 @@ export class ProjectService {
     if (!updatedProject) {
       throw new NotFoundException(`Project with ID ${id} not found.`);
     }
-    if (updateProjectDto.users && updateProjectDto.users.length > 0) {
+
+   const oldUserIds = (oldUsers ?? []).map(u => u.toString());
+   const updatedUserIds = (updatedProject?.users ?? []).map(u => u.toString());   
+   const filteredUsers = updatedUserIds.filter(id => !oldUserIds.includes(id));
+
+    if (filteredUsers.length > 0) {
       this.eventEmitter.emit("project.assigned", {
         projectObj: updatedProject,
+        newUserIds: filteredUsers,
       });
     }
     return updatedProject;

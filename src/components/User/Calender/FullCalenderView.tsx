@@ -1,8 +1,7 @@
 "use client";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
-import interactionPlugin, { Draggable } from "@fullcalendar/interaction";
-import TaskService, { ITask } from "@/service/task.service";
+import interactionPlugin from "@fullcalendar/interaction";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import TimelineService from "@/service/timeline.service";
@@ -16,6 +15,7 @@ import ProjectService from "@/service/project.service";
 import UserService from "@/service/user.service";
 import { H3 } from "@/components/Heading/H3";
 import listPlugin from "@fullcalendar/list";
+import formatMinutes from "@/utils/formatMinutes";
 
 export default function FullCalendarView() {
   interface ProjectOption {
@@ -114,18 +114,6 @@ export default function FullCalendarView() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const formatTime = (time: any) => {
-    const totalTime = time || 0;
-    const hours = Math.floor(totalTime / 60);
-    const minutes = totalTime % 60;
-    const totalUpdatedTime =
-      hours > 0
-        ? minutes > 0
-          ? `${hours}h ${minutes}min`
-          : `${hours}h`
-        : `${minutes}min`;
-    return totalUpdatedTime;
-  };
 
   const colors = [
     "#6366f1",
@@ -236,7 +224,7 @@ export default function FullCalendarView() {
                       .reduce((sum: number, d: any) => sum + d.time_spent, 0);
 
                     return {
-                      title: `${item?.task_code} (${formatTime(
+                      title: `${item?.task_code} (${formatMinutes(
                         item?.task_totaltimespent
                       )}) (${item?.task_status})`,
                       id: `${item?.task_code}-${barIndex}`,
@@ -277,7 +265,7 @@ export default function FullCalendarView() {
               if (time && time > 0) {
                 info.el.setAttribute(
                   "title",
-                  `Log time : ${formatTime(time)}`
+                  `Log time : ${formatMinutes(time)}`
                 );
               }
             }}

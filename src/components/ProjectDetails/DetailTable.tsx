@@ -2,11 +2,11 @@
 import AvatarList from "@/components/IndexPage/avatarlist";
 import { useRef, useState } from "react";
 import MultiSelectUserModal from "../Form/MultiSelectUserModal";
-import AdminProjectService from "@/service/adminProject.service";
 import { getSocket } from "@/utils/socket";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { AssigneeIcon } from "../icons";
+import ProjectService from "@/service/project.service";
 
 interface DetailsProps {
   project: {
@@ -30,40 +30,26 @@ export default function Details({
   user,
   onTaskUpdate,
 }: DetailsProps) {
-  const [email, setEmail] = useState("");
   const [teamUserIds, setTeamUserIds] = useState(
     project.team?.map((u) => u._id) || []
   );
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isUserModalOpen, setIsUserModalOpen] = useState(false);
 
+  const [isUserModalOpen, setIsUserModalOpen] = useState(false)
   const loginUser: any = useSelector((state: RootState) => state.user.data);
-
-  const {
-    team = [],
-    leader,
-    status = "To Do",
-    dueDate,
-    attachments = [],
-  } = project || [];
-
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
 
   const socketRef = useRef(getSocket());
 
   const handleUserUpdate = async (updatedIds: string[]) => {
     try {
-      await AdminProjectService.updateProject(projectId, {
+      const oldProjectDetails = await ProjectService.getProjectById(projectId);
+      const oldUsers = oldProjectDetails?.users;
+
+      const updatedProject = await ProjectService.updateProject(projectId, {
         users: updatedIds,
         is_active: true,
       });
-      const newUserIds = updatedIds.filter((id) => !teamUserIds.includes(id));
+
+      const newUserIds = (updatedProject?.users ?? []).filter((id)=> !(oldUsers ?? []).includes(id));
 
       if (newUserIds.length) {
         if (!socketRef.current.connected) {
@@ -86,7 +72,7 @@ export default function Details({
         console.log("✅ socket event 'task-updated' sent for new users:", newUserIds);
       }
 
-      setTeamUserIds(updatedIds); // update state AFTER handling sockets
+      setTeamUserIds(updatedIds);
       onTaskUpdate?.();
     } catch (err) {
       console.error("Failed to update project users", err);

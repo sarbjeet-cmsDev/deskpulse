@@ -45,7 +45,7 @@ const ProjectService = {
 
   async updateProject(id: string, data: Partial<IProject>): Promise<IProject> {
     const res = await axiosClient.put(`${API_URL}/projects/${id}`, data);
-    return res.data;
+    return res.data.data;
   },
 
   async updateFavProject(
@@ -100,7 +100,6 @@ const ProjectService = {
 
   async getProjectByUser(userid: string, workSpaceId: string): Promise<{ data: IProject[]; }> {
     const res = await axiosClient.get(`${API_URL}/projects/users/user/${userid}/workspace/${workSpaceId}`);
-    console.log(res, "09090")
     return {
       data: res.data.data,
     };

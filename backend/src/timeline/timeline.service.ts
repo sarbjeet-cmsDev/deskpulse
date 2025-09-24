@@ -156,7 +156,7 @@ export class TimelineService {
         $unwind: "$tasks",
       },
       {
-        $sort: { date: sortOrder === "desc" ? 1 : -1 } ,
+        $sort: { date: sortOrder === "desc" ? 1 : -1, createdAt:-1 } ,
       },
       {
         $project: {
@@ -309,7 +309,7 @@ export class TimelineService {
       ...(projectId
         ? [{ $match: { "task_detail.project": new Types.ObjectId(projectId) } }]
         : []),
-      { $sort: { date :sortOrder === "desc" ? 1 : -1 } },
+      { $sort: { date :sortOrder === "desc" ? 1 : -1, createdAt:-1 } },
 
       { $skip: (safePage - 1) * safeLimit },
       { $limit: safeLimit },
@@ -491,7 +491,7 @@ export class TimelineService {
       ...(projectId
         ? [{ $match: { "task_detail.project": new Types.ObjectId(projectId) } }]
         : []),
-        { $sort: { date: sortOrder === "desc" ? 1 : -1 } },
+        { $sort: { date: sortOrder === "desc" ? 1 : -1, createdAt:-1 } },
         { $skip: (safePage - 1) * safeLimit },
         { $limit: safeLimit },
       {

@@ -11,7 +11,7 @@ export class PerformanceListener {
     const taskObj = payload.taskObj;
     try {
       await this.performanceService.createPerformance(taskObj);
-      this.logger.log(`performanceService`);
+      this.logger.log(`performanceService Created`);
     } catch (error) {
       this.logger.error('Failed to create project assign log', error.stack);
     }

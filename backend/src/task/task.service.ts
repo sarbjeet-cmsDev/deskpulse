@@ -299,36 +299,15 @@ export class TaskService {
       revisionIncrement = 1;
     }
 
-    let taskStartdate:any;
-    let taskEndDate:any;
-
-   if (updateTaskDto.status === 'progress' && !task.startDate) {
-      taskStartdate = new Date();
-    }
-
-    if (updateTaskDto.status === 'done') {
-      const today = new Date();
-      if (
-        task.startDate &&
-        task.startDate.toDateString() === today.toDateString()
-      ) {
-        taskEndDate = null;
-      } else {
-        taskEndDate = today;
-      }
-    }
-
     const updatedTask = await this.taskModel
       .findByIdAndUpdate(id,
         {
           ...updateTaskDto,
           ...(revisionIncrement > 0 && { rivision: task.rivision + revisionIncrement }),
-          ...({startDate:taskStartdate}),
-          ...({endDate:taskEndDate })
         },
         { new: true })
       .exec();
-    if (newTaskStatus == "done" || (oldTaskStatus == "done" && (updateTaskDto?.client_acceptance ||  updateTaskDto?.priority || updateTaskDto?.type))) {
+    if (["code_review", "done"].includes(newTaskStatus) || (["code_review", "progress", "done"].includes(oldTaskStatus) && (updateTaskDto?.client_acceptance ||  updateTaskDto?.priority || updateTaskDto?.type))) {
       this.eventEmitter.emit("task.status.updated", {
         taskObj: updatedTask,
         oldTaskStatus: oldTaskStatus,

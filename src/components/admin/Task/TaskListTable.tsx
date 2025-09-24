@@ -68,7 +68,7 @@ const TaskListTable = () => {
     { id: "title", title: "Title" },
   ];
   const rows = (tasks ?? []).map((task: any) => {
-    const actions = [{ title: "Delete" }, { title: "View" }];
+    const actions = [ { title: "View" }, { title: "Delete" }];
 
     if (task?.isArchived === true) {
       actions.push({ title: "UnArchive" });
@@ -84,7 +84,6 @@ const TaskListTable = () => {
     if (action === "View") {
       router.push(`/task/${row.code}`);
     } else if (action === "Delete") {
-      console.log(row, "row++++++");
 
       const result = await SweetAlert({
         title: "Are you sure?",
@@ -111,7 +110,6 @@ const TaskListTable = () => {
         confirmButtonText: "Yes, UnArchieve it!",
         cancelButtonText: "No, cancel!",
       });
-      console.log(result, "result")
       if (result) {
         try {
           await TaskService.unArchiveTask(row._id);
