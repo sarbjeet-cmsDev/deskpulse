@@ -22,11 +22,17 @@ export class NotificationListener {
   async handleProjectAssignedEvent(payload: { projectObj: any; newUserIds: string[] }) {
     const { projectObj, newUserIds } = payload;
     const notifications: CreateNotificationDto[] = [];
+    let assignedBy:any = null;
+    if(projectObj.created_by){
+      const assigneeId = ( projectObj?.created_by || projectObj?.updated_by )
+      const AssignedData = await this.userservices.findOne(assigneeId)
+      assignedBy = AssignedData;
+    }
     for (const userId of newUserIds) {
       const UserData = await this.userservices.findOne(userId)
       notifications.push({
         user: userId,
-        content: `The project "${projectObj.title}" was successfully assigned to ${UserData.username} on ${new Date(projectObj.updatedAt).toLocaleString()}.`,
+        content: `The project "${projectObj.title}" was successfully assigned to ${UserData.username} on ${new Date(projectObj.updatedAt).toLocaleString("en-GB", {day: "numeric", month: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", hour12: true})} by ${assignedBy?.firstName} ${assignedBy?.lastName}.`,
         redirect_url: `${process.env.FRONTEND_URL}/project/${projectObj.code.toString()}`,
       })
     }

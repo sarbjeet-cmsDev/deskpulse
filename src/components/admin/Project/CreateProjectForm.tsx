@@ -62,7 +62,7 @@ const CreateProjectForm = () => {
       url_uat: "",
       deploy_instruction: "",
       critical_notes: "",
-      workSpace: ""
+      workSpace: "",
     },
   });
 
@@ -113,7 +113,6 @@ const CreateProjectForm = () => {
   const socketRef = useRef(getSocket());
 
   const onSubmit = async (data: CreateProjectInput) => {
-    console.log(data, "datadata")
     try {
       const formData: any = new FormData();
 
@@ -129,6 +128,10 @@ const CreateProjectForm = () => {
 
       if (selectedFile) {
         formData.append("avatar", selectedFile);
+      }
+
+      if (user) {
+        formData.append("created_by", user?._id);
       }
 
       await AdminProjectService.createProject(formData);
@@ -165,7 +168,6 @@ const CreateProjectForm = () => {
   const fetchWorkSpace = (async () => {
     const result: any = await WorkSpaceService.getAllWorkSpace()
     setworkSpace(result?.data)
-    console.log(result, ":999")
   })
   useEffect(() => {
     fetchWorkSpace()

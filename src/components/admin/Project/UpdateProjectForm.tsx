@@ -124,6 +124,11 @@ const UpdateProjectForm = ({ id }: Props) => {
       if (selectedFile) {
         formData.append("avatar", selectedFile);
       }
+
+       if (user) {
+        formData.append("created_by", user?._id);
+      }
+      
       await AdminProjectService.updateProject(id, formData);
 
      const FilteredUser = (data?.users ?? []).filter((id)=> !(oldUsers ?? []).includes(id));

@@ -4,6 +4,7 @@ import ReactSelect, { MultiValue } from "react-select";
 import { debounce } from "lodash";
 import AdminUserService, { IUser } from "@/service/adminUser.service";
 import { Button } from "./Button";
+import { H5 } from "../Heading/H5";
 
 export interface IUserOption {
   label: string;
@@ -74,13 +75,26 @@ export default function MultiSelectUserModal({
     onClose();
   };
 
+   useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden"; 
+    } else {
+      document.body.style.overflow = "auto";
+    }
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [isOpen]);
+
   return (
-    <Modal isOpen={isOpen} onOpenChange={onClose}>
+    <Modal isOpen={isOpen} onOpenChange={onClose} shouldBlockScroll={false} classNames={{ wrapper: "items-start h-auto", base: "my-auto rounded-2xl shadow-xl" }}>
       <ModalContent>
-        <ModalBody className="p-1 space-y-2">
-          <div className="flex flex-col justify-between mt-3 h-[400px] p-10 overflow-hidden">
+        <ModalBody className="p-3 space-y-3">
+           <H5 className="text-center py-3 border-b border-[#31394f1a]">Add Team Member</H5>
+          <div className="flex flex-col justify-between h-[440px] p-5 overflow-hidden">
             <ReactSelect
               isMulti
+              closeMenuOnSelect={false}
               options={userOptions}
               value={selectedUsers}
               placeholder="Search users..."
@@ -111,7 +125,7 @@ export default function MultiSelectUserModal({
                   ...base,
                   paddingTop: 0,
                   paddingBottom: 0,
-                  maxHeight: "200px",
+                  maxHeight: 200,
                   overflowY: "scroll",
                 }),
               }}
@@ -120,9 +134,9 @@ export default function MultiSelectUserModal({
             <Button
               onPress={handleConfirm}
               disabled={selectedUsers.length === 0}
-              className={`btn-primary text-white px-4 py-2 rounded mt-2 mx-auto block ${selectedUsers.length === 0 ? "cursor-not-allowed" : ""}`}
+              className={`w-full btn-primary text-white px-4 py-2 rounded-xl mt-2 transition mx-auto block ${selectedUsers.length === 0 ? "cursor-not-allowed" : ""}`}
             >
-              Assign
+              Add Member
             </Button>
           </div>
         </ModalBody>

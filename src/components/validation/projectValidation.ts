@@ -34,6 +34,8 @@ export const projectCreateSchema = z.object({
   url_live: z.string().optional(),
   url_staging: z.string().optional(),
   url_uat: z.string().optional(),
+  // created_by:z.string().optional(),
+  // updated_by:z.string().optional(),
   title: z.string().nonempty("Title is required"),
   workSpace: z.string().nonempty("WorkSpace is required")
 });

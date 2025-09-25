@@ -7,6 +7,7 @@ import ProjectService from "@/service/project.service";
 import { getSocket } from "@/utils/socket"; // Adjust path as needed
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import { H5 } from "./Heading/H5";
 export interface IUserOption {
   label: string;
   value: string;
@@ -98,11 +99,23 @@ export default function MentionUserListModal({
     }
   };
 
+   useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden"; 
+    } else {
+      document.body.style.overflow = "auto";
+    }
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [isOpen]);
+
   return (
-    <Modal isOpen={isOpen} onOpenChange={onClose}>
+    <Modal isOpen={isOpen} onOpenChange={onClose} shouldBlockScroll={false} classNames={{ wrapper: "items-start h-auto", base: "my-auto" }}>
       <ModalContent>
-        <ModalBody className="p-4 space-y-8">
-          <div className="mt-3 h-[300px] p-8 overflow-hidden">
+        <ModalBody className="p-3 space-y-2">
+          <H5 className="text-center py-2 border-b border-[#31394f1a]">Assign Task</H5>
+          <div className="flex flex-col justify-between h-[300px] p-5 overflow-hidden">
             <ReactSelect
               isMulti={false}
               options={userOptions}
@@ -121,18 +134,19 @@ export default function MentionUserListModal({
                   ...base,
                   minHeight: "40px",
                 }),
-                // menu: (base) => ({
-                  // ...base,
-                    // zIndex: 9999,
-                    // maxHeight: 200,
-                    // overflowY: "auto",
-                  // position: "absolute",
-                // }),
+                menu: (base) => ({
+                  ...base,
+                    zIndex: 9999,
+                    maxHeight: 200,
+                    overflowY: "auto",
+                  position: "absolute",
+                }),
                 menuList: (base) => ({
                   ...base,
                   paddingTop: 0,
                   paddingBottom: 0,
                   maxHeight: 200,
+                  overflowY: "scroll",
                 }),
               }}
             />
@@ -140,7 +154,7 @@ export default function MentionUserListModal({
             <button
               onClick={handleConfirmAssign}
               disabled={!selectedUser}
-              className="btn-primary text-white px-4 py-2 rounded mt-20 mx-auto block"
+              className="w-full btn-primary text-white px-4 py-2 rounded-xl mt-20 transition mx-auto block"
             >
               Assign Task
             </button>

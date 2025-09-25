@@ -18,13 +18,11 @@ import { searchAll } from "@/service/searchService";
 import { getSocket } from "@/utils/socket";
 import { fetchNotificationCount } from "@/store/slices/NotificationSlice";
 export default function TopHeader() {
-  const [notificationCount, setNotificationCount] = useState<number>(0);
   const dispatch = useDispatch<AppDispatch>();
   const user: any = useSelector((state: RootState) => state.user.data);
   const userData: any = useSelector((state: RootState) => state.auth.user);
 
-
-  const { count, loading, error } = useSelector(
+  const { count } = useSelector(
     (state: RootState) => state.notification
   );
   useEffect(() => {
@@ -46,52 +44,61 @@ export default function TopHeader() {
     }
   }, [user?.profileImage]);
 
-
   const socketRef = useRef(getSocket());
 
-
   useEffect(() => {
-    if (!userData?.id) return;
-
     const socket = socketRef.current;
-    if (!socket) return;
+    if (!socket || !userData?.id) return;
+
+    if (!socket.connected) {
+      socket.connect();
+    }
 
 
+    const registerUser = () => {
+      socket.emit("register-user", userData.id);
+      console.log("User registered again:", userData.id);
+    };
 
-    const handleNotification = ({ message, taskId }: { message: string; taskId: string }) => {
+    socket.on("connect", registerUser);
+
+    const handleNotification = ({
+      message,
+      taskId,
+    }: {
+      message: string;
+      taskId: string;
+    }) => {
       if (Notification.permission === "granted") {
-
         new Notification("Notification Received", {
           body: message,
           icon: "/bell.png",
         });
       }
       if (userData?._id || userData?.id) {
-
         dispatch(fetchNotificationCount(userData?._id || userData?.id));
       }
     };
 
     socket.on("receive-notification", handleNotification);
     if (userData?._id || userData?.id) {
-
-
       dispatch(fetchNotificationCount(userData?._id || userData?.id));
     }
 
     return () => {
+      socket.off("connect", registerUser);
       socket.off("receive-notification", handleNotification);
     };
-  }, [userData?.id]);
+  }, [userData?.id, dispatch]);
 
   useEffect(() => {
-    if (Notification.permission !== "granted" && Notification.permission !== "denied") {
+    if (
+      Notification.permission !== "granted" &&
+      Notification.permission !== "denied"
+    ) {
       Notification.requestPermission();
     }
   }, []);
-
-
-
 
   return (
     <div className="bg-theme-primary px-4 py-4">
@@ -107,7 +114,6 @@ export default function TopHeader() {
         <div className="flex justify-center items-center gap-6 shrink-0">
           <LeftMenuDrawer />
           <div
-
             onClick={() =>
               dispatch(openDrawer({ size: "md", type: "notification" }))
             }

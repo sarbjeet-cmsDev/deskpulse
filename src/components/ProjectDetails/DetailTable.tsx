@@ -47,6 +47,7 @@ export default function Details({
       const updatedProject = await ProjectService.updateProject(projectId, {
         users: updatedIds,
         is_active: true,
+        created_by:loginUser?._id,
       });
 
       const newUserIds = (updatedProject?.users ?? []).filter((id)=> !(oldUsers ?? []).includes(id));
@@ -68,8 +69,6 @@ export default function Details({
             description: "Assigned You a Project",
           });
         });
-
-        console.log("✅ socket event 'task-updated' sent for new users:", newUserIds);
       }
 
       setTeamUserIds(updatedIds);

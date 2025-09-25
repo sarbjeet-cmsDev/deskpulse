@@ -27,8 +27,11 @@ export const getSocket = (): Socket<
 > => {
   if (!socket) {
     socket = io(SOCKET_URL, {
-      autoConnect: false,
       transports: ["websocket"],
+      reconnection: true,
+      reconnectionAttempts: 10,
+      reconnectionDelay: 1000,
+      autoConnect: true,
     });
   }
   return socket;

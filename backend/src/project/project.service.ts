@@ -71,9 +71,11 @@ export class ProjectService {
       sanitized.code = uniqueCode;
       const createdProject = new this.projectModel(sanitized);
       const savedProject = await createdProject.save();
+      const Users = savedProject.users ? savedProject.users : [];
       if (createProjectDto.users && createProjectDto.users.length > 0) {
         this.eventEmitter.emit("project.assigned", {
           projectObj: savedProject,
+          newUserIds: Users,
         });
       }
       await this.kanbanService.createDefaults(savedProject._id.toString());

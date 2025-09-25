@@ -43,7 +43,8 @@ export function initSocketIO(server: HttpServer) {
         receiverId: string;
         description: string;
       }) => {
-        console.log("Task updated:", { taskId, sender, receiverId });
+
+         SocketLogger.log(`Task updated --> TaskId: ${taskId}, Sender: ${sender}, ReceiverId: ${receiverId}`);
 
         const receiverSocketId = userSockets.get(receiverId);
         if (receiverSocketId) {

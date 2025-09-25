@@ -158,8 +158,7 @@ export const GetKanbonList = () => {
 
     if (
       !draggedTask ||
-      draggedTask._id === targetTaskId ||
-      draggedTask.status !== columnTitle
+      draggedTask._id === targetTaskId
     ) {
       setDraggedTask(null);
       setDragOverTaskId(null);
@@ -167,28 +166,42 @@ export const GetKanbonList = () => {
     }
 
     try {
-      const ordered = taskList
-        .filter((t) => t.status === columnTitle)
-        .sort((a: any, b: any) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
+      if (draggedTask.status !== columnTitle) {
+        await TaskService.updateTaskStatus(draggedTask._id, {
+          status: columnTitle,
+        });
 
-      const draggedIndex = ordered.findIndex((t) => t._id === draggedTask._id);
-      const targetIndex = ordered.findIndex((t) => t._id === targetTaskId);
-      ordered.splice(draggedIndex, 1);
-      ordered.splice(targetIndex, 0, draggedTask);
+        setTaskList((prev) =>
+          prev.map((t) =>
+            t._id === draggedTask._id ? { ...t, status: columnTitle } : t
+          )
+        );
+      } else {
+        const ordered = taskList
+          .filter((t) => t.status === columnTitle)
+          .sort((a: any, b: any) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
 
-      const updatedData = ordered.map((t, idx) => ({
-        _id: t._id,
-        sort_order: idx,
-      }));
+        const draggedIndex = ordered.findIndex(
+          (t) => t._id === draggedTask._id
+        );
+        const targetIndex = ordered.findIndex((t) => t._id === targetTaskId);
+        ordered.splice(draggedIndex, 1);
+        ordered.splice(targetIndex, 0, draggedTask);
 
-      await TaskService.reorderTasks(projectId, updatedData);
+        const updatedData = ordered.map((t, idx) => ({
+          _id: t._id,
+          sort_order: idx,
+        }));
 
-      setTaskList((prev) =>
-        prev.map((t) => {
-          const updated = updatedData.find((u) => u._id === t._id);
-          return updated ? { ...t, sort_order: updated.sort_order } : t;
-        })
-      );
+        await TaskService.reorderTasks(projectId, updatedData);
+
+        setTaskList((prev) =>
+          prev.map((t) => {
+            const updated = updatedData.find((u) => u._id === t._id);
+            return updated ? { ...t, sort_order: updated.sort_order } : t;
+          })
+        );
+      }
     } catch (err) {
       console.error("Failed to reorder tasks:", err);
     } finally {
@@ -214,20 +227,22 @@ export const GetKanbonList = () => {
         <div className="flex gap-3 p-3 mt-2 bg-white rounded-xl shadow-sm">
           <Button
             variant="bordered"
-            className={`rounded-xl px-6 py-2 font-medium transition ${taskView === "list"
-              ? "bg-blue-600 text-white shadow-md"
-              : "hover:bg-gray-100 text-gray-700"
-              }`}
+            className={`rounded-xl px-6 py-2 font-medium transition ${
+              taskView === "list"
+                ? "bg-blue-600 text-white shadow-md"
+                : "hover:bg-gray-100 text-gray-700"
+            }`}
             onPress={() => handleTaskView("list")}
           >
             List
           </Button>
           <Button
             variant="bordered"
-            className={`rounded-xl px-6 py-2 font-medium transition ${taskView === "kanban"
-              ? "bg-blue-600 text-white shadow-md"
-              : "hover:bg-gray-100 text-gray-700"
-              }`}
+            className={`rounded-xl px-6 py-2 font-medium transition ${
+              taskView === "kanban"
+                ? "bg-blue-600 text-white shadow-md"
+                : "hover:bg-gray-100 text-gray-700"
+            }`}
             onPress={() => handleTaskView("kanban")}
           >
             Kanban
@@ -316,14 +331,15 @@ export const GetKanbonList = () => {
                           <span className="font-medium">Priority:</span>
                           <span
                             className={`px-2 py-0.5 rounded-full text-xs font-medium
-          ${card?.priority?.toLowerCase() === "high"
-                                ? "bg-red-100 text-red-700"
-                                : card?.priority?.toLowerCase() === "medium"
-                                  ? "bg-yellow-100 text-yellow-700"
-                                  : card?.priority?.toLowerCase() === "low"
-                                    ? "bg-blue-100 text-blue-700"
-                                    : "bg-gray-100 text-gray-600"
-                              }`}
+          ${
+            card?.priority?.toLowerCase() === "high"
+              ? "bg-red-100 text-red-700"
+              : card?.priority?.toLowerCase() === "medium"
+                ? "bg-yellow-100 text-yellow-700"
+                : card?.priority?.toLowerCase() === "low"
+                  ? "bg-blue-100 text-blue-700"
+                  : "bg-gray-100 text-gray-600"
+          }`}
                           >
                             {card?.priority}
                           </span>
