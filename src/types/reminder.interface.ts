@@ -12,6 +12,7 @@ export interface IReminder {
   dueDate?: string;
   status: 'pending' | 'completed' | string;
   user: string;
+  repeat:string;
   createdAt?: string;
   updatedAt?: string;
 }

@@ -51,7 +51,7 @@ export default function MyReminderList() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto md:p-6">
+    <div className="max-w-6xl mx-auto md:p-6 p-3">
       <div className="flex justify-center items-center md:p-[24px] p-2 border-b border-[#31394f14]">
         <div className="cursor-pointer">
           <span onClick={() => router.back()}>

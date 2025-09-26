@@ -52,7 +52,7 @@ export default function ReminderDetailPage({ reminderId }: Props) {
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex justify-center items-center gap-4 border-b pb-4 mb-6">
-        <div className="cursor-pointer">
+        <div className="cursor-pointer ml-2">
           <span onClick={() => router.back()}>
             <Image src={leftarrow} alt="Back" width={16} height={16} />
           </span>
@@ -66,6 +66,7 @@ export default function ReminderDetailPage({ reminderId }: Props) {
         <DetailItem label="End Time" value={formatDate(reminder.end)} />
         <DetailItem label="Alert Enabled" value={reminder.alert ? "Yes" : "No"} />
         <DetailItem label="Alert Before" value={`${reminder.alert_before} minute(s)`} />
+        <DetailItem label="Repeat" value={`${reminder?.repeat}`} />
         <DetailItem label="Created At" value={formatDate(reminder.createdAt)} />
       </div>
     </div>

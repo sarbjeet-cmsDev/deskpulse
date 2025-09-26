@@ -234,20 +234,20 @@ export default function MyProjectDetails({ code }: Props) {
               <H5 className="w-[98%] text-center">{project.title}</H5>
             </div>
             <div className="flex items-center">
-              <div className="mr-3">
+              <div className="flex gap-3">
                 <CreateTaskModal
                   onCreate={handleCreateTask}
                   projectId={projectId}
                 />
-              </div>
               <Button
                 onPress={() =>
                   router.push(`/project/projectDetail/${projectId}`)
                 }
-                className="btn-primary text-white block w-full flex justify-center items-center gap-2 text-[14px] leading-[16px] font-bold py-[16px] rounded-[12px] px-[28px]"
-              >
+                className="btn-primary text-white block w-full flex justify-center items-center gap-2 text-[14px] leading-[16px] font-bold py-[16px] rounded-[12px] px-[28px] mr-7"
+                >
                 View Kanban
               </Button>
+              </div>
               <UploadImage
                 project={project}
                 projectId={projectId}

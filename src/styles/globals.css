@@ -116,3 +116,40 @@ input[type="range"].range-primary {
   -ms-overflow-style: none;
   scrollbar-width: none;  
 }
+
+.comment-editor-wrapper {
+  position: relative;
+}
+
+.ql-mention-list-container {
+  max-height: 300px;      
+  overflow-y: auto;        
+  overflow-x: hidden;      
+  border-radius: 6px;    
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  background: #fff;      
+  z-index: 997;   
+  position: absolute !important;    
+}
+
+.ql-mention-list-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.ql-mention-list-item:hover,
+.ql-mention-list-item.ql-mention-list-item--selected {
+  background: #f1f5f9; 
+}
+
+.ql-mention-list-container::-webkit-scrollbar {
+  width: 6px;
+}
+.ql-mention-list-container::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+.ql-mention-list-container::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}

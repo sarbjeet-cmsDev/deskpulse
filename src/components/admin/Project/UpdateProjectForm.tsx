@@ -242,6 +242,7 @@ const UpdateProjectForm = ({ id }: Props) => {
               <ReactSelect
                 isMulti
                 options={userOptions}
+                closeMenuOnSelect={false}
                 placeholder="Assign Users"
                 value={selectedOptions}
                 inputValue={inputValue}

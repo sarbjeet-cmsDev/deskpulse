@@ -7,7 +7,6 @@ import { z } from "zod";
 import { useDispatch } from "react-redux";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-
 import { Button } from "@/components/Form/Button";
 import { Input } from "@/components/Form/Input";
 import { H3 } from "@/components/Heading/H3";
@@ -15,7 +14,6 @@ import AuthService from "@/service/auth.service";
 import { WorkSpaceService } from "@/service/workSpace.service";
 import { signIn } from "@/store/slices/authSlice";
 import Cookies from "js-cookie";
-import Link from "next/link";
 
 type LoginInput = z.infer<typeof userLoginSchema>;
 
@@ -37,7 +35,7 @@ export default function AuthLoginPage() {
   } = useForm<LoginInput>({
     resolver: zodResolver(userLoginSchema),
     defaultValues: {
-      email: invitedEmail,
+      email: "",
       password: "",
     },
   });
@@ -88,9 +86,9 @@ export default function AuthLoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
-      <div className="w-full max-w-md rounded-lg shadow-lg px-4 py-12 space-y-6">
-        <div className="flex justify-center items-center p-5 border-b border-[#31394f1]">
-          <H3 className="w-[98%] text-center">Sign In</H3>
+      <div className="w-full max-w-md rounded-lg shadow-lg px-4 py-12 space-y-6 ring-2 ring-gray-100 sm:ring-0 -translate-y-12 sm:translate-y-0">
+        <div className="flex justify-center items-center px-5 border-b border-[#31394f1]">
+          <H3 className="w-[98%] text-center mb-5">Sign In</H3>
         </div>
         <p className="text-center text-sm text-gray-500">
           Give credentials to sign in your account
