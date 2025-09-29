@@ -1,5 +1,4 @@
 import MyProjectDetails from '@/components/User/Project/MyProjectDetail'
-import AdminProjectService from '@/service/adminProject.service'
 import type { Metadata, ResolvingMetadata } from 'next'
 
 type Props = {

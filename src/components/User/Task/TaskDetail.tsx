@@ -42,6 +42,7 @@ export default function TaskDetails({ id }: Props) {
   const [timelineLimit, setTimelineLimit] = useState<number>(5);
   const [taskId, setTaskId] = useState<any>(null);
   const [comments, setComments] = useState<IComment[]>([]);
+  const [projectIdDetails, setProjectIdDetails] = useState<any>()
 
   const user: IUserRedux | null = useSelector(
     (state: RootState) => state.auth.user
@@ -50,6 +51,7 @@ export default function TaskDetails({ id }: Props) {
     const getTaskByCode = async () => {
       const result = await TaskService.getTaskByCode(taskCode);
       setTaskId(result?._id);
+      setProjectIdDetails(result?.project)
     };
 
     getTaskByCode();
@@ -179,7 +181,7 @@ export default function TaskDetails({ id }: Props) {
     <div className="max-w-6xl mx-auto">
       <div className="main-content md:p-0 p-3">
         <div>
-          <div className="flex justify-between items-center border-b border-[#31394f14]">
+          <div className="flex justify-between items-center pb-4 border-b border-[#31394f14]">
             <div className="flex items-center gap-2">
               <div className="w-10 cursor-pointer">
                 <span onClick={() => router.back()} >
@@ -231,6 +233,7 @@ export default function TaskDetails({ id }: Props) {
                 isButton={true}
                 inline={true}
                 isEditing
+                projectId={projectIdDetails}
               />
             )}
 
@@ -283,6 +286,7 @@ export default function TaskDetails({ id }: Props) {
                 isButton={true}
                 title="Comment"
                 code={taskCode}
+                projectId={projectIdDetails}
               />
 
               <CommentList

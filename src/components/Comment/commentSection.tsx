@@ -6,10 +6,8 @@ import "quill-mention/dist/quill.mention.css";
 import "./commentSection.css";
 import "highlight.js/styles/atom-one-dark.css";
 import hljs from "highlight.js";
-
 import { Quill } from "react-quill-new";
 import { Mention, MentionBlot } from "quill-mention";
-import AdminUserService, { IUser } from "@/service/adminUser.service";
 import CommentService from "@/service/comment.service";
 import { Button } from "@/components/Form/Button";
 import QuillEditorWrapper from "./QuillEditorWrapper";
@@ -18,6 +16,7 @@ import { RootState } from "@/store/store";
 import UploadService from "@/service/upload.service";
 import ImageLightbox from "../common/ImagePopUp/ImageLightbox";
 import { getSocket } from "@/utils/socket";
+import ProjectService from "@/service/project.service";
 
 if (
   typeof window !== "undefined" &&
@@ -41,6 +40,7 @@ export default function CommentInputSection({
   onClick,
   isButton,
   code,
+  projectId,
 }: any) {
   const [content, setContent] = useState<string | undefined>(defaultValue);
   const [loading, setLoading] = useState(false);
@@ -52,6 +52,39 @@ export default function CommentInputSection({
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
   const saveBtnRef = useRef<HTMLButtonElement>(null);
   const cancelBtnRef = useRef<HTMLButtonElement>(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  const checkSpace = () => {
+    const dropdownEl = document.querySelector<HTMLElement>(".ql-mention-list-container");
+
+    if (!dropdownEl || !wrapperRef.current) return;
+
+    const rect = wrapperRef.current.getBoundingClientRect();
+    const dropdownHeight = dropdownEl.offsetHeight || 200;
+
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const spaceAbove = rect.top;
+
+    if (spaceBelow < dropdownHeight && spaceAbove > spaceBelow) {
+      dropdownEl.classList.add("drop-up");
+      dropdownEl.classList.remove("drop-down");
+    } else {
+      dropdownEl.classList.add("drop-down");
+      dropdownEl.classList.remove("drop-up");
+    }
+  };
+
+  useEffect(() => {
+    if (dropdownOpen) {
+      checkSpace();
+      window.addEventListener("resize", checkSpace);
+      window.addEventListener("scroll", checkSpace, true);
+    }
+    return () => {
+      window.removeEventListener("resize", checkSpace);
+      window.removeEventListener("scroll", checkSpace, true);
+    };
+  }, [dropdownOpen]);
 
   useEffect(() => {
     if (isEditing && defaultValue) {
@@ -99,23 +132,24 @@ export default function CommentInputSection({
 
   const socketRef = useRef(getSocket());
 
-
-
+  
+  
+  
   const mentionSource = useCallback(
     async (
       searchTerm: string,
       renderList: (items: any[], searchTerm: string) => void
     ) => {
       try {
-        const users: IUser[] = await AdminUserService.searchUsers(searchTerm);
-        const filteredUsers = users.filter((user) =>
-          `${user.firstName} ${user.lastName}`
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase())
-        );
-        const list = filteredUsers.map((user) => ({
-          id: user._id,
-          value: `${user.firstName} ${user.lastName}`,
+        const users  = await ProjectService.getProjectUsers(projectId,searchTerm);
+          const filteredUsers = users.users.filter((user:any) =>
+        `${user.firstName} ${user.lastName}`
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
+      );
+      const list = filteredUsers.map((user:any) => ({
+        id: user._id,
+        value: `${user.firstName} ${user.lastName}`,
         }));
         renderList(list, searchTerm);
       } catch (err) {
@@ -123,9 +157,9 @@ export default function CommentInputSection({
         renderList([], searchTerm);
       }
     },
-    []
+    [projectId]
   );
-
+  
   const modules = useMemo(
     () => ({
       syntax: { hljs },
@@ -143,7 +177,6 @@ export default function CommentInputSection({
           ["clean"],
           ["blockquote"],
           ["formatCode"]
-          // [{ font: [] }]
         ],
         handlers: {
           image: imageHandler,
@@ -155,9 +188,25 @@ export default function CommentInputSection({
         source: mentionSource,
         allowedChars: /^[A-Za-z\s]*$/,
         showDenotationChar: true,
+        positionMenu: 'fixed',
+        onOpen: () => {
+          setDropdownOpen(true);
+          checkSpace();
+          window.addEventListener("resize", checkSpace);
+          window.addEventListener("scroll", checkSpace, true);
+        },
+        onClose: () => {
+          setDropdownOpen(false);
+          const dropdownEl = document.querySelector<HTMLElement>(".ql-mention-list-container");
+          if (dropdownEl) {
+            dropdownEl.classList.remove("drop-up", "drop-down");
+          }
+          window.removeEventListener("resize", checkSpace);
+          window.removeEventListener("scroll", checkSpace, true);
+        },
       },
     }),
-    []
+    [projectId]
   );
 
   function cleanQuillHtml(html: string) {
@@ -231,8 +280,6 @@ export default function CommentInputSection({
         receiverId: `${mentionedUserIds}`,
         description: "mentioned you in a comment",
       });
-
-      console.log("✅ socket event 'task-updated' emitted for mention in comment");
 
       setContent("");
       onCommentCreated();
@@ -363,8 +410,6 @@ export default function CommentInputSection({
         />
       </div>
 
-      {/* )} */}
-
       {error && <p className="text-sm text-red-500 mt-1">{error}</p>}
 
       <div className="flex justify-end gap-2 mt-4">
@@ -377,7 +422,6 @@ export default function CommentInputSection({
         {isButton === true ? (
           <Button
             onFocus={handleFocus}
-            // id="updateSaveButton"
             ref={saveBtnRef}
             onPress={() => {
               if (onClick) {

@@ -20,6 +20,7 @@ import { KanbanColumn } from "@/types/projectKanbon.interface";
 import { getSocket } from "@/utils/socket";
 import { InstructionCard } from "./InstructionCard";
 import { UploadImage } from "./UploadImage";
+import ImageLightbox from "@/components/common/ImagePopUp/ImageLightbox";
 
 interface Props {
   code: string;
@@ -36,11 +37,11 @@ export default function MyProjectDetails({ code }: Props) {
   const [kanbanList, setKanbanList] = useState<KanbanColumn[]>([]);
   const user: any = useSelector((state: RootState) => state.auth.user);
   const [version, setVersion] = useState<number>(Date.now());
-
   const [projectImage, setProjectImage] = useState<string>(ProjectAvtar.src);
   const loginUser: any = useSelector((state: RootState) => state.user.data);
-
   const socketRef = useRef(getSocket());
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
 
   const fetchProjectByCode = async () => {
     const result = await ProjectService.getProjectByCode(code);
@@ -107,7 +108,6 @@ export default function MyProjectDetails({ code }: Props) {
   };
   const fetchUsers = async () => {
     try {
-
       const data: any = await AdminUserService.getAllUsers();
       const result = await ProjectService.getProjectById(projectId);
       const userIds = new Set(result?.users || []);
@@ -130,8 +130,7 @@ export default function MyProjectDetails({ code }: Props) {
 
   useEffect(() => {
     fetchKanbonList([]);
-
-  }, [projectId])
+  }, [projectId]);
   const fetchTasks = async (projectId: string, page = 1, limit = 100) => {
     try {
       const res = await TaskService.getTasksByProject(projectId, page, limit);
@@ -208,14 +207,16 @@ export default function MyProjectDetails({ code }: Props) {
             ? `Assigned you a task : ${title}`
             : `${title} task is assigned by you.`,
         });
-
-        console.log(
-          "✅ socket event 'task-updated' hit while assigned user in project"
-        );
       }
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const openLightbox = (url?: string | null) => {
+    if (!url) return;
+    setLightboxImage(url);
+    setLightboxOpen(true);
   };
 
   if (loading) return <div className="p-6 text-center">Loading project...</div>;
@@ -227,7 +228,7 @@ export default function MyProjectDetails({ code }: Props) {
           <div className="flex justify-between items-center border-b border-[#31394f14] pb-4 max-[768px]:flex-wrap max-[768px]:gap-[10px]">
             <div className="flex items-center gap-2">
               <div className="w-10 cursor-pointer">
-                <span onClick={() => router.back()} >
+                <span onClick={() => router.back()}>
                   <Image src={leftarrow} alt="Back" width={16} height={16} />
                 </span>
               </div>
@@ -239,14 +240,14 @@ export default function MyProjectDetails({ code }: Props) {
                   onCreate={handleCreateTask}
                   projectId={projectId}
                 />
-              <Button
-                onPress={() =>
-                  router.push(`/project/projectDetail/${projectId}`)
-                }
-                className="btn-primary text-white block w-full flex justify-center items-center gap-2 text-[14px] leading-[16px] font-bold py-[16px] rounded-[12px] px-[28px] mr-7"
+                <Button
+                  onPress={() =>
+                    router.push(`/project/projectDetail/${projectId}`)
+                  }
+                  className="btn-primary text-white block w-full flex justify-center items-center gap-2 text-[14px] leading-[16px] font-bold py-[16px] rounded-[12px] px-[28px] mr-7"
                 >
-                View Kanban
-              </Button>
+                  View Kanban
+                </Button>
               </div>
               <UploadImage
                 project={project}
@@ -257,7 +258,12 @@ export default function MyProjectDetails({ code }: Props) {
           </div>
           <div className="">
             <div className="pt-4 ">
-              <div className="mt-[14px] h-[175px] overflow-hidden border border-[#e3e3e35c] rounded-[8px]">
+              <div
+                onClick={() => openLightbox(projectImage)}
+                role="button"
+                aria-label="Open project avatar"
+                className="mt-[14px] h-[175px] overflow-hidden border border-[#e3e3e35c] rounded-[8px]"
+              >
                 {projectImage ? (
                   <Image
                     src={projectImage}
@@ -307,6 +313,13 @@ export default function MyProjectDetails({ code }: Props) {
           </div>
         </div>
       </div>
+      {lightboxOpen && lightboxImage && (
+        <ImageLightbox
+          open={lightboxOpen}
+          imageUrl={lightboxImage}
+          onClose={() => setLightboxOpen(false)}
+        />
+      )}
     </div>
   );
 }

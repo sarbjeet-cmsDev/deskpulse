@@ -138,12 +138,12 @@ export default function FullCalendarView() {
     <div className="flex flex-col">
       <main className="flex-1 p-4 sm:p-6 md:p-8 w-full">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-          <div className="md:w-4/4 w-full">
+          <div className="md:w-3/4 w-full">
             <H3 className="text-xl md:text-4xl font-bold text-gray-800">
               Calender
             </H3>
           </div>
-          <div className="md:w-1/3 w-full md:flex justify-between">
+          <div className="flex flex-col gap-2 w-full sm:flex-row sm:w-1/3 md:w-1/3 sm:justify-between">
             <div className="w-full">
               <Controller
                 name="projectId"
@@ -192,7 +192,7 @@ export default function FullCalendarView() {
               />
             </div>
             {user?.role === "admin" && (
-              <div className="w-full">
+              <div className="w-full flex justify-end">
                 <AvatarList
                   users={users}
                   selectedUserIds={selectedUserIds}

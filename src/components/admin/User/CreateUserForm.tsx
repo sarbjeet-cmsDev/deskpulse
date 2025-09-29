@@ -63,7 +63,7 @@ const CreateUserComponent = () => {
         onSubmit={handleSubmit(onSubmit)}
         className="w-full max-w-xl bg-white p-6 rounded shadow space-y-4"
       >
-        <div className="flex justify-center items-center p-[24px] border-b border-[#31394f14]">
+        <div className="flex justify-center items-center p-[15px] border-b border-[#31394f14]">
           <Link href="/admin/user">
             <Image src={leftarrow} alt="Back" width={16} height={16} />
           </Link>
