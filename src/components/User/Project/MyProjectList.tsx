@@ -2,7 +2,7 @@
 import { H5 } from "@/components/Heading/H5";
 import ProjectCard from "@/components/IndexPage/ProjectCard";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import leftarrow from "@/assets/images/back.png";
 import ProjectService from "@/service/project.service";
 import { useEffect, useState } from "react";
@@ -15,6 +15,8 @@ import { ITask } from "@/service/task.service";
 
 export default function MyProjects() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const favoriteParam = searchParams.get("favorite");
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -27,12 +29,21 @@ export default function MyProjects() {
     const loadProjects = async (page: number) => {
       setLoading(true);
       try {
-        const res = await ProjectService.getProjectByUserId(
+        if(favoriteParam){
+          const res = await ProjectService.getFavoriteProject(
           currentPage,
           itemsPerPage
         );
         setProjects(res?.data || []);
         setTotalItems(res?.total || 0);
+        }else{
+          const res = await ProjectService.getProjectByUserId(
+            currentPage,
+            itemsPerPage
+          );
+          setProjects(res?.data || []);
+          setTotalItems(res?.total || 0);
+        }
       } catch (error) {
         console.error("Error fetching projects:", error);
         setProjects([]);
@@ -100,7 +111,7 @@ export default function MyProjects() {
                 <Image src={leftarrow} alt="Back" width={16} height={16} />
               </span>
             </div>
-            <H5 className="w-[98%] text-center">My Projects</H5>
+            <H5 className="w-[98%] text-center">{favoriteParam ? "My Favorite Projects" : "My Projects"}</H5>
           </div>
           <div className="">
             <div className="pt-4 flex justify-center items-center gap-4 flex-wrap flex-row">
@@ -116,6 +127,19 @@ export default function MyProjects() {
                     kanban={projectKanbanMap[project._id]?.kanbans || []}
                     taskCounts={projectKanbanMap[project._id]?.counts || {}}
                     linkTo={`/project/${project.code}`}
+                    onFavoriteChange={() => {
+                        if (favoriteParam) {
+                          const reload = async () => {
+                            const res = await ProjectService.getFavoriteProject(
+                              currentPage,
+                              itemsPerPage
+                            );
+                            setProjects(res?.data || []);
+                            setTotalItems(res?.total || 0);
+                          };
+                          reload();
+                        }
+                      }}
                   />
                 ))
               )}

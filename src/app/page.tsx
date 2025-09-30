@@ -70,7 +70,7 @@ export default function Dashboard() {
       socket.connect();
     }
     socket.on("connect", () => {
-      socket.emit("register-user", user?.id || user?._id); // Send your user ID immediately
+      socket.emit("register-user", user?.id || user?._id);
     });
   }, []);
 
@@ -98,7 +98,7 @@ export default function Dashboard() {
               <H3>Fav Projects</H3>
               <Link
                 className="font-bold text-[#31394f99]"
-                href={`/project/list`}
+                href={`/project/list?favorite=true`}
               >
                 View All
               </Link>

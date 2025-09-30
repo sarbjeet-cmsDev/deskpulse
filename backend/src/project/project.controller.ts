@@ -39,6 +39,21 @@ export class ProjectController {
     );
   }
 
+   @Get("favorite")
+  async getMyFavorite(
+    @CurrentUser() user: any,
+    @Query("page") page: string = "1",
+    @Query("limit") limit: string = "100"
+  ): Promise<{ data: Project[]; total: number; page: number; limit: number }> {
+    const pageNumber = parseInt(page, 10);
+    const limitNumber = parseInt(limit, 10);
+    return this.projectService.findFavoriteProject(
+      user.userId,
+      pageNumber,
+      limitNumber
+    );
+  }
+
   //full project detail
   @Get("userDetails")
   async getUserProject(
@@ -67,6 +82,7 @@ export class ProjectController {
   async findActive(): Promise<Project[]> {
     return this.projectService.findActiveProjects();
   }
+
   @Get("/fetch/:id")
   async findOne(@Param("id") id: string): Promise<Project> {
     return this.projectService.findOne(id);

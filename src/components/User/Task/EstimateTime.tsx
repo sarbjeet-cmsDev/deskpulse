@@ -68,7 +68,7 @@ export const EstimateTime = ({ task, taskId, fetchTask, user }: any) => {
                     )}
                 </form>
             ) : (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 break-all overflow-hidden">
                     <H5 className="text-left">{task?.title}</H5>
 
                     {!editTaskTitle && user?.role === "admin" && (

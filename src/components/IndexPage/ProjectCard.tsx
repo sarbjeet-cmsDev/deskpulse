@@ -29,6 +29,7 @@ interface ProjectCardProps {
   kanban: KanbanColumn[];
   taskCounts: Record<string, number>;
   linkTo?: string;
+  onFavoriteChange?: () => void;
 }
 
 export default function ProjectCard({
@@ -36,6 +37,7 @@ export default function ProjectCard({
   kanban,
   taskCounts,
   linkTo,
+  onFavoriteChange,
 }: ProjectCardProps) {
   const pathname = usePathname();
   const user: any = useSelector((state: RootState) => state.auth.user);
@@ -69,6 +71,9 @@ export default function ProjectCard({
 
       setIsFavorite(!currentlyFav);
       project.isFavorite = updatedFavorites;
+       if (onFavoriteChange) {
+        onFavoriteChange();
+      }
     } catch (err) {
       console.error("Failed to update favorite:", err);
     }

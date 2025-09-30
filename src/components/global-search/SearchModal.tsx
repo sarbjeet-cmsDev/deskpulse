@@ -4,6 +4,7 @@ import { ResultSection } from "./ResultSection";
 import { SearchResponse } from "./types";
 import { useDebounce } from "./hooks/useDebounce";
 import { usePathname } from "next/navigation";
+import { Input } from "../Form/Input";
 
 interface SearchModalProps {
   open: boolean;
@@ -36,6 +37,17 @@ export function SearchModal({
       setResults(null);
       setLoading(false);
     }
+  }, [open]);
+
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden"; 
+    } else {
+      document.body.style.overflow = "auto";
+    }
+    return () => {
+      document.body.style.overflow = "auto";
+    };
   }, [open]);
 
   useEffect(() => {
@@ -96,7 +108,7 @@ export function SearchModal({
       onMouseDown={overlayClick}
     >
       <div
-        className="bg-white rounded-xl shadow-lg overflow-auto w-full md:max-w-lg p-6 max-w-[330px] relative"
+        className="bg-white rounded-xl shadow-lg overflow-auto w-full md:max-w-lg p-6 max-w-[330px] relative max-h-[95vh] scrollbar-hide flex flex-col"
         role="dialog"
         aria-modal="true"
       >
@@ -107,16 +119,20 @@ export function SearchModal({
         >
           ✕
         </button>
-
-        <input
+       
+       <div className="sticky top-0 bg-white z-10">
+        <Input
           ref={inputRef}
           type="text"
           placeholder={placeholder}
           className="md:w-full border px-3 py-2 rounded mb-4"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-        />
+          />
+        </div>
 
+       
+       <div className="flex-1 overflow-y-auto p-1 scrollbar-hide">
         {loading ? (
           <p>Searching...</p>
         ) : results ? (
@@ -126,19 +142,19 @@ export function SearchModal({
               items={results.projects}
               type="project"
               onSelect={handleSelect}
-            />
+              />
             <ResultSection
               title="Tasks"
               items={results.tasks}
               type="task"
               onSelect={handleSelect}
-            />
+              />
             <ResultSection
               title="Comments"
               items={results.comments}
               type="comment"
               onSelect={handleSelect}
-            />
+              />
           </>
         ) : (
           <p className="text-sm text-gray-500">
@@ -147,6 +163,7 @@ export function SearchModal({
               : "No results."}
           </p>
         )}
+      </div>
       </div>
     </div>
   );

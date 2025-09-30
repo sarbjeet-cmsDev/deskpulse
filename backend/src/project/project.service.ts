@@ -214,6 +214,7 @@ export class ProjectService {
   async findActiveProjects(): Promise<Project[]> {
     return this.projectModel.find({ is_active: true }).exec();
   }
+
   async addUser(projectId: string, userId: string): Promise<Project> {
     const updatedProject = await this.projectModel
       .findByIdAndUpdate(
@@ -264,6 +265,31 @@ export class ProjectService {
         .sort({ createdAt: -1 })
         .exec(),
       this.projectModel.countDocuments({ users: userId }),
+    ]);
+
+    return {
+      data,
+      page,
+      limit,
+      total,
+    };
+  }
+
+  async findFavoriteProject(
+    userId: string,
+    page: number,
+    limit: number
+  ): Promise<{ data: Project[]; total: number; page: number; limit: number }> {
+    const skip = (page - 1) * limit;
+    const filter = { users: userId, isFavorite: userId };
+    const [data, total] = await Promise.all([
+      this.projectModel
+        .find(filter)
+        .skip(skip)
+        .limit(limit)
+        .sort({ createdAt: -1 })
+        .exec(),
+      this.projectModel.countDocuments(filter),
     ]);
 
     return {

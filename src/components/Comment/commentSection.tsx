@@ -266,20 +266,24 @@ export default function CommentInputSection({
       };
 
       await CommentService.createComment(payload);
-
+      
+      if (mentionedUserIds.length) {
       if (!socketRef.current.connected) {
         socketRef.current.connect();
       }
       socketRef.current.on("connect", () => {
         socketRef.current.emit("register-user", user.id);
       });
-
+      
+    mentionedUserIds.forEach((id) => {
       socketRef.current.emit("task-updated", {
         taskId: taskId,
-        sender: user.firstName + " " + user.lastName,
-        receiverId: `${mentionedUserIds}`,
+        sender: `${user.firstName} ${user.lastName}`,
+        receiverId: id,
         description: "mentioned you in a comment",
       });
+    })
+  }
 
       setContent("");
       onCommentCreated();

@@ -14,12 +14,14 @@ interface CommentProps {
   comments: IComment[];
   refreshComments: () => void;
   fetchComments?: any;
+  projectId?:any;
 }
 
 export default function CommentList({
   comments,
   refreshComments,
   fetchComments,
+  projectId,
 }: CommentProps) {
   const params = useParams();
   const taskCode = params?.id as string;
@@ -80,7 +82,7 @@ export default function CommentList({
             </div>
 
             {isEditing ? (
-              <div className="mt-3">
+              <div className="mt-3 break-all">
                 <CommentInputSection
                   taskId={comment.task}
                   createdBy={comment.created_by || ""}
@@ -97,10 +99,11 @@ export default function CommentList({
                   inline
                   isButton={true}
                   title="Edit Comment"
+                  projectId={projectId}
                 />
               </div>
             ) : (
-              <p className="mt-3 text-gray-800 leading-relaxed break-words whitespace-pre-line text-sm sm:text-base">
+              <p className="mt-3 text-gray-800 leading-relaxed break-all whitespace-pre-line text-sm sm:text-base overflow-hidden">
                 {renderMentions(comment)}
               </p>
             )}
@@ -138,7 +141,7 @@ export default function CommentList({
               )}
             </div>
             {isReplying && (
-              <div className="mt-4">
+              <div className="mt-4 break-all">
                 <CommentInputSection
                   defaultValue=""
                   taskId={comment.task}
@@ -154,7 +157,7 @@ export default function CommentList({
                   isButton={true}
                   title="Comment"
                   code={taskCode}
-
+                  projectId={projectId}
                 />
               </div>
             )}

@@ -48,7 +48,7 @@ export function ResultSection({
                             text-gray-800
                             hover:bg-gray-200 hover:text-theme-primary
                             focus:bg-gray-100 focus:text-theme-primary focus:outline-none
-                            cursor-pointer
+                            cursor-pointer break-all overflow-hidden
                             "
               >
                 {type === "comment"

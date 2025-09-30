@@ -6,7 +6,6 @@ import { TaskService } from 'src/task/task.service';
 import { validateTaskId } from './comment.helper';
 import { UserService } from 'src/user/user.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { log } from 'console';
 
 @Injectable()
 export class CommentService {

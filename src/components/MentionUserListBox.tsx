@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { Modal, ModalBody, ModalContent } from "@heroui/react";
 import ReactSelect from "react-select";
 import { debounce } from "lodash";
-import AdminUserService, { IUser } from "@/service/adminUser.service";
+import { IUser } from "@/service/adminUser.service";
 import ProjectService from "@/service/project.service";
 import { getSocket } from "@/utils/socket"; // Adjust path as needed
 import { useSelector } from "react-redux";

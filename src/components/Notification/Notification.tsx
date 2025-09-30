@@ -93,7 +93,7 @@ export const NotificationDrawer = () => {
 
               >
                 <div className="flex-1 text-sm text-gray-700">
-                  <p className="mb-1">
+                  <p className="mb-1 max-w-[250px] overflow-hidden">
                     <span className="font-medium text-indigo-600 cursor-pointer">
                       {item?.content}
                     </span>

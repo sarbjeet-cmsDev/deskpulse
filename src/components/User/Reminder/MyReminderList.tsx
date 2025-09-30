@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import Pagination from "@/components/Pagination/pagination";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import { Button } from "@/components/Form/Button";
 
 export default function MyReminderList() {
   const router = useRouter();
@@ -52,15 +53,17 @@ export default function MyReminderList() {
 
   return (
     <div className="max-w-6xl mx-auto md:p-6 p-3">
-      <div className="flex justify-center items-center md:p-[24px] p-2 border-b border-[#31394f14]">
+      <div className="flex justify-center items-center md:py-[24px] py-2 border-b border-[#31394f14]">
         <div className="cursor-pointer">
           <span onClick={() => router.back()}>
             <Image src={leftarrow} alt="Back" width={16} height={16} />
           </span>
         </div>
-        <H3 className="text-center flex-1 text-base sm:text-lg md:text-xl">
+        <H3 className="text-center flex-1 text-base sm:text-lg md:text-x">
           My Reminders
         </H3>
+
+        <Button className="btn-primary" onPress={()=>router.push('/reminder/create')}>Create Reminder</Button>
       </div>
 
       {loading ? (

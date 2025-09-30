@@ -16,6 +16,17 @@ const ProjectService = {
     }
   },
 
+  async getFavoriteProject(page = 1, limit = 25): Promise<IProjectResponse> {
+    try {
+      const response = await axiosClient.get(
+        `${API_URL}/projects/favorite?page=${page}&limit=${limit}`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error("Failed to fetch user projects");
+    }
+  },
+
   async getProjectsDetail(page = 1, limit = 4, title?: string) {
     const params = new URLSearchParams();
     params.set("page", String(page));

@@ -195,7 +195,7 @@ export default function TaskDetails({ id }: Props) {
                 fetchTask={fetchTask}
               />
             </div>
-            <div className="">
+            <div className="ml-10">
               <DropdownOptions
                 options={[
                   {
@@ -293,6 +293,7 @@ export default function TaskDetails({ id }: Props) {
                 comments={comments}
                 refreshComments={fetchComments}
                 fetchComments={() => fetchComments()}
+                projectId={projectIdDetails}
               />
             </div>
           </div>
