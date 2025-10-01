@@ -142,7 +142,7 @@ export default function TimelineList({
           >
             <div className="flex items-center gap-2">
 
-              <span className="font-medium text-gray-800">
+              <span className="font-sm text-gray-800 break-all overflow-hidden px-2  whitespace-pre-line">
                 {timeline.comment || "Meeting"}
               </span>
             </div>

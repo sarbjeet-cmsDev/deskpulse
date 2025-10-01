@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+const lettersAndSpacesRegex = /^[A-Za-z\s]+$/;
+
 export const projectCreateSchema = z.object({
   users: z.array(z.string(), {
     required_error: "Users are required",
@@ -36,8 +38,11 @@ export const projectCreateSchema = z.object({
   url_uat: z.string().optional(),
   // created_by:z.string().optional(),
   // updated_by:z.string().optional(),
-  title: z.string().nonempty("Title is required"),
-  workSpace: z.string().nonempty("WorkSpace is required")
+  title: z.string().nonempty("Title is required").regex(
+      lettersAndSpacesRegex,
+      "Title must contain only letters and spaces"
+    ),
+  // workSpace: z.string().nonempty("WorkSpace is required")
 });
 
 export const projectUpdateSchema = projectCreateSchema.partial();

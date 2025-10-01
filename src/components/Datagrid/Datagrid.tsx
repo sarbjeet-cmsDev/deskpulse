@@ -82,10 +82,10 @@ const DataGrid: React.FC<DataGridProps> = ({
                 onSearch?.("");
               }
             }}
-            className="p-2 border rounded-md md:w-full md:max-w-md"
+            className="p-2 border rounded-md md:w-full md:max-w-md outline-none"
           />
           <Button
-            onClick={() => {
+            onPress={() => {
               setSearchInput("");
               onSearch?.("");
             }}
@@ -134,7 +134,7 @@ const DataGrid: React.FC<DataGridProps> = ({
               rows.map((row, idx) => (
                 <tr key={idx} className="border-t hover:bg-gray-50">
                   {headers.map((header) => (
-                    <td key={header.id} className="px-4 py-2">
+                    <td key={header.id} className="px-4 py-2 break-all overflow-hidden">
                       {Array.isArray(row[header.id])
                         ? row[header.id].join(', ')
                         : row[header.id]}

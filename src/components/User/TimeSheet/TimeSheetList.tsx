@@ -8,7 +8,7 @@ import TimelineService from "@/service/timeline.service";
 import Datagrid from "@/components/Datagrid/Datagrid";
 import { Button } from "@heroui/button";
 import { RangeCalendar } from "@heroui/react";
-import { today, getLocalTimeZone,CalendarDate } from "@internationalized/date";
+import { getLocalTimeZone,CalendarDate } from "@internationalized/date";
 import dayjs from "dayjs";
 import { format } from "date-fns";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
@@ -19,6 +19,7 @@ import ChevronUp from "@/assets/images/chevronup.svg";
 import ChevronDown from "@/assets/images/chevrondown.svg";
 import { useOutsideClick } from "@/utils/useOutsideClickHandler";
 import formatMinutes from "@/utils/formatMinutes";
+import { H3 } from "@/components/Heading/H3";
 
 function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState(value);
@@ -34,6 +35,7 @@ type Task = {
   comment: string;
   time_spent: number;
   date:any;
+  task_code:string;
 };
 
 const TimeSheetList = () => {
@@ -51,6 +53,7 @@ const TimeSheetList = () => {
   const [totalRecords, setTotalRecords] = useState(0);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [sortField, setSortField] = useState("task_title");
+  const [totalTimeSpent, setTotalTimeSpent] = useState(0);
   
     const jsToday = new Date();
     jsToday.setHours(0, 0, 0, 0);
@@ -81,12 +84,7 @@ const TimeSheetList = () => {
     if (pageFromUrl !== page) setPage(pageFromUrl);
   }, [searchParams]);
 
-  useEffect(() => {
-    if (user?.id) {
-      fetchTasks();
-    }
-  }, [user?.id, debouncedSearch, page, sortOrder, sortField, selectedRange]);
-
+  
   const fetchTasks = async () => {
     try {
       const startDate = selectedRange.start.toDate(getLocalTimeZone()).toISOString();
@@ -98,15 +96,34 @@ const TimeSheetList = () => {
         comment: item.comment,
         time_spent: item.time_spent,
         date:item.date,
+        task_code:item.task_code,
       }));
-
+      
       setTasks(cleanedTasks);
       setTotalRecords(res.total || 0);
       setTotalPages(Math.ceil((res.total || 0) / limit));
+      setTotalTimeSpent(res.totalTimeSpent);
     } catch (err) {
       console.error("Failed to fetch tasks", err);
     }
   };
+  
+  useEffect(() => {
+    if (user?.id) {
+      fetchTasks();
+    }
+  }, [user?.id, debouncedSearch, page, sortOrder, sortField, selectedRange]);
+  
+  const resetPage = () => {
+    setPage(1);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", "1");
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+
+  useEffect(() => {
+    resetPage()
+  }, [selectedRange])
 
   const headers = [
     { id: "taskNumber", title: "TimeSheet", is_sortable: false },
@@ -128,6 +145,7 @@ const TimeSheetList = () => {
       time_spent: formattedTime,
       task_title: task.task_title || "—",
       comment: task.comment,
+      actions: [{ title: "View" }],
     };
   });
 
@@ -166,7 +184,7 @@ const TimeSheetList = () => {
             </Button>
 
             <div
-              className={`transition-all absolute duration-300 ease-in-out overflow-hidden border bg-white shadow rounded mt-2 ${showCalendar
+              className={`transition-all absolute duration-300 ease-in-out overflow-hidden border bg-white shadow z-[99] rounded mt-2 ${showCalendar
                 ? "max-h-[500px] opacity-100 scale-100"
                 : "max-h-0 opacity-0 scale-95"
                 }`}
@@ -195,7 +213,7 @@ const TimeSheetList = () => {
         </div>
 
         <div className="flex flex-col md:flex-row gap-4">
-          <div className=" w-full">
+          <div className="w-full">
             <Datagrid
               headers={headers}
               rows={rows}
@@ -205,6 +223,11 @@ const TimeSheetList = () => {
                 current_page: page,
                 limit: limit,
               }}
+              onAction={async (action, row) => {
+                              if (action === "View") {
+                                router.push(`/task/${row.task_code}`);
+                              }
+                            }}
               sort={{ field: sortField, order: sortOrder }}
               onSort={(field) => {
                 setSortField(field);
@@ -217,6 +240,12 @@ const TimeSheetList = () => {
             />
           </div>
         </div>
+          <div className="flex items-center justify-between mt-10 p-4 bg-gray-50 rounded-2xl shadow-sm w-fit">
+                  <H3 className="text-gray-700 md:text-[20px] text-sm">Total Time Spent</H3>
+                  <span className="ml-4 px-3 py-1 rounded-xl bg-theme-primary text-white font-semibold">
+                    {formatMinutes(totalTimeSpent)}
+                  </span>
+                </div>
       </main>
     </div>
   );

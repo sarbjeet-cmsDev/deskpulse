@@ -4,7 +4,7 @@ import { ResultSection } from "./ResultSection";
 import { SearchResponse } from "./types";
 import { useDebounce } from "./hooks/useDebounce";
 import { usePathname } from "next/navigation";
-import { Input } from "../Form/Input";
+
 
 interface SearchModalProps {
   open: boolean;
@@ -121,11 +121,11 @@ export function SearchModal({
         </button>
        
        <div className="sticky top-0 bg-white z-10">
-        <Input
+        <input
           ref={inputRef}
           type="text"
           placeholder={placeholder}
-          className="md:w-full border px-3 py-2 rounded mb-4"
+          className="md:w-full border px-3 py-2 rounded mb-4 outline-none"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           />

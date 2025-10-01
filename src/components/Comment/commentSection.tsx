@@ -103,6 +103,13 @@ export default function CommentInputSection({
     input.onchange = async () => {
       const file = input.files?.[0];
       if (!file) return;
+      const maxSize = 10 * 1024 * 1024;
+      const maxSizeMB = (maxSize / (1024 * 1024)).toFixed(0);
+ 
+     if (file.size > maxSize) {
+       setError(`File size exceeds ${maxSizeMB}MB. Please upload an image smaller than ${maxSizeMB}MB.`);
+       return;
+     }
 
       try {
         setLoading(true);

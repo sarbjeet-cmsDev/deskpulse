@@ -21,7 +21,7 @@ import DescriptionInputToolbar from "@/components/common/Description/description
 import { getSocket } from "@/utils/socket";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { WorkSpaceService } from "@/service/workSpace.service";
+
 
 type CreateProjectInput = z.infer<typeof projectCreateSchema>;
 type UserOption = { label: string; value: string };
@@ -36,7 +36,7 @@ const CreateProjectForm = () => {
   const [inputValue, setInputValue] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const user: any = useSelector((state: RootState) => state.user.data);
-  const [workSpace, setworkSpace] = useState([])
+
   const {
     register,
     handleSubmit,
@@ -62,7 +62,6 @@ const CreateProjectForm = () => {
       url_uat: "",
       deploy_instruction: "",
       critical_notes: "",
-      workSpace: "",
     },
   });
 
@@ -165,13 +164,6 @@ const CreateProjectForm = () => {
     }
   };
 
-  const fetchWorkSpace = (async () => {
-    const result: any = await WorkSpaceService.getAllWorkSpace()
-    setworkSpace(result?.data)
-  })
-  useEffect(() => {
-    fetchWorkSpace()
-  }, [])
   return (
     <div className="min-h-screen flex justify-center md:pt-10">
       <form
@@ -332,26 +324,6 @@ const CreateProjectForm = () => {
         {errors.is_active && (
           <p className="text-sm text-red-500">{errors.is_active.message}</p>
         )}
-
-
-        <div className="w-full">
-          <select {...register("workSpace")} className="w-full h-[40px]">
-            <option value="" disabled>
-              Select WorkSpace
-            </option>
-            {workSpace?.map((item: any) => (
-              <option value={item?._id} key={item?._id}>
-                {item?.title}
-              </option>
-            ))}
-          </select>
-
-          {errors.workSpace && (
-            <p className="text-sm text-red-500">{errors.workSpace.message}</p>
-          )}
-        </div>
-
-
 
         <Button
           type="submit"

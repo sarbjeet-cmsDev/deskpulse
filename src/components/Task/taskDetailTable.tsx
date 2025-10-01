@@ -133,11 +133,11 @@ export default function DetailsTable({
   );
   const style = activeColor?.color
     ? {
-      backgroundColor: activeColor.color ? activeColor.color : "#7980ff",
+      backgroundColor: activeColor.color ? activeColor.color : "var(--color-primary)",
       color: isDarkColor(activeColor.color) ? "white" : "black",
     }
     : {
-      backgroundColor: activeColor?.color ? activeColor?.color : "#7980ff",
+      backgroundColor: activeColor?.color ? activeColor?.color : "var(--color-primary)",
     };
 
   return (

@@ -13,6 +13,7 @@ import { useEffect, useState } from 'react';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createChecklistSchema } from '../validation/taskChecklistValidation';
+import { TextArea } from "../Form/TextArea";
 
 interface CreateTaskChecklistModalProps {
   onCreate: (title: string) => Promise<void>;
@@ -84,17 +85,20 @@ export default function CreateChecklistModal({ onCreate }: CreateTaskChecklistMo
                   className="px-4 py-4 space-y-4"
                   noValidate
                 >
-                  <div className="px-4 py-4">
-                    <Input
-                      label="Title"
-                      type="text"
-                      placeholder="Enter title"
-                      {...register("title")}
-                    />
-                    {errors.title && (
-                      <p className="text-red-500 text-xs mt-1">{errors.title.message as string}</p>
-                    )}
-                  </div>
+      
+                   <div>
+                                      <TextArea
+                                        className="w-full rounded-lg border border-gray-100 bg-gray-100 p-3 focus:outline-none"
+                                        placeholder="Title"
+                                        {...register("title")}
+                                        rows={2}
+                                      />
+                                      {errors.title && (
+                                        <p className="text-red-500 text-xs mt-1">
+                                          {errors.title.message as string}
+                                        </p>
+                                      )}
+                                    </div>
 
                   <div className="flex flex-col divide-y border-t">
                     <Button

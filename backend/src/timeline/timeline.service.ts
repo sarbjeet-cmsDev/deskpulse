@@ -119,7 +119,7 @@ export class TimelineService {
     startDate?: string,
     endDate?: string,
     sortOrder: "asc" | "desc" = "desc",
-  ): Promise<{ data: Timeline[]; total: number; page: number; limit: number }> {
+  ): Promise<{ data: Timeline[]; total: number; page: number; limit: number; totalTimeSpent:number; }> {
     const skip = (page - 1) * limit;
 
     const matchFilter: any = {
@@ -167,6 +167,7 @@ export class TimelineService {
           createdAt:1,
           taskId: "$task",
           task_title: "$tasks.title",
+          task_code:"$tasks.code",
 
         },
       },
@@ -178,11 +179,36 @@ export class TimelineService {
       },
     ]);
 
+    const totalTimePipeline: any[] = [
+    { $match: matchFilter },
+    {
+      $lookup: {
+        from: "tasks",
+        localField: "task",
+        foreignField: "_id",
+        as: "task_detail",
+      },
+    },
+    { $unwind: { path: "$task_detail", preserveNullAndEmptyArrays: true } },
+  
+    {
+      $group: {
+        _id: null,
+        totalTimeSpent: { $sum: "$time_spent" },
+      },
+    },
+  ];
+
+  const totalTimeResult = await this.timelineModel.aggregate(totalTimePipeline).exec();
+  const totalTimeSpent = totalTimeResult.length > 0 ? totalTimeResult[0].totalTimeSpent : 0;
+
+
     return {
       data,
       total,
       page,
       limit,
+      totalTimeSpent,
     };
   }
 

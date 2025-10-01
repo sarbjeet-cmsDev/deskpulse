@@ -125,7 +125,7 @@ export default function AvatarList({
                   }}
                   className={`flex items-center justify-center w-8 h-8 rounded-full text-white text-sm font-semibold transition cursor-pointer ${isActive
                     ? "bg-green-600 scale-110 shadow-md"
-                    : "bg-blue-500 hover:bg-blue-600"
+                    : "bg-theme-primary hover:bg-theme-secondary"
                     }`}
                 >
                   {!hasImgError && profileImageUrl ? (
@@ -214,7 +214,7 @@ export default function AvatarList({
                       <div
                         className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold text-xs ${selectedUserIds.includes(usr._id)
                           ? "bg-green-600 border-2"
-                          : "bg-blue-500"
+                          : "bg-theme-primary hover:bg-theme-secondary"
                           }`}
                       >
                         {!hasImgError && profileImageUrl ? (

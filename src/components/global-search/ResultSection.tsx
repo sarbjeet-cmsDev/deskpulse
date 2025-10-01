@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import Link from "next/link";
+import { SearchIcon } from "../icons";
 
 interface ResultSectionProps {
   title: string;
@@ -38,19 +39,25 @@ export function ResultSection({
 
 
           return (
-            <li key={item._id}>
-              <Link
-                href={href}
-
-                onClick={onSelect}
-                className="
-                            block w-full rounded px-2 py-1
+            <li key={item._id} className="block w-full rounded px-2 py-1
                             text-gray-800
-                            hover:bg-gray-200 hover:text-theme-primary
-                            focus:bg-gray-100 focus:text-theme-primary focus:outline-none
-                            cursor-pointer break-all overflow-hidden
-                            "
+                            hover:bg-sky-100 hover:text-theme-primary
+                            focus:bg-sky-100 focus:text-theme-primary focus:outline-none
+                            cursor-pointer break-all overflow-hidden">
+              <Link
+              href={href}
+              onClick={onSelect}
+              className="flex
+              block w-full rounded px-2 py-1
+              text-gray-800
+              hover:bg-sky-100 hover:text-theme-primary
+              focus:bg-sky-100 focus:text-theme-primary focus:outline-none
+              cursor-pointer break-all overflow-hidden
+              "
               >
+                <div className="mt-1 mr-2">
+                <SearchIcon/>
+                </div>
                 {type === "comment"
                   ? stripHtml(item.content).slice(0, 30) + "..."
                   : item.title}

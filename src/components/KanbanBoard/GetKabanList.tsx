@@ -229,7 +229,7 @@ export const GetKanbonList = () => {
             variant="bordered"
             className={`rounded-xl px-6 py-2 font-medium transition ${
               taskView === "list"
-                ? "bg-blue-600 text-white shadow-md"
+                ? "bg-theme-primary text-white shadow-md"
                 : "hover:bg-gray-100 text-gray-700"
             }`}
             onPress={() => handleTaskView("list")}
@@ -240,7 +240,7 @@ export const GetKanbonList = () => {
             variant="bordered"
             className={`rounded-xl px-6 py-2 font-medium transition ${
               taskView === "kanban"
-                ? "bg-blue-600 text-white shadow-md"
+                ? "bg-theme-primary text-white shadow-md"
                 : "hover:bg-gray-100 text-gray-700"
             }`}
             onPress={() => handleTaskView("kanban")}

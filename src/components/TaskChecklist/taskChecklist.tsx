@@ -80,7 +80,11 @@ export default function TaskChecklist({ taskchecklist, refreshList }: SubTasksPr
                   onChange={(e) => handleStatusChange(checklist, e.target.checked)}
                   className="accent-green-500"
                 />
-                <span className={checklist.status === "complete" ? "line-through text-gray-500" : ""}>
+                <span className={`break-all overflow-hidden px-2 whitespace-pre-line ${
+                    checklist.status === "complete"
+                      ? "font-sm line-through text-gray-500"
+                      : "font-sm text-gray-800"
+                  }`}>
                   {checklist.title}
                 </span>
               </div>

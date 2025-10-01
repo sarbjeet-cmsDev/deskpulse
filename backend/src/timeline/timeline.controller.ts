@@ -87,7 +87,7 @@ export class TimelineController {
     @Query("startDate") startDate?: string,
     @Query("endDate") endDate?: string,
     @Query("sortOrder") sortOrder: "asc" | "desc" = "asc",
-  ): Promise<{ data: Timeline[]; total: number; page: number; limit: number }> {
+  ): Promise<{ data: Timeline[]; total: number; page: number; limit: number; totalTimeSpent: number }> {
 
     return this.timelineService.findTimeLineByUserId(
       userId,

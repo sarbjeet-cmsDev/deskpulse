@@ -173,7 +173,7 @@ export default function LeftMenuDrawer() {
                         className={`text-start px-4 py-2 font-semibold text-[16px] border border-none rounded-md cursor-pointer transition-colors duration-500
                 ${pathname === item.href
                             ? "bg-blue-500 text-white"
-                            : "bg-white text-black hover:bg-[#7980ff] hover:text-white"
+                            : "bg-white text-black hover:bg-theme-primary hover:text-white"
                           }`}
                         onClick={onClose}
                       >
