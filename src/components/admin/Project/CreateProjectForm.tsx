@@ -35,6 +35,7 @@ const CreateProjectForm = () => {
   const [userOptions, setUserOptions] = useState<UserOption[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [error,setError] = useState("");
   const user: any = useSelector((state: RootState) => state.user.data);
 
   const {
@@ -112,6 +113,7 @@ const CreateProjectForm = () => {
   const socketRef = useRef(getSocket());
 
   const onSubmit = async (data: CreateProjectInput) => {
+    setError("");
     try {
       const formData: any = new FormData();
 
@@ -150,10 +152,6 @@ const CreateProjectForm = () => {
             description: "Assigned You a Project",
           });
         });
-
-        console.log(
-          "✅ socket event 'task-updated' hit while assigned user in Project"
-        );
       }
 
       reset();
@@ -163,6 +161,23 @@ const CreateProjectForm = () => {
       console.error(error);
     }
   };
+
+
+  const sizeLimit = Number(process.env.NEXT_PUBLIC_MAX_FILE_SIZE);
+  const handleFileChange = (e:any) => {
+  const file = e.target.files[0];
+  const maxAllowedSize = sizeLimit * 1024 * 1024; 
+  if (file && file.size > maxAllowedSize) {
+    setError(`File is too large. Please select an image smaller than ${sizeLimit}MB.`)
+    e.target.value = '';
+
+  } else {
+    setSelectedFile(e.target.files?.[0] || null)
+    setError("")
+  }
+};
+
+const disable = error ? true : false;
 
   return (
     <div className="min-h-screen flex justify-center md:pt-10">
@@ -309,10 +324,13 @@ const CreateProjectForm = () => {
           type="file"
           required
           accept="image/*"
-          onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+          onChange={handleFileChange}
         />
         {errors.avatar && (
           <p className="text-sm text-red-500">{errors.avatar.message}</p>
+        )}
+         {error&& (
+          <p className="text-sm text-red-500">{error}</p>
         )}
 
         <div>
@@ -327,8 +345,8 @@ const CreateProjectForm = () => {
 
         <Button
           type="submit"
-          disabled={isSubmitting}
-          className="w-full btn-primary text-white py-2 px-4 rounded"
+          disabled={isSubmitting || disable}
+          className={`w-full btn-primary text-white py-2 px-4 rounded cursor-pointer`}
         >
           {isSubmitting ? "Creating..." : "Create Project"}
         </Button>

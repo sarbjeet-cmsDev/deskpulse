@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IComment } from "@/types/comment.interface";
 import { formatDistanceToNow } from "date-fns";
 import CommentInputSection from "@/components/Comment/commentSection";
@@ -9,12 +9,13 @@ import ShowMoreLess from "../common/ShowMoreLess/ShowMoreLess";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { useParams } from "next/navigation";
+import ImageLightbox from "../common/ImagePopUp/ImageLightbox";
 
 interface CommentProps {
   comments: IComment[];
   refreshComments: () => void;
   fetchComments?: any;
-  projectId?:any;
+  projectId?: any;
 }
 
 export default function CommentList({
@@ -30,6 +31,8 @@ export default function CommentList({
   const [activeReplyId, setActiveReplyId] = useState<string | null>(null);
   const [activeEditId, setActiveEditId] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(step);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [currentImage, setCurrentImage] = useState<string | null>(null);
 
   const renderMentions = (comment: IComment) => {
     let content = comment.content;
@@ -48,6 +51,21 @@ export default function CommentList({
     return <span dangerouslySetInnerHTML={{ __html: content }} />;
   };
 
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      const target = e.target as HTMLImageElement;
+      if (target?.tagName === "IMG") {
+        setCurrentImage(target.src);
+        setLightboxOpen(true);
+      }
+    };
+    document.addEventListener("click", handler);
+
+    return () => {
+      document.removeEventListener("click", handler);
+    };
+  }, []);
+
   const renderComment = (comment: IComment, isChild = false) => {
     const isEditing = activeEditId === comment._id;
     const isReplying = activeReplyId === comment._id;
@@ -65,8 +83,9 @@ export default function CommentList({
     return (
       <div
         key={comment._id}
-        className={`rounded-xl border p-4 transition-shadow duration-200 ${isChild ? "ml-4 sm:ml-6 md:ml-10" : "mt-5"
-          } bg-gray-50 border-gray-200 hover:shadow-md`}
+        className={`rounded-xl border p-4 transition-shadow duration-200 ${
+          isChild ? "ml-4 sm:ml-6 md:ml-10" : "mt-5"
+        } bg-gray-50 border-gray-200 hover:shadow-md`}
       >
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1">
@@ -130,7 +149,9 @@ export default function CommentList({
                         Edit
                       </button>
                       <button
-                        onClick={() => deleteComment(comment._id, fetchComments)}
+                        onClick={() =>
+                          deleteComment(comment._id, fetchComments)
+                        }
                         className="hover:text-red-600 text-red-500 focus:outline-none"
                       >
                         Delete
@@ -184,7 +205,6 @@ export default function CommentList({
 
   const visibleTopComments = topLevelComments.slice(0, visibleCount);
 
-
   return (
     <div className="mt-6">
       <ul className="space-y-2">
@@ -197,6 +217,13 @@ export default function CommentList({
         step={step}
         onChange={setVisibleCount}
       />
+      {lightboxOpen && (
+        <ImageLightbox
+          open={lightboxOpen}
+          imageUrl={currentImage ?? ""}
+          onClose={() => setLightboxOpen(false)}
+        />
+      )}
     </div>
   );
 }

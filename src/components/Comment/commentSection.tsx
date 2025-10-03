@@ -93,6 +93,7 @@ export default function CommentInputSection({
     }
   }, [defaultValue, isEditing]);
 
+  const sizeLimit = Number(process.env.NEXT_PUBLIC_MAX_FILE_SIZE);
 
   const imageHandler = () => {
     const input = document.createElement("input");
@@ -103,11 +104,10 @@ export default function CommentInputSection({
     input.onchange = async () => {
       const file = input.files?.[0];
       if (!file) return;
-      const maxSize = 10 * 1024 * 1024;
-      const maxSizeMB = (maxSize / (1024 * 1024)).toFixed(0);
+      const maxSize = sizeLimit * 1024 * 1024;
  
      if (file.size > maxSize) {
-       setError(`File size exceeds ${maxSizeMB}MB. Please upload an image smaller than ${maxSizeMB}MB.`);
+       setError(`File is too large. Please upload an image smaller than ${sizeLimit}MB.`);
        return;
      }
 

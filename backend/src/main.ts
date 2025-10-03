@@ -12,8 +12,8 @@ dotenv.config({ path: "../.env" });
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: false });
-  app.use(express.json({ limit: '10mb' }));
-  app.use(express.urlencoded({ limit: '10mb', extended: true }));
+  app.use(express.json({ limit: `${process.env.NEXT_PUBLIC_MAX_FILE_SIZE}mb` }));
+  app.use(express.urlencoded({ limit: `${process.env.NEXT_PUBLIC_MAX_FILE_SIZE}mb`, extended: true }));
 
   app.useGlobalPipes(
     new ValidationPipe({

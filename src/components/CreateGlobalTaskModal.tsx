@@ -19,6 +19,7 @@ import AdminProjectService from "@/service/adminProject.service";
 import DescriptionInputToolbar from "./common/Description/descriptionToolbar";
 import { ProjectKanbon } from "@/service/projectKanbon.service";
 import { useParams } from "next/navigation";
+import { usePathname } from 'next/navigation'
 
 interface CreateGlobalTaskModalProps {
   isOpen: boolean;
@@ -56,6 +57,7 @@ export default function CreateGlobalTaskModal({
 
   const loginUser: any = useSelector((state: RootState) => state.user.data);
   const socketRef = useRef(getSocket());
+  const pathname = usePathname();
 
   const {
     register,
@@ -103,7 +105,6 @@ export default function CreateGlobalTaskModal({
 
   useEffect(() => {
     let cancelled = false;
-    console.log(code, "code++=")
     async function autoSelectProject() {
       try {
         if (code) {
@@ -232,6 +233,14 @@ export default function CreateGlobalTaskModal({
             ? `Assigned you a task : ${title}`
             : `${title} task is assigned by you.`,
         });
+      }
+
+
+      if(code){
+        const path = `/project/${code}`
+        if(pathname == path){
+          location.reload();
+        }
       }
 
       reset();

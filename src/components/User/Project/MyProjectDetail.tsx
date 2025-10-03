@@ -42,6 +42,7 @@ export default function MyProjectDetails({ code }: Props) {
   const socketRef = useRef(getSocket());
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+  const [error,setError] = useState("");
 
   const fetchProjectByCode = async () => {
     const result = await ProjectService.getProjectByCode(code);
@@ -218,6 +219,16 @@ export default function MyProjectDetails({ code }: Props) {
     setLightboxImage(url);
     setLightboxOpen(true);
   };
+    
+  const sizeLimit = Number(process.env.NEXT_PUBLIC_MAX_FILE_SIZE);
+  const handleFileError = () => {
+    setError(`File is too large. Please select an image smaller than ${sizeLimit}MB.`)
+  }
+
+  const handleFileSuccess = () => {
+    setError("");
+  };
+
 
   if (loading) return <div className="p-6 text-center">Loading project...</div>;
   if (!project) return <div className="p-6 text-center">Project not found</div>;
@@ -253,6 +264,8 @@ export default function MyProjectDetails({ code }: Props) {
                 project={project}
                 projectId={projectId}
                 fetchProject={fetchProject}
+                handleFileError={handleFileError}
+                handleFileSuccess={handleFileSuccess}
               />
             </div>
           </div>
@@ -282,6 +295,10 @@ export default function MyProjectDetails({ code }: Props) {
                   />
                 )}
               </div>
+              {error&& (
+                  <p className="text-sm text-red-500 mt-1">{error}</p>
+                )}
+
 
               <InstructionCard project={project} />
               <Details
