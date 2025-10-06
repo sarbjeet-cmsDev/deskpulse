@@ -50,8 +50,13 @@ export class TimelineController {
   async update(
     @Param("id") id: string,
     @Body() updateTimelineDto: UpdateTimelineDto
-  ): Promise<Timeline> {
-    return this.timelineService.update(id, updateTimelineDto);
+  ): Promise<{message: string; data :Timeline}> {
+    const updatedTimeline = await this.timelineService.update(id, updateTimelineDto);
+    return {
+      message : "Timeline Updated Successfully",
+      data : updatedTimeline
+    }
+    
   }
 
   @Delete(":id")

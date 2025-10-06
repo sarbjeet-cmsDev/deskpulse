@@ -41,8 +41,9 @@ export class CreateTimelineDto {
 export class UpdateTimelineDto {
     @IsMongoId()
     task: MongooseSchema.Types.ObjectId;
-
-    @IsDate()
+    
+    @Type(() => Date)
+    @IsDate({ message: 'Date must be a valid Date instance.' })
     date?: Date;
 
     @IsMongoId()
@@ -50,11 +51,11 @@ export class UpdateTimelineDto {
 
     @IsOptional()
     @IsString()
-    description?: string;
+    comment?: string;
 
 
     @IsNotEmpty()
-    time_spent?: string; 
+    time_spent?: number; 
 
     @IsBoolean()
     @IsOptional()

@@ -57,6 +57,9 @@ export class TimelineService {
     if (updateTaskDto.task) {
       await validateTaskId(this.taskService, updateTaskDto.task.toString());
     }
+     if (updateTaskDto.time_spent) {
+      updateTaskDto.time_spent = Number(updateTaskDto.time_spent) * 60;
+    }
     return this.timelineModel
       .findByIdAndUpdate(id, updateTaskDto, { new: true })
       .exec();

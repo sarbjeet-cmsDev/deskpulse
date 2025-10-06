@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import { RootState } from "@/store/store";
 import { useSelector } from "react-redux";
 import TaskService from "@/service/task.service";
-import { getSocket } from "@/utils/socket"; //socket
+import { getSocket } from "@/utils/socket";
 
 
 export default function Dashboard() {
@@ -23,6 +23,7 @@ export default function Dashboard() {
 
 
   const user: any = useSelector((state: RootState) => state.auth.user);
+  const role = user?.role;
 
   const getTaskByStatus = ["backlog", "todo", "progress"]
   useEffect(() => {
@@ -98,7 +99,7 @@ export default function Dashboard() {
               <H3>Fav Projects</H3>
               <Link
                 className="font-bold text-[#31394f99]"
-                href={`/project/list?favorite=true`}
+                href={`${role == 'admin' ? "/project/list" : "/project/list?favorite=true"}`}
               >
                 View All
               </Link>

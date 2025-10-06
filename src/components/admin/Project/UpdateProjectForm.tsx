@@ -45,6 +45,7 @@ const UpdateProjectForm = ({ id }: Props) => {
   const [version, setVersion] = useState<number>(Date.now());
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxImage, setLightboxImage] = useState("");
+  const [isUpdate, SetIsUpdate] = useState(false);
 
   const user: any = useSelector((state: RootState) => state.user.data);
 
@@ -105,7 +106,7 @@ const UpdateProjectForm = ({ id }: Props) => {
 
   const onSubmit = async (data: UpdateProjectInput) => {
     try {
-
+      SetIsUpdate(true); 
       const project = await AdminProjectService.getProjectById(id);
       const oldUsers = project?.users;
 
@@ -130,8 +131,7 @@ const UpdateProjectForm = ({ id }: Props) => {
       }
       
       await AdminProjectService.updateProject(id, formData);
-
-     const FilteredUser = (data?.users ?? []).filter((id)=> !(oldUsers ?? []).includes(id));
+      const FilteredUser = (data?.users ?? []).filter((id)=> !(oldUsers ?? []).includes(id));
 
       if (FilteredUser.length) {
         if (!socketRef.current.connected) {
@@ -158,7 +158,9 @@ const UpdateProjectForm = ({ id }: Props) => {
       // router.push("/admin/project");
     } catch (error) {
       console.error(error);
-    }
+    }finally {
+    SetIsUpdate(false);
+  }
   };
 
   if (loading) {
@@ -197,6 +199,7 @@ const UpdateProjectForm = ({ id }: Props) => {
               isButton={false}
               value={field.value}
               onChange={field.onChange}
+              handleError={isUpdate}
             />
           )}
         />
@@ -213,6 +216,7 @@ const UpdateProjectForm = ({ id }: Props) => {
               isButton={false}
               value={field.value}
               onChange={field.onChange}
+              handleError={isUpdate}
             />
           )}
         />
@@ -226,6 +230,7 @@ const UpdateProjectForm = ({ id }: Props) => {
               isButton={false}
               value={field.value}
               onChange={field.onChange}
+              handleError={isUpdate}
             />
           )}
         />

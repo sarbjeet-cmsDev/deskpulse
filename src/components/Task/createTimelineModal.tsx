@@ -10,18 +10,33 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { TextArea } from "../Form/TextArea";
 
-interface CreateTimelineModalProps {
-  onCreate: (data: {
+interface TimelineModalProps {
+  mode: "create" | "update";
+  onSubmit: (data: {
     date: string;
     time_spent: string;
     comment: string;
   }) => Promise<void>;
+  initialData?: { date: string; time_spent: string; comment: string };
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export default function CreateTimelineModal({
-  onCreate,
-}: CreateTimelineModalProps) {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  mode,
+  onSubmit,
+  initialData,
+  isOpen: externalOpen,
+  onOpenChange: externalOnOpenChange,
+}: TimelineModalProps) {
+  const {
+    isOpen: internalOpen,
+    onOpen,
+    onOpenChange: internalOnOpenChange,
+  } = useDisclosure();
+  const isOpen = externalOpen !== undefined ? externalOpen : internalOpen;
+  const onOpenChange = externalOnOpenChange || internalOnOpenChange;
+
   const [loading, setLoading] = useState(false);
   const [weekStart, setWeekStart] = useState("");
   const [today, setToday] = useState("");
@@ -43,61 +58,76 @@ export default function CreateTimelineModal({
     resolver: zodResolver(
       createTimelineSchema.pick({ date: true, time_spent: true, comment: true })
     ),
-    defaultValues: {
+    defaultValues: initialData || {
       date: "",
       time_spent: "",
       comment: "",
     },
   });
 
-  const handleCreate = async (values: {
+  useEffect(() => {
+    if (initialData) {
+      reset(initialData);
+    }
+  }, [initialData, reset]);
+
+  const handleFormSubmit = async (values: {
     date: string;
     time_spent: string;
     comment: string;
   }) => {
     setLoading(true);
     try {
-      await onCreate(values);
+      await onSubmit(values);
       reset();
-      onOpenChange();
+      onOpenChange(false);
     } catch (error) {
-      console.error("Timeline creation failed:", error);
+      console.error(`${mode} timeline failed:`, error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-      if (isOpen) {
-        document.body.style.overflow = "hidden"; 
-      } else {
-        document.body.style.overflow = "auto";
-      }
-      return () => {
-        document.body.style.overflow = "auto";
-      };
-    }, [isOpen]);
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [isOpen]);
 
   return (
     <>
-      <Button
-        onPress={onOpen}
-        className="btn-primary text-white px-4 py-2 text-sm font-semibold"
-      >
-        + Log Time
-      </Button>
+      {mode === "create" ? (
+        <Button
+          onPress={onOpen}
+          className="btn-primary text-white px-4 py-2 text-sm font-semibold"
+        >
+          + Log Time
+        </Button>
+      ) : (
+        ""
+      )}
 
-      <Modal shouldBlockScroll={false} isOpen={isOpen} onOpenChange={onOpenChange} classNames={{ wrapper: "items-start h-auto", base: "my-auto" }}>
+      <Modal
+        shouldBlockScroll={false}
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        classNames={{ wrapper: "items-start h-auto", base: "my-auto" }}
+      >
         <ModalContent>
           {(onClose) => (
             <>
               <ModalBody className="p-0">
                 <H5 className="text-center p-4 border-b border-[#31394f1a]">
-                  Log Time
+                  {mode === "create" ? "Log Time" : "Update Log Time"}
                 </H5>
 
                 <form
-                  onSubmit={handleSubmit(handleCreate)}
+                  onSubmit={handleSubmit(handleFormSubmit)}
                   className="px-4 py-4 space-y-4"
                   noValidate
                 >
@@ -150,7 +180,13 @@ export default function CreateTimelineModal({
                       disabled={loading}
                       className="p-4 bg-transparent text-theme-primary font-bold"
                     >
-                      {loading ? "Logging..." : "Log Time"}
+                      {loading
+                        ? mode === "create"
+                          ? "Logging..."
+                          : "Updating..."
+                        : mode === "create"
+                          ? "Log Time"
+                          : "Update"}
                     </Button>
                     <Button
                       type="button"

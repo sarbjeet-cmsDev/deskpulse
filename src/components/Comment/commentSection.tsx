@@ -444,7 +444,7 @@ export default function CommentInputSection({
                 }
                 setLoading(true);
                 onClick(content)
-                  .then(() => setLoading(false))
+                  .then(() => setLoading(false), setError(""))
                   .catch((err: any) => {
                     console.error("Failed to update description:", err);
                     setLoading(false);

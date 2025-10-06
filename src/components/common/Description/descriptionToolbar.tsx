@@ -34,13 +34,14 @@ interface CommentInputSectionProps {
   value?: string;
   onChange?: (value: string) => void;
   isButton?: boolean;
+  handleError?: boolean;
 }
 
 const DescriptionInputToolbar = ({
   title = "Description",
   value = "",
   onChange,
-  isButton = false,
+  handleError,
 }: CommentInputSectionProps) => {
   const [content, setContent] = useState<string>(value || "");
   const [isFocused, setIsFocused] = useState<boolean>(false);
@@ -49,6 +50,7 @@ const DescriptionInputToolbar = ({
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (value !== undefined && value !== content) {
@@ -56,6 +58,11 @@ const DescriptionInputToolbar = ({
     }
   }, [value]);
 
+  useEffect(()=>{
+      setError("")
+  },[handleError])
+
+  const sizeLimit = Number(process.env.NEXT_PUBLIC_MAX_FILE_SIZE);
   const imageHandler = () => {
     const input = document.createElement("input");
     input.setAttribute("type", "file");
@@ -65,6 +72,13 @@ const DescriptionInputToolbar = ({
     input.onchange = async () => {
       const file = input.files?.[0];
       if (!file) return;
+
+    const maxSize = sizeLimit * 1024 * 1024;
+    setError(""); 
+     if (file.size > maxSize) {
+       setError(`File is too large. Please upload an image smaller than ${sizeLimit}MB.`);
+       return;
+     }
 
       try {
         setLoading(true);
@@ -232,6 +246,7 @@ const DescriptionInputToolbar = ({
           className="description-content"
         />
       </div>
+      {error && <p className="text-sm text-red-500 mt-1">{error}</p>}
       {lightboxOpen && lightboxImage && (
         <ImageLightbox
           open={lightboxOpen}

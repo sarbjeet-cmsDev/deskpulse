@@ -6,6 +6,7 @@ import CreateTimelineModal from "./createTimelineModal";
 import Pagination from "../Pagination/pagination";
 import { ITask } from "@/service/task.service";
 import formatMinutes from "@/utils/formatMinutes";
+import DropdownOptions from "../DropdownOptions";
 
 interface TimelineListProps {
   timelines: ITimeline[];
@@ -19,11 +20,9 @@ interface TimelineListProps {
   refreshTask: () => void;
 }
 
-
 export default function TimelineList({
   timelines,
   task,
-  onLogTimeClick,
   totalItems,
   currentPage,
   itemsPerPage,
@@ -42,6 +41,10 @@ export default function TimelineList({
   const [toDate, setToDate] = useState<string>(
     initialTo.toISOString().substring(0, 10)
   );
+  const [selectedTimeline, setSelectedTimeline] = useState<ITimeline | null>(
+    null
+  );
+  const [updateModalOpen, setUpdateModalOpen] = useState(false);
 
   const handleCreateTimeline = async (data: {
     date: string;
@@ -91,6 +94,32 @@ export default function TimelineList({
 
   const isNextDisabled = isToday(new Date(toDate));
 
+  const handleUpdate = async (id: string) => {
+    try {
+      const res = await TimelineService.getTimelineById(id);
+      setSelectedTimeline(res);
+      setUpdateModalOpen(true);
+    } catch (error) {
+      console.error("Failed to fetch timeline:", error);
+    }
+  };
+
+  const handleUpdateTimeline = async (id: string, data: any) => {
+    try {
+      await TimelineService.updateTimeline(id, {
+        ...data,
+        task: task?._id || "",
+        user: task?.assigned_to || "",
+      });
+      refreshTimelines();
+      refreshTask();
+      setUpdateModalOpen(false);
+      setSelectedTimeline(null);
+    } catch (error) {
+      console.error("Failed to update timeline:", error);
+    }
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
@@ -130,18 +159,16 @@ export default function TimelineList({
           </div>
         </div>
 
-        <CreateTimelineModal onCreate={handleCreateTimeline} />
+        <CreateTimelineModal mode="create" onSubmit={handleCreateTimeline} />
       </div>
 
       <ul>
         {filteredTimelines.map((timeline) => (
-
           <li
             key={timeline._id}
             className="inactive flex justify-between items-center bg-[#f8fafc] w-full py-[15px] px-[20px] rounded-[8px] border-l-[8px] border-l-[#5fd788] mt-[16px]"
           >
             <div className="flex items-center gap-2">
-
               <span className="font-sm text-gray-800 break-all overflow-hidden px-2  whitespace-pre-line">
                 {timeline.comment || "Meeting"}
               </span>
@@ -149,7 +176,9 @@ export default function TimelineList({
 
             <div className="flex items-center gap-6">
               <div className="text-right text-sm text-gray-600">
-                <div className="font-semibold">{formatMinutes(timeline.time_spent)}</div>
+                <div className="font-semibold">
+                  {formatMinutes(timeline.time_spent)}
+                </div>
                 <div>
                   {new Date(timeline.date).toLocaleDateString("en-GB", {
                     day: "2-digit",
@@ -158,6 +187,16 @@ export default function TimelineList({
                   })}
                 </div>
               </div>
+              <DropdownOptions
+                options={[
+                  {
+                    key: "edit",
+                    label: "Edit Log Time",
+                    color: "primary",
+                    onClick: () => handleUpdate(timeline._id),
+                  },
+                ]}
+              />
             </div>
           </li>
         ))}
@@ -169,6 +208,19 @@ export default function TimelineList({
         itemsPerPage={itemsPerPage}
         onPageChange={onPageChange}
       />
+      {updateModalOpen && selectedTimeline && (
+        <CreateTimelineModal
+          mode="update"
+          isOpen={updateModalOpen}
+          onOpenChange={setUpdateModalOpen}
+          initialData={{
+            date: selectedTimeline.date.split("T")[0] ?? "",
+            time_spent: String(selectedTimeline.time_spent ? Number(selectedTimeline.time_spent)/ 60 : 0),
+            comment: selectedTimeline.comment ?? "",
+          }}
+          onSubmit={(data) => handleUpdateTimeline(selectedTimeline._id, data)}
+        />
+      )}
     </div>
   );
 }

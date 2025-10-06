@@ -15,7 +15,7 @@ export class Timeline {
   date: Date;
 
   @Prop({ type: Number })
-  time_spent: number; // Time spent in hours
+  time_spent: number;
 
   @Prop()
   is_active: boolean;
